@@ -132,7 +132,7 @@ per frame ([SIZE]), flat #FF00FF background, no text.
 
 | Hiệu ứng | [N] | [SIZE] | [COLORS] |
 |---|---|---|---|
-| Đạn Buster | 3 | 16x16 | #8FE9FF, #2EC4E6, #FFFFFF |
+| Đạn Arc Cannon | 3 | 16x16 | #8FE9FF, #2EC4E6, #FFFFFF |
 | Lóe nòng | 3 | 16x16 | #FFF1A8, #FFFFFF |
 | Tia lửa trúng đòn | 4 | 16x16 | #FFFFFF, #FFC857 |
 | Nạp mức 1/2/đầy | 4 mỗi mức | 32x32 | #8FE9FF → #FFC857 → #F72585 |
@@ -234,7 +234,7 @@ rounded-square safe zone, 1024x1024.
 
 1. STYLE BLOCK → tờ thiết kế Kai (mục 1–2) → khóa.
 2. Kai: idle, run, nhảy, đáp (P0) → xử lý bằng script → thử trong game.
-3. Hiệu ứng Buster, nổ nhỏ, Drone Lính.
+3. Hiệu ứng Arc Cannon, nổ nhỏ, Drone Lính.
 4. Ô gạch xám (Prototype), rồi tileset Prologue và Stage 1.
 5. Các hoạt ảnh Kai còn lại, Thorna, Bramble Golem.
 6. Giao diện lõi, chân dung, cutscene Prologue.

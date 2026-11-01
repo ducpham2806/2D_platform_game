@@ -59,7 +59,7 @@ Mọi con số là `[PLACEHOLDER]`; chốt sau soft launch. Đây không phải 
 | Mốc | Câu hỏi kiểm tra |
 |---|---|
 | Prototype | Nhảy, lướt, bắn có "sướng" không (điểm ≥ 4/5 từ ít nhất 4 người)? |
-| Vertical slice | Prologue hoàn thành ≥ 90%; Stage 1 ≥ 70% ở phiên đầu; Thorna thắng được bằng Buster |
+| Vertical slice | Prologue hoàn thành ≥ 90%; Stage 1 ≥ 70% ở phiên đầu; Thorna thắng được bằng Arc Cannon |
 | Alpha | Có người nào mua được món đầu tiên mà không cần hướng dẫn? Kinh tế không vỡ? |
 | Beta | Độ khó từng màn theo thứ tự tự do có hợp lý không? Có chuỗi build phá boss quá nhanh không? |
 | Soft launch | Đạt cổng KPI (mục 4.2) |

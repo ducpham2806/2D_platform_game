@@ -1,5 +1,5 @@
 {
-  "buster": {
+  "arcCannon": {
     "damage": 1,
     "maxOnScreen": 3,
     "charge": {

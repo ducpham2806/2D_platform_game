@@ -8,11 +8,11 @@ Mỗi module có giao diện công khai nhỏ để dán vào ChatGPT. Tài li�
 | M1 | Khung game | Scene (Boot, Preload, Menu, Hub, Stage), scale 320×192 nguyên tỷ lệ, khóa ngang, nạp atlas và JSON cấu hình | M0 | GDD 15 | 60 FPS trên điện thoại tầm trung; tỷ lệ không méo |
 | M2 | Đầu vào | Bàn phím, tay cầm, cảm ứng (cần ảo nổi, nút), đổi phím, chỉnh bố cục nút | M1 | GDD 5.2, tab Hub, wireframe | Nút ≥ 48 dp; bố cục lưu được |
 | M3 | Nhân vật | Chạy, nhảy biến thiên, lướt, bám tường, bị đánh, bất tử 1 giây, va chạm lưới ô | M1, M2 | GDD 5.1, `player.json` | Đúng thông số `player.json` |
-| M4 | Chiến đấu | Buster, bắn nạp, đạn, vũ khí boss, sát thương, hộp va chạm, pool đạn | M3 | GDD 5.1, 7, `weapons.json` | Tối đa 3 đạn; nạp 1,2 s ×3 |
+| M4 | Chiến đấu | Arc Cannon, bắn nạp, đạn, vũ khí boss, sát thương, hộp va chạm, pool đạn | M3 | GDD 5.1, 7, `weapons.json` | Tối đa 3 đạn; nạp 1,2 s ×3 |
 | M5 | Kẻ địch | AI theo cấu hình, telegraph, rơi vật phẩm | M4 | GDD 9, 9.1, tab Prologue & Stage 1 | Telegraph ≥ 0,4 s |
 | M6 | Boss | Máy trạng thái 3 pha, Thorna trước, điểm yếu, choáng | M4, M5 | tab Prologue & Stage 1 (mục 5) | Thorna đúng bảng pha và thời gian |
 | M7 | Màn chơi | Nạp bản đồ Tiled, checkpoint, phòng khóa, bí mật, gai, dây leo, camera | M3, M5 | tab Prologue & Stage 1, `stages.json` | 4 checkpoint; hồi sinh ≤ 1,5 s |
-| M8 | Hệ thống RPG | EXP và cấp, cây kỹ năng, module, giáp Capsule, loadout, tính chỉ số | M4 | GDD 6, `player.json`, `modules.json` | Công thức EXP; respec miễn phí |
+| M8 | Hệ thống RPG | EXP và cấp, cây kỹ năng, module, Két giáp, loadout, tính chỉ số | M4 | GDD 6, `player.json`, `modules.json` | Công thức EXP; respec miễn phí |
 | M9 | Kinh tế và Shop | Tiền tệ, upgrade, booster, skin, giao dịch nguyên tử, hoàn upgrade 100% | M8 | GDD 10, tab Hub & Shop, `shop.json`, `economy.json` | Không mua trùng; mất mạng không mất tiền |
 | M10 | Giao diện | HUD, menu, hội thoại, chuẩn bị, kết quả, Hub, Xưởng, cài đặt | M1–M9 | wireframe, tab Hub & Shop | Khớp wireframe |
 | M11 | Lưu và cloud | IndexedDB, mã xuất/nhập, cloud save, xung đột (hiện màn chọn) | M1 | tab Hub & Shop mục 8 | Không nhân đôi tiền khi đồng bộ |

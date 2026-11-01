@@ -29,7 +29,7 @@
       "enabled": true,
       "capPerStage": 1,
       "capPerDay": 3,
-      "rewardType": "refill_sub_tank",
+      "rewardType": "refill_nano_cell",
       "triggerHpPct": 30,
       "where": [
         "pause_menu"

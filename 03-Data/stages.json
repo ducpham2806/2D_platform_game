@@ -16,8 +16,8 @@
       "boss": "thorna",
       "weaponGranted": "Vine Lash",
       "bossWeakness": "Ember Burst",
-      "capsule": "head_mk1",
-      "capsuleRequiresWeapon": "Prism Beam",
+      "armorCache": "head_mk1",
+      "armorCacheRequiresWeapon": "Prism Beam",
       "coreBitBase": 225,
       "segments": [
         "A",
@@ -45,8 +45,8 @@
       "boss": "lumen",
       "weaponGranted": "Prism Beam",
       "bossWeakness": "Vine Lash",
-      "capsule": "body_mk1",
-      "capsuleRequiresWeapon": "Frost Shard",
+      "armorCache": "body_mk1",
+      "armorCacheRequiresWeapon": "Frost Shard",
       "coreBitBase": 300,
       "segments": [
         "A",
@@ -74,8 +74,8 @@
       "boss": "cryo",
       "weaponGranted": "Frost Shard",
       "bossWeakness": "Prism Beam",
-      "capsule": "arm_mk1",
-      "capsuleRequiresWeapon": "Gale Cutter",
+      "armorCache": "arm_mk1",
+      "armorCacheRequiresWeapon": "Gale Cutter",
       "coreBitBase": 375,
       "segments": [
         "A",
@@ -103,8 +103,8 @@
       "boss": "aeris",
       "weaponGranted": "Gale Cutter",
       "bossWeakness": "Frost Shard",
-      "capsule": "leg_mk1",
-      "capsuleRequiresWeapon": "Quake Drill",
+      "armorCache": "leg_mk1",
+      "armorCacheRequiresWeapon": "Quake Drill",
       "coreBitBase": 450,
       "segments": [
         "A",
@@ -132,8 +132,8 @@
       "boss": "terra",
       "weaponGranted": "Quake Drill",
       "bossWeakness": "Gale Cutter",
-      "capsule": "head_mk2",
-      "capsuleRequiresWeapon": "Chain Bolt",
+      "armorCache": "head_mk2",
+      "armorCacheRequiresWeapon": "Chain Bolt",
       "coreBitBase": 525,
       "segments": [
         "A",
@@ -161,8 +161,8 @@
       "boss": "voltaire",
       "weaponGranted": "Chain Bolt",
       "bossWeakness": "Quake Drill",
-      "capsule": "body_mk2",
-      "capsuleRequiresWeapon": "Torrent Wave",
+      "armorCache": "body_mk2",
+      "armorCacheRequiresWeapon": "Torrent Wave",
       "coreBitBase": 600,
       "segments": [
         "A",
@@ -190,8 +190,8 @@
       "boss": "marina",
       "weaponGranted": "Torrent Wave",
       "bossWeakness": "Chain Bolt",
-      "capsule": "arm_mk2",
-      "capsuleRequiresWeapon": "Ember Burst",
+      "armorCache": "arm_mk2",
+      "armorCacheRequiresWeapon": "Ember Burst",
       "coreBitBase": 675,
       "segments": [
         "A",
@@ -219,8 +219,8 @@
       "boss": "pyra",
       "weaponGranted": "Ember Burst",
       "bossWeakness": "Torrent Wave",
-      "capsule": "leg_mk2",
-      "capsuleRequiresWeapon": "Vine Lash",
+      "armorCache": "leg_mk2",
+      "armorCacheRequiresWeapon": "Vine Lash",
       "coreBitBase": 750,
       "segments": [
         "A",
@@ -246,7 +246,7 @@
     "phases": 2,
     "coreBitBase": 1200
   },
-  "note": "Stage 2-8 chọn thứ tự tự do sau Prologue + Stage 1. Thứ tự index là thứ tự khuyến nghị và trùng với vòng khắc chế: vũ khí của Stage k là điểm yếu của boss Stage k+1; Ember Burst (Stage 8) khép vòng về Thorna ở Citadel. Capsule của Stage k cần vũ khí của Stage k+1 (Stage 8 cần Vine Lash).",
+  "note": "Stage 2-8 chọn thứ tự tự do sau Prologue + Stage 1. Thứ tự index là thứ tự khuyến nghị và trùng với vòng khắc chế: vũ khí của Stage k là điểm yếu của boss Stage k+1; Ember Burst (Stage 8) khép vòng về Thorna ở Citadel. Két giáp của Stage k cần vũ khí của Stage k+1 (Stage 8 cần Vine Lash).",
   "levelSync": {
     "enabled": true,
     "belowMin": 2,

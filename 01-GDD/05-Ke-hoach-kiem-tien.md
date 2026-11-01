@@ -191,7 +191,7 @@ Mở khóa: Farm Run và Boss Hunt mở ngay sau cốt truyện; Rift mở khi h
 
 | Giai đoạn | Nguồn sức mạnh | Trần tham khảo |
 | --- | --- | --- |
-| Cốt truyện | Cấp, upgrade, module, giáp Capsule | Khoảng +25% từ upgrade (mục 10.1 GDD) |
+| Cốt truyện | Cấp, upgrade, module, Két giáp | Khoảng +25% từ upgrade (mục 10.1 GDD) |
 | Mức Eclipse 1–3 | Chip Common và Rare, Mastery 1–4 | Sức mạnh gấp \~1,5× cuối cốt truyện |
 | Mức Eclipse 4–7 | Chip Epic và Legendary, bộ 2 mảnh | \~2,5× |
 | Mức Eclipse 8–10 và Rift | Chip Mythic, bộ 4 mảnh, Mastery 10 | \~4× |

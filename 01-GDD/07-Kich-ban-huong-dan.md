@@ -35,7 +35,7 @@ Kịch bản hướng dẫn (tutorial/onboarding) cho người chơi mới của
 | 2. Hub đầu tiên | Sau Prologue | Cài đặt còn lại (tuổi, đồng ý quảng cáo, cỡ nút), Menu nhanh, chọn màn | F02, F03, H01–H04 | 1–2 phút |
 | 3. Stage 1 | Sau H04 | Bám tường, dây leo, gai, phòng khóa, khiên, boss, đổi vũ khí | S01–S13 | \~10 phút |
 | 4. Mở dần theo số boss | Sau boss 1, 2, 3, 4 | Mỗi mốc một hệ thống: kỹ năng → Shop → nhiệm vụ và module → booster và skin | R01–R06 | 1–2 phút mỗi mốc |
-| 5. Mở dần theo tình huống | Rải rác qua 8 màn | Thứ tự màn, điểm yếu, Capsule, Sub-Tank, gợi ý khi chết nhiều | D01–D10 | Theo tình huống |
+| 5. Mở dần theo tình huống | Rải rác qua 8 màn | Thứ tự màn, điểm yếu, Két giáp, Nano Cell, gợi ý khi chết nhiều | D01–D10 | Theo tình huống |
 | 6. Live-ops, quảng cáo, mua hàng | Từ ngày 2 và sau boss 2 | 7 ngày tân thủ, đăng nhập, vòng quay, quà, hồi sinh bằng quảng cáo, Starter Pack | L01–L08 | Theo tình huống |
 | 7. Endgame | Sau khi hạ AEGIS | Vùng Eclipse, Farm, Chip Lõi, tỷ lệ rơi, nâng cấp, Sweep, Mastery | E01–E07 | \~10 phút |
 
@@ -51,7 +51,7 @@ Kịch bản hướng dẫn (tutorial/onboarding) cho người chơi mới của
 | **Sau boss 2:** Shop (quầy Upgrade), dùng vũ khí khắc chế | Lúc này đủ \~525 Core Bit cho upgrade đầu (400) | R04, D03 |
 | **Sau boss 3:** Bảng Nhiệm Vụ, Xưởng (tab Module) | Nhiệm vụ của màn 1–3 hiện cùng lúc; nhiệm vụ màn 1 thưởng module đầu tiên | R05, D04 |
 | **Sau boss 4:** Quầy Booster, Tủ skin, Loadout | Màn Chuẩn bị hiện ô booster từ đây | R06, D05 |
-| Giáp (tab Giáp), Sub-Tank | Khi nhận lần đầu | D02, D07 |
+| Giáp (tab Giáp), Nano Cell | Khi nhận lần đầu | D02, D07 |
 | Đăng nhập, vòng quay, 7 ngày tân thủ, quà 4 giờ | Từ ngày 2, hoặc sau boss 2 nếu chơi tiếp trong ngày 1 | L01–L03, L06 |
 | Quảng cáo rewarded, Starter Pack | Rewarded sau boss 1; Starter Pack từ ngày 2 và sau boss 2 | L04, L05 |
 | Vùng Eclipse, Chip Lõi | Sau AEGIS | E01–E07 |
@@ -88,7 +88,7 @@ Biểu tượng nút (`{NHẢY}`, `{BẮN}`, `{LƯỚT}`, `{DI_CHUYỂN}`, `{Đ�
 | P09 | 2:50 Hành lang đạn huấn luyện | Lướt qua khe đạn | NOVA: "Nhấn `{LƯỚT}` để xuyên qua khe đạn." Mở khóa nút lướt. Đạn huấn luyện chỉ đẩy lùi, **chưa gây sát thương** | Qua hành lang | Thất bại 3 lần: làm chậm đạn 20% |
 | P10 | 3:05 Tháp pháo tập sự, sau một đoạn nghỉ ngắn | Né theo telegraph (dùng lướt vừa học) | NOVA: "Tháp sáng lên trước khi bắn. Né khi nó sáng." Từ đây kẻ địch gây sát thương thật | Né 3 phát liên tiếp | Chết: về checkpoint P07, gợi ý "Quan sát ánh sáng báo trước" |
 | P11 | Vật phẩm hồi máu | Nhặt | NOVA: "Nhặt vật phẩm xanh để hồi máu." | Nhặt vật phẩm | Vật phẩm xuất hiện sau khi người chơi mất máu lần đầu |
-| P12 | 3:20 Tiền sảnh | Xem cảnh Vex | Vex: "Unit-X... vậy là chúng vẫn chọn mày." NOVA: "Tôi không có dữ liệu về người này." | Xem hoặc "Bỏ qua" | Cảnh tối đa 8 giây, bỏ qua được |
+| P12 | 3:20 Tiền sảnh | Xem cảnh Vex | Vex: "Unit-K... vậy là chúng vẫn chọn mày." NOVA: "Tôi không có dữ liệu về người này." | Xem hoặc "Bỏ qua" | Cảnh tối đa 8 giây, bỏ qua được |
 | P13 | 3:50 Thoát ra | Ra khỏi phòng thí nghiệm | Tiêu đề màn; mở Hub Arkon | Qua cửa | Không cần xử lý |
 
 ## 4. Giai đoạn 2 và 3: Hub lần đầu và Stage 1
@@ -130,7 +130,7 @@ Biểu tượng nút (`{NHẢY}`, `{BẮN}`, `{LƯỚT}`, `{DI_CHUYỂN}`, `{Đ�
 | R02 | Lên cấp | Vào Xưởng | Mira: "Cậu lên cấp rồi. Vào Xưởng của tôi đi." Xưởng mở | Vào Xưởng | Nút Xưởng nhấp nháy |
 | R03 | Xưởng, tab Kỹ năng | Học 1 kỹ năng | NOVA: "Mỗi kỹ năng tốn 1 điểm. Đặt lại miễn phí bất cứ lúc nào, cứ thử." | Học 1 kỹ năng | Làm nổi một nút rẻ |
 | R04 | **Sau boss 2**, Quầy Mira mở | Mua upgrade đầu tiên | Mira: "Quầy mở rồi. Cậu đủ tiền cho một nâng cấp đấy." Làm nổi một upgrade cấp 1 | Mua 1 món (có xác nhận) | Thiếu tiền: tặng 150 Core Bit một lần |
-| R05 | **Sau boss 3**, Bảng Nhiệm Vụ mở | Nhận nhiệm vụ | Mira: "Giúp tôi tìm 5 hạt giống ở Verdant nhé. Tiện thể lấy luôn cái Capsule cậu bỏ lại." (Capsule Verdant cần Prism Beam từ boss 2) | Nhận nhiệm vụ | Không ép làm |
+| R05 | **Sau boss 3**, Bảng Nhiệm Vụ mở | Nhận nhiệm vụ | Mira: "Giúp tôi tìm 5 hạt giống ở Verdant nhé. Tiện thể lấy luôn cái Két giáp cậu bỏ lại." (Két giáp Verdant cần Prism Beam từ boss 2) | Nhận nhiệm vụ | Không ép làm |
 | R06 | **Sau boss 4**, màn Chuẩn bị của màn kế | Gán booster | NOVA: "Booster dùng một lần trong màn." Làm nổi ô booster; tặng sẵn 2 booster | Gán 1 booster | Bỏ qua được |
 
 Mỗi bước R chỉ chạy ở lần đầu về Hub sau mốc tương ứng; nếu một lần về Hub có hai mốc (chơi liền hai màn), bước sau dời sang lần về Hub kế tiếp.
@@ -140,13 +140,13 @@ Mỗi bước R chỉ chạy ở lần đầu về Hub sau mốc tương ứng; 
 | ID | Kích hoạt | Người chơi làm | Hiển thị và lời thoại | Hoàn thành khi | Nếu vướng |
 | --- | --- | --- | --- | --- | --- |
 | D01 | Hạ boss thứ nhất | Hiểu thứ tự màn tự do | NOVA: "Từ giờ bạn chọn thứ tự màn. Mỗi boss yếu trước vũ khí của một boss khác." | Xem | Không cần xử lý |
-| D02 | Lần đầu thấy Capsule khóa | Ghi nhớ quay lại | NOVA: "Capsule này cần vũ khí bạn chưa có. Quay lại sau." | Xem | Biểu tượng khóa trên bản đồ nhỏ |
+| D02 | Lần đầu thấy Két giáp khóa | Ghi nhớ quay lại | NOVA: "Két giáp này cần vũ khí bạn chưa có. Quay lại sau." | Xem | Biểu tượng khóa trên bản đồ nhỏ |
 | D03 | Vào phòng boss lần đầu khi đang có vũ khí khắc chế | Thử điểm yếu | NOVA: "Lớp vỏ của nó phản ứng lạ với dữ liệu trong Vine Lash. Thử xem." (tên vũ khí đổi theo boss) | Xem | Không cần xử lý |
 | D04 | Nhận module đầu tiên (sau boss 3) | Lắp module | Mira: "Module cho khả năng phụ. Lắp được 3 ô." | Lắp 1 module | Bỏ qua được |
 | D05 | Sau boss 4 | Mở Tủ skin | Mira: "Muốn đổi diện mạo? Vào Tủ skin." | Xem | Tùy chọn |
 | D06 | Chết 3 lần liên tiếp ở một đoạn | Nhận gợi ý | NOVA: "Thử vũ khí khắc chế, đổi booster hoặc bật chế độ Cốt truyện." | Chọn hoặc đóng | Tối đa 1 lần mỗi màn |
-| D07 | Nhặt Sub-Tank lần đầu | Hồi máu tay | NOVA: "Sub-Tank hồi máu khi bạn chạm vào biểu tượng." | Dùng 1 lần | Nhắc khi máu thấp |
-| D08 | Điểm chọn cốt truyện đầu tiên | Hiểu lựa chọn | NOVA: "Lựa chọn của bạn ảnh hưởng kết thúc. Có thể chọn lại sau." | Chọn | Không cần xử lý |
+| D07 | Nhặt Nano Cell lần đầu | Hồi máu tay | NOVA: "Nano Cell hồi máu khi bạn chạm vào biểu tượng." | Dùng 1 lần | Nhắc khi máu thấp |
+| D08 | Điểm chọn cốt truyện đầu tiên | Hiểu lựa chọn | NOVA: "Lần này không quay lại được đâu. Cậu chắc chứ?" (điểm chọn #1 không chọn lại được; từ điểm chọn #2 có thể chọn lại ở checkpoint truyện) | Chọn | Không cần xử lý |
 | D09 | Phá đảo Thường | Biết có độ khó mới | Thông báo: "Mở khóa độ khó Thử thách: thưởng nhiều hơn, kẻ địch mạnh hơn." | Xem | Không cần xử lý |
 | D10 | Thua một boss lần đầu mà chưa dùng vũ khí khắc chế | Biết điểm yếu | NOVA: "Tôi đã phân tích trận vừa rồi. Lớp vỏ đó sợ `{tên vũ khí}`." Điểm yếu hiện ở màn Chuẩn bị từ đây | Xem | Miễn phí; thay cho việc phải mua Boss Scanner mới biết điểm yếu |
 

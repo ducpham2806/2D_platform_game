@@ -10,7 +10,7 @@ Kế hoạch chi tiết cho quảng cáo trong Cyber Vanguard: vị trí, phần
 
 | Bạn yêu cầu | Trong GDD hiện tại | Cách triển khai bằng quảng cáo |
 | --- | --- | --- |
-| Xem ads nhận **năng lượng** | Chỉ có thanh năng lượng vũ khí (28 đơn vị) và Sub-Tank; **không có thể lực (stamina) giới hạn lượt chơi** | Nạp đầy năng lượng vũ khí; hồi 1 Sub-Tank |
+| Xem ads nhận **năng lượng** | Chỉ có thanh năng lượng vũ khí (28 đơn vị) và Nano Cell; **không có thể lực (stamina) giới hạn lượt chơi** | Nạp đầy năng lượng vũ khí; hồi 1 Nano Cell |
 | Xem ads **tăng mạng** | Không có hệ thống "mạng"; chết thì hồi sinh ở checkpoint (trận boss hồi sinh trong phòng, miễn phí) | Hồi sinh tại chỗ (50% máu, bất tử 2 giây); khiên miễn phí đầu màn |
 | Xem ads **thêm lượt** | Không giới hạn lượt chơi; có lượt vòng quay, Sweep, lượt thưởng gấp đôi, đổi nhiệm vụ ngày | Thêm lượt vòng quay, Sweep, lượt thưởng gấp đôi, đổi nhiệm vụ |
 
@@ -48,7 +48,7 @@ Hạn mức là `[PLACEHOLDER]`, chỉnh bằng Remote Config.
 | --- | --- | --- | --- | --- |
 | `AD_REVIVE` | Màn hồi sinh sau khi chết, **chỉ ở màn thường** (phòng boss đã hồi sinh miễn phí) | Hồi sinh tại chỗ, 50% máu, bất tử 2 giây | 1 lần mỗi màn (dùng chung với Second Wind và Second Chance, GDD mục 10), 6 mỗi ngày | Nhận ngay, vẫn giới hạn 1 mỗi màn |
 | `AD_ENERGY` | Mục "Hỗ trợ" trong menu tạm dừng, và chip "+Năng lượng" cạnh thanh năng lượng khi dưới 15% (chạm vào sẽ tạm dừng game) | Nạp đầy năng lượng vũ khí | 1 lần mỗi màn, 4 mỗi ngày | Nhận ngay |
-| `AD_HEAL` | Mục "Hỗ trợ" trong menu tạm dừng khi hết Sub-Tank và máu dưới 30% | Hồi đầy 1 Sub-Tank | 1 lần mỗi màn, 3 mỗi ngày | Nhận ngay |
+| `AD_HEAL` | Mục "Hỗ trợ" trong menu tạm dừng khi hết Nano Cell và máu dưới 30% | Hồi đầy 1 Nano Cell | 1 lần mỗi màn, 3 mỗi ngày | Nhận ngay |
 | `AD_BOOSTER` | Màn Chuẩn bị: nút "Booster miễn phí" | 1 booster tự chọn trong Shield Cell, Magnet Pulse, Overcharge | 1 lần mỗi màn, 5 mỗi ngày | Nhận ngay |
 | `AD_DOUBLE` | Màn Kết quả: "Nhân đôi Core Bit" | Nhân đôi **Core Bit** của màn (không nhân EXP, Data Chip) | 6 mỗi ngày | Tự động nhân đôi |
 | `AD_GIFT` | Hub: "Quà miễn phí", hồi chiêu 4 giờ | 100–200 Core Bit hoặc 1 booster ngẫu nhiên | 3 mỗi ngày | Nhận không cần xem |
@@ -165,7 +165,7 @@ interface AdService {
 ### 6.3 Xác thực thưởng phía máy chủ
 
 - Thưởng lưu lâu dài (Core Bit, booster, lượt vòng quay/Sweep, bù đăng nhập) được cộng bằng máy chủ. Dùng xác thực phía máy chủ của AdMob (SSV) hoặc mã `nonce` do máy chủ cấp và kiểm tra một lần.
-- Thưởng tạm thời trong màn (hồi sinh, nạp năng lượng, hồi Sub-Tank) có thể tin client vì không lưu lâu dài.
+- Thưởng tạm thời trong màn (hồi sinh, nạp năng lượng, hồi Nano Cell) có thể tin client vì không lưu lâu dài.
 - Ghi log mỗi lượt thưởng để phát hiện gian lận (số lần bất thường mỗi ngày).
 
 ### 6.4 Cấu hình Remote Config (mẫu)

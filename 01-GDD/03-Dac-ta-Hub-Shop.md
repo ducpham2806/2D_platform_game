@@ -20,7 +20,7 @@ Hub rộng 3 màn hình (60 × 12 tile), đi bộ được bằng điều khiể
 | --- | --- | --- | --- |
 | Cổng Chiến dịch | Phải | Bản đồ 8 màn + Citadel, chọn màn | Sau Prologue |
 | Quầy Mira (Shop) | Giữa | Skin, booster, upgrade | Sau boss thứ 2 (Upgrade); Booster và Skin sau boss thứ 4 |
-| Xưởng Lắp Ráp | Giữa-trái | Cây kỹ năng, module, giáp Capsule, loadout, tủ skin | Sau Stage 1 (tab mở dần, mục 5) |
+| Xưởng Lắp Ráp | Giữa-trái | Cây kỹ năng, module, Két giáp, loadout, tủ skin | Sau Stage 1 (tab mở dần, mục 5) |
 | Bảng Nhiệm Vụ | Giữa-phải | Nhiệm vụ phụ | Sau boss thứ 3 |
 | Phòng Hồ Sơ | Trái | Nhật ký, Memory Log, thành tựu, bảng xếp hạng, thống kê | Sau Prologue |
 | Cài đặt | Trong menu | Điều khiển, đồ họa, âm thanh, tài khoản và cloud | Luôn có |
@@ -37,7 +37,7 @@ Mở khi chọn một màn ở Cổng Chiến dịch. Bố cục ngang gồm ba 
 
 | Cột | Thành phần |
 | --- | --- |
-| Trái: thông tin màn | Tên màn, cấp khuyến nghị, tiến độ thu thập (Capsule, Memory Log, bí mật: x/y), vũ khí khắc chế boss (chỉ hiện sau khi đã gặp boss) |
+| Trái: thông tin màn | Tên màn, cấp khuyến nghị, tiến độ thu thập (Két giáp, Memory Log, bí mật: x/y), vũ khí khắc chế boss (chỉ hiện sau khi đã gặp boss) |
 | Giữa: độ khó | Chọn một trong 6 độ khó; độ khó chưa mở hiện khóa kèm điều kiện; mặc định là độ khó đã chọn lần trước cho màn đó |
 | Phải: chuẩn bị | 2 slot booster (3 sau upgrade), loadout hiện tại (đổi nhanh giữa 3 preset), thanh Sức mạnh so với mức khuyến nghị |
 
@@ -72,9 +72,9 @@ Ba tab ở trên cùng: **Skin**, **Booster**, **Upgrade (cộng quầy Premium:
 
 | Mốc | Hàng mở thêm |
 | --- | --- |
-| Sau 2 boss | **Quầy Upgrade mở.** Upgrade: Buster Core, Energy Cell, Armor Plating, Magnet Range (cấp 1–2) |
+| Sau 2 boss | **Quầy Upgrade mở.** Upgrade: Arc Core, Energy Cell, Armor Plating, Magnet Range (cấp 1–2) |
 | Sau 4 boss | **Quầy Booster và quầy Skin mở.** Booster: Magnet Pulse, Shield Cell, Repair Kit, Boss Scanner. 6 skin Thường |
-| Sau 5 boss | Booster: Overcharge, Second Chance. Skin Hiếm đợt 1. Upgrade: Sub-Tank Cap, Dash Coil, Booster Slot |
+| Sau 5 boss | Booster: Overcharge, Second Chance. Skin Hiếm đợt 1. Upgrade: Nano Cell Cap, Dash Coil, Booster Slot |
 | Sau 6 boss | Thêm 6 skin Thường. Skin Hiếm đợt 2 |
 | Sau 8 boss | Skin Sử thi (trả bằng Data Chip). Upgrade cấp 4–5 |
 | Theo thành tựu | Skin Thành tựu mở trực tiếp, không bán (mục 7) |
@@ -87,7 +87,7 @@ Giá theo hạng: Thường 300–800 Core Bit, Hiếm 1.500–3.000 Core Bit, S
 | --- | --- | --- | --- | --- |
 | Đầu | Visor Xanh, Mũ Kỹ Sư | Mặt Nạ Hồ Quang | Vương Miện Mạch | Mũ Huyền Thoại |
 | Thân | Áo Khoác Lab, Giáp Xám | Áo Choàng Neon | Lõi Thủy Tinh | Giáp Overclock |
-| Tay và Buster | Pháo Cổ, Đạn Xanh | Pháo Plasma | Pháo Tinh Vân | Pháo Vô Cực |
+| Tay và Arc Cannon | Pháo Cổ, Đạn Xanh | Pháo Plasma | Pháo Tinh Vân | Pháo Vô Cực |
 | Chân | Giày Trắng, Ủng Công Trường | Giày Lò Xo Neon | Giày Gió | Giày Tốc Độ |
 | Lõi năng lượng | Lõi Lam, Lõi Lục | Lõi Tím Xung | Lõi Cầu Vồng | Lõi Hợp Nhất |
 | Hiệu ứng lướt | Vệt Trắng, Vệt Xanh | Tàn Ảnh | Vệt Sao Băng | Vệt Vàng |
@@ -96,7 +96,7 @@ Tổng 30 skin: 12 Thường, 6 Hiếm, 6 Sử thi, 6 Thành tựu.
 
 ## 5. Xưởng Lắp Ráp
 
-Mở sau Stage 1; các tab mở dần theo lịch hướng dẫn (`07-Kich-ban-huong-dan.md`, mục 2): Kỹ năng sau boss 1, Module sau boss 3, Giáp khi nhận Capsule đầu tiên, Tủ skin và Loadout sau boss 4. Năm tab:
+Mở sau Stage 1; các tab mở dần theo lịch hướng dẫn (`07-Kich-ban-huong-dan.md`, mục 2): Kỹ năng sau boss 1, Module sau boss 3, Giáp khi nhận Két giáp đầu tiên, Tủ skin và Loadout sau boss 4. Năm tab:
 
 | Tab | Chức năng | Quy tắc |
 | --- | --- | --- |
@@ -127,10 +127,15 @@ Hub thay đổi theo tiến trình (đếm theo số boss đã hạ vì Stage 2�
 | Sau Stage 1 | Mở Xưởng (tab Kỹ năng); đèn xanh lục sáng lên | Mira mở Xưởng |
 | Sau boss thứ 2 | Quầy Upgrade của Mira mở | Mira mời mua nâng cấp đầu tiên |
 | Sau boss thứ 3 | Thêm đèn, một góc cây xanh nhỏ; mở Bảng Nhiệm Vụ | Vex trò chuyện trực tiếp với Kai tại Hub (cảnh thoại ngắn, bỏ qua được; đã thấy bóng dáng ở Prologue). Mira giao nhiệm vụ của màn 1–3, gồm "Hạt giống thất lạc" |
-| Sau boss thứ 4 (midpoint) | Hub tối lại, Mira nghi ngờ nhật ký của Lin | Điểm chọn #1 |
-| Sau boss thứ 6 | Hub sáng hơn, mở nhật ký Lin thứ hai | NOVA hé lộ dữ liệu bất thường |
-| Sau boss thứ 8 | Mọi NPC tụ họp trước cổng Citadel | Điểm chọn #2 |
-| Sau kết thúc | Hub đổi theo kết thúc A, B hoặc C | Cảnh kết trong Hub |
+| Sau boss thứ 4 (midpoint) | Hub tối lại, Mira nghi ngờ nhật ký của Lin | Vex đưa Kai đoạn ghi cuộc bỏ phiếu của Hội đồng (lật mở lớp 1: Eclipse là AEGIS tự vệ). **Điểm chọn #1:** đưa nhật ký của Lin cho Vex hay giữ lại |
+| Sau boss thứ 5 | Radio ở Hub phát bản tin mới của Hale | Bản tin mâu thuẫn với đoạn ghi; Mira bắt đầu nghi Hội đồng |
+| Sau boss thứ 6 | Hub sáng hơn, mở nhật ký Lin thứ hai | NOVA lỡ gọi Vex bằng mã hiệu cũ (gieo lật mở lớp 3) |
+| Sau boss thứ 7 | Mira mở được bản thiết kế gốc của Kai | Lật mở lớp 2: Kai là Root Key |
+| Sau boss thứ 8 | Mọi NPC tụ họp trước cổng Citadel | **Điểm chọn #2:** theo kế hoạch của Hale hay nhận lời mời của AEGIS |
+| Citadel 3 | Không ở Hub | Lật mở lớp 3: NOVA là một mảnh của AEGIS |
+| Sau kết thúc | Hub đổi theo kết thúc A, B hoặc C (GDD mục 3.7) | Cảnh kết trong Hub |
+
+Mọi nhịp ở bảng này tính theo **số boss đã hạ**, không theo boss cụ thể, và do NPC ở Hub đảm nhận (GDD mục 3.3).
 
 **Hội thoại mẫu của Mira** (mỗi lần tối đa 3 dòng, có nút bỏ qua)
 
@@ -168,7 +173,7 @@ Module thưởng gắn theo **vị trí màn** (không theo chủ đề) để �
 | Pháo Vô Cực | Hạ cả 8 boss bằng vũ khí điểm yếu |
 | Giày Tốc Độ | Hoàn thành cả 8 màn dưới thời gian mục tiêu |
 | Lõi Hợp Nhất | Đạt kết thúc C (True End) |
-| Vệt Vàng | Thu thập 100% (Capsule, Memory Log, Sub-Tank, nhiệm vụ phụ) |
+| Vệt Vàng | Thu thập 100% (Két giáp, Memory Log, Nano Cell, nhiệm vụ phụ) |
 
 Thành tựu nhỏ khác (ví dụ hạ boss không bị đánh trúng) thưởng thêm Core Bit hoặc Data Chip với lượng nhỏ `[PLACEHOLDER]`.
 
@@ -177,7 +182,7 @@ Thành tựu nhỏ khác (ví dụ hạ boss không bị đánh trúng) thưởn
 | Nhóm dữ liệu | Nội dung |
 | --- | --- |
 | Tiến trình | Boss đã hạ, màn đã mở, độ khó đã mở, Memory Log, lựa chọn cốt truyện |
-| Nhân vật | Cấp, EXP, SP, kỹ năng đã học, module sở hữu, giáp Capsule |
+| Nhân vật | Cấp, EXP, SP, kỹ năng đã học, module sở hữu, Két giáp |
 | Kho | Core Bit, Data Chip, số lượng booster, cấp upgrade |
 | Cosmetic | Skin sở hữu, 3 bộ phối, 3 loadout |
 | Nhiệm vụ và thành tựu | Trạng thái, tiến độ |

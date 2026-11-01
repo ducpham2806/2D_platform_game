@@ -83,7 +83,7 @@ src/logic/player-physics.ts. Viết test: độ cao nhảy tối thiểu/tối �
 
 ### P-M4: Chiến đấu
 ```
-Viết hệ thống Buster và bắn nạp theo weapons.json [dán]: tối đa 3 đạn, nạp 1,2 s nhân 3 sát
+Viết hệ thống Arc Cannon và bắn nạp theo weapons.json [dán]: tối đa 3 đạn, nạp 1,2 s nhân 3 sát
 thương và xuyên 1 kẻ địch, hiệu ứng 3 mức nạp. Viết DamageSystem (sát thương, phòng thủ,
 điểm yếu 2,5 lần, choáng 0,5 s), pool đạn, hộp va chạm hit/hurt, bất tử khung. Vũ khí boss
 là dữ liệu: tên, tiêu hao năng lượng (thanh 28), hành vi đạn. Đổi vũ khí tức thời, không dừng game.
@@ -104,8 +104,8 @@ Lính Kén làm mẫu và test cho telegraph.
 Viết khung BossStateMachine 3 pha (ngưỡng 60% và 30% máu) và cài Thorna đúng bảng:
 [dán bảng boss Thorna từ tab Prologue & Stage 1]. Yêu cầu: telegraph >= 0,5 s, mọi đòn <= 18
 sát thương, luôn có khe né, đòn đỉnh "Hoa Nở" rồi choáng 2 s, Ember Burst gây 2,5 lần và choáng
-0,5 s, thắng được chỉ bằng Buster. Chết thì hồi sinh trong phòng sau 1 giây. Có chế độ debug
-chọn pha. Tiêu chí: mỗi pha qua được bằng Buster trong 60–90 giây.
+0,5 s, thắng được chỉ bằng Arc Cannon. Chết thì hồi sinh trong phòng sau 1 giây. Có chế độ debug
+chọn pha. Tiêu chí: mỗi pha qua được bằng Arc Cannon trong 60–90 giây.
 ```
 
 ### P-M7: Màn chơi
@@ -113,7 +113,7 @@ chọn pha. Tiêu chí: mỗi pha qua được bằng Buster trong 60–90 giây
 Viết StageLoader nạp bản đồ Tiled JSON (lớp ground, hazards, entities, triggers; thuộc tính ô:
 solid, hazard, oneway). Cài: 4 checkpoint, hồi sinh <= 1,5 s giữ Core Bit và EXP, phòng khóa
 (đóng cửa đến khi diệt hết, hiển thị còn lại), bẫy gai (30 sát thương và về ô an toàn), dây leo
-đu (chu kỳ 2,4 s, biên độ 3 ô), hố rơi (mất 20 máu), bí mật và Capsule cần vũ khí. Camera theo
+đu (chu kỳ 2,4 s, biên độ 3 ô), hố rơi (mất 20 máu), bí mật và Két giáp cần vũ khí. Camera theo
 người chơi, giới hạn trong màn. Dữ liệu màn từ stages.json [dán đoạn Stage 1].
 ```
 
@@ -122,7 +122,7 @@ người chơi, giới hạn trong màn. Dữ liệu màn từ stages.json [dán
 Viết src/logic/rpg.ts: EXP lên cấp 40*L^1.4 tối đa cấp 30, máu 100+4*(L-1), công 10+0.25*(L-1), đồng bộ cấp theo levelSync trong stages.json,
 1 SP mỗi cấp từ cấp 2 và 1 SP mỗi boss. Cây kỹ năng 3 nhánh (Vanguard, Phantom, Core), đặt lại
 miễn phí. Module: 3/4/5 ô theo cấp 1/10/20, mỗi module có tải, không lưu cấu hình vượt tải.
-Giáp Capsule 4 bộ phận Mk I/II. Loadout 3 preset (module + giáp + skin; kỹ năng dùng chung).
+Giáp Két giáp 4 bộ phận Mk I/II. Loadout 3 preset (module + giáp + skin; kỹ năng dùng chung).
 Hàm tính chỉ số cuối cùng (cấp + upgrade + module + giáp). Test đầy đủ cho công thức.
 ```
 

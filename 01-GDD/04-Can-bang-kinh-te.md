@@ -52,7 +52,7 @@ Thu theo màn tăng đều: Stage n thu `225 + 75 × (n − 1)` Core Bit ở đ�
 
 | Hạng mục | Chi tiết | Tổng Core Bit |
 | --- | --- | --- |
-| Upgrade | Buster Core 8.948; Armor Plating 8.948; Energy Cell 6.711; Sub-Tank Cap 5.936; Dash Coil 3.624; Magnet Range 1.510; Booster Slot 2.000 | **37.677** |
+| Upgrade | Arc Core 8.948; Armor Plating 8.948; Energy Cell 6.711; Nano Cell Cap 5.936; Dash Coil 3.624; Magnet Range 1.510; Booster Slot 2.000 | **37.677** |
 | Skin Thường | 12 món × \~550 | 6.600 |
 | Skin Hiếm | 6 món × \~2.250 | 13.500 |
 | Skin Sử thi | 6 món, trả bằng Data Chip (mục 5) | 0 |

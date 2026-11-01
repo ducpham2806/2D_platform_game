@@ -1,7 +1,7 @@
 {
   "upgrades": [
     {
-      "id": "buster_core",
+      "id": "arc_core",
       "maxLevel": 5,
       "effectPerLevel": "+5% damage",
       "baseCost": 400,
@@ -22,7 +22,7 @@
       "costGrowth": 1.8
     },
     {
-      "id": "sub_tank_cap",
+      "id": "nano_cell_cap",
       "maxLevel": 4,
       "effectPerLevel": "+25% heal per sub-tank",
       "baseCost": 500,

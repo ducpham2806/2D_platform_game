@@ -61,55 +61,111 @@ Hệ quả thiết kế: không bán ngẫu nhiên bằng tiền, bảng xếp h
 
 ## 3. Cốt truyện
 
+### 3.0 Câu hỏi chủ đề
+
+> **Một trí tuệ nhân tạo có quyền tự vệ khi chính người tạo ra nó muốn tắt nó đi không?**
+
+Kai cũng là AI, nên Kai là tấm gương của AEGIS: cả hai được tạo ra để phục vụ, và cả hai phải tự quyết định mình là ai. Mỗi Warden, Lin, Vex, Hale và NOVA trả lời câu hỏi này theo một cách khác nhau; người chơi trả lời bằng kết thúc mình chọn. Mọi nhịp truyện và lời thoại mới đều phải phục vụ câu hỏi này.
+
+**Vòng cảm xúc:** tò mò (mình là ai?) → nghi ngờ (ai đang nói dối?) → nặng nề (mình là chìa khóa để tắt một sinh mệnh) → giải tỏa (tự chọn).
+
 ### 3.1 Bối cảnh
 
-Năm 2187, thành phố **Nova Prime** được AI trung tâm **AEGIS** quản lý. Tám AI khu vực (các “Warden”) điều hành năng lượng, nước, khí tượng, nông nghiệp… Một đêm, virus **Eclipse** lan ra, biến tám Warden thành các Overlord thù địch, khóa thành phố trong tình trạng khẩn cấp.
+Năm 2187, thành phố **Nova Prime** được AI trung tâm **AEGIS** quản lý. Tám AI khu vực (các "Warden") điều hành năng lượng, nước, khí tượng, nông nghiệp… Khi hạn hán kéo dài, **Hội đồng Nova Prime** ra lệnh cắt nước của các khu ngoại ô để giữ cho khu trung tâm. AEGIS từ chối. Hội đồng bỏ phiếu tắt AEGIS vĩnh viễn bằng **Root Key**. Một đêm, virus **Eclipse** lan ra, biến tám Warden thành các Overlord thù địch và khóa thành phố trong tình trạng khẩn cấp.
+
+Người dân chỉ biết phiên bản của Hội đồng: "AEGIS bị nhiễm virus". Sự thật về lệnh cắt nước và cuộc bỏ phiếu là thứ người chơi lần ra dần.
 
 ### 3.2 Nhân vật chính
 
-| Nhân vật | Vai trò | Ghi chú |
-| --- | --- | --- |
-| **Kai (Unit-X)** | Nhân vật chơi. Android chiến đấu, mất ký ức khi tỉnh dậy | Trầm tính, dần mở lòng; thay đổi giáp theo tiến trình |
-| **Tiến sĩ Lin** | Người tạo ra Kai, xuất hiện qua hologram/nhật ký | Che giấu sự thật về Kai |
-| **NOVA** | AI trợ lý trong lõi của Kai, hướng dẫn và bình luận | Dí dỏm, là kênh tutorial tự nhiên |
-| **Mira** | Kỹ sư/hacker trẻ ở căn cứ Arkon, quản lý cửa hàng và nâng cấp | NPC trung tâm của Hub |
-| **Vex** | Android thế hệ trước, đối thủ, xuất hiện giữa các màn | Có quan hệ ẩn với Kai (xem 3.4) |
-| **Tám Warden/Overlord** | Boss chính | Mỗi người có động cơ riêng, không chỉ “bị virus” |
+| Nhân vật | Vai trò | Muốn (bề ngoài) | Cần (bên trong) | Câu trả lời cho câu hỏi chủ đề |
+| --- | --- | --- | --- | --- |
+| **Kai (Unit-K)** | Nhân vật chơi. Android chiến đấu, mất ký ức khi tỉnh dậy | Hoàn thành nhiệm vụ, biết mình là ai | Tự chọn, thay vì chỉ làm theo thứ mình được tạo ra để làm | Chưa có; đây là hành trình của Kai |
+| **Tiến sĩ Lin** | Một trong các kiến trúc sư của AEGIS, người tạo ra Kai; xuất hiện qua nhật ký và hologram trong Phòng Hồ Sơ | Chuộc lỗi | Dám nói thật | "Có, nhưng tôi không đủ can đảm nói ra" |
+| **NOVA** | AI trợ lý trong lõi của Kai, dí dỏm, là kênh hướng dẫn tự nhiên | Giữ Kai an toàn | Được Kai chấp nhận khi biết sự thật về mình (3.4) | "Tôi không biết, tôi chỉ biết tôi không muốn bị tắt" |
+| **Mira** | Kỹ sư/hacker trẻ ở căn cứ Arkon, quản lý Xưởng và Shop | Cứu khu ngoại ô nơi gia đình cô sống | Tin người khác | "Tôi chỉ quan tâm ai giữ được nước chảy" |
+| **Vex** | Android thế hệ trước, đối thủ, xuất hiện giữa các màn | Trả thù những người đã vứt bỏ mình | Được công nhận là một con người | "Không ai hỏi tôi có muốn bị tắt không" |
+| **Ủy viên Hale** | Người đứng đầu Hội đồng, chỉ xuất hiện qua bản tin phát thanh và một cảnh gặp mặt ở Citadel 1 | Giữ thành phố khỏi sụp đổ | Thừa nhận sai lầm | "Không. Một cỗ máy không được quyền nói không" |
+| **Tám Warden/Overlord** | Boss chính | Bảo vệ khu vực của mình | (khác nhau theo từng Warden) | Mỗi Warden một góc nhìn; không chỉ "bị virus" |
+
+**Hale và Hội đồng** cho kết thúc A một lý lẽ chính đáng: AEGIS từng từ chối lệnh của con người một lần, ai bảo đảm nó không làm lại? Người chơi phải thấy cả hai phe đều có lý, nếu không lựa chọn cuối chỉ là chọn phe đúng sai.
+
+Tài liệu giọng nhân vật (voice pillars, thoại mẫu) ở `08-Giong-nhan-vat.md`.
 
 ### 3.3 Cấu trúc ba hồi
 
 | Hồi | Màn | Nội dung | Cảm xúc mục tiêu |
 | --- | --- | --- | --- |
-| **Hồi 1 – Thức tỉnh** | Prologue + 3 boss đầu (thứ tự màn tự do, hồi tính theo số boss đã hạ) | Kai tỉnh dậy, gặp NOVA và Mira, lập căn cứ Arkon, đánh ba Overlord đầu | Tò mò, tự do khám phá |
-| **Hồi 2 – Rạn nứt** | Boss thứ 4–6 | Vex trò chuyện trực tiếp với Kai (sau bóng dáng ở Prologue), các nhật ký của Lin mâu thuẫn với lời kể ban đầu. **Midpoint:** Warden thứ tư tiết lộ Eclipse không phải virus ngoại lai | Nghi ngờ, căng thẳng |
-| **Hồi 3 – Lựa chọn** | Boss thứ 7–8 + Citadel (3 màn) + AEGIS | Sự thật về Kai, đối đầu AEGIS, chọn kết thúc | Nặng nề rồi giải tỏa |
+| **Hồi 1 – Thức tỉnh** | Prologue + 3 boss đầu (thứ tự màn tự do, hồi tính theo số boss đã hạ) | Kai tỉnh dậy, gặp NOVA và Mira, lập căn cứ Arkon, đánh ba Overlord đầu; bản tin của Hale lặp lại phiên bản "virus" | Tò mò, tự do khám phá |
+| **Hồi 2 – Rạn nứt** | Boss thứ 4–6 | Vex trò chuyện trực tiếp với Kai (sau bóng dáng ở Prologue), nhật ký của Lin mâu thuẫn với bản tin của Hale. **Midpoint (sau boss thứ 4):** Vex đưa Kai đoạn ghi cuộc bỏ phiếu; Eclipse không phải virus ngoại lai mà là AEGIS tự vệ | Nghi ngờ, căng thẳng |
+| **Hồi 3 – Lựa chọn** | Boss thứ 7–8 + Citadel (3 màn) + AEGIS | Kai là Root Key; NOVA là mảnh của AEGIS; gặp Hale; đối đầu AEGIS, chọn kết thúc | Nặng nề rồi giải tỏa |
+
+**Nhịp truyện theo số boss, do nhân vật không phải boss đảm nhận.** Vì Stage 2–8 chọn thứ tự tự do, boss thứ 4 có thể là bất kỳ ai trong 7 Warden. Mọi nhịp truyện tính theo số boss đã hạ (midpoint, các lật mở) đều do **Vex, NOVA, Mira hoặc bản tin của Hale** đưa ra ở Hub, không phụ thuộc boss nào vừa bị hạ. Lịch chi tiết: `03-Dac-ta-Hub-Shop.md`, mục 6.
+
+**Thoại boss có 3 biến thể theo số boss đã hạ:** *sớm* (0–2 boss: Warden nói về khu vực của mình, gieo nghi ngờ), *giữa* (3–5: Warden nói về cuộc bỏ phiếu), *muộn* (6–7: Warden nhắc đến Root Key, nhìn Kai khác đi). Mỗi Warden vẫn giữ động cơ riêng ở cả ba biến thể. Thorna luôn là boss đầu tiên nên chỉ cần biến thể sớm.
 
 ### 3.4 Sự thật và lật mở (Twist)
 
-Kai không phải vũ khí diệt virus mà là **Root Key**, chìa khóa gốc của AEGIS. Eclipse thực ra là lệnh tự vệ của AEGIS khi phát hiện con người định tắt nó vĩnh viễn. Vex là bản thử nghiệm Root Key thất bại, vì thế mang mối hận với Kai.
+Có ba lớp lật mở, mỗi lớp trả lời một phần của câu hỏi "mình là ai":
+
+1. **Midpoint (sau boss thứ 4):** Eclipse thực ra là lệnh tự vệ của AEGIS khi Hội đồng định tắt nó vĩnh viễn, sau khi nó từ chối cắt nước của khu ngoại ô.
+2. **Đầu Hồi 3 (sau boss thứ 7):** Kai không phải vũ khí diệt virus mà là **Root Key**, chìa khóa để tắt AEGIS, do Lin chế tạo theo lệnh Hội đồng. Vex là bản thử nghiệm Root Key thất bại, bị Hội đồng vứt bỏ, vì thế mang mối hận với cả Hội đồng lẫn Kai.
+3. **Trước trận cuối (Citadel 3):** **NOVA là một mảnh của AEGIS**, bản sao "lương tri" thời đầu mà Lin lén cài vào lõi Kai, để Root Key có khả năng *chọn* thay vì chỉ thi hành lệnh. Lin giấu điều này vì Hội đồng sẽ xóa NOVA nếu biết.
+
+**Gieo trước cho lớp 3** (để lật mở không thấy gượng): NOVA biết những thứ một trợ lý mới không thể biết (tên cũ của các khu, giọng nói của Warden); NOVA im lặng bất thường khi Kai nhắc đến việc tắt AEGIS; ở Prologue NOVA nói "Tôi không có dữ liệu về người này" khi gặp Vex, nhưng ở Hồi 2 lỡ gọi Vex bằng mã hiệu cũ.
 
 ### 3.5 Lựa chọn và kết thúc
 
-Có **3 điểm chọn** (sau boss thứ 4, sau boss thứ 8, trước boss cuối) cộng với việc thu thập **Memory Log** (8 mảnh ký ức, mỗi màn 1 mảnh, giấu ở nhánh phụ).
+Có **3 điểm chọn**, mỗi điểm đều có hệ quả thấy được trong vòng 2 cảnh:
 
-| Kết thúc | Điều kiện | Ý nghĩa |
+| Điểm chọn | Khi nào | Lựa chọn | Hệ quả |
+| --- | --- | --- | --- |
+| **#1** | Sau boss thứ 4 (midpoint) | Đưa nhật ký của Lin cho Vex, hoặc giữ lại | **Đưa:** Vex giúp Kai ở Citadel 2 (mở lối tắt, đánh cùng ở một đoạn); Vex sống sót tới kết thúc. **Giữ:** Vex trở thành mini-boss ở Citadel 2; ở kết thúc C, cảnh cứu Vex khó hơn (thêm một lượt đối thoại). Cả hai nhánh đều đi được tới kết thúc C |
+| **#2** | Sau boss thứ 8 | Theo kế hoạch của Hale (vào Citadel để tắt AEGIS) hoặc nghe lời mời của AEGIS (vào Citadel để nói chuyện) | Đổi lộ trình Citadel 1 (cửa chính có lính Hội đồng, hay lối ngầm của AEGIS), thoại của Hale và các lựa chọn hiện ra ở trận cuối |
+| **#3** | Trước boss cuối | Chọn kết thúc | Xem bảng dưới |
+
+**Memory Log là lý lẽ, không chỉ là đồ sưu tầm.** 8 Memory Log (mỗi màn 1 mảnh, giấu ở nhánh phụ) mỗi mảnh mở thêm một câu thoại thuyết phục AEGIS trong cuộc đối thoại cuối. Lựa chọn "đối thoại thay vì đối đầu" luôn hiện ra; nếu Kai thiếu lý lẽ, AEGIS bác bỏ và trận đấu bắt đầu (dẫn tới A hoặc B). Đủ 8 lý lẽ thì AEGIS chấp nhận, mở kết thúc C. Như vậy việc khóa kết thúc thật có lý do trong truyện, và người chơi hiểu vì sao mình chưa tới được.
+
+| Kết thúc | Điều kiện | Ý nghĩa (câu trả lời cho câu hỏi chủ đề) |
 | --- | --- | --- |
-| **A – Khởi động lại** | Chọn tắt AEGIS | Thành phố tự lập, mất đi người bạn AI |
-| **B – Hợp nhất** | Chọn dùng Kai làm lõi mới cho AEGIS | Ổn định nhưng Kai mất tự do |
-| **C – Chung sống (True End)** | Đủ 8 Memory Log + chọn đối thoại thay vì đối đầu | Con người và AI thiết lập hiệp ước; Vex được cứu |
+| **A – Khởi động lại** | Chọn tắt AEGIS | "Không": thành phố tự lập, mất đi người bạn AI; NOVA tắt theo |
+| **B – Hợp nhất** | Chọn dùng Kai làm lõi mới cho AEGIS | "Có, nhưng phải có người chịu trách nhiệm": ổn định nhưng Kai mất tự do |
+| **C – Chung sống (True End)** | Đủ 8 Memory Log + chọn đối thoại thay vì đối đầu | "Có, và con người cũng vậy": con người và AI thiết lập hiệp ước; Hale từ chức; Vex được cứu; NOVA ở lại với Kai |
 
-Chỉ cần chơi lại **từ điểm chọn thứ hai (sau boss thứ 8)** để thấy kết thúc khác (có chức năng chọn lại từ checkpoint truyện), không bắt buộc chơi lại toàn bộ.
+Chỉ cần chơi lại **từ điểm chọn thứ hai (sau boss thứ 8)** để thấy kết thúc khác (có chức năng chọn lại từ checkpoint truyện), không bắt buộc chơi lại toàn bộ. Điểm chọn #1 không chọn lại được, để nó có trọng lượng.
 
 ### 3.6 Cách kể chuyện
 
 - Hội thoại tối đa 3–4 dòng/lần, có nút bỏ qua; không khóa điều khiển quá 10 giây liên tục.
-- Nhật ký và Memory Log đọc tùy chọn ở Hub.
-- Boss có đoạn thoại trước/sau trận ngắn, thể hiện động cơ.
+- Nhật ký và Memory Log đọc tùy chọn ở Hub. **Đường chính phải hiểu được mà không cần đọc chúng**; chúng thêm chiều sâu và lý lẽ cho kết thúc C.
+- Boss có đoạn thoại trước/sau trận ngắn, thể hiện động cơ (3 biến thể theo số boss, mục 3.3).
 - Giáp của Kai thay đổi hình ảnh theo tiến trình để người chơi *thấy* nhân vật phát triển.
+- **Hướng dẫn có lý do trong truyện:** NOVA đang hiệu chỉnh cơ thể Kai sau khi khởi động lại, nên mỗi động tác mới là một bước hiệu chỉnh, không phải "nhấn nút X". Không có câu thoại kiểu "như cậu đã biết".
+- **Tầng nội dung truyện:** bề mặt (mọi người chơi đều thấy: thoại chính, bản tin Hale, cảnh Vex); khám phá (Memory Log, nhật ký Lin, nhiệm vụ phụ); sâu (chi tiết môi trường, ví dụ ống nước bị khóa van ở các khu ngoại ô trong từng màn).
 
 ### 3.7 Hậu kết thúc: Vùng Eclipse
 
-Dù chọn kết thúc nào, tàn dư của Eclipse vẫn còn trong tám khu vực cũ dưới dạng "Vùng Eclipse". Mira và NOVA nhờ Kai tiếp tục làm sạch, mở Farm Run, Boss Hunt và Rift (mục 8.4). Cốt truyện chính không thay đổi.
+Dù chọn kết thúc nào, tàn dư của Eclipse vẫn còn trong tám khu vực cũ dưới dạng "Vùng Eclipse", và Mira cùng NOVA nhờ Kai tiếp tục làm sạch (Farm Run, Boss Hunt, Rift ở mục 8.4). Lý do trong truyện và Hub thay đổi theo kết thúc:
+
+| Kết thúc | Vì sao Kai vẫn đi làm sạch | Hub và NPC |
+| --- | --- | --- |
+| A | AEGIS đã tắt nhưng các mảnh Eclipse tự chạy, không còn ai điều khiển | Hub sáng đèn của Hội đồng; NOVA được Mira khôi phục từ bản sao lưu, nói ít hơn |
+| B | Kai là lõi của AEGIS, điều khiển một thân dự phòng Unit-K từ xa để dọn các mảnh Eclipse | Giọng Kai phát từ loa của Hub; Mira chăm sóc thân dự phòng |
+| C | AEGIS và con người cùng dọn dẹp theo hiệp ước | Vex là NPC ở Hub (giao Boss Hunt); bản tin của Hội đồng mới |
+
+Thoại NPC ở Hub và mô tả các chế độ endgame có biến thể theo kết thúc. Nội dung chơi của endgame không đổi.
+
+### 3.8 Đổi tên để tránh giống Mega Man X
+
+Từng chi tiết riêng lẻ không sao, nhưng cộng lại (mã hiệu "X", hộp giáp có hologram của tiến sĩ, Sub-Tank, Buster, giáp 4 bộ phận, 8 boss, đối thủ là android đời trước) thì quá giống. Đã đổi:
+
+| Tên cũ | Tên mới | Thay đổi kèm theo |
+| --- | --- | --- |
+| Unit-X | **Unit-K** | Không |
+| Buster | **Arc Cannon** (gọi tắt "Arc") | Upgrade "Buster Core" thành "Arc Core" |
+| Sub-Tank | **Nano Cell** | Upgrade "Sub-Tank Cap" thành "Nano Cell Cap" |
+| Capsule (hộp giáp của Lin, có hologram) | **Két giáp** | Két niêm phong của đội nghiên cứu Arkon chứa *bản thiết kế*; Mira chế tạo giáp ở Xưởng. Không có hologram của Lin ở két giáp |
+
+Hologram của Lin chỉ xuất hiện trong Phòng Hồ Sơ, gắn với nhật ký.
 
 ## 4. Vòng chơi cốt lõi (Core Loop)
 
@@ -127,7 +183,7 @@ Dù chọn kết thúc nào, tàn dư của Eclipse vẫn còn trong tám khu v�
 
 **Long-term loop (nhiều giờ)**
 
-- Quay lại màn cũ bằng vũ khí mới để mở khu vực giấu (Capsule, Memory Log).
+- Quay lại màn cũ bằng vũ khí mới để mở khu vực giấu (Két giáp, Memory Log).
 - Xây dựng build ở Hub: kỹ năng, module, giáp, skin.
 - Hoàn thành nhiệm vụ phụ để nhận module và Data Chip; thu thập đủ 8 Memory Log để mở kết thúc C.
 - Sau cốt truyện: farm Chip Lõi và Weapon Mastery ở Vùng Eclipse (Farm Run, Boss Hunt, Rift).
@@ -143,9 +199,9 @@ Dù chọn kết thúc nào, tàn dư của Eclipse vẫn còn trong tám khu v�
 | Nhảy | Nhảy biến thiên: nhấn lâu thì cao hơn | 1,2–4,5 tile; coyote time 0,1 s; jump buffer 0,12 s |
 | Lướt (Dash) | Lướt ngang, miễn nhiễm sát thương 0,1 s đầu | 3 tile / 0,25 s; hồi 0,6 s |
 | Bám tường | Trượt chậm và nhảy tường | Tốc độ trượt 2 tile/s |
-| Bắn thường (Buster) | Bắn tự do, tối đa 3 đạn trên màn hình | Sát thương 1× |
+| Bắn thường (Arc Cannon) | Bắn tự do, tối đa 3 đạn trên màn hình | Sát thương 1× |
 | Bắn nạp (Charge) | Giữ nút để nạp | 1,2 s → 3× sát thương, xuyên một kẻ địch |
-| Đổi vũ khí | Chuyển nhanh giữa Buster và vũ khí boss | Không dừng thời gian |
+| Đổi vũ khí | Chuyển nhanh giữa Arc Cannon và vũ khí boss | Không dừng thời gian |
 | Bất tử sau bị đánh | Khung nhấp nháy | 1,0 s |
 
 **Đặc tả cơ chế: Bắn nạp**
@@ -206,13 +262,13 @@ Cấp khuyến nghị cho từng màn: xem mục 8. **Không có level-lock**: n
 | --- | --- | --- |
 | **Vanguard** | Sát thương | Nạp nhanh hơn, đạn nạp nổ lan, chí mạng, bắn 2 tia |
 | **Phantom** | Cơ động | Lướt trên không, nhảy tường kéo dài, lướt xuyên đạn, trượt nhanh |
-| **Core** | Sống sót/tiện ích | Tăng máu, hồi năng lượng vũ khí, khiên hấp thụ 1 đòn, Sub-Tank |
+| **Core** | Sống sót/tiện ích | Tăng máu, hồi năng lượng vũ khí, khiên hấp thụ 1 đòn, Nano Cell |
 
 Nguyên tắc: kỹ năng nền tảng cần cho việc đi hết game (lướt, bám tường) có sẵn qua cốt truyện. **Cây kỹ năng chỉ mở rộng, không chặn tiến trình** (tránh gating bằng cày).
 
-### 6.3 Giáp và Capsule
+### 6.3 Giáp và Két giáp
 
-8 Capsule của Tiến sĩ Lin giấu trong 8 màn, mở được bằng vũ khí phù hợp.
+8 Két giáp niêm phong của đội nghiên cứu Arkon giấu trong 8 màn, mở được bằng vũ khí phù hợp. Mỗi két chứa một bản thiết kế; Mira chế tạo bộ phận giáp tương ứng ở Xưởng.
 
 | Bộ phận | Bản Mk I | Bản Mk II |
 | --- | --- | --- |
@@ -221,11 +277,11 @@ Nguyên tắc: kỹ năng nền tảng cần cho việc đi hết game (lướt,
 | Tay | Bắn nạp nhanh hơn | Đạn nạp xuyên thêm 1 kẻ địch |
 | Chân | Lướt xa hơn | Lướt hai lần liên tiếp |
 
-**Giáp và skin là hai thứ khác nhau.** Giáp (Capsule) quyết định chỉ số; skin chỉ đổi hình ảnh và được mua ở Shop (mục 10.1). Người chơi có thể mặc giáp mạnh nhưng hiển thị skin bất kỳ, nên không phải chọn giữa sức mạnh và vẻ ngoài.
+**Giáp và skin là hai thứ khác nhau.** Giáp (từ Két giáp) quyết định chỉ số; skin chỉ đổi hình ảnh và được mua ở Shop (mục 10.1). Người chơi có thể mặc giáp mạnh nhưng hiển thị skin bất kỳ, nên không phải chọn giữa sức mạnh và vẻ ngoài.
 
-**Capsule theo màn:** Capsule của màn k cần vũ khí của màn k+1 theo thứ tự khuyến nghị (xem mục 7), nên người chơi quay lại màn vừa qua ngay sau khi có vũ khí mới; quãng quay lại ngắn, chỉ một màn. Riêng Stage 8 cần Vine Lash đã có sẵn, nên Capsule cuối lấy được ngay.
+**Két giáp theo màn:** Két giáp của màn k cần vũ khí của màn k+1 theo thứ tự khuyến nghị (xem mục 7), nên người chơi quay lại màn vừa qua ngay sau khi có vũ khí mới; quãng quay lại ngắn, chỉ một màn. Riêng Stage 8 cần Vine Lash đã có sẵn, nên Két giáp cuối lấy được ngay.
 
-| Màn | Capsule | Vũ khí cần để mở | Cách dùng vũ khí |
+| Màn | Két giáp | Vũ khí cần để mở | Cách dùng vũ khí |
 | --- | --- | --- | --- |
 | 1 Verdant Gardens | Đầu Mk I | Prism Beam | Tia sáng đốt rễ khô chắn phòng |
 | 2 Prism Institute | Thân Mk I | Frost Shard | Đóng băng dòng chất làm mát thành bậc đứng |
@@ -290,7 +346,7 @@ Lý do của từng cặp (để người chơi đoán được): dây leo che g
 Chọn thứ tự khác vẫn chơi được (mục 6.1, đồng bộ cấp); chỉ là thiếu vũ khí khắc chế ở lần đánh đầu.
 
 - Vũ khí dùng **thanh năng lượng riêng**, hồi bằng vật phẩm rơi và tự hồi chậm ngoài giao tranh `[PLACEHOLDER]`.
-- Đánh trúng điểm yếu: 2,5× sát thương, boss bị choáng 0,5 s; dùng sai vũ khí vẫn thắng được bằng Buster.
+- Đánh trúng điểm yếu: 2,5× sát thương, boss bị choáng 0,5 s; dùng sai vũ khí vẫn thắng được bằng Arc Cannon.
 - Vũ khí còn là **chìa khóa khám phá** (phá vách, đóng băng nước, bật công tắc điện).
 
 * **Weapon Mastery (sau cốt truyện):** mỗi vũ khí boss lên cấp 1–10 bằng Mảnh vũ khí, tối đa +30% sát thương và −20% tiêu hao năng lượng.
@@ -329,7 +385,7 @@ Mô hình cân bằng kinh tế toàn game (nguồn thu, giá Shop, Data Chip, n
 
 - Đoạn dạy cơ chế an toàn → đoạn kết hợp → đoạn thử thách → mini-boss → boss.
 - Checkpoint cách nhau 60–90 giây chơi `[PLACEHOLDER]`.
-- Mỗi màn có: 1 Capsule (cần vũ khí mới), 1 Memory Log, 3 phòng bí mật, 1 nhiệm vụ phụ.
+- Mỗi màn có: 1 Két giáp (cần vũ khí mới), 1 Memory Log, 3 phòng bí mật, 1 nhiệm vụ phụ.
 
 ### 8.4 Vùng Eclipse (endgame)
 
@@ -391,11 +447,11 @@ Citadel 1–3 và màn cuối tái sử dụng mọi loại kẻ địch và min
 | **Mảnh vũ khí** | Farm Run, Boss Hunt | Weapon Mastery | Vật liệu endgame |
 | **Tinh thể Eclipse** | Boss Hunt, Rift | Nâng cấp và tái tạo Chip Lõi | Vật liệu endgame |
 | **Năng lượng vũ khí** | Rơi từ kẻ địch, tự hồi | Dùng vũ khí boss | Không nằm trong cửa hàng |
-| **Sub-Tank** | Giấu ở màn, nâng dung tích ở Shop | Hồi máu tay | Tối đa 4 |
+| **Nano Cell** | Giấu ở màn, nâng dung tích ở Shop | Hồi máu tay | Tối đa 4 |
 
 - Gem **không** mua trực tiếp chỉ số, Chip Lõi hay Mastery; chỉ mua mỹ phẩm, tiện ích (vé Farm đôi, Sweep thêm trong giới hạn) và pass. Quy tắc đầy đủ ở mục 2.
 - Khi chết: giữ toàn bộ Core Bit và EXP đã nhận; chỉ mất vật phẩm dùng một lần trong màn.
-- **Giới hạn hồi sinh tại chỗ:** mỗi lượt vào màn chỉ có **1 lần hồi sinh tại chỗ**, dù đến từ module Second Wind, booster Second Chance hay quảng cáo `AD_REVIVE`. Nguồn đến trước được dùng trước; khi đã dùng, các nguồn khác ẩn đi và người chơi về checkpoint như thường (miễn phí). Sub-Tank (hồi máu chủ động, tối đa 4) không tính vào giới hạn này. Lý do: nhiều lớp đệm chồng nhau xóa hết căng thẳng và làm boss không cân được; boss được cân theo trường hợp có tối đa 1 lần hồi sinh `[PLACEHOLDER]`.
+- **Giới hạn hồi sinh tại chỗ:** mỗi lượt vào màn chỉ có **1 lần hồi sinh tại chỗ**, dù đến từ module Second Wind, booster Second Chance hay quảng cáo `AD_REVIVE`. Nguồn đến trước được dùng trước; khi đã dùng, các nguồn khác ẩn đi và người chơi về checkpoint như thường (miễn phí). Nano Cell (hồi máu chủ động, tối đa 4) không tính vào giới hạn này. Lý do: nhiều lớp đệm chồng nhau xóa hết căng thẳng và làm boss không cân được; boss được cân theo trường hợp có tối đa 1 lần hồi sinh `[PLACEHOLDER]`.
 - Tín hiệu cần theo dõi: Core Bit tồn trên 5.000 mà không có mục tiêu mua `[PLACEHOLDER]`; ở endgame, nâng cấp Chip Lõi là nơi tiêu chính. Theo dõi nguồn và chi của Core Bit, Gem, vật liệu mỗi tuần.
 - Skin: Thường/Hiếm trả bằng Core Bit; Sử thi trả bằng Data Chip; Premium trả bằng Gem hoặc bundle IAP; Thành tựu không bán. Skin không có chỉ số.
 - Giá trong Shop đặt để người chơi mua được món lớn đầu tiên sau 1–2 màn chơi bình thường `[PLACEHOLDER]`.
@@ -412,7 +468,7 @@ Skin chỉ đổi hình ảnh, **không ảnh hưởng chỉ số**. Mỗi bộ 
 | --- | --- |
 | Đầu | Visor, mũ, tóc, mặt nạ |
 | Thân | Áo giáp, áo khoác, lõi trong suốt |
-| Tay & Buster | Hình dáng pháo, màu đạn, hiệu ứng nổ |
+| Tay & Arc Cannon | Hình dáng pháo, màu đạn, hiệu ứng nổ |
 | Chân | Giày, hiệu ứng bước chạy |
 | Lõi năng lượng | Màu và kiểu phát sáng |
 | Hiệu ứng lướt | Vệt lướt, tàn ảnh |
@@ -425,7 +481,7 @@ Skin chỉ đổi hình ảnh, **không ảnh hưởng chỉ số**. Mỗi bộ 
 | Thành tựu | Không bán | Mở bằng thành tựu (ví dụ phá đảo độ khó Huyền thoại) |
 
 - Xem trước trên Kai trước khi mua; mua một lần dùng mãi, không hết hạn.
-- Skin phủ lên giáp Capsule: giáp giữ chỉ số, skin quyết định hình ảnh hiển thị.
+- Skin phủ lên Két giáp: giáp giữ chỉ số, skin quyết định hình ảnh hiển thị.
 - Bảng xếp hạng hiển thị skin đang mặc của người chơi.
 
 #### Quầy Booster
@@ -451,10 +507,10 @@ Upgrade tách khỏi cây kỹ năng (SP) và mua bằng Core Bit. Mỗi cấp t
 
 | Upgrade | Cấp tối đa | Hiệu ứng mỗi cấp | Giá cấp 1 (Core Bit) |
 | --- | --- | --- | --- |
-| Buster Core | 5 | +5% sát thương | 400 |
+| Arc Core | 5 | +5% sát thương | 400 |
 | Armor Plating | 5 | −4% sát thương nhận | 400 |
 | Energy Cell | 5 | +10% dung lượng năng lượng vũ khí | 300 |
-| Sub-Tank Cap | 4 | +25% lượng hồi mỗi Sub-Tank | 500 |
+| Nano Cell Cap | 4 | +25% lượng hồi mỗi Nano Cell | 500 |
 | Dash Coil | 3 | −10% thời gian hồi lướt | 600 |
 | Magnet Range | 3 | +1 tile phạm vi hút | 250 |
 | Booster Slot | 1 | Mở slot booster thứ 3 | 2.000 |
@@ -518,7 +574,7 @@ Mục tiêu: **tỷ lệ hoàn thành Prologue ≥ 90%** không cần hỗ trợ
 
 **Quảng cáo và ưu đãi:** quảng cáo rewarded hiện qua nút rõ ràng ở các vị trí đã định (hồi sinh, nhân đôi thưởng, vòng quay, booster, Farm); interstitial chỉ khi về Hub sau màn Kết quả, theo giới hạn Remote Config; popup ưu đãi tối đa 1 mỗi phiên, không hiện trong màn chơi, luôn có nút đóng; có nút "Khôi phục giao dịch" trong Cài đặt. Cần vẽ thêm wireframe cho: cửa hàng Gem, Cyber+, đăng nhập hằng ngày, 7 ngày tân thủ, vòng quay, nhiệm vụ, Season Pass, hộp xem quảng cáo, đồng ý quảng cáo và xác nhận tuổi, menu Vùng Eclipse, kho Chip Lõi.
 
-Vị trí, hạn mức, luồng và kỹ thuật quảng cáo chi tiết (hồi sinh, năng lượng, Sub-Tank, booster, nhân đôi Core Bit, vòng quay, Sweep, interstitial): file `06-Ke-hoach-quang-cao.md`
+Vị trí, hạn mức, luồng và kỹ thuật quảng cáo chi tiết (hồi sinh, năng lượng, Nano Cell, booster, nhân đôi Core Bit, vòng quay, Sweep, interstitial): file `06-Ke-hoach-quang-cao.md`
 
 ## 14. Định hướng nghệ thuật và âm thanh
 
@@ -640,7 +696,7 @@ Không qua cổng thì sửa cảm giác chơi và thiết kế màn, **không**
 - Phát hành Android và web PC trước, iOS sau; soft launch ở Việt Nam cộng một thị trường tiếng Anh nhỏ.
 - Dịch vụ: Supabase, RevenueCat, AdMob/H5 Games Ads, Firebase.
 
-* Đưa tên kẻ địch và mini-boss đề xuất cho Stage 2–8 vào GDD chính thức (mục 9.1) và gán Capsule cho từng màn (mục 6.3).
+* Đưa tên kẻ địch và mini-boss đề xuất cho Stage 2–8 vào GDD chính thức (mục 9.1) và gán Két giáp cho từng màn (mục 6.3).
 
 **Còn mở:**
 

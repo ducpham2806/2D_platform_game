@@ -10,7 +10,7 @@
 | Mục tiêu học | Chạy, nhảy, bắn, bắn nạp, lướt | Bám tường, né mẫu đòn, đọc telegraph, nhận vũ khí boss |
 | Kẻ địch | Drone Lính, Tháp Pháo Tập Sự | 5 loại (mục 4), mini-boss Bramble, boss Thorna |
 | Checkpoint | 1 (giữa màn) | 4 (sau mỗi đoạn A–D) |
-| Phần thưởng | Mở Hub Arkon, gặp Mira | Vine Lash, Memory Log 1, 1 Capsule (cần Prism Beam), EXP |
+| Phần thưởng | Mở Hub Arkon, gặp Mira | Vine Lash, Memory Log 1, 1 Két giáp (cần Prism Beam), EXP |
 | Cấp khuyến nghị | 1 | 2–4 |
 | Độ khó | Thường | Thường |
 
@@ -40,7 +40,7 @@ Mục tiêu: người chơi thấy mình giỏi trong 30 giây đầu và biết
 - NOVA: "Không sao, tôi sẽ dẫn đường. Hãy chạy về phía cửa."
 - NOVA (0:50): "Bắn để phá thùng chắn đường. Nhấn nút bắn."
 - NOVA (2:25): "Giữ nút bắn để nạp năng lượng. Khối chắn này cần đòn mạnh."
-- Vex (3:30): "Unit-X... vậy là chúng vẫn chọn mày."
+- Vex (3:30): "Unit-K... vậy là chúng vẫn chọn mày."
 - Kai: "Ai vậy?" NOVA: "Tôi không có dữ liệu về người này."
 
 ## 3. Stage 1: Verdant Gardens
@@ -67,15 +67,15 @@ Chủ đề: khu vườn sinh học bị Eclipse biến dị, ánh sáng xanh l�
 | Mục | Vị trí | Cách mở |
 | --- | --- | --- |
 | Memory Log 1 | Phòng bí mật đoạn B | Bám tường lên nhánh cao, không cần vũ khí |
-| Capsule: Đầu Mk I | Phòng bí mật đoạn C | Cần **Prism Beam** (từ Stage 2: Prism Institute) để đốt rễ khô chắn phòng; quay lại sau |
-| Sub-Tank | Phòng bí mật đoạn D | Lướt qua khe gai hẹp |
+| Két giáp: Đầu Mk I | Phòng bí mật đoạn C | Cần **Prism Beam** (từ Stage 2: Prism Institute) để đốt rễ khô chắn phòng; quay lại sau |
+| Nano Cell | Phòng bí mật đoạn D | Lướt qua khe gai hẹp |
 | 5 Hạt Giống Phát Quang | Rải khắp màn, hiện trên bản đồ nhỏ sau khi nhận nhiệm vụ | Nhiệm vụ phụ của Mira sau Stage 1 |
 
 Phần thưởng nhiệm vụ phụ "Hạt giống thất lạc": 1 Data Chip và module Magnet Core.
 
 ## 4. Kẻ địch
 
-HP kẻ địch tính bằng số phát Buster ở sát thương gốc; máu người chơi cấp 1 là 100. Mọi chỉ số lưu trong tệp cấu hình (JSON), không viết cứng trong mã.
+HP kẻ địch tính bằng số phát Arc Cannon ở sát thương gốc; máu người chơi cấp 1 là 100. Mọi chỉ số lưu trong tệp cấu hình (JSON), không viết cứng trong mã.
 
 | Kẻ địch | HP | Sát thương | Hành vi | Telegraph | EXP | Core Bit |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -91,14 +91,14 @@ Quy tắc chung: mọi đòn có telegraph ≥ 0,4 s; không có kẻ địch xu
 
 ## 5. Boss Thorna
 
-**Chủ đề:** Warden của Vườn Sinh Học, một cây khổng lồ có lõi máy. Đây là boss đầu tiên nên mẫu đòn rõ ràng, khe né rộng, và có thể thắng chỉ bằng Buster.
+**Chủ đề:** Warden của Vườn Sinh Học, một cây khổng lồ có lõi máy. Đây là boss đầu tiên nên mẫu đòn rõ ràng, khe né rộng, và có thể thắng chỉ bằng Arc Cannon.
 
 | Thông số | Giá trị `[PLACEHOLDER]` |
 | --- | --- |
-| HP | 100 (đơn vị phát Buster gốc) |
+| HP | 100 (đơn vị phát Arc Cannon gốc) |
 | Đấu trường | 24 × 12 tile, 3 bục cao 3 tile; Thorna đứng bên phải và di chuyển chậm |
-| Điểm yếu | Ember Burst (từ Stage 8, dùng ở trận tái đấu trong Citadel): 2,5× sát thương và choáng 0,5 s. Lần đầu luôn đánh bằng Buster |
-| Thắng chỉ bằng Buster | Có, thời gian dự kiến 60–90 giây |
+| Điểm yếu | Ember Burst (từ Stage 8, dùng ở trận tái đấu trong Citadel): 2,5× sát thương và choáng 0,5 s. Lần đầu luôn đánh bằng Arc Cannon |
+| Thắng chỉ bằng Arc Cannon | Có, thời gian dự kiến 60–90 giây |
 | Phần thưởng | Vũ khí Vine Lash, 120 EXP, 80 Core Bit, 1 SP |
 
 | Pha | Ngưỡng máu | Chiêu | Telegraph | Sát thương | Cách né |
@@ -110,7 +110,7 @@ Quy tắc chung: mọi đòn có telegraph ≥ 0,4 s; không có kẻ địch xu
 
 **Quy tắc thiết kế boss:** không có đòn nào gây quá 18 sát thương; không tung hai đòn trong cùng một lúc ở pha 1; luôn có khe né; khi người chơi chết, hồi sinh trong phòng boss sau 1 giây với máu đầy.
 
-**Vũ khí Vine Lash:** roi dây quét ngang tầm 4 tile, sát thương 2× Buster, tốn 4/28 thanh năng lượng mỗi lần; kéo được thùng và móc dây leo, cắt được dây leo chắn đường ở các màn sau.
+**Vũ khí Vine Lash:** roi dây quét ngang tầm 4 tile, sát thương 2× Arc Cannon, tốn 4/28 thanh năng lượng mỗi lần; kéo được thùng và móc dây leo, cắt được dây leo chắn đường ở các màn sau.
 
 **Thoại sau trận (hạt giống cốt truyện):** Thorna: "Nó không phải... lỗi. Hãy hỏi... AEGIS." Thorna tan thành hạt sáng, Kai nhận Vine Lash, NOVA: "Tôi phát hiện dữ liệu lạ trong vũ khí này."
 
@@ -152,8 +152,8 @@ Quy tắc điều chỉnh: nếu quá 30% người thử chết ở cùng một 
 - [ ] Mỗi cơ chế mới có tình huống dạy riêng; biểu tượng nút đúng theo nền tảng (cảm ứng, bàn phím, tay cầm).
 - [ ] 4 checkpoint của Stage 1 hoạt động, hồi sinh ≤ 1,5 giây, giữ nguyên Core Bit và EXP.
 - [ ] Mọi đòn kẻ địch có telegraph ≥ 0,4 giây; đòn boss ≥ 0,5 giây.
-- [ ] Thorna đúng 3 pha tại 60% và 30% máu; Ember Burst gây 2,5× (kiểm tra bằng bản debug); thắng được chỉ với Buster.
-- [ ] Nhận được Vine Lash, Memory Log 1, Sub-Tank; Capsule chỉ mở được khi có Prism Beam.
+- [ ] Thorna đúng 3 pha tại 60% và 30% máu; Ember Burst gây 2,5× (kiểm tra bằng bản debug); thắng được chỉ với Arc Cannon.
+- [ ] Nhận được Vine Lash, Memory Log 1, Nano Cell; Két giáp chỉ mở được khi có Prism Beam.
 - [ ] Bẫy gai gây 30 sát thương, đưa về ô an toàn, Spike Guard miễn nhiễm.
 - [ ] Cảm ứng: bố cục nút tùy chỉnh và được lưu; 60 FPS trên điện thoại tầm trung; Stage 1 tải ≤ 8 MB.
 - [ ] Thoát giữa màn rồi vào lại về đúng checkpoint; cloud save đồng bộ.

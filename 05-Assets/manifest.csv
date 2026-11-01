@@ -11,7 +11,7 @@ kai_hurt,character,sprites/kai/kai_hurt.png,48,48,2,10,0,P1,Vertical slice,"Phá
 kai_death,character,sprites/kai/kai_death.png,48,48,6,10,0,P1,Vertical slice,"Pháo luôn giơ sẵn, không cần hoạt ảnh bắn riêng"
 kai_respawn,character,sprites/kai/kai_respawn.png,48,48,6,12,0,P1,Vertical slice,"Pháo luôn giơ sẵn, không cần hoạt ảnh bắn riêng"
 kai_victory,character,sprites/kai/kai_victory.png,48,48,4,8,1,P3,Beta,"Pháo luôn giơ sẵn, không cần hoạt ảnh bắn riêng"
-fx_buster_shot,fx,sprites/fx/fx_buster_shot.png,16,16,3,12,0,P0,Prototype,
+fx_arc_shot,fx,sprites/fx/fx_arc_shot.png,16,16,3,12,0,P0,Prototype,
 fx_muzzle,fx,sprites/fx/fx_muzzle.png,16,16,3,12,0,P0,Prototype,
 fx_hit_spark,fx,sprites/fx/fx_hit_spark.png,16,16,4,12,0,P0,Prototype,
 fx_charge_1,fx,sprites/fx/fx_charge_1.png,32,32,4,12,0,P0,Prototype,
@@ -28,8 +28,8 @@ pk_hp_small,object,sprites/objects/pk_hp_small.png,16,16,2,8,1,P1,Vertical slice
 pk_hp_large,object,sprites/objects/pk_hp_large.png,16,16,2,8,1,P1,Vertical slice,
 pk_energy_small,object,sprites/objects/pk_energy_small.png,16,16,2,8,1,P1,Vertical slice,
 pk_energy_large,object,sprites/objects/pk_energy_large.png,16,16,2,8,1,P1,Vertical slice,
-pk_sub_tank,object,sprites/objects/pk_sub_tank.png,16,16,2,8,1,P1,Vertical slice,
-obj_capsule,object,sprites/objects/obj_capsule.png,32,32,6,8,1,P1,Vertical slice,
+pk_nano_cell,object,sprites/objects/pk_nano_cell.png,16,16,2,8,1,P1,Vertical slice,
+obj_armor_cache,object,sprites/objects/obj_armor_cache.png,32,32,6,8,1,P1,Vertical slice,
 obj_checkpoint_idle,object,sprites/objects/obj_checkpoint_idle.png,32,48,4,8,1,P1,Vertical slice,
 obj_checkpoint_on,object,sprites/objects/obj_checkpoint_on.png,32,48,4,8,1,P1,Vertical slice,
 obj_door,object,sprites/objects/obj_door.png,32,48,6,8,1,P1,Vertical slice,
@@ -326,7 +326,7 @@ ic_currency,icon,icons/ic_currency.png,32,32,3,0,0,P2,Alpha,"Core Bit, Data Chip
 ic_boosters,icon,icons/ic_boosters.png,32,32,6,0,0,P2,Alpha,
 ic_upgrades,icon,icons/ic_upgrades.png,32,32,7,0,0,P2,Alpha,
 ic_modules,icon,icons/ic_modules.png,32,32,8,0,0,P2,Alpha,
-ic_weapons,icon,icons/ic_weapons.png,32,32,9,0,0,P2,Alpha,Buster + 8 vũ khí boss
+ic_weapons,icon,icons/ic_weapons.png,32,32,9,0,0,P2,Alpha,Arc Cannon + 8 vũ khí boss
 ic_skills,icon,icons/ic_skills.png,32,32,9,0,0,P2,Alpha,3 nhánh x 3 node
 ic_achievements,icon,icons/ic_achievements.png,32,32,6,0,0,P3,Beta,
 ic_armor_parts,icon,icons/ic_armor_parts.png,32,32,8,0,0,P3,Beta,4 bộ phận x Mk I/II

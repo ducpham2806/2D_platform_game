@@ -150,7 +150,7 @@ Danh sách cần có: khoảng 25 SFX, và nhạc cho Prologue, 8 màn, Hub, Cit
 
 | Nhóm | Mốc | Số sheet | Số khung | Nội dung chính |
 |---|---|---|---|---|
-| P0 | Prototype | 10 | 38 | Kai (idle, run, nhảy, đáp), hiệu ứng Buster, nổ nhỏ |
+| P0 | Prototype | 10 | 38 | Kai (idle, run, nhảy, đáp), hiệu ứng Arc Cannon, nổ nhỏ |
 | P1 | Vertical slice | 84 | 275 | Còn lại của Kai, Prologue, Stage 1, Thorna, giao diện lõi, chân dung đầu tiên, cutscene Prologue |
 | P2 | Alpha | 107 | 440 | Stage 2–4 (Prism Institute, Cryo Vault, Cirrus Tower), Hub, biểu tượng, kẻ địch, NPC |
 | P3 | Beta | 142 | 636 | Stage 5–8 (Bedrock Mines, Ion Station, Abyss Harbor, Magma Foundry), Citadel, boss còn lại, skin, kết thúc |

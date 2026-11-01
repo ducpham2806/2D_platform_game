@@ -26,7 +26,7 @@
   "inPlaceRevivePerStage": {
     "max": 1,
     "sharedBy": ["module:second_wind", "booster:second_chance", "ad:AD_REVIVE"],
-    "excludes": ["sub_tank"]
+    "excludes": ["nano_cell"]
   },
   "moduleSlots": {
     "start": 3,
