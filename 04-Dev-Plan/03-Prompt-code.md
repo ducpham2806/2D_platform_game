@@ -119,7 +119,7 @@ người chơi, giới hạn trong màn. Dữ liệu màn từ stages.json [dán
 
 ### P-M8: Hệ thống RPG
 ```
-Viết src/logic/rpg.ts: EXP lên cấp 40*L^1.4 tối đa cấp 30, máu 100+8*(L-1), công 10+1.5*(L-1),
+Viết src/logic/rpg.ts: EXP lên cấp 40*L^1.4 tối đa cấp 30, máu 100+4*(L-1), công 10+0.25*(L-1), đồng bộ cấp theo levelSync trong stages.json,
 1 SP mỗi cấp từ cấp 2 và 1 SP mỗi boss. Cây kỹ năng 3 nhánh (Vanguard, Phantom, Core), đặt lại
 miễn phí. Module: 3/4/5 ô theo cấp 1/10/20, mỗi module có tải, không lưu cấu hình vượt tải.
 Giáp Capsule 4 bộ phận Mk I/II. Loadout 3 preset (module + giáp + skin; kỹ năng dùng chung).

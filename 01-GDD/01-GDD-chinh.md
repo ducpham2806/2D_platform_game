@@ -183,8 +183,10 @@ Dù chọn kết thúc nào, tàn dư của Eclipse vẫn còn trong tám khu v�
 Nhận kinh nghiệm (EXP) từ kẻ địch, boss, nhiệm vụ phụ. Cấp tối đa: **30**.
 
 - EXP cần để lên cấp: `40 × L^1,4` `[PLACEHOLDER]`
-- Máu tối đa: `100 + 8 × (L − 1)` → cấp 30 ≈ 332 `[PLACEHOLDER]`
-- Công: `10 + 1,5 × (L − 1)` `[PLACEHOLDER]`
+- Máu tối đa: `100 + 4 × (L − 1)` → cấp 30 = 216 (×2,16) `[PLACEHOLDER]`
+- Công: `10 + 0,25 × (L − 1)` → cấp 30 ≈ 17,3 (×1,73) `[PLACEHOLDER]`
+- **Trần sức mạnh cốt truyện:** cấp, upgrade và module cộng lại không vượt khoảng ×2,2 sát thương và ×2,5 máu so với cấp 1. Phần thưởng chính khi lên cấp là **SP và ô module** (lựa chọn), không phải chỉ số; đây là game hành động nên kỹ năng phải quyết định thắng thua, đúng trụ cột 1.
+- **Đồng bộ cấp (level sync):** trong Stage 1–8, cấp hiệu dụng khi tính máu và công bị kẹp trong khoảng `[cấp khuyến nghị thấp − 2, cấp khuyến nghị cao + 2]` của màn. Người cấp cao không làm boss chết quá nhanh; người đi màn khó sớm không bị đánh mãi không chết. Citadel và màn cuối không đồng bộ cấp. EXP, SP và Core Bit vẫn tính theo cấp thật. Cấu hình: `levelSync` trong `03-Data/stages.json` `[PLACEHOLDER]`.
 
 | Cấp | EXP lên cấp tiếp (ước tính) |
 | --- | --- |
@@ -194,7 +196,7 @@ Nhận kinh nghiệm (EXP) từ kẻ địch, boss, nhiệm vụ phụ. Cấp t�
 | 20 → 21 | \~2.650 |
 | 29 → 30 | \~4.460 |
 
-Cấp khuyến nghị cho từng màn: xem mục 8. **Không có level-lock**: người chơi giỏi vẫn vượt màn ở cấp thấp, chỉ khó hơn.
+Cấp khuyến nghị cho từng màn: xem mục 8. **Không có level-lock**: người chơi giỏi vẫn vượt màn ở cấp thấp; nhờ đồng bộ cấp, độ chênh không quá ±2 cấp.
 
 ### 6.2 Cây kỹ năng (3 nhánh)
 
@@ -246,7 +248,7 @@ Nguyên tắc: kỹ năng nền tảng cần cho việc đi hết game (lướt,
 | Phase Step | Lướt tạo ảo ảnh gây choáng nhẹ |
 | Energy Siphon | Giết kẻ địch hồi 2% năng lượng vũ khí |
 | Spike Guard | Miễn nhiễm gai (không miễn hố sâu) |
-| Second Wind | Hồi 20% máu một lần mỗi màn khi chết |
+| Second Wind | Hồi 20% máu một lần mỗi màn khi chết (tính vào giới hạn hồi sinh, mục 10) |
 | Scholar | +15% EXP |
 | Echo Shot | Đạn nạp để lại sóng dư |
 
@@ -393,6 +395,7 @@ Citadel 1–3 và màn cuối tái sử dụng mọi loại kẻ địch và min
 
 - Gem **không** mua trực tiếp chỉ số, Chip Lõi hay Mastery; chỉ mua mỹ phẩm, tiện ích (vé Farm đôi, Sweep thêm trong giới hạn) và pass. Quy tắc đầy đủ ở mục 2.
 - Khi chết: giữ toàn bộ Core Bit và EXP đã nhận; chỉ mất vật phẩm dùng một lần trong màn.
+- **Giới hạn hồi sinh tại chỗ:** mỗi lượt vào màn chỉ có **1 lần hồi sinh tại chỗ**, dù đến từ module Second Wind, booster Second Chance hay quảng cáo `AD_REVIVE`. Nguồn đến trước được dùng trước; khi đã dùng, các nguồn khác ẩn đi và người chơi về checkpoint như thường (miễn phí). Sub-Tank (hồi máu chủ động, tối đa 4) không tính vào giới hạn này. Lý do: nhiều lớp đệm chồng nhau xóa hết căng thẳng và làm boss không cân được; boss được cân theo trường hợp có tối đa 1 lần hồi sinh `[PLACEHOLDER]`.
 - Tín hiệu cần theo dõi: Core Bit tồn trên 5.000 mà không có mục tiêu mua `[PLACEHOLDER]`; ở endgame, nâng cấp Chip Lõi là nơi tiêu chính. Theo dõi nguồn và chi của Core Bit, Gem, vật liệu mỗi tuần.
 - Skin: Thường/Hiếm trả bằng Core Bit; Sử thi trả bằng Data Chip; Premium trả bằng Gem hoặc bundle IAP; Thành tựu không bán. Skin không có chỉ số.
 - Giá trong Shop đặt để người chơi mua được món lớn đầu tiên sau 1–2 màn chơi bình thường `[PLACEHOLDER]`.
@@ -435,7 +438,7 @@ Booster dùng một lần, chọn ở màn hình chuẩn bị trước khi vào 
 | Repair Kit | Tự hồi 50% máu khi xuống dưới 25% (1 lần) | 200 |
 | Overcharge | Bắn nạp nhanh hơn 30% trong màn | 250 |
 | Magnet Pulse | Hút Core Bit và vật phẩm trong 6 tile | 120 |
-| Second Chance | Hồi sinh tại chỗ với 50% máu (1 lần) | 400 |
+| Second Chance | Hồi sinh tại chỗ với 50% máu (1 lần; tính vào giới hạn hồi sinh) | 400 |
 | Boss Scanner | Hiện thanh máu boss và gợi ý vũ khí khắc chế | 100 |
 
 - Kho tối đa 9 mỗi loại; hoàn thành màn lần đầu tặng 1 booster ngẫu nhiên để người mới luôn có hàng.

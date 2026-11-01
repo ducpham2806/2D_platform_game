@@ -63,7 +63,7 @@ Kế hoạch này đi theo **mô hình A**. Nếu bạn muốn mô hình B, cầ
 
 | Vị trí | Loại | Điều kiện | Giới hạn `[PLACEHOLDER]` | Cyber+ |
 | --- | --- | --- | --- | --- |
-| Hồi sinh tại chỗ | Rewarded | Sau khi chết, người chơi tự chọn | Tối đa 2 lần mỗi màn | Nhận thưởng không cần xem |
+| Hồi sinh tại chỗ | Rewarded | Sau khi chết, người chơi tự chọn | Tối đa 1 lần mỗi màn, dùng chung với Second Wind và Second Chance | Nhận thưởng không cần xem |
 | Nhân đôi Core Bit (không nhân EXP) | Rewarded | Màn Kết quả | 6 lần mỗi ngày | Nhận thưởng không cần xem |
 | Thêm lượt vòng quay | Rewarded | Ở màn vòng quay | 2 lượt mỗi ngày | Nhận thưởng không cần xem |
 | Booster miễn phí trước màn | Rewarded | Màn Chuẩn bị | 1 booster mỗi màn | Nhận thưởng không cần xem |

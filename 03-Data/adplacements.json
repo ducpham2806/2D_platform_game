@@ -2,8 +2,9 @@
   "rewarded": {
     "AD_REVIVE": {
       "enabled": true,
-      "capPerStage": 2,
+      "capPerStage": 1,
       "capPerDay": 6,
+      "sharedCap": "player.inPlaceRevivePerStage",
       "rewardType": "revive",
       "reviveHpPct": 50,
       "invincibleSec": 2,

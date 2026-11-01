@@ -46,7 +46,7 @@ Hạn mức là `[PLACEHOLDER]`, chỉnh bằng Remote Config.
 
 | ID | Vị trí và thời điểm | Phần thưởng | Hạn mức | Cyber+ |
 | --- | --- | --- | --- | --- |
-| `AD_REVIVE` | Màn hồi sinh sau khi chết, **chỉ ở màn thường** (phòng boss đã hồi sinh miễn phí) | Hồi sinh tại chỗ, 50% máu, bất tử 2 giây | 2 lần mỗi màn, 6 mỗi ngày | Nhận ngay, vẫn giới hạn 2 mỗi màn |
+| `AD_REVIVE` | Màn hồi sinh sau khi chết, **chỉ ở màn thường** (phòng boss đã hồi sinh miễn phí) | Hồi sinh tại chỗ, 50% máu, bất tử 2 giây | 1 lần mỗi màn (dùng chung với Second Wind và Second Chance, GDD mục 10), 6 mỗi ngày | Nhận ngay, vẫn giới hạn 1 mỗi màn |
 | `AD_ENERGY` | Mục "Hỗ trợ" trong menu tạm dừng, và chip "+Năng lượng" cạnh thanh năng lượng khi dưới 15% (chạm vào sẽ tạm dừng game) | Nạp đầy năng lượng vũ khí | 1 lần mỗi màn, 4 mỗi ngày | Nhận ngay |
 | `AD_HEAL` | Mục "Hỗ trợ" trong menu tạm dừng khi hết Sub-Tank và máu dưới 30% | Hồi đầy 1 Sub-Tank | 1 lần mỗi màn, 3 mỗi ngày | Nhận ngay |
 | `AD_BOOSTER` | Màn Chuẩn bị: nút "Booster miễn phí" | 1 booster tự chọn trong Shield Cell, Magnet Pulse, Overcharge | 1 lần mỗi màn, 5 mỗi ngày | Nhận ngay |
@@ -173,7 +173,7 @@ interface AdService {
 ```json
 {
   "ads": {
-    "AD_REVIVE": {"enabled": true, "capPerStage": 2, "capPerDay": 6, "reviveHpPct": 50, "invincibleSec": 2},
+    "AD_REVIVE": {"enabled": true, "capPerStage": 1, "capPerDay": 6, "reviveHpPct": 50, "invincibleSec": 2},
     "AD_ENERGY": {"enabled": true, "capPerStage": 1, "capPerDay": 4, "triggerEnergyPct": 15},
     "AD_DOUBLE": {"enabled": true, "capPerDay": 6, "multiplier": 2, "applyTo": ["core_bit"]},
     "AD_GIFT": {"enabled": true, "capPerDay": 3, "cooldownHours": 4},

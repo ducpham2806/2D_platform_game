@@ -17,10 +17,16 @@
   "level": {
     "max": 30,
     "expFormula": "40*L^1.4",
-    "hp": "100+8*(L-1)",
-    "atk": "10+1.5*(L-1)",
+    "hp": "100+4*(L-1)",
+    "atk": "10+0.25*(L-1)",
     "spPerLevelFrom2": 1,
-    "spPerBoss": 1
+    "spPerBoss": 1,
+    "storyPowerCap": {"damageMul": 2.2, "hpMul": 2.5, "note": "cấp + upgrade + module trong cốt truyện [PLACEHOLDER]"}
+  },
+  "inPlaceRevivePerStage": {
+    "max": 1,
+    "sharedBy": ["module:second_wind", "booster:second_chance", "ad:AD_REVIVE"],
+    "excludes": ["sub_tank"]
   },
   "moduleSlots": {
     "start": 3,
