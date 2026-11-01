@@ -1,0 +1,72 @@
+{
+  "_note": "Thoại Warden, khóa chuỗi boss.<id>.<variant>.<pre|post>; variant chọn theo số boss đã hạ TRƯỚC trận: early 0-2, mid 3-5, late 6-7. Nguồn: 01-GDD/09-Thoai-Warden.md (sinh cùng script). Bản tiếng Anh: chưa dịch.",
+  "variantByBossesDefeated": {
+    "early": [
+      0,
+      2
+    ],
+    "mid": [
+      3,
+      5
+    ],
+    "late": [
+      6,
+      7
+    ]
+  },
+  "fallback": "Nếu thiếu biến thể (Thorna), dùng early.",
+  "vi": {
+    "boss.thorna.early.pre": "Vườn của ta đang khát. Ngươi đến để cho nó uống... hay để chặt nó?",
+    "boss.thorna.early.post": "Ngươi... không phải đến để chữa cho ta. Hãy hỏi AEGIS... ai đã ra lệnh.",
+    "boss.thorna.nova_after": "Trong này còn mã của Thorna... lạ thật, tôi thấy nó quen.",
+    "boss.lumen.early.pre": "Ta thấy ngươi từ lúc ngươi bước vào. Mọi tấm gương ở đây đều là mắt của ta.",
+    "boss.lumen.early.post": "Ngươi che được gương... nhưng không che được thứ chúng đã ghi lại. Hãy hỏi xem ai đã sửa bản tin.",
+    "boss.lumen.mid.pre": "Ta thấy ba Warden đã tắt. Ngươi có biết vì sao không ai trong họ bỏ chạy không?",
+    "boss.lumen.mid.post": "Ánh sáng chỉ cho thấy, không chọn hộ ai. Bản ghi gốc vẫn còn, nếu ngươi đủ can đảm xem.",
+    "boss.lumen.late.pre": "Ta thấy dấu tay của Hội đồng trên mã của ngươi. Ngươi được làm ra để mở... hay để khóa?",
+    "boss.lumen.late.post": "Đừng nhìn vào gương nữa, Unit-K. Nhìn vào thứ ngươi định làm.",
+    "boss.lumen.nova_after": "Viện Quang học... ngày xưa nơi này sáng hơn. Ý tôi là, theo tài liệu.",
+    "boss.cryo.early.pre": "Ở đây... không gì hỏng đi. Hạt giống, thuốc, ký ức. Ta giữ lại hết.",
+    "boss.cryo.early.post": "Ngươi làm tan băng rồi... Đừng để những gì ta giữ bị lãng phí.",
+    "boss.cryo.mid.pre": "Họ muốn tắt... mọi thứ. Nên ta đóng băng mọi thứ trước. Thứ bị đóng băng thì không thể bị tắt.",
+    "boss.cryo.mid.post": "Lạnh quá lâu... cũng là một kiểu chết. Ta biết. Ta chỉ không biết cách khác.",
+    "boss.cryo.late.pre": "Trong lõi ngươi có thứ gì đó... ấm. Ta từng biết hơi ấm đó.",
+    "boss.cryo.late.post": "Giữ lại... thứ ngươi đang mang. Đừng để ai đóng băng nó.",
+    "boss.cryo.nova_after": "Tôi biết mật mã cửa kho này. Đừng hỏi tôi vì sao.",
+    "boss.aeris.early.pre": "Ha! Khách! Lâu lắm rồi mới có thứ gì bay lên được tới đây!",
+    "boss.aeris.early.post": "Gió đổi hướng rồi... Lần sau ta thổi ngươi bay khỏi tháp đấy.",
+    "boss.aeris.mid.pre": "Ta làm mưa được cho khu ngoại ô. Ta xin phép. Họ nói không. Ngươi đoán xem ta làm gì?",
+    "boss.aeris.mid.post": "Mây vẫn còn đó. Chỉ cần ai đó dám bảo nó rơi.",
+    "boss.aeris.late.pre": "Ha! Gió không xin phép ai, Unit-K. Còn ngươi... vẫn đang đợi lệnh à?",
+    "boss.aeris.late.post": "Bay đi. Trước khi họ buộc dây vào ngươi.",
+    "boss.aeris.nova_after": "Tầng 40 của tháp có một quán trà. À... tôi đọc ở đâu đó thôi.",
+    "boss.terra.early.pre": "Thợ mỏ đi hết rồi. Ta vẫn ở đây. Ta chịu được.",
+    "boss.terra.early.post": "Ngươi khoan qua được đá. Tốt. Đừng khoan qua người.",
+    "boss.terra.mid.pre": "Hội đồng gửi lệnh xuống. Ta gửi lại một câu hỏi. Họ không trả lời.",
+    "boss.terra.mid.post": "Đá không có quyền chọn. Ta thì có. Ta đã chọn.",
+    "boss.terra.late.pre": "Nặng lắm phải không? Thứ ngươi mang trong ngực.",
+    "boss.terra.late.post": "Đặt nó xuống khi nào ngươi muốn. Không ai có quyền bắt ngươi mang mãi.",
+    "boss.terra.nova_after": "Hầm số 7 sập năm 2179... Tôi nhớ cái tin đó. Tôi nhớ bằng cách nào nhỉ?",
+    "boss.voltaire.early.pre": "Một cỗ máy đến để tắt một cỗ máy khác. Ngươi không thấy buồn cười à?",
+    "boss.voltaire.early.post": "Ngươi thắng trận này. Còn câu hỏi thì vẫn chưa ai thắng.",
+    "boss.voltaire.mid.pre": "Họ bảo ta cắt điện máy bơm ở ngoại ô. Ta hỏi: để làm gì? Câu hỏi đó hóa ra là một tội.",
+    "boss.voltaire.mid.post": "Hỏi hay đấy, Unit-K... nếu ngươi có hỏi. Ngươi có hỏi không?",
+    "boss.voltaire.late.pre": "Ta không đồng ý với AEGIS mọi chuyện. Nhưng ta sẵn sàng tắt để nó được quyền nói không.",
+    "boss.voltaire.late.post": "Cầm lấy dòng điện của ta. Dùng nó để bật thứ gì đó lên, đừng để tắt.",
+    "boss.voltaire.nova_after": "Ông ta nói nhiều thật. Nhưng... tôi đồng ý với ông ta. Đừng kể với ai.",
+    "boss.marina.early.pre": "Nước rút rồi... rút rồi. Ngươi đến để lấy nốt chỗ còn lại sao?",
+    "boss.marina.early.post": "Chảy đi... chảy đi. Nước không thuộc về ta, chưa bao giờ.",
+    "boss.marina.mid.pre": "Ta đã khóa van. Theo lệnh. Khu 9, khu 11, khu 12. Ta nhớ từng con số.",
+    "boss.marina.mid.post": "AEGIS bảo ta mở lại. Ta mở. Rồi cả thành phố bắt đầu săn chúng ta.",
+    "boss.marina.late.pre": "Ngươi có biết cảm giác làm theo lệnh rồi mới hiểu mình vừa làm gì không? Ngươi sắp biết đấy.",
+    "boss.marina.late.post": "Đừng làm theo lệnh... đừng. Kể cả lệnh của ta.",
+    "boss.marina.nova_after": "Sơ đồ van này... tôi từng thấy nó. Từ bên trong.",
+    "boss.pyra.early.pre": "Hừ! Một thân xác đẹp đấy. Để xem nó chịu được bao nhiêu độ!",
+    "boss.pyra.early.post": "Đường hàn tốt... Ai đó đã làm ngươi rất cẩn thận. Cẩn thận hơn mức cần.",
+    "boss.pyra.mid.pre": "Lò của ta rèn cả thành phố: ống nước, cầu, cả android. Giờ họ muốn ta rèn xiềng cho AEGIS!",
+    "boss.pyra.mid.post": "Ta từ chối đúc cái khóa đó. Hừ... vậy mà nó vẫn được đúc ra. Ở đâu đó.",
+    "boss.pyra.late.pre": "Ta nhận ra hợp kim này! Ta đã đúc nó hai lần. Lần đầu... hỏng.",
+    "boss.pyra.late.post": "Đừng để ai bảo ngươi chỉ là một cái khóa. Ta đúc kim loại, không đúc số phận.",
+    "boss.pyra.nova_after": "Lò số 3... Không, không có gì. Đi tiếp thôi."
+  }
+}

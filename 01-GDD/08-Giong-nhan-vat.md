@@ -121,7 +121,7 @@ Tài liệu chuẩn để viết và duyệt mọi lời thoại của Cyber Van
 
 ### Warden (khuôn chung)
 
-Mỗi Warden có 3 biến thể thoại theo số boss đã hạ (GDD mục 3.3). Khuôn: một câu về khu vực mình bảo vệ + một câu cho thấy động cơ + (biến thể giữa/muộn) một câu về cuộc bỏ phiếu hoặc Root Key.
+Mỗi Warden có 3 biến thể thoại theo số boss đã hạ (GDD mục 3.3). Giọng riêng và toàn bộ thoại của 8 Warden ở `09-Thoai-Warden.md`. Khuôn: một câu về khu vực mình bảo vệ + một câu cho thấy động cơ + (biến thể giữa/muộn) một câu về cuộc bỏ phiếu hoặc Root Key.
 
 **Thorna** (luôn là boss đầu, chỉ có biến thể sớm):
 - Trước trận: "Vườn của ta đang khát. Ngươi đến để cho nó uống... hay để chặt nó?"

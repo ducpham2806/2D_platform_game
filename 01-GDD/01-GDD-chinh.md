@@ -101,7 +101,7 @@ Tài liệu giọng nhân vật (voice pillars, thoại mẫu) ở `08-Giong-nha
 
 **Nhịp truyện theo số boss, do nhân vật không phải boss đảm nhận.** Vì Stage 2–8 chọn thứ tự tự do, boss thứ 4 có thể là bất kỳ ai trong 7 Warden. Mọi nhịp truyện tính theo số boss đã hạ (midpoint, các lật mở) đều do **Vex, NOVA, Mira hoặc bản tin của Hale** đưa ra ở Hub, không phụ thuộc boss nào vừa bị hạ. Lịch chi tiết: `03-Dac-ta-Hub-Shop.md`, mục 6.
 
-**Thoại boss có 3 biến thể theo số boss đã hạ:** *sớm* (0–2 boss: Warden nói về khu vực của mình, gieo nghi ngờ), *giữa* (3–5: Warden nói về cuộc bỏ phiếu), *muộn* (6–7: Warden nhắc đến Root Key, nhìn Kai khác đi). Mỗi Warden vẫn giữ động cơ riêng ở cả ba biến thể. Thorna luôn là boss đầu tiên nên chỉ cần biến thể sớm.
+**Thoại boss có 3 biến thể theo số boss đã hạ trước trận:** *sớm* (0–2: Warden nói về khu vực của mình, gieo nghi ngờ), *giữa* (3–5: Warden gợi về lệnh cắt nước và cuộc bỏ phiếu), *muộn* (6–7: Warden ám chỉ Kai là một cái khóa, nhìn Kai khác đi). Warden chỉ ám chỉ, không bao giờ xác nhận lật mở; việc đó thuộc về NPC ở Hub. Mỗi Warden vẫn giữ động cơ riêng ở cả ba biến thể. Thorna luôn là boss đầu tiên nên chỉ cần biến thể sớm. Toàn bộ thoại: `09-Thoai-Warden.md` và `03-Data/dialogue_wardens.json`.
 
 ### 3.4 Sự thật và lật mở (Twist)
 
@@ -710,7 +710,7 @@ Không qua cổng thì sửa cảm giác chơi và thiết kế màn, **không**
 
 **Còn mở:**
 
-0. (Từ bản 0.5) Kiểm tra pháp lý việc hỏi tuổi và đồng ý quảng cáo sau Prologue; vẽ lại wireframe theo các thay đổi 0.5 (lịch mở dần, điểm chọn #1, Két giáp); viết thoại 3 biến thể cho 7 Warden còn lại.
+0. (Từ bản 0.5) Kiểm tra pháp lý việc hỏi tuổi và đồng ý quảng cáo sau Prologue; vẽ lại wireframe theo các thay đổi 0.5 (lịch mở dần, điểm chọn #1, Két giáp); dịch thoại Warden sang tiếng Anh.
 
 1. Giá cuối của Gem, skin, booster, upgrade và Cyber+ sau playtest kinh tế.
 2. Thị trường tiếng Anh cụ thể cho soft launch (hiện chỉ giả định).
@@ -721,7 +721,7 @@ Không qua cổng thì sửa cảm giác chơi và thiết kế màn, **không**
 
 | Phiên bản | Ngày | Thay đổi |
 | --- | --- | --- |
-| 0.6 | 01/11/2026 | Thu gọn độ khó cốt truyện từ 6 xuống 3 (Cốt truyện, Thường, Thử thách); Thử thách mở theo từng màn và có mẫu đòn mới; Mức Eclipse dùng biến thể (Tinh nhuệ, mẫu đòn mới, bố cục remix, boss pha 4) với chỉ số +15% mỗi mức thay vì +25%; hạ giá upgrade (hệ số 1,25) để upgrade đủ sau lượt Thử thách; Data Chip và skin Thành tựu chuyển sang mốc Mức Eclipse |
+| 0.6 | 01/11/2026 | Thu gọn độ khó cốt truyện từ 6 xuống 3 (Cốt truyện, Thường, Thử thách); Thử thách mở theo từng màn và có mẫu đòn mới; Mức Eclipse dùng biến thể (Tinh nhuệ, mẫu đòn mới, bố cục remix, boss pha 4) với chỉ số +15% mỗi mức thay vì +25%; hạ giá upgrade (hệ số 1,25) để upgrade đủ sau lượt Thử thách; Data Chip và skin Thành tựu chuyển sang mốc Mức Eclipse; thêm thoại 3 biến thể cho 7 Warden và câu NOVA sau trận (`09-Thoai-Warden.md`, `03-Data/dialogue_wardens.json`) |
 | 0.5 | 01/11/2026 | Rà soát thiết kế: đánh số lại Stage 2–8 theo vòng khắc chế (vũ khí màn k là điểm yếu của boss màn k+1) và gán lại Két giáp; nén đường chỉ số RPG, thêm đồng bộ cấp và giới hạn 1 lần hồi sinh tại chỗ mỗi màn; lộ trình hai giai đoạn với MVP 4 màn và cổng chặn; mở dần hệ thống sau từng boss, chơi được trong 15 giây; viết lại cốt truyện (câu hỏi chủ đề, phe Hội đồng và Hale, nhịp truyện theo số boss do NPC ở Hub đảm nhận, 3 lớp lật mở với NOVA, hệ quả cho điểm chọn #1, Memory Log là lý lẽ cho kết thúc C, endgame theo từng kết thúc); đổi tên Unit-X, Buster, Sub-Tank, Capsule; thêm tài liệu giọng nhân vật; viết lại trụ cột 3 và 5, bỏ booster khỏi Starter Pack |
 | 0.4 | 16/10/2026 | Chuyển sang free-to-play: IAP (Gem), quảng cáo, subscription Cyber+; thêm endgame Vùng Eclipse (Farm Run, Boss Hunt, Rift), Chip Lõi, Weapon Mastery, live-ops; chốt các quyết định mô hình A, 13+, Android + web trước; cập nhật nền tảng, máy chủ, lộ trình, KPI, rủi ro; hiệu chỉnh kinh tế endgame và Gem bằng mô phỏng (Cyber+ +10 Gem/ngày, thời gian endgame) |
 | 0.3 | 16/10/2026 | Thêm đặc tả Prologue & Stage 1, Hub & Shop, cân bằng kinh tế; đưa tên kẻ địch/mini-boss Stage 2–8 và Capsule theo màn vào GDD; rà soát và sửa mâu thuẫn |
