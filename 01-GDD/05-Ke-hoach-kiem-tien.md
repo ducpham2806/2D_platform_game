@@ -284,7 +284,7 @@ Các con số dưới đây chỉ để lập kế hoạch, **không phải dự
 | Kịch bản (DAU 10.000) | ARPDAU quảng cáo | ARPDAU IAP | ARPDAU sub | Tổng ARPDAU | Doanh thu tháng (trước phí) |
 | --- | --- | --- | --- | --- | --- |
 | Thận trọng | 0,008 | 0,013 | 0,0004 | 0,022 | \~6.500 USD |
-| Cơ sở | 0,023 | 0,038 | 0,0008 | 0,061 | \~18.200 USD |
+| Cơ sở | 0,022 | 0,038 | 0,0008 | 0,061 | \~18.200 USD |
 | Lạc quan | 0,060 | 0,080 | 0,002 | 0,142 | \~42.600 USD |
 
 **KPI mục tiêu `[PLACEHOLDER]`:**

@@ -205,23 +205,25 @@ interface AdService {
 
 ### 7.1 Ước tính theo vị trí `[PLACEHOLDER]`
 
-Giả định kịch bản cơ sở: eCPM rewarded 6 USD, interstitial 3 USD. Tổng khoảng 3 lượt rewarded và 1,5 interstitial mỗi người dùng hoạt động mỗi ngày, khớp bảng doanh thu ở tab Kế hoạch kiếm tiền (ARPDAU quảng cáo \~0,0225).
+Giả định kịch bản cơ sở: eCPM rewarded 6 USD, interstitial 3 USD. Tổng khoảng 2,9 lượt rewarded và 1,5 interstitial mỗi người dùng hoạt động mỗi ngày, khớp bảng doanh thu ở tab Kế hoạch kiếm tiền (ARPDAU quảng cáo \~0,022).
+
+**Điều chỉnh từ GDD 0.5:** `AD_REVIVE` giảm từ 0,35 xuống 0,25 lượt mỗi DAU vì hai lý do. (1) Giới hạn mỗi màn hạ từ 2 xuống 1 lần, nên mất các lượt hồi sinh thứ hai; theo giả định khoảng 20% lượt hồi sinh cũ là lượt thứ hai trong cùng màn. (2) Giới hạn này dùng chung với Second Wind và Second Chance; người đã có một trong hai thứ đó thì không còn nút quảng cáo, ước tính mất thêm khoảng 10% `[PLACEHOLDER]`. Tổng giảm khoảng 0,0006 USD mỗi DAU (khoảng 3% doanh thu quảng cáo).
 
 | Vị trí | Lượt xem mỗi DAU | Doanh thu mỗi DAU (USD) |
 | --- | --- | --- |
 | `AD_DOUBLE` | 0,70 | 0,0042 |
 | `AD_SPIN` | 0,50 | 0,0030 |
 | `AD_BOOSTER` | 0,40 | 0,0024 |
-| `AD_REVIVE` | 0,35 | 0,0021 |
+| `AD_REVIVE` | 0,25 | 0,0015 |
 | `AD_GIFT` | 0,35 | 0,0021 |
 | `AD_ENERGY` | 0,20 | 0,0012 |
 | `AD_FARM2X` | 0,20 | 0,0012 |
 | `AD_SWEEP` | 0,15 | 0,0009 |
 | `AD_HEAL` | 0,10 | 0,0006 |
 | `AD_LOGIN` | 0,05 | 0,0003 |
-| Rewarded tổng | 3,00 | 0,0180 |
+| Rewarded tổng | 2,90 | 0,0174 |
 | Interstitial (`INT_HUB`, `INT_FARM`) | 1,50 | 0,0045 |
-| **Tổng quảng cáo** |  | **0,0225** |
+| **Tổng quảng cáo** |  | **0,0219** |
 
 Nhóm đem lại nhiều doanh thu nhất: nhân đôi thưởng, vòng quay, booster miễn phí, hồi sinh. `AD_QUEST`, `AD_SALVAGE` có lượt rất nhỏ nên chưa tính.
 
