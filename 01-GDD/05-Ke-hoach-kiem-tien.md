@@ -103,7 +103,7 @@ Lần mua đầu tiên của mỗi gói được nhân đôi Gem (một lần ch
 
 | Gói | Giá | Nội dung | Điều kiện |
 | --- | --- | --- | --- |
-| **Starter Pack** | 1,99 | 300 Gem, bộ skin Rookie (mỹ phẩm), 5 booster, 5 vé Farm đôi | Mua một lần; hiện từ ngày 2 trong 7 ngày tân thủ |
+| **Starter Pack** | 1,99 | 300 Gem, bộ skin Rookie (mỹ phẩm), hiệu ứng lướt Rookie (mỹ phẩm), 5 vé Farm đôi (dùng sau cốt truyện); không có booster vì booster tăng sức chiến đấu | Mua một lần; hiện từ ngày 2 trong 7 ngày tân thủ |
 | **Season Pass (Premium)** | 4,99 mỗi mùa | Làn thưởng Premium của mùa (mục 8.5) | Mỗi mùa 30 ngày |
 | **Skin bundle** | 2,99–9,99 | Bộ skin mỹ phẩm theo chủ đề, giảm giá so với mua lẻ | Không có chỉ số |
 | **Weekly Deal** | 0,99–4,99 | Gói Gem + vật phẩm tiện ích theo tuần | Xoay vòng, tối đa 1 popup mỗi phiên |

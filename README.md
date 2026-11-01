@@ -1,6 +1,6 @@
 # Cyber Vanguard: Gói tài liệu phát triển
 
-Game action-platformer nhập vai kiểu Mega Man (thiết kế nguyên bản), chơi trên điện thoại và web PC. Phiên bản tài liệu 0.4, cập nhật 22/10/2026.
+Game action-platformer nhập vai kiểu Mega Man (thiết kế nguyên bản), chơi trên điện thoại và web PC. Phiên bản tài liệu 0.5, cập nhật 01/11/2026 (rà soát thiết kế: thứ tự màn theo vòng khắc chế, đường chỉ số, MVP 4 màn, lịch mở dần, cốt truyện, giọng nhân vật; xem nhật ký thay đổi ở cuối GDD).
 
 > **Chiến lược đã chốt (0.4):** free-to-play (IAP, quảng cáo, subscription Cyber+) cộng endgame farm. Chi tiết ở `01-GDD/05-Ke-hoach-kiem-tien.md`. Quyết định mục 13 đã được chốt và đưa vào GDD.
 

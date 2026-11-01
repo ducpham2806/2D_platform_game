@@ -1,6 +1,6 @@
 # Cyber Vanguard – Game Design Document
 
-*Phiên bản 0.4 · 16/10/2026 · Thể loại: Action-Platformer nhập vai · Nền tảng: Android/iOS (app) + Web PC · Mô hình: free-to-play (IAP, quảng cáo, subscription) + endgame farm*
+*Phiên bản 0.5 · 01/11/2026 · Thể loại: Action-Platformer nhập vai · Nền tảng: Android/iOS (app) + Web PC · Mô hình: free-to-play (IAP, quảng cáo, subscription) + endgame farm*
 
 **Chiến lược đã chốt từ bản 0.4:** free-to-play (quảng cáo, IAP, subscription Cyber+) cộng endgame farm sau cốt truyện. Chi tiết và lý do: file `05-Ke-hoach-kiem-tien.md`
 
@@ -24,9 +24,9 @@ Quy ước: mọi con số đánh dấu `[PLACEHOLDER]` là giả thuyết ban �
 
 1. **Điều khiển chuẩn xác, tha thứ đúng chỗ** – mọi cái chết phải thấy là lỗi của mình, kể cả trên cảm ứng.
 2. **Mỗi boss là một món quà** – đánh bại boss mở vũ khí, câu chuyện và cách chơi mới.
-3. **Lớn lên là chọn lựa, không phải cày cuốc** – điểm kỹ năng ít hơn nhu cầu, buộc chọn lối chơi; được đổi lại miễn phí bất cứ lúc nào.
+3. **Cốt truyện: lớn lên là chọn lựa, không phải cày cuốc. Endgame: farm là tùy chọn** – trong cốt truyện, điểm kỹ năng ít hơn nhu cầu, buộc chọn lối chơi, đổi lại miễn phí bất cứ lúc nào; không cần chơi lại màn cũ để đủ sức đi tiếp (đồng bộ cấp, mục 6.1). Sau cốt truyện, Vùng Eclipse là nơi dành cho ai *thích* farm: không cần cho kết thúc nào, không cần cho bảng xếp hạng Tiêu chuẩn.
 4. **Câu chuyện đi cùng nhịp chơi** – cốt truyện kể qua màn chơi, đoạn hội thoại ngắn, không bắt xem cutscene dài.
-5. **Tôn trọng người chơi** – cốt truyện chơi trọn vẹn miễn phí, tiền không mua chỉ số, quảng cáo tự nguyện và có giới hạn, không ép đăng nhập.
+5. **Tôn trọng người chơi** – cốt truyện chơi trọn vẹn miễn phí; **tiền thật không mua sức chiến đấu** (không bán chỉ số, Chip Lõi, Mastery hay booster); ở endgame, tiền chỉ mua *thời gian* (Sweep, vé Farm đôi) và có trần mỗi ngày, nên người không trả tiền vẫn tới được cùng trần sức mạnh, chỉ chậm hơn; bảng xếp hạng Tiêu chuẩn chuẩn hóa loadout nên hoàn toàn công bằng; quảng cáo tự nguyện, có giới hạn; không ép đăng nhập.
 
 ### 1.2 Giả thuyết cốt lõi (Fun Hypothesis)
 
@@ -38,7 +38,7 @@ Cảm giác nhảy – lướt – bắn phải sướng ngay trong 30 giây đ�
 | --- | --- |
 | Mô hình | Free-to-play: quảng cáo (rewarded là chính), IAP gói Gem và gói tiện ích, subscription Cyber+ tắt quảng cáo |
 | Không paywall | Toàn bộ cốt truyện chơi miễn phí; không khóa nội dung chính bằng tiền |
-| Tiền không mua chỉ số | Gem mua mỹ phẩm, tiện ích tiết kiệm thời gian (vé Farm đôi, Sweep) và pass; trang bị và sức mạnh chỉ rơi khi chơi |
+| Tiền không mua sức chiến đấu | Gem mua mỹ phẩm, tiện ích tiết kiệm thời gian ở endgame (vé Farm đôi, Sweep, có trần mỗi ngày) và pass; trang bị, booster và sức mạnh chỉ có khi chơi hoặc xem quảng cáo tự nguyện |
 | Quảng cáo | AdMob (app) và H5 Games Ads (web); rewarded tự nguyện; interstitial giới hạn; không có trong màn chơi và trận boss |
 | Không energy | Không giới hạn thể lực; Farm không giới hạn lượt (chỉ giới hạn lượt thưởng gấp đôi và Sweep mỗi ngày) |
 | Độ tuổi | 13+ |
@@ -526,7 +526,7 @@ Chi tiết giá và nội dung ở tab Kế hoạch kiếm tiền và Live-ops (
 | Hạng mục | Nội dung tóm tắt |
 | --- | --- |
 | Gói Gem | 7 bậc từ 0,99 đến 99,99 USD; lần mua đầu của mỗi gói nhân đôi Gem; Gem đã mua không hết hạn |
-| Starter Pack | 1,99 USD, một lần: 300 Gem, bộ skin Rookie, 5 booster, 5 vé Farm đôi |
+| Starter Pack | 1,99 USD, một lần: 300 Gem, bộ skin Rookie, hiệu ứng lướt Rookie, 5 vé Farm đôi (dùng sau cốt truyện); không có booster (trụ cột 5) |
 | Cyber+ | Tháng 2,99; năm 19,99; Lifetime 24,99. Tắt interstitial, rewarded nhận ngay, +10 Gem mỗi ngày, +1 vòng quay, +5 Sweep, 1 skin mỗi tháng; không tăng chỉ số |
 | Season Pass | 4,99 mỗi mùa 30 ngày; làn Premium chỉ có mỹ phẩm và Gem |
 | Skin Premium | 400–1.200 Gem hoặc bundle 2,99–9,99 USD; không có chỉ số |
@@ -700,6 +700,8 @@ Không qua cổng thì sửa cảm giác chơi và thiết kế màn, **không**
 
 **Còn mở:**
 
+0. (Từ bản 0.5) Thu gọn thang độ khó cốt truyện từ 6 xuống 3 mức và cho Mức Eclipse dùng biến thể màn thay vì chỉ tăng chỉ số; kiểm tra pháp lý việc hỏi tuổi và đồng ý quảng cáo sau Prologue; vẽ lại wireframe theo các thay đổi 0.5 (lịch mở dần, điểm chọn #1, Két giáp); viết thoại 3 biến thể cho 7 Warden còn lại.
+
 1. Giá cuối của Gem, skin, booster, upgrade và Cyber+ sau playtest kinh tế.
 2. Thị trường tiếng Anh cụ thể cho soft launch (hiện chỉ giả định).
 3. Cập nhật 66 wireframe hiện có và vẽ thêm khoảng 22 màn cho Gem, Cyber+, live-ops, Vùng Eclipse.
@@ -709,6 +711,7 @@ Không qua cổng thì sửa cảm giác chơi và thiết kế màn, **không**
 
 | Phiên bản | Ngày | Thay đổi |
 | --- | --- | --- |
+| 0.5 | 01/11/2026 | Rà soát thiết kế: đánh số lại Stage 2–8 theo vòng khắc chế (vũ khí màn k là điểm yếu của boss màn k+1) và gán lại Két giáp; nén đường chỉ số RPG, thêm đồng bộ cấp và giới hạn 1 lần hồi sinh tại chỗ mỗi màn; lộ trình hai giai đoạn với MVP 4 màn và cổng chặn; mở dần hệ thống sau từng boss, chơi được trong 15 giây; viết lại cốt truyện (câu hỏi chủ đề, phe Hội đồng và Hale, nhịp truyện theo số boss do NPC ở Hub đảm nhận, 3 lớp lật mở với NOVA, hệ quả cho điểm chọn #1, Memory Log là lý lẽ cho kết thúc C, endgame theo từng kết thúc); đổi tên Unit-X, Buster, Sub-Tank, Capsule; thêm tài liệu giọng nhân vật; viết lại trụ cột 3 và 5, bỏ booster khỏi Starter Pack |
 | 0.4 | 16/10/2026 | Chuyển sang free-to-play: IAP (Gem), quảng cáo, subscription Cyber+; thêm endgame Vùng Eclipse (Farm Run, Boss Hunt, Rift), Chip Lõi, Weapon Mastery, live-ops; chốt các quyết định mô hình A, 13+, Android + web trước; cập nhật nền tảng, máy chủ, lộ trình, KPI, rủi ro; hiệu chỉnh kinh tế endgame và Gem bằng mô phỏng (Cyber+ +10 Gem/ngày, thời gian endgame) |
 | 0.3 | 16/10/2026 | Thêm đặc tả Prologue & Stage 1, Hub & Shop, cân bằng kinh tế; đưa tên kẻ địch/mini-boss Stage 2–8 và Capsule theo màn vào GDD; rà soát và sửa mâu thuẫn |
 | 0.2 | 15/10/2026 | Chốt câu hỏi mở: bỏ donate; thêm cloud save và bảng xếp hạng; thêm Shop (skin từng bộ phận, booster, upgrade); thêm 3 độ khó; không lồng tiếng; chọn Phaser 3 + TypeScript |
