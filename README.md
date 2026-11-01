@@ -12,6 +12,7 @@ Game action-platformer nhập vai kiểu Mega Man (thiết kế nguyên bản), 
 | `02-Wireframes/` | 97 màn wireframe HTML. Mở `index.html` bằng trình duyệt |
 | `03-Data/` | 12 file JSON cấu hình (màn, vũ khí, độ khó, Shop, kinh tế, module, người chơi, kiếm tiền, vị trí quảng cáo, live-ops, endgame, thoại Warden) |
 | `04-Dev-Plan/` | Kế hoạch làm việc, danh sách module, bộ prompt code, kế hoạch test và launch, `tools/economy_sim.py` (mô phỏng kinh tế endgame) |
+| `game/` | Mã nguồn game (Phaser 3 + TypeScript + Vite). Hướng dẫn chạy ở `game/README.md`, kiến trúc và trạng thái module ở `game/CONTEXT.md` |
 | `05-Assets/` | Hướng dẫn tạo asset, bộ prompt hình, `manifest.csv` (350 spritesheet), script xử lý ảnh |
 
 ## Bắt đầu thế nào
