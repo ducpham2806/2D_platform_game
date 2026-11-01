@@ -1,6 +1,6 @@
 # Cyber Vanguard – Game Design Document
 
-*Phiên bản 0.5 · 01/11/2026 · Thể loại: Action-Platformer nhập vai · Nền tảng: Android/iOS (app) + Web PC · Mô hình: free-to-play (IAP, quảng cáo, subscription) + endgame farm*
+*Phiên bản 0.6 · 01/11/2026 · Thể loại: Action-Platformer nhập vai · Nền tảng: Android/iOS (app) + Web PC · Mô hình: free-to-play (IAP, quảng cáo, subscription) + endgame farm*
 
 **Chiến lược đã chốt từ bản 0.4:** free-to-play (quảng cáo, IAP, subscription Cyber+) cộng endgame farm sau cốt truyện. Chi tiết và lý do: file `05-Ke-hoach-kiem-tien.md`
 
@@ -393,7 +393,7 @@ Mở sau khi hạ AEGIS. Farm miễn phí, không giới hạn thể lực.
 
 | Chế độ | Mô tả | Phần thưởng chính |
 | --- | --- | --- |
-| Farm Run | Chơi lại bất kỳ màn ở Mức Eclipse 1–10 (+25% máu và sát thương mỗi mức); có thể chỉ chơi một đoạn hoặc chỉ boss, 3–6 phút mỗi lượt | Chip Lõi, Mảnh vũ khí, Core Bit |
+| Farm Run | Chơi lại bất kỳ màn ở Mức Eclipse 1–10 (+15% máu và sát thương mỗi mức, kèm biến thể theo mức ở mục 11); có thể chỉ chơi một đoạn hoặc chỉ boss, 3–6 phút mỗi lượt | Chip Lõi, Mảnh vũ khí, Core Bit |
 | Boss Hunt | 8 boss và AEGIS ở dạng Eclipse với mẫu đòn mới | Bộ Chip Lõi theo boss, Tinh thể Eclipse |
 | Eclipse Rift | Tháp 100 tầng theo mùa 4 tuần, không checkpoint giữa tầng | Tinh thể, skin mùa, thứ hạng bảng Mở |
 
@@ -478,7 +478,7 @@ Skin chỉ đổi hình ảnh, **không ảnh hưởng chỉ số**. Mỗi bộ 
 | Thường | 300–800 Core Bit | Shop |
 | Hiếm | 1.500–3.000 Core Bit | Shop, mở sau mốc tiến trình |
 | Sử thi | 3–6 Data Chip | Shop, Data Chip từ nhiệm vụ phụ |
-| Thành tựu | Không bán | Mở bằng thành tựu (ví dụ phá đảo độ khó Huyền thoại) |
+| Thành tựu | Không bán | Mở bằng thành tựu (ví dụ hoàn thành mọi màn ở Mức Eclipse 10) |
 
 - Xem trước trên Kai trước khi mua; mua một lần dùng mãi, không hết hạn.
 - Skin phủ lên Két giáp: giáp giữ chỉ số, skin quyết định hình ảnh hiển thị.
@@ -509,13 +509,13 @@ Upgrade tách khỏi cây kỹ năng (SP) và mua bằng Core Bit. Mỗi cấp t
 | --- | --- | --- | --- |
 | Arc Core | 5 | +5% sát thương | 400 |
 | Armor Plating | 5 | −4% sát thương nhận | 400 |
-| Energy Cell | 5 | +10% dung lượng năng lượng vũ khí | 300 |
-| Nano Cell Cap | 4 | +25% lượng hồi mỗi Nano Cell | 500 |
-| Dash Coil | 3 | −10% thời gian hồi lướt | 600 |
-| Magnet Range | 3 | +1 tile phạm vi hút | 250 |
-| Booster Slot | 1 | Mở slot booster thứ 3 | 2.000 |
+| Energy Cell | 5 | +10% dung lượng năng lượng vũ khí | 250 |
+| Nano Cell Cap | 4 | +25% lượng hồi mỗi Nano Cell | 400 |
+| Dash Coil | 3 | −10% thời gian hồi lướt | 500 |
+| Magnet Range | 3 | +1 tile phạm vi hút | 200 |
+| Booster Slot | 1 | Mở slot booster thứ 3 | 1.000 |
 
-- Giá cấp n = giá cấp 1 × 1,8^(n−1) `[PLACEHOLDER]`.
+- Giá cấp n = giá cấp 1 × 1,25^(n−1); tổng toàn bộ upgrade khoảng 14.600 Core Bit, đủ khi xong lượt Thử thách (mô hình ở tab Cân bằng kinh tế) `[PLACEHOLDER]`.
 - Gỡ upgrade tại Hub hoàn 100% Core Bit, để thử build tự do (đồng bộ với respec miễn phí).
 - Upgrade giữ nguyên khi đổi độ khó.
 
@@ -533,18 +533,28 @@ Chi tiết giá và nội dung ở tab Kế hoạch kiếm tiền và Live-ops (
 
 ## 11. Độ khó và khả năng tiếp cận
 
+Cốt truyện có **3 độ khó**. Thử thách sâu hơn nằm ở Mức Eclipse sau cốt truyện, nơi độ khó tăng chủ yếu bằng **biến thể** (mẫu đòn mới, bố cục remix, pha boss thứ 4) thay vì chỉ tăng chỉ số. Lý do: 6 độ khó cũ bắt người chơi chơi lại cùng 12 màn tới 5 lần, mỗi lần chỉ khác ở con số.
+
 | Chế độ | Sát thương nhận | Máu kẻ địch/boss | Thưởng Core Bit/EXP | Điều kiện mở | Ghi chú |
 | --- | --- | --- | --- | --- | --- |
 | Cốt truyện | −50% | −20% | ×0,5 | Có sẵn | Nhiều checkpoint, dành cho người chỉ muốn xem truyện |
 | Thường | 100% | 100% | ×1 | Có sẵn | Thiết kế gốc, cân bằng cho người chưa nâng cấp |
-| Thử thách | +50% | +25% | ×1,5 | Phá đảo Thường | Dành cho người đã có vài upgrade; ít checkpoint hơn |
-| Ác mộng | +100% | +50% | ×2 | Phá đảo Thử thách | Thêm mẫu đòn mới cho kẻ địch và boss |
-| Huyền thoại | +150% | +100% | ×3 | Phá đảo Ác mộng | Cần build tối ưu và booster đúng chỗ |
-| Overclock | +200%, không rơi vật phẩm hồi máu | +150% | ×4 | Phá đảo Huyền thoại | Boss thêm pha thứ 4, dành cho người chơi hardcore |
+| Thử thách | +50% | +25% | ×1,5 | **Theo từng màn:** hoàn thành màn đó ở Thường | Ít checkpoint hơn; **mẫu đòn mới** cho kẻ địch và boss (mỗi boss thêm 1 đòn, mỗi kẻ địch thường thêm 1 biến thể hành vi) |
 
-Mỗi độ khó được cân bằng quanh một mức sức mạnh dự kiến của người chơi (Power Score = cấp + upgrade + module `[PLACEHOLDER]`), nên việc mở upgrade và mua booster phải theo kịp độ khó. Mức upgrade dự kiến (đầu → cuối lượt chơi): Thường 0 → 12%, Thử thách 12 → 31%, Ác mộng 31 → 56%, Huyền thoại 56 → 93%, Overclock 93 → 100%; độ khó được cân quanh mức giữa khoảng đó. Lần đầu phá đảo từ Thử thách trở lên thưởng 3 Data Chip (chi tiết ở tab Cân bằng kinh tế). Thưởng Core Bit tăng theo hệ số để việc nâng cấp không bắt người chơi cày lại màn cũ. Bảng xếp hạng tách riêng theo từng độ khó.
+Mỗi độ khó được cân bằng quanh một mức sức mạnh dự kiến của người chơi (Power Score = cấp + upgrade + module `[PLACEHOLDER]`). Mức upgrade dự kiến (đầu → cuối lượt chơi): Thường 0 → 37%, Thử thách 37 → 94%; độ khó được cân quanh mức giữa khoảng đó. Toàn bộ upgrade hoàn thành ở đầu endgame. Lần đầu phá đảo Thử thách thưởng 3 Data Chip (chi tiết ở tab Cân bằng kinh tế). Bảng xếp hạng tách riêng theo từng độ khó.
 
-**Độ khó và Mức Eclipse:** sáu độ khó dùng cho cốt truyện; sau cốt truyện, độ khó leo thang bằng Mức Eclipse 1–10 trên màn đã hoàn thành. Hai hệ thống không cộng dồn: ở Mức Eclipse, độ khó nền cố định là Thường.
+**Độ khó và Mức Eclipse:** ba độ khó dùng cho cốt truyện; sau cốt truyện, độ khó leo thang bằng Mức Eclipse 1–10 trên màn đã hoàn thành. Hai hệ thống không cộng dồn: ở Mức Eclipse, độ khó nền cố định là Thường.
+
+| Mức Eclipse | Chỉ số kẻ địch | Biến thể mở thêm (cộng dồn) |
+| --- | --- | --- |
+| 1 | +15% | Không |
+| 2–3 | +30% đến +45% | Một phần kẻ địch thường thành Tinh nhuệ |
+| 4–5 | +60% đến +75% | Mẫu đòn mới cho kẻ địch và boss |
+| 6–7 | +90% đến +105% | Đoạn B và C dùng bố cục remix (đảo chiều, thêm bẫy) |
+| 8–9 | +120% đến +135% | Boss thêm pha thứ 4; không rơi vật phẩm hồi máu |
+| 10 | +150% | Chỉ còn checkpoint trước mini-boss và trước boss |
+
+Cấu hình: `eclipseLevels` trong `03-Data/endgame.json` `[PLACEHOLDER]`.
 
 Tùy chọn tiếp cận: chế độ mù màu, giảm rung màn hình, giảm hiệu ứng nhấp nháy, phụ đề cỡ lớn, đổi phím, tự bắn, giảm tốc độ game 10–30%, hộp thoại tự tiến tùy chọn.
 
@@ -635,7 +645,7 @@ Không qua cổng thì sửa cảm giác chơi và thiết kế màn, **không**
 | **Live-ops MVP** | Đăng nhập, 7 ngày tân thủ, vòng quay, nhiệm vụ ngày; rewarded ads; IAP Gem, Starter Pack, Cyber+; Gem do máy chủ giữ; Remote Config; đồng ý quảng cáo và xác nhận tuổi | Mua và khôi phục đúng; không lỗi nhân đôi Gem |
 | **Endgame MVP** | Farm Run, Boss Hunt, Chip Lõi, Sweep, Weapon Mastery, bảng xếp hạng Tiêu chuẩn | Vòng farm 3–6 phút; tỷ lệ rơi hiển thị đúng |
 | **Soft launch** | Việt Nam cộng một thị trường tiếng Anh nhỏ, 4–6 tuần | Qua cổng KPI (mục 17) |
-| **Ra mắt toàn cầu và mùa đầu** | Eclipse Rift, Season Pass, sự kiện, kiếm tiền bản web, iOS, độ khó Ác mộng/Huyền thoại/Overclock | KPI ổn định 2 tuần |
+| **Ra mắt toàn cầu và mùa đầu** | Eclipse Rift, Season Pass, sự kiện, kiếm tiền bản web, iOS | KPI ổn định 2 tuần |
 | **Sau ra mắt** | Mỗi 2 tuần 1 sự kiện, mỗi 4 tuần 1 mùa, mỗi tháng 1 bản vá cân bằng | Nhịp nội dung ổn định |
 
 ## 17. Chỉ số thành công và định nghĩa “hỏng”
@@ -687,7 +697,7 @@ Không qua cổng thì sửa cảm giác chơi và thiết kế màn, **không**
 - Không có nút donate.
 - Cloud save và bảng xếp hạng làm ngay trong bản đầu.
 - Giữ Kai làm nhân vật chính duy nhất; skin đổi riêng từng bộ phận.
-- Có Shop skin, booster, upgrade và 3 độ khó mới (Ác mộng, Huyền thoại, Overclock).
+- Có Shop skin, booster, upgrade và 3 độ khó mới (Ác mộng, Huyền thoại, Overclock). *Bản 0.6: bỏ ba độ khó này, thay bằng biến thể ở Mức Eclipse (mục 11).*
 - Không lồng tiếng.
 - Công cụ: Phaser 3 + TypeScript.
 - Chuyển sang free-to-play, mô hình A (tiện ích và mỹ phẩm, không bán ngẫu nhiên bằng tiền).
@@ -700,7 +710,7 @@ Không qua cổng thì sửa cảm giác chơi và thiết kế màn, **không**
 
 **Còn mở:**
 
-0. (Từ bản 0.5) Thu gọn thang độ khó cốt truyện từ 6 xuống 3 mức và cho Mức Eclipse dùng biến thể màn thay vì chỉ tăng chỉ số; kiểm tra pháp lý việc hỏi tuổi và đồng ý quảng cáo sau Prologue; vẽ lại wireframe theo các thay đổi 0.5 (lịch mở dần, điểm chọn #1, Két giáp); viết thoại 3 biến thể cho 7 Warden còn lại.
+0. (Từ bản 0.5) Kiểm tra pháp lý việc hỏi tuổi và đồng ý quảng cáo sau Prologue; vẽ lại wireframe theo các thay đổi 0.5 (lịch mở dần, điểm chọn #1, Két giáp); viết thoại 3 biến thể cho 7 Warden còn lại.
 
 1. Giá cuối của Gem, skin, booster, upgrade và Cyber+ sau playtest kinh tế.
 2. Thị trường tiếng Anh cụ thể cho soft launch (hiện chỉ giả định).
@@ -711,6 +721,7 @@ Không qua cổng thì sửa cảm giác chơi và thiết kế màn, **không**
 
 | Phiên bản | Ngày | Thay đổi |
 | --- | --- | --- |
+| 0.6 | 01/11/2026 | Thu gọn độ khó cốt truyện từ 6 xuống 3 (Cốt truyện, Thường, Thử thách); Thử thách mở theo từng màn và có mẫu đòn mới; Mức Eclipse dùng biến thể (Tinh nhuệ, mẫu đòn mới, bố cục remix, boss pha 4) với chỉ số +15% mỗi mức thay vì +25%; hạ giá upgrade (hệ số 1,25) để upgrade đủ sau lượt Thử thách; Data Chip và skin Thành tựu chuyển sang mốc Mức Eclipse |
 | 0.5 | 01/11/2026 | Rà soát thiết kế: đánh số lại Stage 2–8 theo vòng khắc chế (vũ khí màn k là điểm yếu của boss màn k+1) và gán lại Két giáp; nén đường chỉ số RPG, thêm đồng bộ cấp và giới hạn 1 lần hồi sinh tại chỗ mỗi màn; lộ trình hai giai đoạn với MVP 4 màn và cổng chặn; mở dần hệ thống sau từng boss, chơi được trong 15 giây; viết lại cốt truyện (câu hỏi chủ đề, phe Hội đồng và Hale, nhịp truyện theo số boss do NPC ở Hub đảm nhận, 3 lớp lật mở với NOVA, hệ quả cho điểm chọn #1, Memory Log là lý lẽ cho kết thúc C, endgame theo từng kết thúc); đổi tên Unit-X, Buster, Sub-Tank, Capsule; thêm tài liệu giọng nhân vật; viết lại trụ cột 3 và 5, bỏ booster khỏi Starter Pack |
 | 0.4 | 16/10/2026 | Chuyển sang free-to-play: IAP (Gem), quảng cáo, subscription Cyber+; thêm endgame Vùng Eclipse (Farm Run, Boss Hunt, Rift), Chip Lõi, Weapon Mastery, live-ops; chốt các quyết định mô hình A, 13+, Android + web trước; cập nhật nền tảng, máy chủ, lộ trình, KPI, rủi ro; hiệu chỉnh kinh tế endgame và Gem bằng mô phỏng (Cyber+ +10 Gem/ngày, thời gian endgame) |
 | 0.3 | 16/10/2026 | Thêm đặc tả Prologue & Stage 1, Hub & Shop, cân bằng kinh tế; đưa tên kẻ địch/mini-boss Stage 2–8 và Capsule theo màn vào GDD; rà soát và sửa mâu thuẫn |

@@ -147,7 +147,7 @@ Mỗi bước R chỉ chạy ở lần đầu về Hub sau mốc tương ứng; 
 | D06 | Chết 3 lần liên tiếp ở một đoạn | Nhận gợi ý | NOVA: "Ba lần rồi. Tôi không chê đâu, chỉ gợi ý: thử vũ khí khác, hoặc bật chế độ Cốt truyện." | Chọn hoặc đóng | Tối đa 1 lần mỗi màn |
 | D07 | Nhặt Nano Cell lần đầu | Hồi máu tay | NOVA: "Nano Cell hồi máu khi bạn chạm vào biểu tượng." | Dùng 1 lần | Nhắc khi máu thấp |
 | D08 | Điểm chọn cốt truyện đầu tiên | Hiểu lựa chọn | NOVA: "Lần này không quay lại được đâu. Cậu chắc chứ?" (điểm chọn #1 không chọn lại được; từ điểm chọn #2 có thể chọn lại ở checkpoint truyện) | Chọn | Không cần xử lý |
-| D09 | Phá đảo Thường | Biết có độ khó mới | Thông báo: "Mở khóa độ khó Thử thách: thưởng nhiều hơn, kẻ địch mạnh hơn." | Xem | Không cần xử lý |
+| D09 | Hoàn thành một màn ở Thường lần đầu | Biết có độ khó mới | Thông báo (một lần): "Mở khóa Thử thách cho màn này: đòn mới, ít checkpoint hơn, thưởng ×1,5." | Xem | Không cần xử lý |
 | D10 | Thua một boss lần đầu mà chưa dùng vũ khí khắc chế | Biết điểm yếu | NOVA: "Tôi đã phân tích trận vừa rồi. Lớp vỏ đó sợ `{tên vũ khí}`." Điểm yếu hiện ở màn Chuẩn bị từ đây | Xem | Miễn phí; thay cho việc phải mua Boss Scanner mới biết điểm yếu |
 
 ## 6. Giai đoạn 6 và 7: live-ops, quảng cáo, mua hàng và endgame

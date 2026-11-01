@@ -8,7 +8,36 @@
   "eclipseLevels": {
     "min": 1,
     "max": 10,
-    "enemyHpDmgPerLevelPct": 25
+    "enemyHpDmgPerLevelPct": 15,
+    "baseDifficulty": "normal",
+    "modifiers": [
+      {
+        "fromLevel": 2,
+        "id": "elite_swap",
+        "desc": "Một phần kẻ địch thường thành Tinh nhuệ"
+      },
+      {
+        "fromLevel": 4,
+        "id": "new_patterns",
+        "desc": "Mẫu đòn mới cho kẻ địch và boss"
+      },
+      {
+        "fromLevel": 6,
+        "id": "remix_layout",
+        "desc": "Đoạn B và C dùng bố cục remix (đảo chiều, thêm bẫy)"
+      },
+      {
+        "fromLevel": 8,
+        "id": "boss_phase4",
+        "desc": "Boss thêm pha thứ 4; không rơi vật phẩm hồi máu"
+      },
+      {
+        "fromLevel": 10,
+        "id": "no_mid_checkpoint",
+        "desc": "Chỉ còn checkpoint trước mini-boss và trước boss"
+      }
+    ],
+    "note": "Thay cho các độ khó Ác mộng/Huyền thoại/Overclock cũ: độ khó tăng bằng biến thể (modifiers) là chính, chỉ số chỉ +15% mỗi mức [PLACEHOLDER]"
   },
   "rift": {
     "floors": 100,

@@ -168,8 +168,8 @@ Module thưởng gắn theo **vị trí màn** (không theo chủ đề) để �
 
 | Skin | Thành tựu |
 | --- | --- |
-| Mũ Huyền Thoại | Phá đảo độ khó Huyền thoại |
-| Giáp Overclock | Phá đảo độ khó Overclock |
+| Mũ Huyền Thoại | Hạ cả 8 boss Hunt ở Mức Eclipse 6 |
+| Giáp Overclock | Hoàn thành mọi màn ở Mức Eclipse 10 |
 | Pháo Vô Cực | Hạ cả 8 boss bằng vũ khí điểm yếu |
 | Giày Tốc Độ | Hoàn thành cả 8 màn dưới thời gian mục tiêu |
 | Lõi Hợp Nhất | Đạt kết thúc C (True End) |

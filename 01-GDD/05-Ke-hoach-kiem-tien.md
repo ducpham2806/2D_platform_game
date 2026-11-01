@@ -8,7 +8,7 @@ Chuyển Cyber Vanguard từ mô hình miễn phí hoàn toàn (không IAP, khô
 | --- | --- |
 | Không IAP, không quảng cáo | Free-to-play: IAP, quảng cáo, subscription Cyber+ để tắt quảng cáo |
 | Chỉ Core Bit và Data Chip, kiếm bằng cách chơi | Thêm Gem (tiền cao cấp, mua được và kiếm được một ít) và vật liệu farm |
-| Game kết thúc ở AEGIS, hoàn thiện Shop khoảng giữa lượt Overclock | Sau cốt truyện mở endgame: Farm, trang bị hiếm, nâng sức mạnh, Rift |
+| Game kết thúc ở AEGIS, hoàn thiện Shop khoảng giữa lượt Overclock (bản cũ; từ GDD 0.6 upgrade đủ sau lượt Thử thách) | Sau cốt truyện mở endgame: Farm, trang bị hiếm, nâng sức mạnh, Rift |
 | Không popup, không đồng hồ đếm ngược | Có ưu đãi giới hạn thời gian, nhưng theo quy tắc kỷ luật ở mục 2 |
 | Web/PWA, dữ liệu lưu cục bộ làm gốc | Cần app gốc cho mobile và máy chủ giữ số dư Gem, giao dịch (mục 3) |
 
@@ -158,7 +158,7 @@ Mục tiêu: sau khi hạ AEGIS (bất kỳ kết thúc nào), người chơi m�
 
 | Chế độ | Mô tả | Phần thưởng chính |
 | --- | --- | --- |
-| **Farm Run** | Chơi lại bất kỳ màn nào ở Mức Eclipse 1–10 (mỗi mức +25% máu và sát thương kẻ địch, tỷ lệ rơi tốt hơn). Có thể chọn chơi từng đoạn A–D hoặc chỉ boss để mỗi lượt 3–6 phút | Chip Lõi, Mảnh vũ khí, Core Bit |
+| **Farm Run** | Chơi lại bất kỳ màn nào ở Mức Eclipse 1–10 (mỗi mức +15% máu và sát thương kẻ địch kèm biến thể theo mức ở GDD mục 11, tỷ lệ rơi tốt hơn). Có thể chọn chơi từng đoạn A–D hoặc chỉ boss để mỗi lượt 3–6 phút | Chip Lõi, Mảnh vũ khí, Core Bit |
 | **Boss Hunt** | Đánh 8 boss và AEGIS ở "dạng Eclipse" với mẫu đòn mới; mỗi boss có bộ Chip Lõi riêng | Chip Lõi theo bộ, Tinh thể Eclipse |
 | **Eclipse Rift** | Tháp 100 tầng theo mùa (4 tuần), độ khó tăng dần, không checkpoint giữa các tầng | Tinh thể, skin mùa, thứ hạng bảng Mở |
 

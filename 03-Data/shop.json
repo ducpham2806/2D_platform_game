@@ -5,49 +5,49 @@
       "maxLevel": 5,
       "effectPerLevel": "+5% damage",
       "baseCost": 400,
-      "costGrowth": 1.8
+      "costGrowth": 1.25
     },
     {
       "id": "armor_plating",
       "maxLevel": 5,
       "effectPerLevel": "-4% damage taken",
       "baseCost": 400,
-      "costGrowth": 1.8
+      "costGrowth": 1.25
     },
     {
       "id": "energy_cell",
       "maxLevel": 5,
       "effectPerLevel": "+10% weapon energy",
-      "baseCost": 300,
-      "costGrowth": 1.8
+      "baseCost": 250,
+      "costGrowth": 1.25
     },
     {
       "id": "nano_cell_cap",
       "maxLevel": 4,
       "effectPerLevel": "+25% heal per sub-tank",
-      "baseCost": 500,
-      "costGrowth": 1.8
+      "baseCost": 400,
+      "costGrowth": 1.25
     },
     {
       "id": "dash_coil",
       "maxLevel": 3,
       "effectPerLevel": "-10% dash cooldown",
-      "baseCost": 600,
-      "costGrowth": 1.8
+      "baseCost": 500,
+      "costGrowth": 1.25
     },
     {
       "id": "magnet_range",
       "maxLevel": 3,
       "effectPerLevel": "+1 tile magnet",
-      "baseCost": 250,
-      "costGrowth": 1.8
+      "baseCost": 200,
+      "costGrowth": 1.25
     },
     {
       "id": "booster_slot",
       "maxLevel": 1,
       "effectPerLevel": "unlock 3rd booster slot",
-      "baseCost": 2000,
-      "costGrowth": 1.8
+      "baseCost": 1000,
+      "costGrowth": 1.25
     }
   ],
   "boosters": [

@@ -7,7 +7,7 @@ Mô hình để kiểm tra Core Bit và Data Chip kiếm được có đủ tr�
 **Mục tiêu thiết kế**
 
 - Người chơi chỉ chơi tiến trình bình thường vẫn mua đều đặn, không phải cày màn cũ.
-- Hoàn thiện toàn bộ Shop (trừ booster, vốn là chi tiêu định kỳ) vào khoảng giữa lượt Overclock.
+- Hoàn thiện toàn bộ upgrade vào khoảng cuối lượt Thử thách hoặc đầu endgame; skin là sink thẩm mỹ dài hạn, mua tiếp bằng Core Bit ở endgame.
 - Không có tiền tệ nào dư vô hạn quá sớm hoặc thiếu đến mức phải cày.
 
 **Giả định của mô hình**
@@ -16,10 +16,10 @@ Mô hình để kiểm tra Core Bit và Data Chip kiếm được có đủ tr�
 | --- | --- |
 | Core Bit lượt chơi đầu (độ khó Thường) | 7.800 (8 màn + 3 màn Citadel + màn cuối) |
 | Thời gian lượt đầu | 8–10 giờ, khoảng 780–975 Core Bit mỗi giờ |
-| Hệ số thưởng theo độ khó | Thường ×1, Thử thách ×1,5, Ác mộng ×2, Huyền thoại ×3, Overclock ×4 |
-| Cách chi (mô hình) | 60% upgrade, 20% skin, 20% booster; người chơi thật sẽ tự phân bổ khác |
-| Giá upgrade cấp n | Giá cấp 1 × 1,8^(n − 1) |
-| Hành vi | Mỗi độ khó được chơi hết một lượt theo thứ tự mở khóa |
+| Hệ số thưởng theo độ khó | Cốt truyện ×0,5, Thường ×1, Thử thách ×1,5 (GDD 0.6 bỏ Ác mộng, Huyền thoại, Overclock) |
+| Cách chi (mô hình) | 70% upgrade, 15% skin, 15% booster (booster và skin chỉ mở sau boss thứ 4); người chơi thật sẽ tự phân bổ khác |
+| Giá upgrade cấp n | Giá cấp 1 × 1,25^(n − 1) |
+| Hành vi | Chơi một lượt Thường, rồi một lượt Thử thách (Thử thách mở theo từng màn) |
 
 ## 2. Nguồn thu Core Bit
 
@@ -44,20 +44,17 @@ Thu theo màn tăng đều: Stage n thu `225 + 75 × (n − 1)` Core Bit ở đ�
 | --- | --- | --- | --- |
 | Thường | ×1 | 7.800 | 7.800 |
 | Thử thách | ×1,5 | 11.700 | 19.500 |
-| Ác mộng | ×2 | 15.600 | 35.100 |
-| Huyền thoại | ×3 | 23.400 | 58.500 |
-| Overclock | ×4 | 31.200 | 89.700 |
 
 ## 3. Chi tiêu: tổng giá trị Shop
 
 | Hạng mục | Chi tiết | Tổng Core Bit |
 | --- | --- | --- |
-| Upgrade | Arc Core 8.948; Armor Plating 8.948; Energy Cell 6.711; Nano Cell Cap 5.936; Dash Coil 3.624; Magnet Range 1.510; Booster Slot 2.000 | **37.677** |
+| Upgrade | Arc Core 3.283; Armor Plating 3.283; Energy Cell 2.051; Nano Cell Cap 2.306; Dash Coil 1.906; Magnet Range 762; Booster Slot 1.000 | **14.591** |
 | Skin Thường | 12 món × \~550 | 6.600 |
 | Skin Hiếm | 6 món × \~2.250 | 13.500 |
 | Skin Sử thi | 6 món, trả bằng Data Chip (mục 5) | 0 |
 | Skin Thành tựu | Không bán | 0 |
-| **Cộng vĩnh viễn** |  | **57.777** |
+| **Cộng vĩnh viễn** |  | **34.691** |
 | Booster | 6 loại, 100–400 mỗi cái, chi định kỳ theo ý người chơi | \~20% thu nhập |
 
 Module không tính vào chi Core Bit vì nhận qua nhiệm vụ phụ (8 module, mục 7 của đặc tả Hub).
@@ -66,24 +63,23 @@ Module không tính vào chi Core Bit vì nhận qua nhiệm vụ phụ (8 modul
 
 | Độ khó | Thu của lượt chơi | Tích lũy khi bắt đầu | Upgrade khi bắt đầu → kết thúc |
 | --- | --- | --- | --- |
-| Thường | 7.800 | 0 | 0% → 12% |
-| Thử thách | 11.700 | 7.800 | 12% → 31% |
-| Ác mộng | 15.600 | 19.500 | 31% → 56% |
-| Huyền thoại | 23.400 | 35.100 | 56% → 93% |
-| Overclock | 31.200 | 58.500 | 93% → 100% (đạt 100% ở giữa lượt) |
+| Thường | 7.800 | 0 | 0% → 37% |
+| Thử thách | 11.700 | 7.800 | 37% → 94% |
+| Đầu endgame (Farm Run, \~250 Core Bit mỗi lượt) | \~1.500 mỗi ngày | 19.500 | 94% → 100% sau khoảng 3–4 lượt |
 
-(Phần trăm upgrade = 60% thu nhập tích lũy chia cho 37.677.)
+(Phần trăm upgrade = 70% thu nhập tích lũy chia cho tổng giá upgrade 14.591.)
 
-**Hoàn thiện Shop:** nếu 20% thu nhập đi vào booster thì 80% còn lại dành cho vật phẩm vĩnh viễn, đủ 57.777 Core Bit khi tích lũy đạt khoảng 72.200, tức khoảng 44% lượt Overclock. Người chơi không bị buộc phải cày: mỗi độ khó đều thưởng nhiều hơn độ khó trước.
+**Hoàn thiện Shop:** upgrade (sức mạnh cốt truyện) hoàn thành ở đầu endgame. Skin Thường và Hiếm (tổng 20.100 Core Bit) là sink thẩm mỹ dài hạn: trong cốt truyện chỉ khoảng 2.900 Core Bit (15%) đi vào skin, phần còn lại mua dần bằng Core Bit từ Farm Run. Người chơi không bị buộc phải cày: cốt truyện chỉ cần một lượt Thường, và mọi thứ ảnh hưởng sức mạnh cốt truyện đều đủ sau lượt Thử thách.
 
-**Dòng mua điển hình ở lượt Thường đầu tiên** (theo mô hình 60/20/20):
+**Dòng mua điển hình ở lượt Thường đầu tiên** (theo mô hình 70/15/15, Shop mở sau boss thứ 2, booster và skin sau boss thứ 4):
 
 | Tích lũy | Người chơi mua được khoảng |
 | --- | --- |
-| 225 (hết Stage 1) | Chưa đủ upgrade; 1 booster rẻ (Magnet Pulse 120) hoặc để dành |
-| 900 (hết Stage 3) | 1 upgrade cấp 1 (400), 1 booster |
-| 3.900 (hết Stage 8) | 4 upgrade cấp 1–2, 1 skin Thường, \~5 booster |
-| 7.800 (hết lượt đầu) | Upgrade \~12% (cấp 2–3 ở 3 loại), \~3 skin Thường, \~10 booster |
+| 225 (hết Stage 1) | Shop chưa mở; để dành |
+| 525 (hết Stage 2) | 1 upgrade cấp 1 (Shop vừa mở) |
+| 1.350 (hết Stage 4) | 3 upgrade cấp 1; quầy Booster và Skin vừa mở |
+| 3.900 (hết Stage 8) | \~7 cấp upgrade, 1 skin Thường, \~3 booster |
+| 7.800 (hết lượt đầu) | Upgrade \~37% (cấp 2–3 ở hầu hết các loại), \~2 skin Thường, \~6 booster |
 
 Nếu người chơi dồn toàn bộ tiền vào upgrade thì sau Stage 2 (525) đã mua được upgrade cấp 1 (400): khớp mục tiêu "món lớn đầu tiên sau 1–2 màn".
 
@@ -96,7 +92,8 @@ Data Chip hữu hạn, chỉ nhận một lần cho mỗi nguồn, không mua đ
 | Nhiệm vụ phụ | 8 | 1 mỗi màn |
 | Phòng bí mật đầu tiên mỗi màn | 8 | 1 mỗi màn |
 | Thành tựu nhỏ | \~10 | 1 mỗi thành tựu |
-| Lần đầu phá đảo Thử thách, Ác mộng, Huyền thoại, Overclock | 12 | 3 mỗi độ khó |
+| Lần đầu phá đảo Thử thách | 3 | |
+| Lần đầu hoàn thành mọi màn ở Mức Eclipse 3, 6 và 10 | 9 | 3 mỗi mốc (thay cho ba độ khó đã bỏ) |
 | **Tổng cung** | **\~38** |  |
 
 | Chi | Số lượng |
@@ -125,20 +122,21 @@ Mô hình phát hiện hai chỗ lệch với bản trước, đã sửa:
 
 1. **Skin Sử thi:** giá đổi từ 5–10 Data Chip xuống **3–6 Data Chip**, vì nguồn Data Chip (\~38) không đủ cho 6 skin × 7,5 = 45.
 2. **Mức upgrade dự kiến theo độ khó:** thay vì một con số mỗi độ khó, ghi rõ khoảng đầu → cuối lượt chơi (0 → 12%, 12 → 31%, 31 → 56%, 56 → 93%, 93 → 100%). Độ khó nên được cân quanh mức giữa khoảng đó.
-3. **Data Chip mới:** lần đầu phá đảo Thử thách, Ác mộng, Huyền thoại, Overclock thưởng 3 Data Chip mỗi lần.
+3. **Data Chip mới:** lần đầu phá đảo Thử thách thưởng 3 Data Chip; từ GDD 0.6, ba mốc Mức Eclipse 3, 6, 10 thay cho ba độ khó đã bỏ, mỗi mốc 3 Data Chip.
+4. **GDD 0.6, thu gọn độ khó:** bỏ Ác mộng, Huyền thoại, Overclock; giá upgrade hạ (hệ số 1,8 → 1,25, giá cấp 1 của bốn loại giảm) để toàn bộ upgrade đủ sau lượt Thử thách thay vì giữa lượt Overclock.
 
-Giữ nguyên: hệ số giá upgrade 1,8, hệ số thưởng theo độ khó, giá booster và giá skin Thường/Hiếm.
+Giữ nguyên: giá booster và giá skin Thường/Hiếm.
 
 ## 8. Tham số tinh chỉnh và cách đo khi playtest
 
 | Tham số | Giá trị hiện tại | Ảnh hưởng | Chỉnh khi |
 | --- | --- | --- | --- |
 | Thu Stage n | 225 + 75 × (n − 1) | Tốc độ kiếm tiền | Thiếu hoặc dư Core Bit |
-| Hệ số thưởng độ khó | 1 / 1,5 / 2 / 3 / 4 | Tốc độ nâng cấp ở độ khó cao | Độ khó cao mà thiếu upgrade |
-| Hệ số giá upgrade | 1,8 | Độ dốc chi phí | Cấp cuối quá đắt hoặc quá rẻ |
+| Hệ số thưởng độ khó | 0,5 / 1 / 1,5 | Tốc độ nâng cấp ở Thử thách | Thử thách mà thiếu upgrade |
+| Hệ số giá upgrade | 1,25 | Độ dốc chi phí | Cấp cuối quá đắt hoặc quá rẻ |
 | Giá skin Thường / Hiếm | 300–800 / 1.500–3.000 | Sink thẩm mỹ | Skin không ai mua hoặc mua hết quá sớm |
 | Giá booster | 100–400 | Chi định kỳ | Booster nuốt ngân sách |
-| Data Chip thưởng | Nhiệm vụ 1, bí mật 1, độ khó 3 | Tốc độ mở skin Sử thi | Cung lệch cầu |
+| Data Chip thưởng | Nhiệm vụ 1, bí mật 1, Thử thách 3, mốc Eclipse 3 | Tốc độ mở skin Sử thi | Cung lệch cầu |
 
 **Số liệu cần ghi khi playtest (ẩn danh):** Core Bit kiếm được mỗi màn và độ khó; số dư cuối mỗi màn; mỗi giao dịch (món, giá, số dư trước và sau); thời gian đến lần mua đầu tiên; số lần lặp lại màn đã hoàn thành; booster dùng mỗi màn; tỷ lệ chi theo loại.
 
@@ -146,7 +144,7 @@ Giữ nguyên: hệ số giá upgrade 1,8, hệ số thưởng theo độ khó, 
 
 - [ ] ≥ 70% người chơi đủ tiền cho món đầu tiên trước khi kết thúc Stage 2.
 - [ ] Số dư cuối mỗi màn trung bình ≤ 1,5 lần thu của màn đó.
-- [ ] Tỷ lệ chi: upgrade 50–70%, skin 10–30%, booster 10–30%.
+- [ ] Tỷ lệ chi trong cốt truyện: upgrade 60–80%, skin 10–25%, booster 10–25%.
 - [ ] Mức upgrade ở đầu và cuối mỗi độ khó lệch ≤ 10 điểm phần trăm so với mô hình mục 4.
 - [ ] Không ai phải lặp màn đã xong chỉ để kiếm tiền trong 3 màn đầu (dưới 15%).
 
