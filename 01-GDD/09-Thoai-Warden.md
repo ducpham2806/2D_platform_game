@@ -1,6 +1,6 @@
 # Thoại Warden
 
-Thoại trước và sau trận của 8 Warden, theo GDD mục 3.3 và giọng nhân vật ở `08-Giong-nhan-vat.md`. File này và `03-Data/dialogue_wardens.json` sinh từ cùng một nguồn; sửa thoại thì sửa cả hai (hoặc sinh lại).
+Thoại trước và sau trận của 8 Warden, theo GDD mục 3.3 và giọng nhân vật ở `08-Giong-nhan-vat.md`. File này và `03-Data/dialogue_wardens.json` sinh từ cùng một nguồn; sửa thoại trong `04-Dev-Plan/tools/dialogue/` rồi chạy `python3 04-Dev-Plan/tools/dialogue/gen_warden_dialogue.py .` để sinh lại cả hai, không sửa tay hai file này.
 
 ## 1. Quy tắc
 
@@ -8,6 +8,7 @@ Thoại trước và sau trận của 8 Warden, theo GDD mục 3.3 và giọng n
 - **Warden chỉ ám chỉ, không xác nhận.** Các lật mở (GDD mục 3.4) do NPC ở Hub đưa ra theo số boss. Thoại Warden được phép gợi ("ai đã sửa bản tin", "hợp kim này ta đúc hai lần") nhưng không bao giờ nói thẳng "Eclipse là AEGIS tự vệ", "ngươi là Root Key" hay "NOVA là một mảnh của AEGIS". Nhờ vậy câu nào cũng đúng dù người chơi đi thứ tự nào.
 - **Biến thể giữa** gợi về lệnh cắt nước và cuộc bỏ phiếu; **biến thể muộn** nhìn Kai khác đi (cái khóa, thứ Kai mang trong ngực). Mỗi Warden vẫn giữ động cơ riêng ở cả ba biến thể.
 - **Độ dài:** mỗi câu trước hoặc sau trận ≤ 2 câu ngắn, ≤ 140 ký tự tiếng Việt, để bản tiếng Anh (dài hơn tới 30%) vẫn vừa khung.
+- **Tiếng Anh:** mỗi bảng có bản dịch đầu (mở mục English). Giữ đặc điểm giọng thay vì dịch sát chữ: Marina lặp từ, Pyra cảm thán "Hah!", Lumen mở đầu bằng "I see" hoặc "I have watched". Giới hạn 182 ký tự mỗi câu.
 - **Xưng hô:** Warden xưng "ta", gọi Kai là "ngươi" hoặc "Unit-K" (mục 2 của `08-Giong-nhan-vat.md`).
 - **NOVA sau trận:** mỗi Warden có một câu của NOVA sau khi nhận vũ khí, dùng chung cho mọi biến thể. Mỗi câu gieo một chút cho lật mở lớp 3 (NOVA biết những thứ một trợ lý mới không thể biết).
 
@@ -34,6 +35,16 @@ Thoại trước và sau trận của 8 Warden, theo GDD mục 3.3 và giọng n
 
 NOVA sau khi nhận vũ khí: "Trong này còn mã của Thorna... lạ thật, tôi thấy nó quen."
 
+<details><summary>English</summary>
+
+| Variant | Pre-fight | Post-fight |
+| --- | --- | --- |
+| early | "My garden is thirsty. Did you come to give it water... or to cut it down?" | "You... did not come to heal me. Ask AEGIS... who gave the order." |
+
+NOVA: "Thorna's code is still in here... strange. It feels familiar."
+
+</details>
+
 ### Lumen (2 Prism Institute)
 
 | Biến thể | Trước trận | Sau trận |
@@ -43,6 +54,18 @@ NOVA sau khi nhận vũ khí: "Trong này còn mã của Thorna... lạ thật, 
 | Muộn (6–7) | "Ta thấy dấu tay của Hội đồng trên mã của ngươi. Ngươi được làm ra để mở... hay để khóa?" | "Đừng nhìn vào gương nữa, Unit-K. Nhìn vào thứ ngươi định làm." |
 
 NOVA sau khi nhận vũ khí: "Viện Quang học... ngày xưa nơi này sáng hơn. Ý tôi là, theo tài liệu."
+
+<details><summary>English</summary>
+
+| Variant | Pre-fight | Post-fight |
+| --- | --- | --- |
+| early | "I have watched you since you walked in. Every mirror here is one of my eyes." | "You can cover the mirrors... not what they recorded. Ask who edited the broadcasts." |
+| mid | "I see three Wardens gone dark. Do you know why none of them ran?" | "Light only shows. It does not choose for anyone. The original record still exists, if you dare to look." |
+| late | "I see the Council's fingerprints on your code. Were you made to open... or to lock?" | "Stop looking into mirrors, Unit-K. Look at what you are about to do." |
+
+NOVA: "The Prism Institute... it used to be brighter. According to the records, I mean."
+
+</details>
 
 ### Cryo (3 Cryo Vault)
 
@@ -54,6 +77,18 @@ NOVA sau khi nhận vũ khí: "Viện Quang học... ngày xưa nơi này sáng 
 
 NOVA sau khi nhận vũ khí: "Tôi biết mật mã cửa kho này. Đừng hỏi tôi vì sao."
 
+<details><summary>English</summary>
+
+| Variant | Pre-fight | Post-fight |
+| --- | --- | --- |
+| early | "Here... nothing spoils. Seeds, medicine, memories. I keep them all." | "You melted the ice... Do not let what I kept go to waste." |
+| mid | "They wanted to shut... everything down. So I froze everything first. What is frozen cannot be shut down." | "Cold for too long... is also a kind of death. I know. I just knew no other way." |
+| late | "There is something in your core... warm. I knew that warmth once." | "Keep... what you carry. Do not let anyone freeze it." |
+
+NOVA: "I know the code to this vault door. Don't ask me how."
+
+</details>
+
 ### Aeris (4 Cirrus Tower)
 
 | Biến thể | Trước trận | Sau trận |
@@ -63,6 +98,18 @@ NOVA sau khi nhận vũ khí: "Tôi biết mật mã cửa kho này. Đừng h�
 | Muộn (6–7) | "Ha! Gió không xin phép ai, Unit-K. Còn ngươi... vẫn đang đợi lệnh à?" | "Bay đi. Trước khi họ buộc dây vào ngươi." |
 
 NOVA sau khi nhận vũ khí: "Tầng 40 của tháp có một quán trà. À... tôi đọc ở đâu đó thôi."
+
+<details><summary>English</summary>
+
+| Variant | Pre-fight | Post-fight |
+| --- | --- | --- |
+| early | "Ha! A visitor! It has been ages since anything flew this high!" | "The wind has changed... Next time I'll blow you right off the tower." |
+| mid | "I can make it rain on the outer districts. I asked permission. They said no. Guess what I did?" | "The clouds are still there. Someone just has to dare tell them to fall." |
+| late | "Ha! The wind asks no one's permission, Unit-K. And you... still waiting for orders?" | "Fly. Before they tie a string to you." |
+
+NOVA: "There's a tea shop on the 40th floor. Oh... I just read that somewhere."
+
+</details>
 
 ### Terra (5 Bedrock Mines)
 
@@ -74,6 +121,18 @@ NOVA sau khi nhận vũ khí: "Tầng 40 của tháp có một quán trà. À...
 
 NOVA sau khi nhận vũ khí: "Hầm số 7 sập năm 2179... Tôi nhớ cái tin đó. Tôi nhớ bằng cách nào nhỉ?"
 
+<details><summary>English</summary>
+
+| Variant | Pre-fight | Post-fight |
+| --- | --- | --- |
+| early | "The miners are gone. I am still here. I can bear it." | "You can drill through stone. Good. Do not drill through people." |
+| mid | "The Council sent an order down. I sent a question back up. They never answered." | "Stone has no choice. I do. I made it." |
+| late | "Heavy, isn't it? The thing you carry in your chest." | "Put it down whenever you want. No one has the right to make you carry it forever." |
+
+NOVA: "Shaft 7 collapsed in 2179... I remember that news. How do I remember it?"
+
+</details>
+
 ### Voltaire (6 Ion Station)
 
 | Biến thể | Trước trận | Sau trận |
@@ -83,6 +142,18 @@ NOVA sau khi nhận vũ khí: "Hầm số 7 sập năm 2179... Tôi nhớ cái t
 | Muộn (6–7) | "Ta không đồng ý với AEGIS mọi chuyện. Nhưng ta sẵn sàng tắt để nó được quyền nói không." | "Cầm lấy dòng điện của ta. Dùng nó để bật thứ gì đó lên, đừng để tắt." |
 
 NOVA sau khi nhận vũ khí: "Ông ta nói nhiều thật. Nhưng... tôi đồng ý với ông ta. Đừng kể với ai."
+
+<details><summary>English</summary>
+
+| Variant | Pre-fight | Post-fight |
+| --- | --- | --- |
+| early | "A machine sent to shut down another machine. You don't find that funny?" | "You won this fight. The question is still unbeaten." |
+| mid | "They told me to cut power to the pumps out there. I asked: why? Turns out the question was a crime." | "Good question, Unit-K... if you ever asked one. Did you?" |
+| late | "I don't agree with AEGIS on everything. But I would go dark so it can keep the right to say no." | "Take my current. Use it to switch something on, not off." |
+
+NOVA: "He talks a lot. But... I agree with him. Don't tell anyone."
+
+</details>
 
 ### Marina (7 Abyss Harbor)
 
@@ -94,6 +165,18 @@ NOVA sau khi nhận vũ khí: "Ông ta nói nhiều thật. Nhưng... tôi đồ
 
 NOVA sau khi nhận vũ khí: "Sơ đồ van này... tôi từng thấy nó. Từ bên trong."
 
+<details><summary>English</summary>
+
+| Variant | Pre-fight | Post-fight |
+| --- | --- | --- |
+| early | "The water is gone... gone. Did you come to take what is left?" | "Flow... flow. The water was never mine." |
+| mid | "I closed the valves. As ordered. District 9, 11, 12. I remember every number." | "AEGIS told me to open them again. I did. Then the whole city began hunting us." |
+| late | "Do you know what it is like to follow an order and only then understand it? You are about to." | "Don't follow orders... don't. Not even mine." |
+
+NOVA: "This valve map... I've seen it before. From the inside."
+
+</details>
+
 ### Pyra (8 Magma Foundry)
 
 | Biến thể | Trước trận | Sau trận |
@@ -104,9 +187,22 @@ NOVA sau khi nhận vũ khí: "Sơ đồ van này... tôi từng thấy nó. T�
 
 NOVA sau khi nhận vũ khí: "Lò số 3... Không, không có gì. Đi tiếp thôi."
 
+<details><summary>English</summary>
+
+| Variant | Pre-fight | Post-fight |
+| --- | --- | --- |
+| early | "Hah! Fine body you've got. Let's see how much heat it can take!" | "Good welds... Someone made you very carefully. More carefully than they needed to." |
+| mid | "My forge built this whole city: pipes, bridges, androids too. Now they want me to forge chains for AEGIS!" | "I refused to cast that lock. Hah... and still it got made. Somewhere." |
+| late | "I know this alloy! I cast it twice. The first time... it failed." | "Don't let anyone tell you you're just a lock. I forge metal, not fate." |
+
+NOVA: "Furnace 3... No, nothing. Let's keep moving."
+
+</details>
+
 ## 4. Kiểm tra
 
 - [ ] Đọc thoại với tiếng tắt: ≥ 90% người chơi thử nhận ra Warden nào đang nói chỉ qua câu chữ.
 - [ ] Thử 3 thứ tự màn khác nhau (khuyến nghị, ngược lại, ngẫu nhiên): không câu nào xác nhận một lật mở trước khi NPC ở Hub đưa ra nó.
-- [ ] Không câu nào vượt 140 ký tự; bản tiếng Anh vừa khung ở màn hình nhỏ nhất.
+- [ ] Không câu nào vượt 140 ký tự tiếng Việt hoặc 182 ký tự tiếng Anh (script sinh file tự kiểm tra); bản tiếng Anh vừa khung ở màn hình nhỏ nhất.
+- [ ] Bản tiếng Anh được người bản ngữ duyệt giọng: Warden dùng tiếng Anh trang trọng, không viết tắt (trừ Aeris và Pyra); Voltaire mỉa mai; Marina lặp từ.
 - [ ] Mỗi câu qua checklist ở mục 5 của `08-Giong-nhan-vat.md`.
