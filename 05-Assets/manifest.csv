@@ -37,20 +37,20 @@ obj_breakable_box,object,sprites/objects/obj_breakable_box.png,16,16,4,8,1,P1,Ve
 obj_charge_block,object,sprites/objects/obj_charge_block.png,16,32,4,8,1,P1,Vertical slice,
 wp_vine_lash_proj,weapon,sprites/weapons/wp_vine_lash_proj.png,32,32,6,14,1,P1,Vertical slice,
 wp_vine_lash_hit,weapon,sprites/weapons/wp_vine_lash_hit.png,32,32,5,14,0,P1,Vertical slice,
-wp_ember_burst_proj,weapon,sprites/weapons/wp_ember_burst_proj.png,32,32,6,14,1,P2,Alpha,
-wp_ember_burst_hit,weapon,sprites/weapons/wp_ember_burst_hit.png,32,32,5,14,0,P2,Alpha,
+wp_ember_burst_proj,weapon,sprites/weapons/wp_ember_burst_proj.png,32,32,6,14,1,P3,Beta,
+wp_ember_burst_hit,weapon,sprites/weapons/wp_ember_burst_hit.png,32,32,5,14,0,P3,Beta,
 wp_torrent_wave_proj,weapon,sprites/weapons/wp_torrent_wave_proj.png,32,32,6,14,1,P3,Beta,
 wp_torrent_wave_hit,weapon,sprites/weapons/wp_torrent_wave_hit.png,32,32,5,14,0,P3,Beta,
 wp_chain_bolt_proj,weapon,sprites/weapons/wp_chain_bolt_proj.png,32,32,6,14,1,P3,Beta,
 wp_chain_bolt_hit,weapon,sprites/weapons/wp_chain_bolt_hit.png,32,32,5,14,0,P3,Beta,
 wp_quake_drill_proj,weapon,sprites/weapons/wp_quake_drill_proj.png,32,32,6,14,1,P3,Beta,
 wp_quake_drill_hit,weapon,sprites/weapons/wp_quake_drill_hit.png,32,32,5,14,0,P3,Beta,
-wp_gale_cutter_proj,weapon,sprites/weapons/wp_gale_cutter_proj.png,32,32,6,14,1,P3,Beta,
-wp_gale_cutter_hit,weapon,sprites/weapons/wp_gale_cutter_hit.png,32,32,5,14,0,P3,Beta,
-wp_frost_shard_proj,weapon,sprites/weapons/wp_frost_shard_proj.png,32,32,6,14,1,P3,Beta,
-wp_frost_shard_hit,weapon,sprites/weapons/wp_frost_shard_hit.png,32,32,5,14,0,P3,Beta,
-wp_prism_beam_proj,weapon,sprites/weapons/wp_prism_beam_proj.png,32,32,6,14,1,P3,Beta,
-wp_prism_beam_hit,weapon,sprites/weapons/wp_prism_beam_hit.png,32,32,5,14,0,P3,Beta,
+wp_gale_cutter_proj,weapon,sprites/weapons/wp_gale_cutter_proj.png,32,32,6,14,1,P2,Alpha,
+wp_gale_cutter_hit,weapon,sprites/weapons/wp_gale_cutter_hit.png,32,32,5,14,0,P2,Alpha,
+wp_frost_shard_proj,weapon,sprites/weapons/wp_frost_shard_proj.png,32,32,6,14,1,P2,Alpha,
+wp_frost_shard_hit,weapon,sprites/weapons/wp_frost_shard_hit.png,32,32,5,14,0,P2,Alpha,
+wp_prism_beam_proj,weapon,sprites/weapons/wp_prism_beam_proj.png,32,32,6,14,1,P2,Alpha,
+wp_prism_beam_hit,weapon,sprites/weapons/wp_prism_beam_hit.png,32,32,5,14,0,P2,Alpha,
 en_drone_linh_idle,enemy,sprites/enemies/en_drone_linh_idle.png,32,32,4,6,1,P1,Vertical slice,
 en_drone_linh_attack,enemy,sprites/enemies/en_drone_linh_attack.png,32,32,4,10,0,P1,Vertical slice,
 en_drone_linh_hit,enemy,sprites/enemies/en_drone_linh_hit.png,32,32,2,10,0,P1,Vertical slice,
@@ -66,88 +66,88 @@ en_thap_gai_hit,enemy,sprites/enemies/en_thap_gai_hit.png,32,32,2,10,0,P1,Vertic
 en_linh_ken_idle,enemy,sprites/enemies/en_linh_ken_idle.png,32,32,4,6,1,P1,Vertical slice,
 en_linh_ken_attack,enemy,sprites/enemies/en_linh_ken_attack.png,32,32,4,10,0,P1,Vertical slice,
 en_linh_ken_hit,enemy,sprites/enemies/en_linh_ken_hit.png,32,32,2,10,0,P1,Vertical slice,
-en_robot_han_idle,enemy,sprites/enemies/en_robot_han_idle.png,32,32,4,6,1,P2,Alpha,
-en_robot_han_attack,enemy,sprites/enemies/en_robot_han_attack.png,32,32,4,10,0,P2,Alpha,
-en_robot_han_hit,enemy,sprites/enemies/en_robot_han_hit.png,32,32,2,10,0,P2,Alpha,
-en_lo_phun_idle,enemy,sprites/enemies/en_lo_phun_idle.png,32,32,4,6,1,P2,Alpha,
-en_lo_phun_attack,enemy,sprites/enemies/en_lo_phun_attack.png,32,32,4,10,0,P2,Alpha,
-en_lo_phun_hit,enemy,sprites/enemies/en_lo_phun_hit.png,32,32,2,10,0,P2,Alpha,
-en_cua_may_idle,enemy,sprites/enemies/en_cua_may_idle.png,32,32,4,6,1,P2,Alpha,
-en_cua_may_attack,enemy,sprites/enemies/en_cua_may_attack.png,32,32,4,10,0,P2,Alpha,
-en_cua_may_hit,enemy,sprites/enemies/en_cua_may_hit.png,32,32,2,10,0,P2,Alpha,
-en_sua_dien_idle,enemy,sprites/enemies/en_sua_dien_idle.png,32,32,4,6,1,P2,Alpha,
-en_sua_dien_attack,enemy,sprites/enemies/en_sua_dien_attack.png,32,32,4,10,0,P2,Alpha,
-en_sua_dien_hit,enemy,sprites/enemies/en_sua_dien_hit.png,32,32,2,10,0,P2,Alpha,
-en_cuon_tesla_idle,enemy,sprites/enemies/en_cuon_tesla_idle.png,32,32,4,6,1,P2,Alpha,
-en_cuon_tesla_attack,enemy,sprites/enemies/en_cuon_tesla_attack.png,32,32,4,10,0,P2,Alpha,
-en_cuon_tesla_hit,enemy,sprites/enemies/en_cuon_tesla_hit.png,32,32,2,10,0,P2,Alpha,
-en_drone_tinh_dien_idle,enemy,sprites/enemies/en_drone_tinh_dien_idle.png,32,32,4,6,1,P2,Alpha,
-en_drone_tinh_dien_attack,enemy,sprites/enemies/en_drone_tinh_dien_attack.png,32,32,4,10,0,P2,Alpha,
-en_drone_tinh_dien_hit,enemy,sprites/enemies/en_drone_tinh_dien_hit.png,32,32,2,10,0,P2,Alpha,
+en_robot_han_idle,enemy,sprites/enemies/en_robot_han_idle.png,32,32,4,6,1,P3,Beta,
+en_robot_han_attack,enemy,sprites/enemies/en_robot_han_attack.png,32,32,4,10,0,P3,Beta,
+en_robot_han_hit,enemy,sprites/enemies/en_robot_han_hit.png,32,32,2,10,0,P3,Beta,
+en_lo_phun_idle,enemy,sprites/enemies/en_lo_phun_idle.png,32,32,4,6,1,P3,Beta,
+en_lo_phun_attack,enemy,sprites/enemies/en_lo_phun_attack.png,32,32,4,10,0,P3,Beta,
+en_lo_phun_hit,enemy,sprites/enemies/en_lo_phun_hit.png,32,32,2,10,0,P3,Beta,
+en_cua_may_idle,enemy,sprites/enemies/en_cua_may_idle.png,32,32,4,6,1,P3,Beta,
+en_cua_may_attack,enemy,sprites/enemies/en_cua_may_attack.png,32,32,4,10,0,P3,Beta,
+en_cua_may_hit,enemy,sprites/enemies/en_cua_may_hit.png,32,32,2,10,0,P3,Beta,
+en_sua_dien_idle,enemy,sprites/enemies/en_sua_dien_idle.png,32,32,4,6,1,P3,Beta,
+en_sua_dien_attack,enemy,sprites/enemies/en_sua_dien_attack.png,32,32,4,10,0,P3,Beta,
+en_sua_dien_hit,enemy,sprites/enemies/en_sua_dien_hit.png,32,32,2,10,0,P3,Beta,
+en_cuon_tesla_idle,enemy,sprites/enemies/en_cuon_tesla_idle.png,32,32,4,6,1,P3,Beta,
+en_cuon_tesla_attack,enemy,sprites/enemies/en_cuon_tesla_attack.png,32,32,4,10,0,P3,Beta,
+en_cuon_tesla_hit,enemy,sprites/enemies/en_cuon_tesla_hit.png,32,32,2,10,0,P3,Beta,
+en_drone_tinh_dien_idle,enemy,sprites/enemies/en_drone_tinh_dien_idle.png,32,32,4,6,1,P3,Beta,
+en_drone_tinh_dien_attack,enemy,sprites/enemies/en_drone_tinh_dien_attack.png,32,32,4,10,0,P3,Beta,
+en_drone_tinh_dien_hit,enemy,sprites/enemies/en_drone_tinh_dien_hit.png,32,32,2,10,0,P3,Beta,
 en_sau_khoan_idle,enemy,sprites/enemies/en_sau_khoan_idle.png,32,32,4,6,1,P3,Beta,
 en_sau_khoan_attack,enemy,sprites/enemies/en_sau_khoan_attack.png,32,32,4,10,0,P3,Beta,
 en_sau_khoan_hit,enemy,sprites/enemies/en_sau_khoan_hit.png,32,32,2,10,0,P3,Beta,
 en_tru_roi_da_idle,enemy,sprites/enemies/en_tru_roi_da_idle.png,32,32,4,6,1,P3,Beta,
 en_tru_roi_da_attack,enemy,sprites/enemies/en_tru_roi_da_attack.png,32,32,4,10,0,P3,Beta,
 en_tru_roi_da_hit,enemy,sprites/enemies/en_tru_roi_da_hit.png,32,32,2,10,0,P3,Beta,
-en_chim_cat_gio_idle,enemy,sprites/enemies/en_chim_cat_gio_idle.png,32,32,4,6,1,P3,Beta,
-en_chim_cat_gio_attack,enemy,sprites/enemies/en_chim_cat_gio_attack.png,32,32,4,10,0,P3,Beta,
-en_chim_cat_gio_hit,enemy,sprites/enemies/en_chim_cat_gio_hit.png,32,32,2,10,0,P3,Beta,
-en_coi_xoay_idle,enemy,sprites/enemies/en_coi_xoay_idle.png,32,32,4,6,1,P3,Beta,
-en_coi_xoay_attack,enemy,sprites/enemies/en_coi_xoay_attack.png,32,32,4,10,0,P3,Beta,
-en_coi_xoay_hit,enemy,sprites/enemies/en_coi_xoay_hit.png,32,32,2,10,0,P3,Beta,
-en_nguoi_tuyet_may_idle,enemy,sprites/enemies/en_nguoi_tuyet_may_idle.png,32,32,4,6,1,P3,Beta,
-en_nguoi_tuyet_may_attack,enemy,sprites/enemies/en_nguoi_tuyet_may_attack.png,32,32,4,10,0,P3,Beta,
-en_nguoi_tuyet_may_hit,enemy,sprites/enemies/en_nguoi_tuyet_may_hit.png,32,32,2,10,0,P3,Beta,
-en_thap_bang_idle,enemy,sprites/enemies/en_thap_bang_idle.png,32,32,4,6,1,P3,Beta,
-en_thap_bang_attack,enemy,sprites/enemies/en_thap_bang_attack.png,32,32,4,10,0,P3,Beta,
-en_thap_bang_hit,enemy,sprites/enemies/en_thap_bang_hit.png,32,32,2,10,0,P3,Beta,
-en_guong_quang_idle,enemy,sprites/enemies/en_guong_quang_idle.png,32,32,4,6,1,P3,Beta,
-en_guong_quang_attack,enemy,sprites/enemies/en_guong_quang_attack.png,32,32,4,10,0,P3,Beta,
-en_guong_quang_hit,enemy,sprites/enemies/en_guong_quang_hit.png,32,32,2,10,0,P3,Beta,
-en_thap_laser_idle,enemy,sprites/enemies/en_thap_laser_idle.png,32,32,4,6,1,P3,Beta,
-en_thap_laser_attack,enemy,sprites/enemies/en_thap_laser_attack.png,32,32,4,10,0,P3,Beta,
-en_thap_laser_hit,enemy,sprites/enemies/en_thap_laser_hit.png,32,32,2,10,0,P3,Beta,
+en_chim_cat_gio_idle,enemy,sprites/enemies/en_chim_cat_gio_idle.png,32,32,4,6,1,P2,Alpha,
+en_chim_cat_gio_attack,enemy,sprites/enemies/en_chim_cat_gio_attack.png,32,32,4,10,0,P2,Alpha,
+en_chim_cat_gio_hit,enemy,sprites/enemies/en_chim_cat_gio_hit.png,32,32,2,10,0,P2,Alpha,
+en_coi_xoay_idle,enemy,sprites/enemies/en_coi_xoay_idle.png,32,32,4,6,1,P2,Alpha,
+en_coi_xoay_attack,enemy,sprites/enemies/en_coi_xoay_attack.png,32,32,4,10,0,P2,Alpha,
+en_coi_xoay_hit,enemy,sprites/enemies/en_coi_xoay_hit.png,32,32,2,10,0,P2,Alpha,
+en_nguoi_tuyet_may_idle,enemy,sprites/enemies/en_nguoi_tuyet_may_idle.png,32,32,4,6,1,P2,Alpha,
+en_nguoi_tuyet_may_attack,enemy,sprites/enemies/en_nguoi_tuyet_may_attack.png,32,32,4,10,0,P2,Alpha,
+en_nguoi_tuyet_may_hit,enemy,sprites/enemies/en_nguoi_tuyet_may_hit.png,32,32,2,10,0,P2,Alpha,
+en_thap_bang_idle,enemy,sprites/enemies/en_thap_bang_idle.png,32,32,4,6,1,P2,Alpha,
+en_thap_bang_attack,enemy,sprites/enemies/en_thap_bang_attack.png,32,32,4,10,0,P2,Alpha,
+en_thap_bang_hit,enemy,sprites/enemies/en_thap_bang_hit.png,32,32,2,10,0,P2,Alpha,
+en_guong_quang_idle,enemy,sprites/enemies/en_guong_quang_idle.png,32,32,4,6,1,P2,Alpha,
+en_guong_quang_attack,enemy,sprites/enemies/en_guong_quang_attack.png,32,32,4,10,0,P2,Alpha,
+en_guong_quang_hit,enemy,sprites/enemies/en_guong_quang_hit.png,32,32,2,10,0,P2,Alpha,
+en_thap_laser_idle,enemy,sprites/enemies/en_thap_laser_idle.png,32,32,4,6,1,P2,Alpha,
+en_thap_laser_attack,enemy,sprites/enemies/en_thap_laser_attack.png,32,32,4,10,0,P2,Alpha,
+en_thap_laser_hit,enemy,sprites/enemies/en_thap_laser_hit.png,32,32,2,10,0,P2,Alpha,
 mb_bramble_golem_idle,miniboss,sprites/minibosses/mb_bramble_golem_idle.png,64,64,4,6,1,P1,Vertical slice,
 mb_bramble_golem_attack_a,miniboss,sprites/minibosses/mb_bramble_golem_attack_a.png,64,64,6,10,0,P1,Vertical slice,
 mb_bramble_golem_attack_b,miniboss,sprites/minibosses/mb_bramble_golem_attack_b.png,64,64,6,10,0,P1,Vertical slice,
 mb_bramble_golem_hurt,miniboss,sprites/minibosses/mb_bramble_golem_hurt.png,64,64,2,10,0,P1,Vertical slice,
 mb_bramble_golem_die,miniboss,sprites/minibosses/mb_bramble_golem_die.png,64,64,6,10,0,P1,Vertical slice,
-mb_slag_golem_idle,miniboss,sprites/minibosses/mb_slag_golem_idle.png,64,64,4,6,1,P2,Alpha,
-mb_slag_golem_attack_a,miniboss,sprites/minibosses/mb_slag_golem_attack_a.png,64,64,6,10,0,P2,Alpha,
-mb_slag_golem_attack_b,miniboss,sprites/minibosses/mb_slag_golem_attack_b.png,64,64,6,10,0,P2,Alpha,
-mb_slag_golem_hurt,miniboss,sprites/minibosses/mb_slag_golem_hurt.png,64,64,2,10,0,P2,Alpha,
-mb_slag_golem_die,miniboss,sprites/minibosses/mb_slag_golem_die.png,64,64,6,10,0,P2,Alpha,
-mb_kraken_may_idle,miniboss,sprites/minibosses/mb_kraken_may_idle.png,64,64,4,6,1,P2,Alpha,
-mb_kraken_may_attack_a,miniboss,sprites/minibosses/mb_kraken_may_attack_a.png,64,64,6,10,0,P2,Alpha,
-mb_kraken_may_attack_b,miniboss,sprites/minibosses/mb_kraken_may_attack_b.png,64,64,6,10,0,P2,Alpha,
-mb_kraken_may_hurt,miniboss,sprites/minibosses/mb_kraken_may_hurt.png,64,64,2,10,0,P2,Alpha,
-mb_kraken_may_die,miniboss,sprites/minibosses/mb_kraken_may_die.png,64,64,6,10,0,P2,Alpha,
-mb_tesla_core_idle,miniboss,sprites/minibosses/mb_tesla_core_idle.png,64,64,4,6,1,P2,Alpha,
-mb_tesla_core_attack_a,miniboss,sprites/minibosses/mb_tesla_core_attack_a.png,64,64,6,10,0,P2,Alpha,
-mb_tesla_core_attack_b,miniboss,sprites/minibosses/mb_tesla_core_attack_b.png,64,64,6,10,0,P2,Alpha,
-mb_tesla_core_hurt,miniboss,sprites/minibosses/mb_tesla_core_hurt.png,64,64,2,10,0,P2,Alpha,
-mb_tesla_core_die,miniboss,sprites/minibosses/mb_tesla_core_die.png,64,64,6,10,0,P2,Alpha,
+mb_slag_golem_idle,miniboss,sprites/minibosses/mb_slag_golem_idle.png,64,64,4,6,1,P3,Beta,
+mb_slag_golem_attack_a,miniboss,sprites/minibosses/mb_slag_golem_attack_a.png,64,64,6,10,0,P3,Beta,
+mb_slag_golem_attack_b,miniboss,sprites/minibosses/mb_slag_golem_attack_b.png,64,64,6,10,0,P3,Beta,
+mb_slag_golem_hurt,miniboss,sprites/minibosses/mb_slag_golem_hurt.png,64,64,2,10,0,P3,Beta,
+mb_slag_golem_die,miniboss,sprites/minibosses/mb_slag_golem_die.png,64,64,6,10,0,P3,Beta,
+mb_kraken_may_idle,miniboss,sprites/minibosses/mb_kraken_may_idle.png,64,64,4,6,1,P3,Beta,
+mb_kraken_may_attack_a,miniboss,sprites/minibosses/mb_kraken_may_attack_a.png,64,64,6,10,0,P3,Beta,
+mb_kraken_may_attack_b,miniboss,sprites/minibosses/mb_kraken_may_attack_b.png,64,64,6,10,0,P3,Beta,
+mb_kraken_may_hurt,miniboss,sprites/minibosses/mb_kraken_may_hurt.png,64,64,2,10,0,P3,Beta,
+mb_kraken_may_die,miniboss,sprites/minibosses/mb_kraken_may_die.png,64,64,6,10,0,P3,Beta,
+mb_tesla_core_idle,miniboss,sprites/minibosses/mb_tesla_core_idle.png,64,64,4,6,1,P3,Beta,
+mb_tesla_core_attack_a,miniboss,sprites/minibosses/mb_tesla_core_attack_a.png,64,64,6,10,0,P3,Beta,
+mb_tesla_core_attack_b,miniboss,sprites/minibosses/mb_tesla_core_attack_b.png,64,64,6,10,0,P3,Beta,
+mb_tesla_core_hurt,miniboss,sprites/minibosses/mb_tesla_core_hurt.png,64,64,2,10,0,P3,Beta,
+mb_tesla_core_die,miniboss,sprites/minibosses/mb_tesla_core_die.png,64,64,6,10,0,P3,Beta,
 mb_rock_wyrm_idle,miniboss,sprites/minibosses/mb_rock_wyrm_idle.png,64,64,4,6,1,P3,Beta,
 mb_rock_wyrm_attack_a,miniboss,sprites/minibosses/mb_rock_wyrm_attack_a.png,64,64,6,10,0,P3,Beta,
 mb_rock_wyrm_attack_b,miniboss,sprites/minibosses/mb_rock_wyrm_attack_b.png,64,64,6,10,0,P3,Beta,
 mb_rock_wyrm_hurt,miniboss,sprites/minibosses/mb_rock_wyrm_hurt.png,64,64,2,10,0,P3,Beta,
 mb_rock_wyrm_die,miniboss,sprites/minibosses/mb_rock_wyrm_die.png,64,64,6,10,0,P3,Beta,
-mb_gale_roc_idle,miniboss,sprites/minibosses/mb_gale_roc_idle.png,64,64,4,6,1,P3,Beta,
-mb_gale_roc_attack_a,miniboss,sprites/minibosses/mb_gale_roc_attack_a.png,64,64,6,10,0,P3,Beta,
-mb_gale_roc_attack_b,miniboss,sprites/minibosses/mb_gale_roc_attack_b.png,64,64,6,10,0,P3,Beta,
-mb_gale_roc_hurt,miniboss,sprites/minibosses/mb_gale_roc_hurt.png,64,64,2,10,0,P3,Beta,
-mb_gale_roc_die,miniboss,sprites/minibosses/mb_gale_roc_die.png,64,64,6,10,0,P3,Beta,
-mb_frost_titan_idle,miniboss,sprites/minibosses/mb_frost_titan_idle.png,64,64,4,6,1,P3,Beta,
-mb_frost_titan_attack_a,miniboss,sprites/minibosses/mb_frost_titan_attack_a.png,64,64,6,10,0,P3,Beta,
-mb_frost_titan_attack_b,miniboss,sprites/minibosses/mb_frost_titan_attack_b.png,64,64,6,10,0,P3,Beta,
-mb_frost_titan_hurt,miniboss,sprites/minibosses/mb_frost_titan_hurt.png,64,64,2,10,0,P3,Beta,
-mb_frost_titan_die,miniboss,sprites/minibosses/mb_frost_titan_die.png,64,64,6,10,0,P3,Beta,
-mb_prism_sentinel_idle,miniboss,sprites/minibosses/mb_prism_sentinel_idle.png,64,64,4,6,1,P3,Beta,
-mb_prism_sentinel_attack_a,miniboss,sprites/minibosses/mb_prism_sentinel_attack_a.png,64,64,6,10,0,P3,Beta,
-mb_prism_sentinel_attack_b,miniboss,sprites/minibosses/mb_prism_sentinel_attack_b.png,64,64,6,10,0,P3,Beta,
-mb_prism_sentinel_hurt,miniboss,sprites/minibosses/mb_prism_sentinel_hurt.png,64,64,2,10,0,P3,Beta,
-mb_prism_sentinel_die,miniboss,sprites/minibosses/mb_prism_sentinel_die.png,64,64,6,10,0,P3,Beta,
+mb_gale_roc_idle,miniboss,sprites/minibosses/mb_gale_roc_idle.png,64,64,4,6,1,P2,Alpha,
+mb_gale_roc_attack_a,miniboss,sprites/minibosses/mb_gale_roc_attack_a.png,64,64,6,10,0,P2,Alpha,
+mb_gale_roc_attack_b,miniboss,sprites/minibosses/mb_gale_roc_attack_b.png,64,64,6,10,0,P2,Alpha,
+mb_gale_roc_hurt,miniboss,sprites/minibosses/mb_gale_roc_hurt.png,64,64,2,10,0,P2,Alpha,
+mb_gale_roc_die,miniboss,sprites/minibosses/mb_gale_roc_die.png,64,64,6,10,0,P2,Alpha,
+mb_frost_titan_idle,miniboss,sprites/minibosses/mb_frost_titan_idle.png,64,64,4,6,1,P2,Alpha,
+mb_frost_titan_attack_a,miniboss,sprites/minibosses/mb_frost_titan_attack_a.png,64,64,6,10,0,P2,Alpha,
+mb_frost_titan_attack_b,miniboss,sprites/minibosses/mb_frost_titan_attack_b.png,64,64,6,10,0,P2,Alpha,
+mb_frost_titan_hurt,miniboss,sprites/minibosses/mb_frost_titan_hurt.png,64,64,2,10,0,P2,Alpha,
+mb_frost_titan_die,miniboss,sprites/minibosses/mb_frost_titan_die.png,64,64,6,10,0,P2,Alpha,
+mb_prism_sentinel_idle,miniboss,sprites/minibosses/mb_prism_sentinel_idle.png,64,64,4,6,1,P2,Alpha,
+mb_prism_sentinel_attack_a,miniboss,sprites/minibosses/mb_prism_sentinel_attack_a.png,64,64,6,10,0,P2,Alpha,
+mb_prism_sentinel_attack_b,miniboss,sprites/minibosses/mb_prism_sentinel_attack_b.png,64,64,6,10,0,P2,Alpha,
+mb_prism_sentinel_hurt,miniboss,sprites/minibosses/mb_prism_sentinel_hurt.png,64,64,2,10,0,P2,Alpha,
+mb_prism_sentinel_die,miniboss,sprites/minibosses/mb_prism_sentinel_die.png,64,64,6,10,0,P2,Alpha,
 boss_thorna_idle,boss,sprites/bosses/boss_thorna_idle.png,96,96,4,6,1,P1,Vertical slice,"Dùng chung bộ khung cho 3 pha, đổi màu lõi"
 boss_thorna_move,boss,sprites/bosses/boss_thorna_move.png,96,96,6,10,1,P1,Vertical slice,
 boss_thorna_attack_a,boss,sprites/bosses/boss_thorna_attack_a.png,96,96,8,12,0,P1,Vertical slice,
@@ -157,33 +157,33 @@ boss_thorna_ultimate,boss,sprites/bosses/boss_thorna_ultimate.png,96,96,10,12,0,
 boss_thorna_hurt,boss,sprites/bosses/boss_thorna_hurt.png,96,96,2,10,0,P1,Vertical slice,
 boss_thorna_stun,boss,sprites/bosses/boss_thorna_stun.png,96,96,4,8,1,P1,Vertical slice,
 boss_thorna_die,boss,sprites/bosses/boss_thorna_die.png,96,96,10,10,0,P1,Vertical slice,
-boss_pyra_idle,boss,sprites/bosses/boss_pyra_idle.png,96,96,4,6,1,P2,Alpha,"Dùng chung bộ khung cho 3 pha, đổi màu lõi"
-boss_pyra_move,boss,sprites/bosses/boss_pyra_move.png,96,96,6,10,1,P2,Alpha,
-boss_pyra_attack_a,boss,sprites/bosses/boss_pyra_attack_a.png,96,96,8,12,0,P2,Alpha,
-boss_pyra_attack_b,boss,sprites/bosses/boss_pyra_attack_b.png,96,96,8,12,0,P2,Alpha,
-boss_pyra_attack_c,boss,sprites/bosses/boss_pyra_attack_c.png,96,96,8,12,0,P2,Alpha,
-boss_pyra_ultimate,boss,sprites/bosses/boss_pyra_ultimate.png,96,96,10,12,0,P2,Alpha,
-boss_pyra_hurt,boss,sprites/bosses/boss_pyra_hurt.png,96,96,2,10,0,P2,Alpha,
-boss_pyra_stun,boss,sprites/bosses/boss_pyra_stun.png,96,96,4,8,1,P2,Alpha,
-boss_pyra_die,boss,sprites/bosses/boss_pyra_die.png,96,96,10,10,0,P2,Alpha,
-boss_marina_idle,boss,sprites/bosses/boss_marina_idle.png,96,96,4,6,1,P2,Alpha,"Dùng chung bộ khung cho 3 pha, đổi màu lõi"
-boss_marina_move,boss,sprites/bosses/boss_marina_move.png,96,96,6,10,1,P2,Alpha,
-boss_marina_attack_a,boss,sprites/bosses/boss_marina_attack_a.png,96,96,8,12,0,P2,Alpha,
-boss_marina_attack_b,boss,sprites/bosses/boss_marina_attack_b.png,96,96,8,12,0,P2,Alpha,
-boss_marina_attack_c,boss,sprites/bosses/boss_marina_attack_c.png,96,96,8,12,0,P2,Alpha,
-boss_marina_ultimate,boss,sprites/bosses/boss_marina_ultimate.png,96,96,10,12,0,P2,Alpha,
-boss_marina_hurt,boss,sprites/bosses/boss_marina_hurt.png,96,96,2,10,0,P2,Alpha,
-boss_marina_stun,boss,sprites/bosses/boss_marina_stun.png,96,96,4,8,1,P2,Alpha,
-boss_marina_die,boss,sprites/bosses/boss_marina_die.png,96,96,10,10,0,P2,Alpha,
-boss_voltaire_idle,boss,sprites/bosses/boss_voltaire_idle.png,96,96,4,6,1,P2,Alpha,"Dùng chung bộ khung cho 3 pha, đổi màu lõi"
-boss_voltaire_move,boss,sprites/bosses/boss_voltaire_move.png,96,96,6,10,1,P2,Alpha,
-boss_voltaire_attack_a,boss,sprites/bosses/boss_voltaire_attack_a.png,96,96,8,12,0,P2,Alpha,
-boss_voltaire_attack_b,boss,sprites/bosses/boss_voltaire_attack_b.png,96,96,8,12,0,P2,Alpha,
-boss_voltaire_attack_c,boss,sprites/bosses/boss_voltaire_attack_c.png,96,96,8,12,0,P2,Alpha,
-boss_voltaire_ultimate,boss,sprites/bosses/boss_voltaire_ultimate.png,96,96,10,12,0,P2,Alpha,
-boss_voltaire_hurt,boss,sprites/bosses/boss_voltaire_hurt.png,96,96,2,10,0,P2,Alpha,
-boss_voltaire_stun,boss,sprites/bosses/boss_voltaire_stun.png,96,96,4,8,1,P2,Alpha,
-boss_voltaire_die,boss,sprites/bosses/boss_voltaire_die.png,96,96,10,10,0,P2,Alpha,
+boss_pyra_idle,boss,sprites/bosses/boss_pyra_idle.png,96,96,4,6,1,P3,Beta,"Dùng chung bộ khung cho 3 pha, đổi màu lõi"
+boss_pyra_move,boss,sprites/bosses/boss_pyra_move.png,96,96,6,10,1,P3,Beta,
+boss_pyra_attack_a,boss,sprites/bosses/boss_pyra_attack_a.png,96,96,8,12,0,P3,Beta,
+boss_pyra_attack_b,boss,sprites/bosses/boss_pyra_attack_b.png,96,96,8,12,0,P3,Beta,
+boss_pyra_attack_c,boss,sprites/bosses/boss_pyra_attack_c.png,96,96,8,12,0,P3,Beta,
+boss_pyra_ultimate,boss,sprites/bosses/boss_pyra_ultimate.png,96,96,10,12,0,P3,Beta,
+boss_pyra_hurt,boss,sprites/bosses/boss_pyra_hurt.png,96,96,2,10,0,P3,Beta,
+boss_pyra_stun,boss,sprites/bosses/boss_pyra_stun.png,96,96,4,8,1,P3,Beta,
+boss_pyra_die,boss,sprites/bosses/boss_pyra_die.png,96,96,10,10,0,P3,Beta,
+boss_marina_idle,boss,sprites/bosses/boss_marina_idle.png,96,96,4,6,1,P3,Beta,"Dùng chung bộ khung cho 3 pha, đổi màu lõi"
+boss_marina_move,boss,sprites/bosses/boss_marina_move.png,96,96,6,10,1,P3,Beta,
+boss_marina_attack_a,boss,sprites/bosses/boss_marina_attack_a.png,96,96,8,12,0,P3,Beta,
+boss_marina_attack_b,boss,sprites/bosses/boss_marina_attack_b.png,96,96,8,12,0,P3,Beta,
+boss_marina_attack_c,boss,sprites/bosses/boss_marina_attack_c.png,96,96,8,12,0,P3,Beta,
+boss_marina_ultimate,boss,sprites/bosses/boss_marina_ultimate.png,96,96,10,12,0,P3,Beta,
+boss_marina_hurt,boss,sprites/bosses/boss_marina_hurt.png,96,96,2,10,0,P3,Beta,
+boss_marina_stun,boss,sprites/bosses/boss_marina_stun.png,96,96,4,8,1,P3,Beta,
+boss_marina_die,boss,sprites/bosses/boss_marina_die.png,96,96,10,10,0,P3,Beta,
+boss_voltaire_idle,boss,sprites/bosses/boss_voltaire_idle.png,96,96,4,6,1,P3,Beta,"Dùng chung bộ khung cho 3 pha, đổi màu lõi"
+boss_voltaire_move,boss,sprites/bosses/boss_voltaire_move.png,96,96,6,10,1,P3,Beta,
+boss_voltaire_attack_a,boss,sprites/bosses/boss_voltaire_attack_a.png,96,96,8,12,0,P3,Beta,
+boss_voltaire_attack_b,boss,sprites/bosses/boss_voltaire_attack_b.png,96,96,8,12,0,P3,Beta,
+boss_voltaire_attack_c,boss,sprites/bosses/boss_voltaire_attack_c.png,96,96,8,12,0,P3,Beta,
+boss_voltaire_ultimate,boss,sprites/bosses/boss_voltaire_ultimate.png,96,96,10,12,0,P3,Beta,
+boss_voltaire_hurt,boss,sprites/bosses/boss_voltaire_hurt.png,96,96,2,10,0,P3,Beta,
+boss_voltaire_stun,boss,sprites/bosses/boss_voltaire_stun.png,96,96,4,8,1,P3,Beta,
+boss_voltaire_die,boss,sprites/bosses/boss_voltaire_die.png,96,96,10,10,0,P3,Beta,
 boss_terra_idle,boss,sprites/bosses/boss_terra_idle.png,96,96,4,6,1,P3,Beta,"Dùng chung bộ khung cho 3 pha, đổi màu lõi"
 boss_terra_move,boss,sprites/bosses/boss_terra_move.png,96,96,6,10,1,P3,Beta,
 boss_terra_attack_a,boss,sprites/bosses/boss_terra_attack_a.png,96,96,8,12,0,P3,Beta,
@@ -193,33 +193,33 @@ boss_terra_ultimate,boss,sprites/bosses/boss_terra_ultimate.png,96,96,10,12,0,P3
 boss_terra_hurt,boss,sprites/bosses/boss_terra_hurt.png,96,96,2,10,0,P3,Beta,
 boss_terra_stun,boss,sprites/bosses/boss_terra_stun.png,96,96,4,8,1,P3,Beta,
 boss_terra_die,boss,sprites/bosses/boss_terra_die.png,96,96,10,10,0,P3,Beta,
-boss_aeris_idle,boss,sprites/bosses/boss_aeris_idle.png,96,96,4,6,1,P3,Beta,"Dùng chung bộ khung cho 3 pha, đổi màu lõi"
-boss_aeris_move,boss,sprites/bosses/boss_aeris_move.png,96,96,6,10,1,P3,Beta,
-boss_aeris_attack_a,boss,sprites/bosses/boss_aeris_attack_a.png,96,96,8,12,0,P3,Beta,
-boss_aeris_attack_b,boss,sprites/bosses/boss_aeris_attack_b.png,96,96,8,12,0,P3,Beta,
-boss_aeris_attack_c,boss,sprites/bosses/boss_aeris_attack_c.png,96,96,8,12,0,P3,Beta,
-boss_aeris_ultimate,boss,sprites/bosses/boss_aeris_ultimate.png,96,96,10,12,0,P3,Beta,
-boss_aeris_hurt,boss,sprites/bosses/boss_aeris_hurt.png,96,96,2,10,0,P3,Beta,
-boss_aeris_stun,boss,sprites/bosses/boss_aeris_stun.png,96,96,4,8,1,P3,Beta,
-boss_aeris_die,boss,sprites/bosses/boss_aeris_die.png,96,96,10,10,0,P3,Beta,
-boss_cryo_idle,boss,sprites/bosses/boss_cryo_idle.png,96,96,4,6,1,P3,Beta,"Dùng chung bộ khung cho 3 pha, đổi màu lõi"
-boss_cryo_move,boss,sprites/bosses/boss_cryo_move.png,96,96,6,10,1,P3,Beta,
-boss_cryo_attack_a,boss,sprites/bosses/boss_cryo_attack_a.png,96,96,8,12,0,P3,Beta,
-boss_cryo_attack_b,boss,sprites/bosses/boss_cryo_attack_b.png,96,96,8,12,0,P3,Beta,
-boss_cryo_attack_c,boss,sprites/bosses/boss_cryo_attack_c.png,96,96,8,12,0,P3,Beta,
-boss_cryo_ultimate,boss,sprites/bosses/boss_cryo_ultimate.png,96,96,10,12,0,P3,Beta,
-boss_cryo_hurt,boss,sprites/bosses/boss_cryo_hurt.png,96,96,2,10,0,P3,Beta,
-boss_cryo_stun,boss,sprites/bosses/boss_cryo_stun.png,96,96,4,8,1,P3,Beta,
-boss_cryo_die,boss,sprites/bosses/boss_cryo_die.png,96,96,10,10,0,P3,Beta,
-boss_lumen_idle,boss,sprites/bosses/boss_lumen_idle.png,96,96,4,6,1,P3,Beta,"Dùng chung bộ khung cho 3 pha, đổi màu lõi"
-boss_lumen_move,boss,sprites/bosses/boss_lumen_move.png,96,96,6,10,1,P3,Beta,
-boss_lumen_attack_a,boss,sprites/bosses/boss_lumen_attack_a.png,96,96,8,12,0,P3,Beta,
-boss_lumen_attack_b,boss,sprites/bosses/boss_lumen_attack_b.png,96,96,8,12,0,P3,Beta,
-boss_lumen_attack_c,boss,sprites/bosses/boss_lumen_attack_c.png,96,96,8,12,0,P3,Beta,
-boss_lumen_ultimate,boss,sprites/bosses/boss_lumen_ultimate.png,96,96,10,12,0,P3,Beta,
-boss_lumen_hurt,boss,sprites/bosses/boss_lumen_hurt.png,96,96,2,10,0,P3,Beta,
-boss_lumen_stun,boss,sprites/bosses/boss_lumen_stun.png,96,96,4,8,1,P3,Beta,
-boss_lumen_die,boss,sprites/bosses/boss_lumen_die.png,96,96,10,10,0,P3,Beta,
+boss_aeris_idle,boss,sprites/bosses/boss_aeris_idle.png,96,96,4,6,1,P2,Alpha,"Dùng chung bộ khung cho 3 pha, đổi màu lõi"
+boss_aeris_move,boss,sprites/bosses/boss_aeris_move.png,96,96,6,10,1,P2,Alpha,
+boss_aeris_attack_a,boss,sprites/bosses/boss_aeris_attack_a.png,96,96,8,12,0,P2,Alpha,
+boss_aeris_attack_b,boss,sprites/bosses/boss_aeris_attack_b.png,96,96,8,12,0,P2,Alpha,
+boss_aeris_attack_c,boss,sprites/bosses/boss_aeris_attack_c.png,96,96,8,12,0,P2,Alpha,
+boss_aeris_ultimate,boss,sprites/bosses/boss_aeris_ultimate.png,96,96,10,12,0,P2,Alpha,
+boss_aeris_hurt,boss,sprites/bosses/boss_aeris_hurt.png,96,96,2,10,0,P2,Alpha,
+boss_aeris_stun,boss,sprites/bosses/boss_aeris_stun.png,96,96,4,8,1,P2,Alpha,
+boss_aeris_die,boss,sprites/bosses/boss_aeris_die.png,96,96,10,10,0,P2,Alpha,
+boss_cryo_idle,boss,sprites/bosses/boss_cryo_idle.png,96,96,4,6,1,P2,Alpha,"Dùng chung bộ khung cho 3 pha, đổi màu lõi"
+boss_cryo_move,boss,sprites/bosses/boss_cryo_move.png,96,96,6,10,1,P2,Alpha,
+boss_cryo_attack_a,boss,sprites/bosses/boss_cryo_attack_a.png,96,96,8,12,0,P2,Alpha,
+boss_cryo_attack_b,boss,sprites/bosses/boss_cryo_attack_b.png,96,96,8,12,0,P2,Alpha,
+boss_cryo_attack_c,boss,sprites/bosses/boss_cryo_attack_c.png,96,96,8,12,0,P2,Alpha,
+boss_cryo_ultimate,boss,sprites/bosses/boss_cryo_ultimate.png,96,96,10,12,0,P2,Alpha,
+boss_cryo_hurt,boss,sprites/bosses/boss_cryo_hurt.png,96,96,2,10,0,P2,Alpha,
+boss_cryo_stun,boss,sprites/bosses/boss_cryo_stun.png,96,96,4,8,1,P2,Alpha,
+boss_cryo_die,boss,sprites/bosses/boss_cryo_die.png,96,96,10,10,0,P2,Alpha,
+boss_lumen_idle,boss,sprites/bosses/boss_lumen_idle.png,96,96,4,6,1,P2,Alpha,"Dùng chung bộ khung cho 3 pha, đổi màu lõi"
+boss_lumen_move,boss,sprites/bosses/boss_lumen_move.png,96,96,6,10,1,P2,Alpha,
+boss_lumen_attack_a,boss,sprites/bosses/boss_lumen_attack_a.png,96,96,8,12,0,P2,Alpha,
+boss_lumen_attack_b,boss,sprites/bosses/boss_lumen_attack_b.png,96,96,8,12,0,P2,Alpha,
+boss_lumen_attack_c,boss,sprites/bosses/boss_lumen_attack_c.png,96,96,8,12,0,P2,Alpha,
+boss_lumen_ultimate,boss,sprites/bosses/boss_lumen_ultimate.png,96,96,10,12,0,P2,Alpha,
+boss_lumen_hurt,boss,sprites/bosses/boss_lumen_hurt.png,96,96,2,10,0,P2,Alpha,
+boss_lumen_stun,boss,sprites/bosses/boss_lumen_stun.png,96,96,4,8,1,P2,Alpha,
+boss_lumen_die,boss,sprites/bosses/boss_lumen_die.png,96,96,10,10,0,P2,Alpha,
 boss_aegis_idle,boss,sprites/bosses/boss_aegis_idle.png,96,96,4,6,1,P3,Beta,"Dùng chung bộ khung cho 3 pha, đổi màu lõi"
 boss_aegis_move,boss,sprites/bosses/boss_aegis_move.png,96,96,6,10,1,P3,Beta,
 boss_aegis_attack_a,boss,sprites/bosses/boss_aegis_attack_a.png,96,96,8,12,0,P3,Beta,
@@ -251,9 +251,9 @@ pt_boss_pyra,portrait,portraits/pt_boss_pyra.png,64,64,2,0,0,P3,Beta,2 biểu c�
 pt_boss_marina,portrait,portraits/pt_boss_marina.png,64,64,2,0,0,P3,Beta,2 biểu cảm
 pt_boss_voltaire,portrait,portraits/pt_boss_voltaire.png,64,64,2,0,0,P3,Beta,2 biểu cảm
 pt_boss_terra,portrait,portraits/pt_boss_terra.png,64,64,2,0,0,P3,Beta,2 biểu cảm
-pt_boss_aeris,portrait,portraits/pt_boss_aeris.png,64,64,2,0,0,P3,Beta,2 biểu cảm
-pt_boss_cryo,portrait,portraits/pt_boss_cryo.png,64,64,2,0,0,P3,Beta,2 biểu cảm
-pt_boss_lumen,portrait,portraits/pt_boss_lumen.png,64,64,2,0,0,P3,Beta,2 biểu cảm
+pt_boss_aeris,portrait,portraits/pt_boss_aeris.png,64,64,2,0,0,P2,Alpha,2 biểu cảm
+pt_boss_cryo,portrait,portraits/pt_boss_cryo.png,64,64,2,0,0,P2,Alpha,2 biểu cảm
+pt_boss_lumen,portrait,portraits/pt_boss_lumen.png,64,64,2,0,0,P2,Alpha,2 biểu cảm
 pt_boss_aegis,portrait,portraits/pt_boss_aegis.png,64,64,2,0,0,P3,Beta,2 biểu cảm
 ts_lab,tileset,tilesets/ts_lab.png,128,128,1,0,0,P1,Vertical slice,Lưới 8x8 ô 16x16; xem danh sách ô trong hướng dẫn
 ts_lab_props,tileset,tilesets/ts_lab_props.png,128,128,1,0,0,P1,Vertical slice,Vật trang trí
@@ -270,36 +270,36 @@ ts_foundry_props,tileset,tilesets/ts_foundry_props.png,128,128,1,0,0,P2,Alpha,V�
 bg_foundry_l1,background,backgrounds/bg_foundry_l1.png,640,192,1,0,0,P2,Alpha,"Lớp 1 parallax, lặp ngang"
 bg_foundry_l2,background,backgrounds/bg_foundry_l2.png,640,192,1,0,0,P2,Alpha,"Lớp 2 parallax, lặp ngang"
 bg_foundry_l3,background,backgrounds/bg_foundry_l3.png,640,192,1,0,0,P2,Alpha,"Lớp 3 parallax, lặp ngang"
-ts_abyss,tileset,tilesets/ts_abyss.png,128,128,1,0,0,P2,Alpha,Lưới 8x8 ô 16x16; xem danh sách ô trong hướng dẫn
-ts_abyss_props,tileset,tilesets/ts_abyss_props.png,128,128,1,0,0,P2,Alpha,Vật trang trí
-bg_abyss_l1,background,backgrounds/bg_abyss_l1.png,640,192,1,0,0,P2,Alpha,"Lớp 1 parallax, lặp ngang"
-bg_abyss_l2,background,backgrounds/bg_abyss_l2.png,640,192,1,0,0,P2,Alpha,"Lớp 2 parallax, lặp ngang"
-bg_abyss_l3,background,backgrounds/bg_abyss_l3.png,640,192,1,0,0,P2,Alpha,"Lớp 3 parallax, lặp ngang"
+ts_abyss,tileset,tilesets/ts_abyss.png,128,128,1,0,0,P3,Beta,Lưới 8x8 ô 16x16; xem danh sách ô trong hướng dẫn
+ts_abyss_props,tileset,tilesets/ts_abyss_props.png,128,128,1,0,0,P3,Beta,Vật trang trí
+bg_abyss_l1,background,backgrounds/bg_abyss_l1.png,640,192,1,0,0,P3,Beta,"Lớp 1 parallax, lặp ngang"
+bg_abyss_l2,background,backgrounds/bg_abyss_l2.png,640,192,1,0,0,P3,Beta,"Lớp 2 parallax, lặp ngang"
+bg_abyss_l3,background,backgrounds/bg_abyss_l3.png,640,192,1,0,0,P3,Beta,"Lớp 3 parallax, lặp ngang"
 ts_ion,tileset,tilesets/ts_ion.png,128,128,1,0,0,P2,Alpha,Lưới 8x8 ô 16x16; xem danh sách ô trong hướng dẫn
-ts_ion_props,tileset,tilesets/ts_ion_props.png,128,128,1,0,0,P2,Alpha,Vật trang trí
-bg_ion_l1,background,backgrounds/bg_ion_l1.png,640,192,1,0,0,P2,Alpha,"Lớp 1 parallax, lặp ngang"
-bg_ion_l2,background,backgrounds/bg_ion_l2.png,640,192,1,0,0,P2,Alpha,"Lớp 2 parallax, lặp ngang"
-bg_ion_l3,background,backgrounds/bg_ion_l3.png,640,192,1,0,0,P2,Alpha,"Lớp 3 parallax, lặp ngang"
+ts_ion_props,tileset,tilesets/ts_ion_props.png,128,128,1,0,0,P3,Beta,Vật trang trí
+bg_ion_l1,background,backgrounds/bg_ion_l1.png,640,192,1,0,0,P3,Beta,"Lớp 1 parallax, lặp ngang"
+bg_ion_l2,background,backgrounds/bg_ion_l2.png,640,192,1,0,0,P3,Beta,"Lớp 2 parallax, lặp ngang"
+bg_ion_l3,background,backgrounds/bg_ion_l3.png,640,192,1,0,0,P3,Beta,"Lớp 3 parallax, lặp ngang"
 ts_bedrock,tileset,tilesets/ts_bedrock.png,128,128,1,0,0,P3,Beta,Lưới 8x8 ô 16x16; xem danh sách ô trong hướng dẫn
 ts_bedrock_props,tileset,tilesets/ts_bedrock_props.png,128,128,1,0,0,P3,Beta,Vật trang trí
 bg_bedrock_l1,background,backgrounds/bg_bedrock_l1.png,640,192,1,0,0,P3,Beta,"Lớp 1 parallax, lặp ngang"
 bg_bedrock_l2,background,backgrounds/bg_bedrock_l2.png,640,192,1,0,0,P3,Beta,"Lớp 2 parallax, lặp ngang"
 bg_bedrock_l3,background,backgrounds/bg_bedrock_l3.png,640,192,1,0,0,P3,Beta,"Lớp 3 parallax, lặp ngang"
-ts_cirrus,tileset,tilesets/ts_cirrus.png,128,128,1,0,0,P3,Beta,Lưới 8x8 ô 16x16; xem danh sách ô trong hướng dẫn
-ts_cirrus_props,tileset,tilesets/ts_cirrus_props.png,128,128,1,0,0,P3,Beta,Vật trang trí
-bg_cirrus_l1,background,backgrounds/bg_cirrus_l1.png,640,192,1,0,0,P3,Beta,"Lớp 1 parallax, lặp ngang"
-bg_cirrus_l2,background,backgrounds/bg_cirrus_l2.png,640,192,1,0,0,P3,Beta,"Lớp 2 parallax, lặp ngang"
-bg_cirrus_l3,background,backgrounds/bg_cirrus_l3.png,640,192,1,0,0,P3,Beta,"Lớp 3 parallax, lặp ngang"
-ts_cryo,tileset,tilesets/ts_cryo.png,128,128,1,0,0,P3,Beta,Lưới 8x8 ô 16x16; xem danh sách ô trong hướng dẫn
-ts_cryo_props,tileset,tilesets/ts_cryo_props.png,128,128,1,0,0,P3,Beta,Vật trang trí
-bg_cryo_l1,background,backgrounds/bg_cryo_l1.png,640,192,1,0,0,P3,Beta,"Lớp 1 parallax, lặp ngang"
-bg_cryo_l2,background,backgrounds/bg_cryo_l2.png,640,192,1,0,0,P3,Beta,"Lớp 2 parallax, lặp ngang"
-bg_cryo_l3,background,backgrounds/bg_cryo_l3.png,640,192,1,0,0,P3,Beta,"Lớp 3 parallax, lặp ngang"
-ts_prism,tileset,tilesets/ts_prism.png,128,128,1,0,0,P3,Beta,Lưới 8x8 ô 16x16; xem danh sách ô trong hướng dẫn
-ts_prism_props,tileset,tilesets/ts_prism_props.png,128,128,1,0,0,P3,Beta,Vật trang trí
-bg_prism_l1,background,backgrounds/bg_prism_l1.png,640,192,1,0,0,P3,Beta,"Lớp 1 parallax, lặp ngang"
-bg_prism_l2,background,backgrounds/bg_prism_l2.png,640,192,1,0,0,P3,Beta,"Lớp 2 parallax, lặp ngang"
-bg_prism_l3,background,backgrounds/bg_prism_l3.png,640,192,1,0,0,P3,Beta,"Lớp 3 parallax, lặp ngang"
+ts_cirrus,tileset,tilesets/ts_cirrus.png,128,128,1,0,0,P2,Alpha,Lưới 8x8 ô 16x16; xem danh sách ô trong hướng dẫn
+ts_cirrus_props,tileset,tilesets/ts_cirrus_props.png,128,128,1,0,0,P2,Alpha,Vật trang trí
+bg_cirrus_l1,background,backgrounds/bg_cirrus_l1.png,640,192,1,0,0,P2,Alpha,"Lớp 1 parallax, lặp ngang"
+bg_cirrus_l2,background,backgrounds/bg_cirrus_l2.png,640,192,1,0,0,P2,Alpha,"Lớp 2 parallax, lặp ngang"
+bg_cirrus_l3,background,backgrounds/bg_cirrus_l3.png,640,192,1,0,0,P2,Alpha,"Lớp 3 parallax, lặp ngang"
+ts_cryo,tileset,tilesets/ts_cryo.png,128,128,1,0,0,P2,Alpha,Lưới 8x8 ô 16x16; xem danh sách ô trong hướng dẫn
+ts_cryo_props,tileset,tilesets/ts_cryo_props.png,128,128,1,0,0,P2,Alpha,Vật trang trí
+bg_cryo_l1,background,backgrounds/bg_cryo_l1.png,640,192,1,0,0,P2,Alpha,"Lớp 1 parallax, lặp ngang"
+bg_cryo_l2,background,backgrounds/bg_cryo_l2.png,640,192,1,0,0,P2,Alpha,"Lớp 2 parallax, lặp ngang"
+bg_cryo_l3,background,backgrounds/bg_cryo_l3.png,640,192,1,0,0,P2,Alpha,"Lớp 3 parallax, lặp ngang"
+ts_prism,tileset,tilesets/ts_prism.png,128,128,1,0,0,P2,Alpha,Lưới 8x8 ô 16x16; xem danh sách ô trong hướng dẫn
+ts_prism_props,tileset,tilesets/ts_prism_props.png,128,128,1,0,0,P2,Alpha,Vật trang trí
+bg_prism_l1,background,backgrounds/bg_prism_l1.png,640,192,1,0,0,P2,Alpha,"Lớp 1 parallax, lặp ngang"
+bg_prism_l2,background,backgrounds/bg_prism_l2.png,640,192,1,0,0,P2,Alpha,"Lớp 2 parallax, lặp ngang"
+bg_prism_l3,background,backgrounds/bg_prism_l3.png,640,192,1,0,0,P2,Alpha,"Lớp 3 parallax, lặp ngang"
 ts_citadel,tileset,tilesets/ts_citadel.png,128,128,1,0,0,P3,Beta,Lưới 8x8 ô 16x16; xem danh sách ô trong hướng dẫn
 ts_citadel_props,tileset,tilesets/ts_citadel_props.png,128,128,1,0,0,P3,Beta,Vật trang trí
 bg_citadel_l1,background,backgrounds/bg_citadel_l1.png,640,192,1,0,0,P3,Beta,"Lớp 1 parallax, lặp ngang"

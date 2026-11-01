@@ -10,7 +10,7 @@
 | Mục tiêu học | Chạy, nhảy, bắn, bắn nạp, lướt | Bám tường, né mẫu đòn, đọc telegraph, nhận vũ khí boss |
 | Kẻ địch | Drone Lính, Tháp Pháo Tập Sự | 5 loại (mục 4), mini-boss Bramble, boss Thorna |
 | Checkpoint | 1 (giữa màn) | 4 (sau mỗi đoạn A–D) |
-| Phần thưởng | Mở Hub Arkon, gặp Mira | Vine Lash, Memory Log 1, 1 Capsule (cần Ember Burst), EXP |
+| Phần thưởng | Mở Hub Arkon, gặp Mira | Vine Lash, Memory Log 1, 1 Capsule (cần Prism Beam), EXP |
 | Cấp khuyến nghị | 1 | 2–4 |
 | Độ khó | Thường | Thường |
 
@@ -66,7 +66,7 @@ Chủ đề: khu vườn sinh học bị Eclipse biến dị, ánh sáng xanh l�
 | Mục | Vị trí | Cách mở |
 | --- | --- | --- |
 | Memory Log 1 | Phòng bí mật đoạn B | Bám tường lên nhánh cao, không cần vũ khí |
-| Capsule: Đầu Mk I | Phòng bí mật đoạn C | Cần **Ember Burst** (từ Stage 2) để đốt dây leo chắn; quay lại sau |
+| Capsule: Đầu Mk I | Phòng bí mật đoạn C | Cần **Prism Beam** (từ Stage 2: Prism Institute) để đốt rễ khô chắn phòng; quay lại sau |
 | Sub-Tank | Phòng bí mật đoạn D | Lướt qua khe gai hẹp |
 | 5 Hạt Giống Phát Quang | Rải khắp màn, hiện trên bản đồ nhỏ sau khi nhận nhiệm vụ | Nhiệm vụ phụ của Mira sau Stage 1 |
 
@@ -96,7 +96,7 @@ Quy tắc chung: mọi đòn có telegraph ≥ 0,4 s; không có kẻ địch xu
 | --- | --- |
 | HP | 100 (đơn vị phát Buster gốc) |
 | Đấu trường | 24 × 12 tile, 3 bục cao 3 tile; Thorna đứng bên phải và di chuyển chậm |
-| Điểm yếu | Ember Burst: 2,5× sát thương và choáng 0,5 s |
+| Điểm yếu | Ember Burst (từ Stage 8, dùng ở trận tái đấu trong Citadel): 2,5× sát thương và choáng 0,5 s. Lần đầu luôn đánh bằng Buster |
 | Thắng chỉ bằng Buster | Có, thời gian dự kiến 60–90 giây |
 | Phần thưởng | Vũ khí Vine Lash, 120 EXP, 80 Core Bit, 1 SP |
 
@@ -152,7 +152,7 @@ Quy tắc điều chỉnh: nếu quá 30% người thử chết ở cùng một 
 - [ ] 4 checkpoint của Stage 1 hoạt động, hồi sinh ≤ 1,5 giây, giữ nguyên Core Bit và EXP.
 - [ ] Mọi đòn kẻ địch có telegraph ≥ 0,4 giây; đòn boss ≥ 0,5 giây.
 - [ ] Thorna đúng 3 pha tại 60% và 30% máu; Ember Burst gây 2,5× (kiểm tra bằng bản debug); thắng được chỉ với Buster.
-- [ ] Nhận được Vine Lash, Memory Log 1, Sub-Tank; Capsule chỉ mở được khi có Ember Burst.
+- [ ] Nhận được Vine Lash, Memory Log 1, Sub-Tank; Capsule chỉ mở được khi có Prism Beam.
 - [ ] Bẫy gai gây 30 sát thương, đưa về ô an toàn, Spike Guard miễn nhiễm.
 - [ ] Cảm ứng: bố cục nút tùy chỉnh và được lưu; 60 FPS trên điện thoại tầm trung; Stage 1 tải ≤ 8 MB.
 - [ ] Thoát giữa màn rồi vào lại về đúng checkpoint; cloud save đồng bộ.

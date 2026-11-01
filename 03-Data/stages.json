@@ -17,7 +17,7 @@
       "weaponGranted": "Vine Lash",
       "bossWeakness": "Ember Burst",
       "capsule": "head_mk1",
-      "capsuleRequiresWeapon": "Ember Burst",
+      "capsuleRequiresWeapon": "Prism Beam",
       "coreBitBase": 225,
       "segments": [
         "A",
@@ -31,22 +31,22 @@
     },
     {
       "index": 2,
-      "id": "magma_foundry",
-      "name": "Magma Foundry",
+      "id": "prism_institute",
+      "name": "Prism Institute",
       "recommendedLevel": "4-7",
-      "mechanic": "dung nham dâng, băng chuyền",
+      "mechanic": "laser, gương phản xạ",
       "enemies": [
-        "drone_linh",
-        "robot_han",
-        "lo_phun",
+        "guong_quang",
+        "thap_laser",
+        "buom_sat",
         "linh_ken"
       ],
-      "miniBoss": "slag_golem",
-      "boss": "pyra",
-      "weaponGranted": "Ember Burst",
-      "bossWeakness": "Torrent Wave",
+      "miniBoss": "prism_sentinel",
+      "boss": "lumen",
+      "weaponGranted": "Prism Beam",
+      "bossWeakness": "Vine Lash",
       "capsule": "body_mk1",
-      "capsuleRequiresWeapon": "Torrent Wave",
+      "capsuleRequiresWeapon": "Frost Shard",
       "coreBitBase": 300,
       "segments": [
         "A",
@@ -55,27 +55,27 @@
         "D"
       ],
       "checkpoints": 4,
-      "sideQuestId": "sq_magma_foundry",
+      "sideQuestId": "sq_prism_institute",
       "memoryLog": 2
     },
     {
       "index": 3,
-      "id": "abyss_harbor",
-      "name": "Abyss Harbor",
+      "id": "cryo_vault",
+      "name": "Cryo Vault",
       "recommendedLevel": "5-8",
-      "mechanic": "bơi, dòng nước, áp suất",
+      "mechanic": "sàn trơn, băng vỡ",
       "enemies": [
-        "cua_may",
-        "sua_dien",
-        "thap_gai",
+        "nguoi_tuyet_may",
+        "thap_bang",
+        "drone_linh",
         "linh_ken"
       ],
-      "miniBoss": "kraken_may",
-      "boss": "marina",
-      "weaponGranted": "Torrent Wave",
-      "bossWeakness": "Chain Bolt",
+      "miniBoss": "frost_titan",
+      "boss": "cryo",
+      "weaponGranted": "Frost Shard",
+      "bossWeakness": "Prism Beam",
       "capsule": "arm_mk1",
-      "capsuleRequiresWeapon": "Chain Bolt",
+      "capsuleRequiresWeapon": "Gale Cutter",
       "coreBitBase": 375,
       "segments": [
         "A",
@@ -84,25 +84,25 @@
         "D"
       ],
       "checkpoints": 4,
-      "sideQuestId": "sq_abyss_harbor",
+      "sideQuestId": "sq_cryo_vault",
       "memoryLog": 3
     },
     {
       "index": 4,
-      "id": "ion_station",
-      "name": "Ion Station",
+      "id": "cirrus_tower",
+      "name": "Cirrus Tower",
       "recommendedLevel": "7-10",
-      "mechanic": "cổng điện bật/tắt theo nhịp",
+      "mechanic": "gió đổi hướng, bệ mây",
       "enemies": [
-        "cuon_tesla",
-        "drone_tinh_dien",
+        "chim_cat_gio",
+        "coi_xoay",
         "buom_sat",
         "linh_ken"
       ],
-      "miniBoss": "tesla_core",
-      "boss": "voltaire",
-      "weaponGranted": "Chain Bolt",
-      "bossWeakness": "Quake Drill",
+      "miniBoss": "gale_roc",
+      "boss": "aeris",
+      "weaponGranted": "Gale Cutter",
+      "bossWeakness": "Frost Shard",
       "capsule": "leg_mk1",
       "capsuleRequiresWeapon": "Quake Drill",
       "coreBitBase": 450,
@@ -113,7 +113,7 @@
         "D"
       ],
       "checkpoints": 4,
-      "sideQuestId": "sq_ion_station",
+      "sideQuestId": "sq_cirrus_tower",
       "memoryLog": 4
     },
     {
@@ -133,7 +133,7 @@
       "weaponGranted": "Quake Drill",
       "bossWeakness": "Gale Cutter",
       "capsule": "head_mk2",
-      "capsuleRequiresWeapon": "Gale Cutter",
+      "capsuleRequiresWeapon": "Chain Bolt",
       "coreBitBase": 525,
       "segments": [
         "A",
@@ -147,22 +147,22 @@
     },
     {
       "index": 6,
-      "id": "cirrus_tower",
-      "name": "Cirrus Tower",
+      "id": "ion_station",
+      "name": "Ion Station",
       "recommendedLevel": "10-14",
-      "mechanic": "gió đổi hướng, bệ mây",
+      "mechanic": "cổng điện bật/tắt theo nhịp",
       "enemies": [
-        "chim_cat_gio",
-        "coi_xoay",
+        "cuon_tesla",
+        "drone_tinh_dien",
         "buom_sat",
         "linh_ken"
       ],
-      "miniBoss": "gale_roc",
-      "boss": "aeris",
-      "weaponGranted": "Gale Cutter",
-      "bossWeakness": "Frost Shard",
+      "miniBoss": "tesla_core",
+      "boss": "voltaire",
+      "weaponGranted": "Chain Bolt",
+      "bossWeakness": "Quake Drill",
       "capsule": "body_mk2",
-      "capsuleRequiresWeapon": "Frost Shard",
+      "capsuleRequiresWeapon": "Torrent Wave",
       "coreBitBase": 600,
       "segments": [
         "A",
@@ -171,27 +171,27 @@
         "D"
       ],
       "checkpoints": 4,
-      "sideQuestId": "sq_cirrus_tower",
+      "sideQuestId": "sq_ion_station",
       "memoryLog": 6
     },
     {
       "index": 7,
-      "id": "cryo_vault",
-      "name": "Cryo Vault",
+      "id": "abyss_harbor",
+      "name": "Abyss Harbor",
       "recommendedLevel": "12-16",
-      "mechanic": "sàn trơn, băng vỡ",
+      "mechanic": "bơi, dòng nước, áp suất",
       "enemies": [
-        "nguoi_tuyet_may",
-        "thap_bang",
-        "drone_linh",
+        "cua_may",
+        "sua_dien",
+        "thap_gai",
         "linh_ken"
       ],
-      "miniBoss": "frost_titan",
-      "boss": "cryo",
-      "weaponGranted": "Frost Shard",
-      "bossWeakness": "Prism Beam",
+      "miniBoss": "kraken_may",
+      "boss": "marina",
+      "weaponGranted": "Torrent Wave",
+      "bossWeakness": "Chain Bolt",
       "capsule": "arm_mk2",
-      "capsuleRequiresWeapon": "Prism Beam",
+      "capsuleRequiresWeapon": "Ember Burst",
       "coreBitBase": 675,
       "segments": [
         "A",
@@ -200,25 +200,25 @@
         "D"
       ],
       "checkpoints": 4,
-      "sideQuestId": "sq_cryo_vault",
+      "sideQuestId": "sq_abyss_harbor",
       "memoryLog": 7
     },
     {
       "index": 8,
-      "id": "prism_institute",
-      "name": "Prism Institute",
+      "id": "magma_foundry",
+      "name": "Magma Foundry",
       "recommendedLevel": "14-18",
-      "mechanic": "laser, gương phản xạ",
+      "mechanic": "dung nham dâng, băng chuyền",
       "enemies": [
-        "guong_quang",
-        "thap_laser",
-        "buom_sat",
+        "drone_linh",
+        "robot_han",
+        "lo_phun",
         "linh_ken"
       ],
-      "miniBoss": "prism_sentinel",
-      "boss": "lumen",
-      "weaponGranted": "Prism Beam",
-      "bossWeakness": "Vine Lash",
+      "miniBoss": "slag_golem",
+      "boss": "pyra",
+      "weaponGranted": "Ember Burst",
+      "bossWeakness": "Torrent Wave",
       "capsule": "leg_mk2",
       "capsuleRequiresWeapon": "Vine Lash",
       "coreBitBase": 750,
@@ -229,7 +229,7 @@
         "D"
       ],
       "checkpoints": 4,
-      "sideQuestId": "sq_prism_institute",
+      "sideQuestId": "sq_magma_foundry",
       "memoryLog": 8
     }
   ],
@@ -246,5 +246,12 @@
     "phases": 2,
     "coreBitBase": 1200
   },
-  "note": "Stage 2-8 chọn thứ tự tự do sau Prologue + Stage 1"
+  "note": "Stage 2-8 chọn thứ tự tự do sau Prologue + Stage 1. Thứ tự index là thứ tự khuyến nghị và trùng với vòng khắc chế: vũ khí của Stage k là điểm yếu của boss Stage k+1; Ember Burst (Stage 8) khép vòng về Thorna ở Citadel. Capsule của Stage k cần vũ khí của Stage k+1 (Stage 8 cần Vine Lash).",
+  "levelSync": {
+    "enabled": true,
+    "belowMin": 2,
+    "aboveMax": 2,
+    "appliesTo": "stages 1-8 trong cốt truyện; Citadel và màn cuối không áp dụng",
+    "note": "Cấp hiệu dụng khi tính máu/công = clamp(cấp thật, min-2, max+2) theo recommendedLevel của màn [PLACEHOLDER]"
+  }
 }

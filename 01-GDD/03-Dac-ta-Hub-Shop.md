@@ -146,13 +146,15 @@ Hub thay đổi theo tiến trình (đếm theo số boss đã hạ vì Stage 2�
 | Màn | Nhiệm vụ | Mục tiêu | Thưởng |
 | --- | --- | --- | --- |
 | 1 Verdant | Hạt giống thất lạc | Thu 5 Hạt Giống Phát Quang | 1 Data Chip + module Magnet Core |
-| 2 Foundry | Khuôn đúc kẹt | Phá 4 máy đúc bằng bắn nạp | 1 Data Chip + module Last Stand |
-| 3 Abyss | Tín hiệu mất tích | Tìm 3 phao tín hiệu | 1 Data Chip + module Phase Step |
-| 4 Ion | Bật lại trạm | Kích hoạt 4 công tắc trong một lần chơi | 1 Data Chip + module Energy Siphon |
+| 2 Prism | Gương rối | Phá 6 gương phản xạ | 1 Data Chip + module Last Stand |
+| 3 Cryo | Băng vỡ | Qua đoạn trượt không rơi | 1 Data Chip + module Phase Step |
+| 4 Cirrus | Gió mất hướng | Qua đoạn gió mà không chạm sàn | 1 Data Chip + module Energy Siphon |
 | 5 Bedrock | Hầm sập | Thu 5 tinh thể | 1 Data Chip + module Spike Guard |
-| 6 Cirrus | Gió mất hướng | Qua đoạn gió mà không chạm sàn | 1 Data Chip + module Second Wind |
-| 7 Cryo | Băng vỡ | Qua đoạn trượt không rơi | 1 Data Chip + module Scholar |
-| 8 Prism | Gương rối | Phá 6 gương phản xạ | 1 Data Chip + module Echo Shot |
+| 6 Ion | Bật lại trạm | Kích hoạt 4 công tắc trong một lần chơi | 1 Data Chip + module Second Wind |
+| 7 Abyss | Tín hiệu mất tích | Tìm 3 phao tín hiệu | 1 Data Chip + module Scholar |
+| 8 Foundry | Khuôn đúc kẹt | Phá 4 máy đúc bằng bắn nạp | 1 Data Chip + module Echo Shot |
+
+Module thưởng gắn theo **vị trí màn** (không theo chủ đề) để đường sức mạnh giữ nguyên khi thứ tự màn đổi.
 
 **Phòng Hồ Sơ gồm bốn mục:** Nhật ký Dr. Lin (mở theo 8 Memory Log), Hồ sơ boss (mở sau khi hạ), Từ điển kẻ địch (mở khi gặp), Thống kê (thời gian chơi, số lần chết, tỷ lệ hoàn thành).
 

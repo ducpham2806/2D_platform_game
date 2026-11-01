@@ -221,18 +221,18 @@ Nguyên tắc: kỹ năng nền tảng cần cho việc đi hết game (lướt,
 
 **Giáp và skin là hai thứ khác nhau.** Giáp (Capsule) quyết định chỉ số; skin chỉ đổi hình ảnh và được mua ở Shop (mục 10.1). Người chơi có thể mặc giáp mạnh nhưng hiển thị skin bất kỳ, nên không phải chọn giữa sức mạnh và vẻ ngoài.
 
-**Capsule theo màn:** mỗi Capsule cần vũ khí của boss kế tiếp trong vòng khắc chế (xem mục 7), nên người chơi phải quay lại màn cũ.
+**Capsule theo màn:** Capsule của màn k cần vũ khí của màn k+1 theo thứ tự khuyến nghị (xem mục 7), nên người chơi quay lại màn vừa qua ngay sau khi có vũ khí mới; quãng quay lại ngắn, chỉ một màn. Riêng Stage 8 cần Vine Lash đã có sẵn, nên Capsule cuối lấy được ngay.
 
-| Màn | Capsule | Vũ khí cần để mở |
-| --- | --- | --- |
-| 1 Verdant Gardens | Đầu Mk I | Ember Burst |
-| 2 Magma Foundry | Thân Mk I | Torrent Wave |
-| 3 Abyss Harbor | Tay Mk I | Chain Bolt |
-| 4 Ion Station | Chân Mk I | Quake Drill |
-| 5 Bedrock Mines | Đầu Mk II | Gale Cutter |
-| 6 Cirrus Tower | Thân Mk II | Frost Shard |
-| 7 Cryo Vault | Tay Mk II | Prism Beam |
-| 8 Prism Institute | Chân Mk II | Vine Lash |
+| Màn | Capsule | Vũ khí cần để mở | Cách dùng vũ khí |
+| --- | --- | --- | --- |
+| 1 Verdant Gardens | Đầu Mk I | Prism Beam | Tia sáng đốt rễ khô chắn phòng |
+| 2 Prism Institute | Thân Mk I | Frost Shard | Đóng băng dòng chất làm mát thành bậc đứng |
+| 3 Cryo Vault | Tay Mk I | Gale Cutter | Thổi tan màn sương lạnh che lối |
+| 4 Cirrus Tower | Chân Mk I | Quake Drill | Khoan vỡ sàn mây đá |
+| 5 Bedrock Mines | Đầu Mk II | Chain Bolt | Cấp điện cho thang máy mỏ |
+| 6 Ion Station | Thân Mk II | Torrent Wave | Làm nguội lõi quá nhiệt |
+| 7 Abyss Harbor | Tay Mk II | Ember Burst | Đốt lớp tảo dầu ở khoang khô |
+| 8 Magma Foundry | Chân Mk II | Vine Lash | Móc dây qua hố dung nham |
 
 ### 6.4 Module (chip)
 
@@ -270,18 +270,22 @@ Trần +25% của upgrade chỉ phục vụ cốt truyện. Sau khi hạ AEGIS, 
 
 ## 7. Hệ thống vũ khí khắc chế
 
-Tám vũ khí tạo vòng khắc chế (mỗi boss yếu trước vũ khí của một boss khác).
+Tám vũ khí tạo vòng khắc chế (mỗi boss yếu trước vũ khí của một boss khác). **Thứ tự màn khuyến nghị trùng với vòng khắc chế:** vũ khí nhận ở màn k là điểm yếu của boss màn k+1, nên người chơi đi theo khuyến nghị luôn có vũ khí khắc chế ở lần đánh đầu (khoảnh khắc "à, thì ra thế" của mục 1.2). Ember Burst từ màn 8 khép vòng về Thorna, dùng ở trận tái đấu trong Citadel.
 
-| Boss | Vũ khí nhận | Yếu trước |
-| --- | --- | --- |
-| 1. Thorna | Vine Lash | Ember Burst |
-| 2. Pyra | Ember Burst | Torrent Wave |
-| 3. Marina | Torrent Wave | Chain Bolt |
-| 4. Voltaire | Chain Bolt | Quake Drill |
-| 5. Terra | Quake Drill | Gale Cutter |
-| 6. Aeris | Gale Cutter | Frost Shard |
-| 7. Cryo | Frost Shard | Prism Beam |
-| 8. Lumen | Prism Beam | Vine Lash |
+| Màn | Boss | Vũ khí nhận | Yếu trước (vũ khí của màn trước) |
+| --- | --- | --- | --- |
+| 1 | Thorna | Vine Lash | Ember Burst (màn 8, tái đấu ở Citadel) |
+| 2 | Lumen | Prism Beam | Vine Lash |
+| 3 | Cryo | Frost Shard | Prism Beam |
+| 4 | Aeris | Gale Cutter | Frost Shard |
+| 5 | Terra | Quake Drill | Gale Cutter |
+| 6 | Voltaire | Chain Bolt | Quake Drill |
+| 7 | Marina | Torrent Wave | Chain Bolt |
+| 8 | Pyra | Ember Burst | Torrent Wave |
+
+Lý do của từng cặp (để người chơi đoán được): dây leo che gương của Lumen; tia sáng nung chảy băng của Cryo; mảnh băng làm nặng cánh gió của Aeris; lưỡi gió mài mòn giáp đá của Terra; mũi khoan tiếp đất làm mạch điện của Voltaire chập; điện dẫn qua nước của Marina; nước dập lửa của Pyra; lửa đốt cây của Thorna.
+
+Chọn thứ tự khác vẫn chơi được (mục 6.1, đồng bộ cấp); chỉ là thiếu vũ khí khắc chế ở lần đánh đầu.
 
 - Vũ khí dùng **thanh năng lượng riêng**, hồi bằng vật phẩm rơi và tự hồi chậm ngoài giao tranh `[PLACEHOLDER]`.
 - Đánh trúng điểm yếu: 2,5× sát thương, boss bị choáng 0,5 s; dùng sai vũ khí vẫn thắng được bằng Buster.
@@ -297,7 +301,7 @@ Không gian an toàn, Mira ở đây. Chức năng: chọn màn, đổi kỹ nă
 
 ### 8.2 Danh sách màn
 
-Sau Prologue và Stage 1, người chơi chọn thứ tự tự do từ Stage 2 đến 8 (có khuyến nghị theo vòng khắc chế).
+Sau Prologue và Stage 1, người chơi chọn thứ tự tự do từ Stage 2 đến 8. Số thứ tự màn chính là thứ tự khuyến nghị, trùng với vòng khắc chế (mục 7). Cơ chế môi trường được chỉnh độ phức tạp theo vị trí mới: Prism Institute ở vị trí 2 dùng laser theo nhịp cố định và gương ít góc, còn dung nham dâng và bơi (khó hơn) dời về cuối.
 
 Đặc tả chi tiết Prologue và Stage 1 (bố cục, kẻ địch, boss Thorna, cân bằng, nghiệm thu): file `02-Dac-ta-Prologue-Stage1.md`
 
@@ -309,13 +313,13 @@ Mô hình cân bằng kinh tế toàn game (nguồn thu, giá Shop, Data Chip, n
 | --- | --- | --- | --- |
 | Prologue | Nova Prime bị tấn công | Hướng dẫn cơ bản, không thể thua ở nhịp đầu | 1 |
 | 1. Verdant Gardens | Vườn sinh học | Dây leo đẩy/kéo, bẫy gai | 2–4 |
-| 2. Magma Foundry | Lò đúc | Dung nham dâng, băng chuyền | 4–7 |
-| 3. Abyss Harbor | Cảng ngầm | Bơi, dòng nước, áp suất | 5–8 |
-| 4. Ion Station | Trạm điện | Cổng điện bật/tắt theo nhịp | 7–10 |
+| 2. Prism Institute | Viện quang học | Laser theo nhịp cố định, gương xoay tay (bản dễ: gương chỉ có 2 góc) | 4–7 |
+| 3. Cryo Vault | Trạm lạnh | Sàn trơn, băng vỡ | 5–8 |
+| 4. Cirrus Tower | Tháp khí tượng | Gió đổi hướng, bệ mây | 7–10 |
 | 5. Bedrock Mines | Mỏ sâu | Tường phá được, hầm sập | 8–12 |
-| 6. Cirrus Tower | Tháp khí tượng | Gió đổi hướng, bệ mây | 10–14 |
-| 7. Cryo Vault | Trạm lạnh | Sàn trơn, băng vỡ | 12–16 |
-| 8. Prism Institute | Viện quang học | Laser, gương phản xạ | 14–18 |
+| 6. Ion Station | Trạm điện | Cổng điện bật/tắt theo nhịp | 10–14 |
+| 7. Abyss Harbor | Cảng ngầm | Bơi, dòng nước, áp suất | 12–16 |
+| 8. Magma Foundry | Lò đúc | Dung nham dâng, băng chuyền | 14–18 |
 | Citadel 1–3 | Tháp AEGIS | Tổng hợp mọi cơ chế, không checkpoint hồi phục thêm | 20+ |
 | Final | Lõi AEGIS | Boss hai pha, chọn kết thúc | 22+ |
 
@@ -365,13 +369,13 @@ Prologue dùng Drone Lính và Tháp Pháo Tập Sự. Tên kẻ địch thườ
 | Màn | Kẻ địch thường | Mini-boss | Boss |
 | --- | --- | --- | --- |
 | 1 Verdant Gardens | Drone Lính, Bướm Sắt, Tháp Gai, Lính Kén | Bramble Golem | Thorna |
-| 2 Magma Foundry | Drone Lính, Robot Hàn, Lò Phun, Lính Kén | Slag Golem | Pyra |
-| 3 Abyss Harbor | Cua Máy, Sứa Điện, Tháp Gai, Lính Kén | Kraken Máy | Marina |
-| 4 Ion Station | Cuộn Tesla, Drone Tĩnh Điện, Bướm Sắt, Lính Kén | Tesla Core | Voltaire |
+| 2 Prism Institute | Gương Quang, Tháp Laser, Bướm Sắt, Lính Kén | Prism Sentinel | Lumen |
+| 3 Cryo Vault | Người Tuyết Máy, Tháp Băng, Drone Lính, Lính Kén | Frost Titan | Cryo |
+| 4 Cirrus Tower | Chim Cắt Gió, Cối Xoáy, Bướm Sắt, Lính Kén | Gale Roc | Aeris |
 | 5 Bedrock Mines | Sâu Khoan, Trụ Rơi Đá, Drone Lính, Lính Kén | Rock Wyrm | Terra |
-| 6 Cirrus Tower | Chim Cắt Gió, Cối Xoáy, Bướm Sắt, Lính Kén | Gale Roc | Aeris |
-| 7 Cryo Vault | Người Tuyết Máy, Tháp Băng, Drone Lính, Lính Kén | Frost Titan | Cryo |
-| 8 Prism Institute | Gương Quang, Tháp Laser, Bướm Sắt, Lính Kén | Prism Sentinel | Lumen |
+| 6 Ion Station | Cuộn Tesla, Drone Tĩnh Điện, Bướm Sắt, Lính Kén | Tesla Core | Voltaire |
+| 7 Abyss Harbor | Cua Máy, Sứa Điện, Tháp Gai, Lính Kén | Kraken Máy | Marina |
+| 8 Magma Foundry | Drone Lính, Robot Hàn, Lò Phun, Lính Kén | Slag Golem | Pyra |
 
 Citadel 1–3 và màn cuối tái sử dụng mọi loại kẻ địch và mini-boss đã gặp (biến thể mạnh hơn); boss cuối AEGIS có hai pha.
 
