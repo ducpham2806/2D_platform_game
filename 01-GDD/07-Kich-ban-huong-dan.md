@@ -274,6 +274,8 @@ Mẫu một bước:
 
 **Đã có từ trước:** TutKeys, TutRun, TutJump, TutCharge, TutDash, TutWall (Prologue và Stage 1).
 
+**Đã vẽ thêm từ GDD 0.6:** HubEarly (Hub sau Stage 1, khu chưa mở có mốc mở), UnlockFlow (lịch mở dần), NovaWeakness (bước D10).
+
 **Vẽ thêm (6 màn):**
 
 | Màn | Bước |

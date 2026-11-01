@@ -710,7 +710,7 @@ Không qua cổng thì sửa cảm giác chơi và thiết kế màn, **không**
 
 **Còn mở:**
 
-0. (Từ bản 0.5) Kiểm tra pháp lý việc hỏi tuổi và đồng ý quảng cáo sau Prologue; vẽ lại wireframe theo các thay đổi 0.5 (lịch mở dần, điểm chọn #1, Két giáp); người bản ngữ duyệt bản tiếng Anh của thoại Warden.
+0. (Từ bản 0.5) Kiểm tra pháp lý việc hỏi tuổi và đồng ý quảng cáo sau Prologue; người bản ngữ duyệt bản tiếng Anh của thoại Warden.
 
 1. Giá cuối của Gem, skin, booster, upgrade và Cyber+ sau playtest kinh tế.
 2. Thị trường tiếng Anh cụ thể cho soft launch (hiện chỉ giả định).

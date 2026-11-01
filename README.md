@@ -9,7 +9,7 @@ Game action-platformer nhập vai kiểu Mega Man (thiết kế nguyên bản), 
 | Thư mục | Nội dung |
 |---|---|
 | `01-GDD/` | GDD chính (Markdown + Word), ba đặc tả (Prologue và Stage 1, Hub và Shop, cân bằng kinh tế) kế hoạch kiếm tiền, kế hoạch gắn quảng cáo (`06-Ke-hoach-quang-cao.md`) , kịch bản hướng dẫn người chơi mới (`07-Kich-ban-huong-dan.md`) giọng nhân vật (`08-Giong-nhan-vat.md`) và thoại Warden (`09-Thoai-Warden.md`) |
-| `02-Wireframes/` | 94 màn wireframe HTML. Mở `index.html` bằng trình duyệt |
+| `02-Wireframes/` | 97 màn wireframe HTML. Mở `index.html` bằng trình duyệt |
 | `03-Data/` | 12 file JSON cấu hình (màn, vũ khí, độ khó, Shop, kinh tế, module, người chơi, kiếm tiền, vị trí quảng cáo, live-ops, endgame, thoại Warden) |
 | `04-Dev-Plan/` | Kế hoạch làm việc, danh sách module, bộ prompt code, kế hoạch test và launch, `tools/economy_sim.py` (mô phỏng kinh tế endgame) |
 | `05-Assets/` | Hướng dẫn tạo asset, bộ prompt hình, `manifest.csv` (350 spritesheet), script xử lý ảnh |
