@@ -83,7 +83,7 @@
     },
     {
       "id": "boss_scanner",
-      "effect": "show boss hp + weakness hint",
+      "effect": "show boss phase thresholds + warn before signature attack (weakness hint is free via NOVA, tutorial D10)",
       "cost": 100,
       "maxStock": 9
     }

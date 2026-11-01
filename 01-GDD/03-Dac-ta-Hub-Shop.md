@@ -19,9 +19,9 @@ Hub rộng 3 màn hình (60 × 12 tile), đi bộ được bằng điều khiể
 | Khu | Vị trí | Chức năng | Mở khi |
 | --- | --- | --- | --- |
 | Cổng Chiến dịch | Phải | Bản đồ 8 màn + Citadel, chọn màn | Sau Prologue |
-| Quầy Mira (Shop) | Giữa | Skin, booster, upgrade | Sau Prologue (hàng mở dần) |
-| Xưởng Lắp Ráp | Giữa-trái | Cây kỹ năng, module, giáp Capsule, loadout, tủ skin | Sau Stage 1 |
-| Bảng Nhiệm Vụ | Giữa-phải | Nhiệm vụ phụ | Sau Stage 1 |
+| Quầy Mira (Shop) | Giữa | Skin, booster, upgrade | Sau boss thứ 2 (Upgrade); Booster và Skin sau boss thứ 4 |
+| Xưởng Lắp Ráp | Giữa-trái | Cây kỹ năng, module, giáp Capsule, loadout, tủ skin | Sau Stage 1 (tab mở dần, mục 5) |
+| Bảng Nhiệm Vụ | Giữa-phải | Nhiệm vụ phụ | Sau boss thứ 3 |
 | Phòng Hồ Sơ | Trái | Nhật ký, Memory Log, thành tựu, bảng xếp hạng, thống kê | Sau Prologue |
 | Cài đặt | Trong menu | Điều khiển, đồ họa, âm thanh, tài khoản và cloud | Luôn có |
 
@@ -72,10 +72,10 @@ Ba tab ở trên cùng: **Skin**, **Booster**, **Upgrade (cộng quầy Premium:
 
 | Mốc | Hàng mở thêm |
 | --- | --- |
-| Sau Prologue | Booster: Magnet Pulse, Shield Cell. 2 skin Thường (đầu, chân). Upgrade: Buster Core, Energy Cell (cấp 1–2) |
-| Sau Stage 1 | Booster: Repair Kit, Boss Scanner. Thêm 4 skin Thường. Upgrade: Armor Plating, Magnet Range |
-| Sau 3 boss | Booster: Overcharge. Skin Hiếm đợt 1. Upgrade: Sub-Tank Cap, Dash Coil |
-| Sau 5 boss | Booster: Second Chance. Skin Hiếm đợt 2. Upgrade: Booster Slot |
+| Sau 2 boss | **Quầy Upgrade mở.** Upgrade: Buster Core, Energy Cell, Armor Plating, Magnet Range (cấp 1–2) |
+| Sau 4 boss | **Quầy Booster và quầy Skin mở.** Booster: Magnet Pulse, Shield Cell, Repair Kit, Boss Scanner. 6 skin Thường |
+| Sau 5 boss | Booster: Overcharge, Second Chance. Skin Hiếm đợt 1. Upgrade: Sub-Tank Cap, Dash Coil, Booster Slot |
+| Sau 6 boss | Thêm 6 skin Thường. Skin Hiếm đợt 2 |
 | Sau 8 boss | Skin Sử thi (trả bằng Data Chip). Upgrade cấp 4–5 |
 | Theo thành tựu | Skin Thành tựu mở trực tiếp, không bán (mục 7) |
 
@@ -96,7 +96,7 @@ Tổng 30 skin: 12 Thường, 6 Hiếm, 6 Sử thi, 6 Thành tựu.
 
 ## 5. Xưởng Lắp Ráp
 
-Mở sau Stage 1. Năm tab:
+Mở sau Stage 1; các tab mở dần theo lịch hướng dẫn (`07-Kich-ban-huong-dan.md`, mục 2): Kỹ năng sau boss 1, Module sau boss 3, Giáp khi nhận Capsule đầu tiên, Tủ skin và Loadout sau boss 4. Năm tab:
 
 | Tab | Chức năng | Quy tắc |
 | --- | --- | --- |
@@ -123,9 +123,10 @@ Hub thay đổi theo tiến trình (đếm theo số boss đã hạ vì Stage 2�
 
 | Mốc | Thay đổi Hub | Sự kiện |
 | --- | --- | --- |
-| Sau Prologue | Hub tối, hư hại, ít đèn | Mira giới thiệu Shop |
-| Sau Stage 1 | Mở Xưởng và Bảng Nhiệm Vụ; đèn xanh lục sáng lên | Mira giao nhiệm vụ "Hạt giống thất lạc" |
-| Sau boss thứ 3 | Thêm đèn, một góc cây xanh nhỏ | Vex trò chuyện trực tiếp với Kai tại Hub (cảnh thoại ngắn, bỏ qua được; đã thấy bóng dáng ở Prologue) |
+| Sau Prologue | Hub tối, hư hại, ít đèn | Mira giới thiệu căn cứ Arkon (Shop còn đóng: "Quầy chưa có hàng, kiếm ít Core Bit đã") |
+| Sau Stage 1 | Mở Xưởng (tab Kỹ năng); đèn xanh lục sáng lên | Mira mở Xưởng |
+| Sau boss thứ 2 | Quầy Upgrade của Mira mở | Mira mời mua nâng cấp đầu tiên |
+| Sau boss thứ 3 | Thêm đèn, một góc cây xanh nhỏ; mở Bảng Nhiệm Vụ | Vex trò chuyện trực tiếp với Kai tại Hub (cảnh thoại ngắn, bỏ qua được; đã thấy bóng dáng ở Prologue). Mira giao nhiệm vụ của màn 1–3, gồm "Hạt giống thất lạc" |
 | Sau boss thứ 4 (midpoint) | Hub tối lại, Mira nghi ngờ nhật ký của Lin | Điểm chọn #1 |
 | Sau boss thứ 6 | Hub sáng hơn, mở nhật ký Lin thứ hai | NOVA hé lộ dữ liệu bất thường |
 | Sau boss thứ 8 | Mọi NPC tụ họp trước cổng Citadel | Điểm chọn #2 |
@@ -141,7 +142,7 @@ Hub thay đổi theo tiến trình (đếm theo số boss đã hạ vì Stage 2�
 
 ## 7. Nhiệm vụ phụ, nhật ký, thành tựu
 
-**Bảng Nhiệm Vụ:** mỗi màn có 1 nhiệm vụ phụ, giao qua Mira sau khi hạ boss màn đó; mục tiêu hiện trên bản đồ nhỏ khi vào màn.
+**Bảng Nhiệm Vụ:** mỗi màn có 1 nhiệm vụ phụ, giao qua Mira sau khi hạ boss màn đó; Bảng mở sau boss thứ 3, lúc đó nhiệm vụ của các màn đã qua hiện cùng lúc. Mục tiêu hiện trên bản đồ nhỏ khi vào màn.
 
 | Màn | Nhiệm vụ | Mục tiêu | Thưởng |
 | --- | --- | --- | --- |

@@ -26,7 +26,8 @@ Mục tiêu: người chơi thấy mình giỏi trong 30 giây đầu và biết
 | 1:10–1:50 | Drone đầu tiên | Chiến đấu cơ bản | Drone Lính chậm, xuất hiện từ xa, **chưa gây sát thương** ở nhịp 1–3; thắng được ngay lần đầu |
 | 1:50–2:20 | Tường và drone bay | Nhảy + bắn trên không | Drone bay ở độ cao 3 tile; **checkpoint 1** ở cuối nhịp |
 | 2:20–2:50 | Khối chắn cam | Bắn nạp | Khối cần 1 phát nạp để phá; NOVA gợi ý giữ nút bắn; hiệu ứng ánh sáng rõ |
-| 2:50–3:20 | Tháp pháo tập sự | Né theo nhịp, lướt | Tháp bắn đạn lặp, telegraph 0,8 s; hành lang hẹp buộc lướt qua khe đạn; từ nhịp này kẻ địch gây sát thương thật (10 máu) |
+| 2:50–3:05 | Hành lang đạn huấn luyện | Lướt | Hành lang hẹp buộc lướt qua khe đạn; đạn huấn luyện chỉ đẩy lùi, chưa gây sát thương |
+| 3:05–3:20 | Tháp pháo tập sự | Né theo nhịp | Sau một khoảng nghỉ ngắn; tháp bắn đạn lặp, telegraph 0,8 s; từ nhịp này kẻ địch gây sát thương thật (10 máu) |
 | 3:20–3:50 | Tiền sảnh | Cốt truyện | Cutscene ≤ 8 giây (bỏ qua được): Vex xuất hiện, bắn một phát vào cột |
 | 3:50–4:00 | Thoát ra | Chuyển cảnh | Kai rời phòng thí nghiệm; tiêu đề màn, mở Hub Arkon |
 

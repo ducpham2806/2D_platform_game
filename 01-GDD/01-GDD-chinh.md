@@ -439,7 +439,7 @@ Booster dùng một lần, chọn ở màn hình chuẩn bị trước khi vào 
 | Overcharge | Bắn nạp nhanh hơn 30% trong màn | 250 |
 | Magnet Pulse | Hút Core Bit và vật phẩm trong 6 tile | 120 |
 | Second Chance | Hồi sinh tại chỗ với 50% máu (1 lần; tính vào giới hạn hồi sinh) | 400 |
-| Boss Scanner | Hiện thanh máu boss và gợi ý vũ khí khắc chế | 100 |
+| Boss Scanner | Hiện ngưỡng chuyển pha trên thanh máu boss và báo trước đòn đỉnh (điểm yếu thì NOVA báo miễn phí sau lần thua đầu) | 100 |
 
 - Kho tối đa 9 mỗi loại; hoàn thành màn lần đầu tặng 1 booster ngẫu nhiên để người mới luôn có hàng.
 - Booster tiêu hao khi vào màn; thoát trước checkpoint đầu tiên thì được hoàn lại.
@@ -502,6 +502,9 @@ Phản hồi khi chết nhiều lần: sau 5 lần chết liên tiếp ở một
 - [ ] Ít nhất một cơ chế do người chơi tự khám phá, không cần chữ.
 - [ ] Hướng dẫn cảm ứng kèm hình, có thể thử bố cục nút trước khi bắt đầu.
 - [ ] Kết thúc buổi chơi đầu bằng một điểm treo (xuất hiện bóng dáng Vex).
+- [ ] Người chơi điều khiển Kai trong ≤ 15 giây kể từ lần mở đầu; tuổi, đồng ý quảng cáo và cỡ nút hỏi sau Prologue.
+- [ ] Không có cơ chế mới nào được dạy cùng lúc với lần đầu kẻ địch gây sát thương thật.
+- [ ] Sau mỗi boss, Hub mở tối đa một hệ thống mới (lịch ở `07-Kich-ban-huong-dan.md`, mục 2).
 
 Mục tiêu: **tỷ lệ hoàn thành Prologue ≥ 90%** không cần hỗ trợ.
 
