@@ -33,15 +33,15 @@ Mục tiêu: người chơi thấy mình giỏi trong 30 giây đầu và biết
 
 **Quy tắc không thể thua (nhịp 1–3):** không có hố chết, kẻ địch gây 0 sát thương (chỉ đẩy lùi), người chơi chết ở nhịp 4 trở đi thì hồi sinh tại checkpoint trong 1 giây.
 
-**Kịch bản thoại chính** (mỗi lần tối đa 3–4 dòng, có nút bỏ qua):
+**Kịch bản thoại chính** (mỗi lần tối đa 3–4 dòng, có nút bỏ qua; giọng theo `08-Giong-nhan-vat.md`):
 
-- NOVA (0:05): "Khởi động hoàn tất. Chào Kai, tôi là NOVA. Thành phố đang gặp nguy hiểm và chỉ còn bạn hoạt động."
+- NOVA (0:05): "Khởi động lại... xong. Kai, nghe rõ không? Tôi là NOVA."
 - Kai: "Tôi... không nhớ gì cả."
-- NOVA: "Không sao, tôi sẽ dẫn đường. Hãy chạy về phía cửa."
-- NOVA (0:50): "Bắn để phá thùng chắn đường. Nhấn nút bắn."
-- NOVA (2:25): "Giữ nút bắn để nạp năng lượng. Khối chắn này cần đòn mạnh."
+- NOVA: "Không sao, tôi nhớ hộ cậu. Chân cậu có điện rồi, đi về phía cửa."
+- NOVA (0:50): "Pháo tay còn nguội. Bắn thử vào thùng kia."
+- NOVA (2:25): "Khối này dày quá. Giữ nút bắn cho Arc tích điện, rồi thả."
 - Vex (3:30): "Unit-K... vậy là chúng vẫn chọn mày."
-- Kai: "Ai vậy?" NOVA: "Tôi không có dữ liệu về người này."
+- Kai: "Ai vậy?" NOVA (ngập ngừng): "Tôi... không có dữ liệu về người này."
 
 ## 3. Stage 1: Verdant Gardens
 
@@ -112,7 +112,9 @@ Quy tắc chung: mọi đòn có telegraph ≥ 0,4 s; không có kẻ địch xu
 
 **Vũ khí Vine Lash:** roi dây quét ngang tầm 4 tile, sát thương 2× Arc Cannon, tốn 4/28 thanh năng lượng mỗi lần; kéo được thùng và móc dây leo, cắt được dây leo chắn đường ở các màn sau.
 
-**Thoại sau trận (hạt giống cốt truyện):** Thorna: "Nó không phải... lỗi. Hãy hỏi... AEGIS." Thorna tan thành hạt sáng, Kai nhận Vine Lash, NOVA: "Tôi phát hiện dữ liệu lạ trong vũ khí này."
+**Thoại trước trận:** Thorna: "Vườn của ta đang khát. Ngươi đến để cho nó uống... hay để chặt nó?"
+
+**Thoại sau trận (hạt giống cốt truyện):** Thorna: "Ngươi... không phải đến để chữa cho ta. Hãy hỏi AEGIS... ai đã ra lệnh." Thorna tan thành hạt sáng, Kai nhận Vine Lash, NOVA: "Trong này còn mã của Thorna... lạ thật, tôi thấy nó quen."
 
 ## 6. Cân bằng
 

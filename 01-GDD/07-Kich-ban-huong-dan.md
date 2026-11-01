@@ -4,7 +4,7 @@ Kịch bản hướng dẫn (tutorial/onboarding) cho người chơi mới của
 
 ## 1. Nguyên tắc, mục tiêu và KPI
 
-**Nguyên tắc**
+**Nguyên tắc** (lời thoại theo `08-Giong-nhan-vat.md`: NOVA đang hiệu chỉnh cơ thể Kai, nên mỗi bước hướng dẫn là một bước hiệu chỉnh)
 
 1. **Học bằng làm:** mỗi bước dạy một điều, trong một tình huống an toàn; lời thoại tối đa 2 dòng.
 2. **Không khóa lâu:** cutscene và hội thoại bỏ qua được; không khóa điều khiển quá 10 giây.
@@ -77,18 +77,18 @@ Biểu tượng nút (`{NHẢY}`, `{BẮN}`, `{LƯỚT}`, `{DI_CHUYỂN}`, `{Đ�
 
 | ID | Kích hoạt | Người chơi làm | Hiển thị và lời thoại | Hoàn thành khi | Nếu vướng |
 | --- | --- | --- | --- | --- | --- |
-| P01 | 0:00 Kai tỉnh dậy | Chạy sang phải | NOVA: "Khởi động hoàn tất. Chào Kai, tôi là NOVA. Hãy chạy về phía cửa." Biểu tượng `{DI_CHUYỂN}` nhấp nháy | Đi 8 ô | Đứng yên 8 giây: mũi tên chỉ hướng và nhắc "Dùng `{DI_CHUYỂN}` để chạy." |
-| P02 | 0:20 Khe sàn | Nhảy qua khe 2 ô | NOVA: "Nhấn `{NHẢY}` để nhảy." | Qua khe | Rơi 3 lần: "Nhấn khi chạm mép khe rồi thả ra."; khe không gây chết |
-| P03 | Bục thấp và cao | Nhảy cao hơn bằng giữ nút | NOVA: "Giữ `{NHẢY}` lâu hơn để nhảy cao hơn." | Lên bục 3,5 ô | Thất bại 3 lần: hiện bóng mờ minh họa giữ nút |
-| P04 | 0:45 Thùng phế liệu | Bắn | NOVA: "Nhấn `{BẮN}` để phá thùng." | Phá thùng | Sau 6 giây: nhấp nháy nút `{BẮN}` |
-| P05 | 1:10 Drone đầu tiên | Hạ Drone | NOVA: "Có kẻ địch! Bắn hạ nó." Drone chưa gây sát thương | Hạ Drone | Sau 10 giây: Drone tự lùi lại gần hơn |
-| P06 | 1:50 Drone bay | Nhảy và bắn lên cao | NOVA: "Nhảy rồi bắn khi nó ở trên cao." | Hạ 2 Drone bay | Nhắc lại sau 3 lần trượt |
-| P07 | Checkpoint 1 | Đi qua checkpoint | Cờ sáng: "Đã lưu điểm hồi sinh. Nếu thua, bạn quay lại đây." | Chạm checkpoint | Không cần xử lý |
-| P08 | 2:20 Khối chắn cam | Bắn nạp | NOVA: "Giữ `{BẮN}` để nạp năng lượng rồi thả." Hiện thanh nạp | Phá khối | Sau 5 giây: hiện thanh nạp minh họa |
-| P09 | 2:50 Hành lang đạn huấn luyện | Lướt qua khe đạn | NOVA: "Nhấn `{LƯỚT}` để xuyên qua khe đạn." Mở khóa nút lướt. Đạn huấn luyện chỉ đẩy lùi, **chưa gây sát thương** | Qua hành lang | Thất bại 3 lần: làm chậm đạn 20% |
-| P10 | 3:05 Tháp pháo tập sự, sau một đoạn nghỉ ngắn | Né theo telegraph (dùng lướt vừa học) | NOVA: "Tháp sáng lên trước khi bắn. Né khi nó sáng." Từ đây kẻ địch gây sát thương thật | Né 3 phát liên tiếp | Chết: về checkpoint P07, gợi ý "Quan sát ánh sáng báo trước" |
-| P11 | Vật phẩm hồi máu | Nhặt | NOVA: "Nhặt vật phẩm xanh để hồi máu." | Nhặt vật phẩm | Vật phẩm xuất hiện sau khi người chơi mất máu lần đầu |
-| P12 | 3:20 Tiền sảnh | Xem cảnh Vex | Vex: "Unit-K... vậy là chúng vẫn chọn mày." NOVA: "Tôi không có dữ liệu về người này." | Xem hoặc "Bỏ qua" | Cảnh tối đa 8 giây, bỏ qua được |
+| P01 | 0:00 Kai tỉnh dậy | Chạy sang phải | NOVA: "Khởi động lại... xong. Kai, nghe rõ không? Tôi là NOVA. Chân cậu có điện rồi, đi về phía cửa." Biểu tượng `{DI_CHUYỂN}` nhấp nháy | Đi 8 ô | Đứng yên 8 giây: mũi tên chỉ hướng và nhắc "Dùng `{DI_CHUYỂN}` để chạy." |
+| P02 | 0:20 Khe sàn | Nhảy qua khe 2 ô | NOVA: "Khe hở. Thử bật lên xem: `{NHẢY}`." | Qua khe | Rơi 3 lần: "Nhấn khi chạm mép khe rồi thả ra."; khe không gây chết |
+| P03 | Bục thấp và cao | Nhảy cao hơn bằng giữ nút | NOVA: "Lực bật đang ở mức thấp. Giữ `{NHẢY}` lâu hơn để dồn lực." | Lên bục 3,5 ô | Thất bại 3 lần: hiện bóng mờ minh họa giữ nút |
+| P04 | 0:45 Thùng phế liệu | Bắn | NOVA: "Pháo tay còn nguội. Bắn thử vào thùng kia: `{BẮN}`." | Phá thùng | Sau 6 giây: nhấp nháy nút `{BẮN}` |
+| P05 | 1:10 Drone đầu tiên | Hạ Drone | NOVA: "Drone tuần tra. Bộ ngắm của nó hỏng rồi, không bắn trúng được đâu. Hạ nó đi." Drone chưa gây sát thương | Hạ Drone | Sau 10 giây: Drone tự lùi lại gần hơn |
+| P06 | 1:50 Drone bay | Nhảy và bắn lên cao | NOVA: "Hai cái trên cao. Nhảy lên rồi bắn." | Hạ 2 Drone bay | Nhắc lại sau 3 lần trượt |
+| P07 | Checkpoint 1 | Đi qua checkpoint | Cờ sáng. NOVA: "Tôi vừa lưu trạng thái của cậu ở đây. Có chuyện gì thì cậu tỉnh lại từ chỗ này." | Chạm checkpoint | Không cần xử lý |
+| P08 | 2:20 Khối chắn cam | Bắn nạp | NOVA: "Khối này dày quá. Giữ `{BẮN}` cho Arc tích điện, rồi thả." Hiện thanh nạp | Phá khối | Sau 5 giây: hiện thanh nạp minh họa |
+| P09 | 2:50 Hành lang đạn huấn luyện | Lướt qua khe đạn | NOVA: "Hành lang huấn luyện cũ, đạn tập không làm đau. Thử `{LƯỚT}` xuyên qua khe." Mở khóa nút lướt. Đạn huấn luyện chỉ đẩy lùi, **chưa gây sát thương** | Qua hành lang | Thất bại 3 lần: làm chậm đạn 20% |
+| P10 | 3:05 Tháp pháo tập sự, sau một đoạn nghỉ ngắn | Né theo telegraph (dùng lướt vừa học) | NOVA: "Cái tháp này bắn thật đấy. Nó sáng lên trước khi khai hỏa, thấy sáng là né." Từ đây kẻ địch gây sát thương thật | Né 3 phát liên tiếp | Chết: về checkpoint P07, gợi ý "Quan sát ánh sáng báo trước" |
+| P11 | Vật phẩm hồi máu | Nhặt | NOVA: "Gói sửa chữa màu xanh. Nhặt đi, cậu đang rò điện kìa." | Nhặt vật phẩm | Vật phẩm xuất hiện sau khi người chơi mất máu lần đầu |
+| P12 | 3:20 Tiền sảnh | Xem cảnh Vex | Vex: "Unit-K... vậy là chúng vẫn chọn mày." Kai: "Ai vậy?" NOVA (ngập ngừng): "Tôi... không có dữ liệu về người này." | Xem hoặc "Bỏ qua" | Cảnh tối đa 8 giây, bỏ qua được |
 | P13 | 3:50 Thoát ra | Ra khỏi phòng thí nghiệm | Tiêu đề màn; mở Hub Arkon | Qua cửa | Không cần xử lý |
 
 ## 4. Giai đoạn 2 và 3: Hub lần đầu và Stage 1
@@ -98,27 +98,27 @@ Biểu tượng nút (`{NHẢY}`, `{BẮN}`, `{LƯỚT}`, `{DI_CHUYỂN}`, `{Đ�
 | ID | Kích hoạt | Người chơi làm | Hiển thị và lời thoại | Hoàn thành khi | Nếu vướng |
 | --- | --- | --- | --- | --- | --- |
 | H01 | Vào Hub lần đầu | Nói chuyện với Mira | Mira: "Đừng đứng ngẩn ra đó. Tôi là Mira, kỹ sư trạm Arkon." | Hết thoại | Bỏ qua được |
-| H02 | Sau H01 | Mở Menu nhanh | Chỉ vào nút Menu: "Chạm Menu để đến mọi nơi chỉ một chạm. Đi bộ là tùy chọn." | Mở menu | Sau 10 giây nút Menu nhấp nháy |
-| H03 | Sau H02 | Chọn Cổng Chiến dịch | NOVA: "Chọn Stage 1: Verdant Gardens." Chỉ Stage 1 được mở | Chọn Stage 1 | Chỉ có một lựa chọn |
+| H02 | Sau H01 | Mở Menu nhanh | Mira chỉ vào nút Menu: "Trạm rộng lắm, nhưng cậu không cần đi bộ đâu. Chạm Menu là tới đâu cũng được." | Mở menu | Sau 10 giây nút Menu nhấp nháy |
+| H03 | Sau H02 | Chọn Cổng Chiến dịch | NOVA: "Tín hiệu Eclipse mạnh nhất ở Verdant Gardens. Bắt đầu từ đó." Chỉ Stage 1 được mở | Chọn Stage 1 | Chỉ có một lựa chọn |
 | H04 | Màn Chuẩn bị lần đầu | Bắt đầu màn | NOVA: "Đây là nơi chọn độ khó. Lần này cứ để Thường rồi bấm Bắt đầu." (ô booster chưa hiện cho tới sau boss 4) | Bấm Bắt đầu | Các phần khác làm mờ |
 
 ### 4.2 Giai đoạn 3: Stage 1
 
 | ID | Kích hoạt | Người chơi làm | Hiển thị và lời thoại | Hoàn thành khi | Nếu vướng |
 | --- | --- | --- | --- | --- | --- |
-| S01 | Đoạn A, giếng cao | Bám tường và leo | NOVA: "Nhảy về phía tường để bám, nhảy tiếp để leo." | Lên đỉnh giếng | Thất bại 3 lần: mũi tên trên tường và bóng mờ |
-| S02 | Đoạn B, dây leo đu | Nhảy lên dây | NOVA: "Dây leo mang bạn theo. Nhảy khi nó lắc gần bờ." | Qua đoạn dây | Rơi 3 lần: dây chậm lại 15% |
-| S03 | Bẫy gai | Tránh gai | NOVA: "Gai gây sát thương và đưa bạn về chỗ an toàn." (chỉ lần chạm đầu) | Qua gai | Không cần xử lý |
-| S04 | Gần phòng bí mật | Khám phá (tùy chọn) | Biểu tượng "?" mờ; NOVA: "Có thứ gì giấu quanh đây." (một lần) | Tùy chọn | Không ép |
-| S05 | Đoạn C, vào phòng khóa | Hạ hết kẻ địch | NOVA: "Cửa khóa cho đến khi hạ hết kẻ địch." Hiện số còn lại | Cửa mở | Không cần xử lý |
-| S06 | Lính Kén lần đầu | Bắn nạp phá khiên | NOVA: "Khiên chặn đạn thường. Bắn nạp sẽ phá nó." | Phá khiên | Bắn thường trúng khiên 5 lần: nhắc lại kèm biểu tượng nạp |
-| S07 | Mini-boss Bramble Golem | Né sóng đất | NOVA: "Nhảy qua sóng đất khi nó đập xuống." | Hạ mini-boss | Checkpoint CP3 ngay trước phòng |
-| S08 | Cửa boss | Vào phòng boss | NOVA: "Máu boss ở trên cùng. Quan sát và né khi nó sáng." Hiện thanh máu boss | Vào phòng | Không cần xử lý |
+| S01 | Đoạn A, giếng cao | Bám tường và leo | NOVA: "Lớp bám ở lòng bàn tay vẫn chạy. Nhảy vào tường để bám, nhảy tiếp để leo." | Lên đỉnh giếng | Thất bại 3 lần: mũi tên trên tường và bóng mờ |
+| S02 | Đoạn B, dây leo đu | Nhảy lên dây | NOVA: "Dây leo đang lắc. Đợi nó lại gần bờ rồi hẵng nhảy." | Qua đoạn dây | Rơi 3 lần: dây chậm lại 15% |
+| S03 | Bẫy gai | Tránh gai | NOVA: "Gai kim loại. Không chết được, nhưng đau. Tôi kéo cậu về chỗ an toàn." (chỉ lần chạm đầu) | Qua gai | Không cần xử lý |
+| S04 | Gần phòng bí mật | Khám phá (tùy chọn) | Biểu tượng "?" mờ; NOVA: "Tôi bắt được một tín hiệu yếu quanh đây... có thứ bị giấu." (một lần) | Tùy chọn | Không ép |
+| S05 | Đoạn C, vào phòng khóa | Hạ hết kẻ địch | NOVA: "Cửa khóa từ. Khu này sạch kẻ địch thì nó mới mở." Hiện số còn lại | Cửa mở | Không cần xử lý |
+| S06 | Lính Kén lần đầu | Bắn nạp phá khiên | NOVA: "Khiên đó chặn đạn thường. Đạn tích điện thì không." | Phá khiên | Bắn thường trúng khiên 5 lần: nhắc lại kèm biểu tượng nạp |
+| S07 | Mini-boss Bramble Golem | Né sóng đất | NOVA: "Nó đập xuống là sóng đất lan ra. Nhảy qua." | Hạ mini-boss | Checkpoint CP3 ngay trước phòng |
+| S08 | Cửa boss | Vào phòng boss | NOVA: "Năng lượng rất lớn sau cánh cửa này. Quan sát trước, rồi hẵng đánh." Hiện thanh máu boss | Vào phòng | Không cần xử lý |
 | S09 | Thorna pha 1 | Né Gai Quạt và Dây Quất | Chữ nhỏ theo đòn đầu: "Sáng xanh: sắp bắn gai." / "Dây rung: nhảy lên bục." | Hạ pha 1 | Chết 3 lần: NOVA gợi ý đứng bục và đề nghị (không ép) độ khó Cốt truyện |
-| S10 | Thorna pha 2 và 3 | Né Rễ Trồi và Hoa Nở | NOVA: "Nó mạnh lên. Giữ nhịp né." | Hạ boss | Như S09 |
-| S11 | Thorna bại | Xem thoại | Thorna: "Nó không phải... lỗi. Hãy hỏi... AEGIS." | Hết thoại | Bỏ qua được |
-| S12 | Nhận vũ khí | Xem vũ khí mới | NOVA: "Vũ khí mới: Vine Lash. Tôi phát hiện dữ liệu lạ trong nó." | Xác nhận | Không cần xử lý |
-| S13 | Sau S12 | Đổi vũ khí và thử | NOVA: "Nhấn `{ĐỔI_VK}` để đổi vũ khí. Vũ khí boss tốn năng lượng (thanh dưới thanh máu)." | Đổi và bắn 1 lần | Nhắc lại ở màn Kết quả nếu chưa làm |
+| S10 | Thorna pha 2 và 3 | Né Rễ Trồi và Hoa Nở | NOVA: "Nó đang dồn sức. Giữ nhịp né." | Hạ boss | Như S09 |
+| S11 | Thorna bại | Xem thoại | Thorna: "Ngươi... không phải đến để chữa cho ta. Hãy hỏi AEGIS... ai đã ra lệnh." | Hết thoại | Bỏ qua được |
+| S12 | Nhận vũ khí | Xem vũ khí mới | NOVA: "Vine Lash. Trong này còn mã của Thorna... lạ thật, tôi thấy nó quen." | Xác nhận | Không cần xử lý |
+| S13 | Sau S12 | Đổi vũ khí và thử | NOVA: "`{ĐỔI_VK}` để đổi vũ khí. Vũ khí Warden ăn năng lượng riêng, xem thanh dưới thanh máu." | Đổi và bắn 1 lần | Nhắc lại ở màn Kết quả nếu chưa làm |
 
 ## 5. Giai đoạn 4 và 5: sau Stage 1 và mở dần
 
@@ -127,8 +127,8 @@ Biểu tượng nút (`{NHẢY}`, `{BẮN}`, `{LƯỚT}`, `{DI_CHUYỂN}`, `{Đ�
 | ID | Kích hoạt | Người chơi làm | Hiển thị và lời thoại | Hoàn thành khi | Nếu vướng |
 | --- | --- | --- | --- | --- | --- |
 | R01 | Màn Kết quả Stage 1 | Xem thưởng | NOVA: "EXP giúp lên cấp. Core Bit cứ giữ lại, sắp có chỗ tiêu." (Data Chip giới thiệu khi nhận lần đầu) | Bấm Tiếp | Không cần xử lý |
-| R02 | Lên cấp | Vào Xưởng | Mira: "Cậu lên cấp rồi. Vào Xưởng của tôi đi." Xưởng mở | Vào Xưởng | Nút Xưởng nhấp nháy |
-| R03 | Xưởng, tab Kỹ năng | Học 1 kỹ năng | NOVA: "Mỗi kỹ năng tốn 1 điểm. Đặt lại miễn phí bất cứ lúc nào, cứ thử." | Học 1 kỹ năng | Làm nổi một nút rẻ |
+| R02 | Lên cấp | Vào Xưởng | Mira: "Cậu về với cái chân cháy xém. Vào Xưởng, tôi xem nào." Xưởng mở | Vào Xưởng | Nút Xưởng nhấp nháy |
+| R03 | Xưởng, tab Kỹ năng | Học 1 kỹ năng | NOVA: "Mỗi kỹ năng tốn 1 điểm. Đặt lại lúc nào cũng được, miễn phí. Cứ thử đi." | Học 1 kỹ năng | Làm nổi một nút rẻ |
 | R04 | **Sau boss 2**, Quầy Mira mở | Mua upgrade đầu tiên | Mira: "Quầy mở rồi. Cậu đủ tiền cho một nâng cấp đấy." Làm nổi một upgrade cấp 1 | Mua 1 món (có xác nhận) | Thiếu tiền: tặng 150 Core Bit một lần |
 | R05 | **Sau boss 3**, Bảng Nhiệm Vụ mở | Nhận nhiệm vụ | Mira: "Giúp tôi tìm 5 hạt giống ở Verdant nhé. Tiện thể lấy luôn cái Két giáp cậu bỏ lại." (Két giáp Verdant cần Prism Beam từ boss 2) | Nhận nhiệm vụ | Không ép làm |
 | R06 | **Sau boss 4**, màn Chuẩn bị của màn kế | Gán booster | NOVA: "Booster dùng một lần trong màn." Làm nổi ô booster; tặng sẵn 2 booster | Gán 1 booster | Bỏ qua được |
@@ -144,7 +144,7 @@ Mỗi bước R chỉ chạy ở lần đầu về Hub sau mốc tương ứng; 
 | D03 | Vào phòng boss lần đầu khi đang có vũ khí khắc chế | Thử điểm yếu | NOVA: "Lớp vỏ của nó phản ứng lạ với dữ liệu trong Vine Lash. Thử xem." (tên vũ khí đổi theo boss) | Xem | Không cần xử lý |
 | D04 | Nhận module đầu tiên (sau boss 3) | Lắp module | Mira: "Module cho khả năng phụ. Lắp được 3 ô." | Lắp 1 module | Bỏ qua được |
 | D05 | Sau boss 4 | Mở Tủ skin | Mira: "Muốn đổi diện mạo? Vào Tủ skin." | Xem | Tùy chọn |
-| D06 | Chết 3 lần liên tiếp ở một đoạn | Nhận gợi ý | NOVA: "Thử vũ khí khắc chế, đổi booster hoặc bật chế độ Cốt truyện." | Chọn hoặc đóng | Tối đa 1 lần mỗi màn |
+| D06 | Chết 3 lần liên tiếp ở một đoạn | Nhận gợi ý | NOVA: "Ba lần rồi. Tôi không chê đâu, chỉ gợi ý: thử vũ khí khác, hoặc bật chế độ Cốt truyện." | Chọn hoặc đóng | Tối đa 1 lần mỗi màn |
 | D07 | Nhặt Nano Cell lần đầu | Hồi máu tay | NOVA: "Nano Cell hồi máu khi bạn chạm vào biểu tượng." | Dùng 1 lần | Nhắc khi máu thấp |
 | D08 | Điểm chọn cốt truyện đầu tiên | Hiểu lựa chọn | NOVA: "Lần này không quay lại được đâu. Cậu chắc chứ?" (điểm chọn #1 không chọn lại được; từ điểm chọn #2 có thể chọn lại ở checkpoint truyện) | Chọn | Không cần xử lý |
 | D09 | Phá đảo Thường | Biết có độ khó mới | Thông báo: "Mở khóa độ khó Thử thách: thưởng nhiều hơn, kẻ địch mạnh hơn." | Xem | Không cần xử lý |
