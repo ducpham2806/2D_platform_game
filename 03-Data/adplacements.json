@@ -1,0 +1,182 @@
+{
+  "rewarded": {
+    "AD_REVIVE": {
+      "enabled": true,
+      "capPerStage": 2,
+      "capPerDay": 6,
+      "rewardType": "revive",
+      "reviveHpPct": 50,
+      "invincibleSec": 2,
+      "whereNot": [
+        "boss_room"
+      ],
+      "cyberPlus": "instant"
+    },
+    "AD_ENERGY": {
+      "enabled": true,
+      "capPerStage": 1,
+      "capPerDay": 4,
+      "rewardType": "refill_weapon_energy",
+      "triggerEnergyPct": 15,
+      "where": [
+        "pause_menu",
+        "hud_chip"
+      ],
+      "cyberPlus": "instant"
+    },
+    "AD_HEAL": {
+      "enabled": true,
+      "capPerStage": 1,
+      "capPerDay": 3,
+      "rewardType": "refill_sub_tank",
+      "triggerHpPct": 30,
+      "where": [
+        "pause_menu"
+      ],
+      "cyberPlus": "instant"
+    },
+    "AD_BOOSTER": {
+      "enabled": true,
+      "capPerStage": 1,
+      "capPerDay": 5,
+      "rewardType": "free_booster",
+      "choices": [
+        "shield_cell",
+        "magnet_pulse",
+        "overcharge"
+      ],
+      "where": [
+        "prep"
+      ],
+      "cyberPlus": "instant"
+    },
+    "AD_DOUBLE": {
+      "enabled": true,
+      "capPerDay": 6,
+      "rewardType": "double_reward",
+      "multiplier": 2,
+      "applyTo": [
+        "core_bit"
+      ],
+      "excludes": [
+        "exp",
+        "data_chip"
+      ],
+      "where": [
+        "result"
+      ],
+      "cyberPlus": "auto"
+    },
+    "AD_GIFT": {
+      "enabled": true,
+      "capPerDay": 3,
+      "cooldownHours": 4,
+      "rewardType": "gift",
+      "amountCoreBit": [
+        100,
+        200
+      ],
+      "orRandomBooster": true,
+      "where": [
+        "hub"
+      ],
+      "cyberPlus": "instant"
+    },
+    "AD_SPIN": {
+      "enabled": true,
+      "capPerDay": 2,
+      "rewardType": "extra_spin",
+      "where": [
+        "spin"
+      ],
+      "cyberPlus": "+1 free spin"
+    },
+    "AD_LOGIN": {
+      "enabled": true,
+      "capPerDay": 1,
+      "rewardType": "login_makeup",
+      "where": [
+        "daily_login"
+      ]
+    },
+    "AD_SWEEP": {
+      "enabled": true,
+      "capPerDay": 2,
+      "rewardType": "extra_sweep",
+      "where": [
+        "farm"
+      ]
+    },
+    "AD_FARM2X": {
+      "enabled": true,
+      "capPerDay": 2,
+      "rewardType": "extra_double_drop",
+      "where": [
+        "farm"
+      ]
+    },
+    "AD_QUEST": {
+      "enabled": true,
+      "capPerDay": 1,
+      "rewardType": "reroll_daily_quest",
+      "where": [
+        "quests"
+      ]
+    },
+    "AD_SALVAGE": {
+      "enabled": true,
+      "capPerDay": 3,
+      "rewardType": "double_salvage_materials",
+      "where": [
+        "chip_inventory"
+      ]
+    }
+  },
+  "interstitial": {
+    "INT_HUB": {
+      "enabled": true,
+      "where": "result_to_hub",
+      "minGapMin": 4,
+      "capPerDay": 2,
+      "everyNStages": 2,
+      "noAdFirstMinutes": 20,
+      "startDay": 2,
+      "neverIn": [
+        "prologue",
+        "stage1",
+        "after_boss"
+      ],
+      "frustrationGuard": {
+        "deaths": 3,
+        "windowMin": 5,
+        "muteMin": 10
+      },
+      "cyberPlus": "off"
+    },
+    "INT_FARM": {
+      "enabled": true,
+      "where": "farm_menu_after_3_runs",
+      "capPerDay": 1,
+      "cyberPlus": "off"
+    }
+  },
+  "neverShowIn": [
+    "prologue",
+    "boss_fight",
+    "gameplay_control",
+    "consent_screen",
+    "cyber_plus_screen",
+    "dialogue",
+    "cutscene",
+    "purchase_flow",
+    "app_open"
+  ],
+  "banner": false,
+  "countdownAfterAdSec": 3,
+  "loadTimeoutSec": 3,
+  "rewardVerification": {
+    "persistent": "server_ssv_or_nonce",
+    "temporary": "client_ok"
+  },
+  "ageRating": "13+"
+}

@@ -1,0 +1,121 @@
+{
+  "newPlayer7Day": {
+    "windowDays": 14,
+    "days": [
+      {
+        "day": 1,
+        "reward": "100 core_bit + shield_cell"
+      },
+      {
+        "day": 2,
+        "reward": "20 gem + repair_kit",
+        "showStarterPack": true
+      },
+      {
+        "day": 3,
+        "reward": "300 core_bit + 1 spin"
+      },
+      {
+        "day": 4,
+        "reward": "1 data_chip"
+      },
+      {
+        "day": 5,
+        "reward": "choose 1 common skin"
+      },
+      {
+        "day": 6,
+        "reward": "50 gem + 2 booster"
+      },
+      {
+        "day": 7,
+        "reward": "rookie skin set + 100 gem + 2 data_chip"
+      }
+    ],
+    "pointsChest": [
+      20,
+      40,
+      60,
+      80,
+      100
+    ]
+  },
+  "dailyLogin": {
+    "cycleDays": 30,
+    "makeup": {
+      "ad": 1,
+      "gemCost": 30
+    },
+    "milestones": {
+      "3,10,17,24": "15 gem",
+      "7": "1 data_chip",
+      "14": "50 gem + farm_double_ticket",
+      "21": "rare chip",
+      "30": "100 gem + 1 data_chip + profile frame"
+    }
+  },
+  "dailySpin": {
+    "freePerDay": 1,
+    "adExtra": 2,
+    "purchasable": false,
+    "pityStreakDays": 7,
+    "pityMin": "30 gem",
+    "prizes": [
+      {
+        "p": 30,
+        "r": "200 core_bit"
+      },
+      {
+        "p": 18,
+        "r": "500 core_bit"
+      },
+      {
+        "p": 18,
+        "r": "random booster"
+      },
+      {
+        "p": 12,
+        "r": "10 gem"
+      },
+      {
+        "p": 12,
+        "r": "small farm material"
+      },
+      {
+        "p": 6,
+        "r": "30 gem"
+      },
+      {
+        "p": 3,
+        "r": "1 data_chip"
+      },
+      {
+        "p": 1,
+        "r": "epic chip"
+      }
+    ],
+    "oddsVisible": true
+  },
+  "quests": {
+    "daily": 5,
+    "weekly": 3,
+    "pointsEach": 20,
+    "chests": [
+      20,
+      40,
+      60,
+      80,
+      100
+    ]
+  },
+  "events": {
+    "weekendDoubleDrop": true,
+    "limitedBossEveryDays": 14,
+    "riftSeasonDays": 28,
+    "welcomeBackAfterDays": 7
+  },
+  "push": {
+    "optIn": true,
+    "maxPerDay": 1
+  }
+}

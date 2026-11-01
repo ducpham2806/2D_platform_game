@@ -1,0 +1,138 @@
+{
+  "model": "A",
+  "ageRating": "13+",
+  "platformsFirst": [
+    "android",
+    "web"
+  ],
+  "platformsLater": [
+    "ios"
+  ],
+  "ads": {
+    "app": "AdMob",
+    "web": "H5 Games Ads",
+    "rewarded": [
+      {
+        "id": "revive",
+        "capPerStage": 2
+      },
+      {
+        "id": "double_reward",
+        "capPerDay": 6
+      },
+      {
+        "id": "extra_spin",
+        "capPerDay": 2
+      },
+      {
+        "id": "free_booster",
+        "capPerStage": 1
+      },
+      {
+        "id": "farm_double",
+        "capPerDay": 2
+      },
+      {
+        "id": "login_makeup",
+        "capPerDay": 1
+      }
+    ],
+    "interstitial": {
+      "when": "sau màn Kết quả khi về Hub",
+      "minGapMin": 4,
+      "maxPerStages": 1,
+      "perStages": 2,
+      "noAdFirstMinutes": 20,
+      "neverIn": [
+        "prologue",
+        "stage1",
+        "boss",
+        "gameplay"
+      ]
+    },
+    "banner": false,
+    "detailsFile": "adplacements.json"
+  },
+  "gemPacks": [
+    {
+      "usd": 0.99,
+      "gem": 80
+    },
+    {
+      "usd": 2.99,
+      "gem": 260
+    },
+    {
+      "usd": 4.99,
+      "gem": 450
+    },
+    {
+      "usd": 9.99,
+      "gem": 950
+    },
+    {
+      "usd": 19.99,
+      "gem": 2000
+    },
+    {
+      "usd": 49.99,
+      "gem": 5200
+    },
+    {
+      "usd": 99.99,
+      "gem": 10800
+    }
+  ],
+  "firstPurchaseBonusMul": 2,
+  "starterPack": {
+    "usd": 1.99,
+    "gem": 300,
+    "items": [
+      "skin_rookie_set",
+      "booster_x5",
+      "farm_double_ticket_x5"
+    ],
+    "once": true
+  },
+  "cyberPlus": {
+    "monthlyUsd": 2.99,
+    "yearlyUsd": 19.99,
+    "lifetimeUsd": 24.99,
+    "trialDays": 3,
+    "benefits": [
+      "no_interstitial",
+      "rewarded_auto_claim",
+      "gem_per_day_10",
+      "spin_per_day_plus_1",
+      "sweep_per_day_plus_5",
+      "monthly_exclusive_skin"
+    ],
+    "noStats": true,
+    "gemPerDay": 10
+  },
+  "seasonPass": {
+    "usd": 4.99,
+    "days": 30,
+    "levels": 30,
+    "premiumTrack": "cosmetic_and_gem_only",
+    "buyLevelWithGemMaxPerSeason": 10
+  },
+  "premiumSkinGem": [
+    400,
+    1200
+  ],
+  "sweepGem": {
+    "extraPerDayMax": 5
+  },
+  "farmDoubleTicketGem": {
+    "costGem": 20,
+    "maxPerDay": 5
+  },
+  "remoteConfigKeys": [
+    "ad_interstitial_gap",
+    "ad_rewarded_caps",
+    "drop_rates",
+    "offers",
+    "event_bonus"
+  ]
+}

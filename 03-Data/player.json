@@ -1,0 +1,30 @@
+{
+  "speedTilesPerSec": 5.5,
+  "jump": {
+    "minTiles": 1.2,
+    "maxTiles": 4.5,
+    "coyoteSec": 0.1,
+    "bufferSec": 0.12
+  },
+  "dash": {
+    "tiles": 3,
+    "durationSec": 0.25,
+    "cooldownSec": 0.6,
+    "iFrameSec": 0.1
+  },
+  "wallSlideTilesPerSec": 2,
+  "iFramesAfterHitSec": 1.0,
+  "level": {
+    "max": 30,
+    "expFormula": "40*L^1.4",
+    "hp": "100+8*(L-1)",
+    "atk": "10+1.5*(L-1)",
+    "spPerLevelFrom2": 1,
+    "spPerBoss": 1
+  },
+  "moduleSlots": {
+    "start": 3,
+    "at10": 4,
+    "at20": 5
+  }
+}

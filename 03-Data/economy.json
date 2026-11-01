@@ -1,0 +1,47 @@
+{
+  "currencies": [
+    "core_bit",
+    "data_chip",
+    "gem"
+  ],
+  "iap": true,
+  "ads": true,
+  "incomeFormula": "225 + 75*(stage-1)",
+  "difficultyRewardMul": [
+    1,
+    1.5,
+    2,
+    3,
+    4
+  ],
+  "dataChipSources": {
+    "sideQuests": 8,
+    "secrets": 8,
+    "achievements": 10,
+    "firstClearHardDifficulties": 12
+  },
+  "deathKeepsCurrency": true,
+  "gemNeverExpires": true,
+  "serverAuthoritative": [
+    "gem",
+    "purchases",
+    "drops",
+    "leaderboard"
+  ],
+  "note": "Gem không mua được chỉ số, Chip Lõi hay Mastery",
+  "upgradeShareModel": {
+    "upgrade": 0.6,
+    "skin": 0.2,
+    "booster": 0.2,
+    "scope": "chỉ phần cốt truyện"
+  },
+  "gemFreeIncomePerDay": {
+    "noAds": 34,
+    "withAds": 40
+  },
+  "premiumSinks": {
+    "farmDoubleTicketGem": 20,
+    "extraSweepGem": 10,
+    "maxGemPerDay": 150
+  }
+}

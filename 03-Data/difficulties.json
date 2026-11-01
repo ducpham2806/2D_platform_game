@@ -1,0 +1,44 @@
+[
+  {
+    "id": "story",
+    "damageTaken": 0.5,
+    "enemyHp": 0.8,
+    "rewardMul": 0.5,
+    "unlock": null
+  },
+  {
+    "id": "normal",
+    "damageTaken": 1.0,
+    "enemyHp": 1.0,
+    "rewardMul": 1,
+    "unlock": null
+  },
+  {
+    "id": "challenge",
+    "damageTaken": 1.5,
+    "enemyHp": 1.25,
+    "rewardMul": 1.5,
+    "unlock": "clear normal"
+  },
+  {
+    "id": "nightmare",
+    "damageTaken": 2.0,
+    "enemyHp": 1.5,
+    "rewardMul": 2,
+    "unlock": "clear challenge"
+  },
+  {
+    "id": "legend",
+    "damageTaken": 2.5,
+    "enemyHp": 2.0,
+    "rewardMul": 3,
+    "unlock": "clear nightmare"
+  },
+  {
+    "id": "overclock",
+    "damageTaken": 3.0,
+    "enemyHp": 2.5,
+    "rewardMul": 4,
+    "unlock": "clear legend"
+  }
+]

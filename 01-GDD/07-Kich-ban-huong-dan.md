@@ -1,0 +1,276 @@
+# Kịch bản hướng dẫn làm quen với game
+
+Kịch bản hướng dẫn (tutorial/onboarding) cho người chơi mới của Cyber Vanguard: từ lần mở game đầu tiên đến endgame. Mỗi bước có mã, điều kiện kích hoạt, hành động yêu cầu, lời thoại, điều kiện hoàn thành và cách xử lý khi người chơi vướng. Prologue dùng các nhịp đã có ở tab Đặc tả Prologue & Stage 1. Mọi con số đánh dấu `[PLACEHOLDER]` cần chỉnh sau playtest.
+
+## 1. Nguyên tắc, mục tiêu và KPI
+
+**Nguyên tắc**
+
+1. **Học bằng làm:** mỗi bước dạy một điều, trong một tình huống an toàn; lời thoại tối đa 2 dòng.
+2. **Không khóa lâu:** cutscene và hội thoại bỏ qua được; không khóa điều khiển quá 10 giây.
+3. **Thích ứng:** nếu người chơi đã làm đúng trước khi gợi ý hiện, bỏ qua bước; nếu vướng thì gợi ý rõ hơn (mục 7).
+4. **Không bán hàng trong lúc học:** không quảng cáo, popup ưu đãi hay IAP ở Prologue và Stage 1; quảng cáo đầu tiên chỉ sau khi hạ boss Stage 1.
+5. **Mở dần:** chỉ giới thiệu hệ thống khi người chơi cần nó (mục 2).
+6. **Xem lại được:** mọi hướng dẫn có trong Trợ giúp (Menu tạm dừng) và Phòng Hồ Sơ.
+
+**KPI `[PLACEHOLDER]`**
+
+| Chỉ số | Mục tiêu |
+| --- | --- |
+| Hoàn thành Prologue | ≥ 90% |
+| Thời lượng Prologue | 3–5 phút |
+| Bỏ cuộc tại một bước | ≤ 3% mỗi bước |
+| Người chọn "Bỏ qua hướng dẫn" | ≤ 15% |
+| Hoàn thành Stage 1 ở phiên đầu | ≥ 70% |
+| Mua món đầu tiên không cần chỉ dẫn thêm | ≥ 90% |
+| Giữ chân ngày 1 | ≥ 35% |
+
+## 2. Tổng quan các giai đoạn và mở dần tính năng
+
+| Giai đoạn | Khi nào | Mục tiêu học | Mã bước | Thời lượng |
+| --- | --- | --- | --- | --- |
+| 0. Mở game lần đầu | Lần mở đầu tiên | Ngôn ngữ, tuổi, bố cục nút | F01–F04 | \~1 phút |
+| 1. Prologue | Sau giai đoạn 0 | Chạy, nhảy, bắn, bắn nạp, lướt, né telegraph | P01–P13 | 3–5 phút |
+| 2. Hub đầu tiên | Sau Prologue | Menu nhanh, chọn màn | H01–H04 | 1–2 phút |
+| 3. Stage 1 | Sau H04 | Bám tường, dây leo, gai, phòng khóa, khiên, boss, đổi vũ khí | S01–S13 | \~10 phút |
+| 4. Sau Stage 1 | Kết quả Stage 1 | EXP, Core Bit, Xưởng, Shop, nhiệm vụ phụ, booster | R01–R06 | 3–5 phút |
+| 5. Mở dần | Rải rác qua 8 màn | Thứ tự màn, điểm yếu, Capsule, module, skin, Sub-Tank, gợi ý khi chết nhiều | D01–D09 | Theo tình huống |
+| 6. Live-ops, quảng cáo, mua hàng | Từ sau Stage 1 | 7 ngày tân thủ, đăng nhập, vòng quay, quà, hồi sinh bằng quảng cáo, Starter Pack | L01–L08 | Theo tình huống |
+| 7. Endgame | Sau khi hạ AEGIS | Vùng Eclipse, Farm, Chip Lõi, tỷ lệ rơi, nâng cấp, Sweep, Mastery | E01–E07 | \~10 phút |
+
+**Tính năng mở dần**
+
+| Tính năng | Mở khi | Giới thiệu qua |
+| --- | --- | --- |
+| Chạy, nhảy, bắn | Ngay từ Prologue | P01–P05 |
+| Bắn nạp, lướt | Giữa Prologue | P08, P09 |
+| Bám tường | Stage 1 đoạn A | S01 |
+| Đổi vũ khí, năng lượng vũ khí | Sau Thorna | S12, S13 |
+| Shop, Xưởng, nhiệm vụ phụ | Sau Stage 1 | R02–R05 |
+| Chọn thứ tự màn, điểm yếu boss | Sau Stage 1 | D01, D03 |
+| Module, Tủ skin, Sub-Tank | Khi nhận lần đầu | D04, D05, D08 |
+| Đăng nhập, vòng quay, 7 ngày tân thủ | Sau Stage 1 | L01–L03 |
+| Quảng cáo rewarded, Starter Pack | Sau Stage 1, từ ngày 2 | L04, L05 |
+| Vùng Eclipse, Chip Lõi | Sau AEGIS | E01–E07 |
+
+## 3. Giai đoạn 0 và 1: mở game lần đầu và Prologue
+
+Biểu tượng nút (`{NHẢY}`, `{BẮN}`, `{LƯỚT}`, `{DI_CHUYỂN}`, `{ĐỔI_VK}`) tự đổi theo thiết bị đang dùng (mục 8).
+
+### 3.1 Giai đoạn 0: mở game lần đầu
+
+| ID | Kích hoạt | Người chơi làm | Hiển thị và lời thoại | Hoàn thành khi | Nếu vướng |
+| --- | --- | --- | --- | --- | --- |
+| F01 | Lần mở đầu tiên | Chọn ngôn ngữ | "Chọn ngôn ngữ: Tiếng Việt / English" | Chọn một ngôn ngữ | Mặc định theo hệ thống |
+| F02 | Sau F01 | Xác nhận tuổi 13+ và đồng ý quảng cáo | Màn tuổi và đồng ý quảng cáo | Hoàn thành | Dưới 13 tuổi: dừng, giải thích |
+| F03 | Thiết bị cảm ứng, sau F02 | Chọn cỡ nút (nhỏ/vừa/lớn) và tay thuận | "Chọn cỡ nút cho vừa tay" kèm xem trước | Xác nhận hoặc "Dùng mặc định" | Bỏ qua được; chỉnh lại ở Cài đặt |
+| F04 | Bắt đầu Prologue | (Tùy chọn) bỏ qua phần hướng dẫn | Nút nhỏ "Tôi đã biết chơi, bỏ qua hướng dẫn" hiện sau 10 giây | Bấm hoặc không | Bỏ qua: mở khóa mọi nút, nhảy tới checkpoint P07 |
+
+### 3.2 Giai đoạn 1: Prologue (bám các nhịp trong tab Đặc tả Prologue & Stage 1)
+
+| ID | Kích hoạt | Người chơi làm | Hiển thị và lời thoại | Hoàn thành khi | Nếu vướng |
+| --- | --- | --- | --- | --- | --- |
+| P01 | 0:00 Kai tỉnh dậy | Chạy sang phải | NOVA: "Khởi động hoàn tất. Chào Kai, tôi là NOVA. Hãy chạy về phía cửa." Biểu tượng `{DI_CHUYỂN}` nhấp nháy | Đi 8 ô | Đứng yên 8 giây: mũi tên chỉ hướng và nhắc "Dùng `{DI_CHUYỂN}` để chạy." |
+| P02 | 0:20 Khe sàn | Nhảy qua khe 2 ô | NOVA: "Nhấn `{NHẢY}` để nhảy." | Qua khe | Rơi 3 lần: "Nhấn khi chạm mép khe rồi thả ra."; khe không gây chết |
+| P03 | Bục thấp và cao | Nhảy cao hơn bằng giữ nút | NOVA: "Giữ `{NHẢY}` lâu hơn để nhảy cao hơn." | Lên bục 3,5 ô | Thất bại 3 lần: hiện bóng mờ minh họa giữ nút |
+| P04 | 0:45 Thùng phế liệu | Bắn | NOVA: "Nhấn `{BẮN}` để phá thùng." | Phá thùng | Sau 6 giây: nhấp nháy nút `{BẮN}` |
+| P05 | 1:10 Drone đầu tiên | Hạ Drone | NOVA: "Có kẻ địch! Bắn hạ nó." Drone chưa gây sát thương | Hạ Drone | Sau 10 giây: Drone tự lùi lại gần hơn |
+| P06 | 1:50 Drone bay | Nhảy và bắn lên cao | NOVA: "Nhảy rồi bắn khi nó ở trên cao." | Hạ 2 Drone bay | Nhắc lại sau 3 lần trượt |
+| P07 | Checkpoint 1 | Đi qua checkpoint | Cờ sáng: "Đã lưu điểm hồi sinh. Nếu thua, bạn quay lại đây." | Chạm checkpoint | Không cần xử lý |
+| P08 | 2:20 Khối chắn cam | Bắn nạp | NOVA: "Giữ `{BẮN}` để nạp năng lượng rồi thả." Hiện thanh nạp | Phá khối | Sau 5 giây: hiện thanh nạp minh họa |
+| P09 | 2:50 Hành lang đạn | Lướt qua khe đạn | NOVA: "Nhấn `{LƯỚT}` để xuyên qua khe đạn." Mở khóa nút lướt | Qua hành lang | Thất bại 3 lần: làm chậm đạn 20% |
+| P10 | Tháp pháo tập sự | Né theo telegraph | NOVA: "Tháp sáng lên trước khi bắn. Né khi nó sáng." Từ đây kẻ địch gây sát thương thật | Né 3 phát liên tiếp | Chết: về checkpoint P07, gợi ý "Quan sát ánh sáng báo trước" |
+| P11 | Vật phẩm hồi máu | Nhặt | NOVA: "Nhặt vật phẩm xanh để hồi máu." | Nhặt vật phẩm | Vật phẩm xuất hiện sau khi người chơi mất máu lần đầu |
+| P12 | 3:20 Tiền sảnh | Xem cảnh Vex | Vex: "Unit-X... vậy là chúng vẫn chọn mày." NOVA: "Tôi không có dữ liệu về người này." | Xem hoặc "Bỏ qua" | Cảnh tối đa 8 giây, bỏ qua được |
+| P13 | 3:50 Thoát ra | Ra khỏi phòng thí nghiệm | Tiêu đề màn; mở Hub Arkon | Qua cửa | Không cần xử lý |
+
+## 4. Giai đoạn 2 và 3: Hub lần đầu và Stage 1
+
+### 4.1 Giai đoạn 2: Hub lần đầu
+
+| ID | Kích hoạt | Người chơi làm | Hiển thị và lời thoại | Hoàn thành khi | Nếu vướng |
+| --- | --- | --- | --- | --- | --- |
+| H01 | Vào Hub lần đầu | Nói chuyện với Mira | Mira: "Đừng đứng ngẩn ra đó. Tôi là Mira, kỹ sư trạm Arkon." | Hết thoại | Bỏ qua được |
+| H02 | Sau H01 | Mở Menu nhanh | Chỉ vào nút Menu: "Chạm Menu để đến mọi nơi chỉ một chạm. Đi bộ là tùy chọn." | Mở menu | Sau 10 giây nút Menu nhấp nháy |
+| H03 | Sau H02 | Chọn Cổng Chiến dịch | NOVA: "Chọn Stage 1: Verdant Gardens." Chỉ Stage 1 được mở | Chọn Stage 1 | Chỉ có một lựa chọn |
+| H04 | Màn Chuẩn bị lần đầu | Bắt đầu màn | NOVA: "Đây là nơi chọn độ khó và booster. Lần này cứ để Thường rồi bấm Bắt đầu." | Bấm Bắt đầu | Các phần khác làm mờ |
+
+### 4.2 Giai đoạn 3: Stage 1
+
+| ID | Kích hoạt | Người chơi làm | Hiển thị và lời thoại | Hoàn thành khi | Nếu vướng |
+| --- | --- | --- | --- | --- | --- |
+| S01 | Đoạn A, giếng cao | Bám tường và leo | NOVA: "Nhảy về phía tường để bám, nhảy tiếp để leo." | Lên đỉnh giếng | Thất bại 3 lần: mũi tên trên tường và bóng mờ |
+| S02 | Đoạn B, dây leo đu | Nhảy lên dây | NOVA: "Dây leo mang bạn theo. Nhảy khi nó lắc gần bờ." | Qua đoạn dây | Rơi 3 lần: dây chậm lại 15% |
+| S03 | Bẫy gai | Tránh gai | NOVA: "Gai gây sát thương và đưa bạn về chỗ an toàn." (chỉ lần chạm đầu) | Qua gai | Không cần xử lý |
+| S04 | Gần phòng bí mật | Khám phá (tùy chọn) | Biểu tượng "?" mờ; NOVA: "Có thứ gì giấu quanh đây." (một lần) | Tùy chọn | Không ép |
+| S05 | Đoạn C, vào phòng khóa | Hạ hết kẻ địch | NOVA: "Cửa khóa cho đến khi hạ hết kẻ địch." Hiện số còn lại | Cửa mở | Không cần xử lý |
+| S06 | Lính Kén lần đầu | Bắn nạp phá khiên | NOVA: "Khiên chặn đạn thường. Bắn nạp sẽ phá nó." | Phá khiên | Bắn thường trúng khiên 5 lần: nhắc lại kèm biểu tượng nạp |
+| S07 | Mini-boss Bramble Golem | Né sóng đất | NOVA: "Nhảy qua sóng đất khi nó đập xuống." | Hạ mini-boss | Checkpoint CP3 ngay trước phòng |
+| S08 | Cửa boss | Vào phòng boss | NOVA: "Máu boss ở trên cùng. Quan sát và né khi nó sáng." Hiện thanh máu boss | Vào phòng | Không cần xử lý |
+| S09 | Thorna pha 1 | Né Gai Quạt và Dây Quất | Chữ nhỏ theo đòn đầu: "Sáng xanh: sắp bắn gai." / "Dây rung: nhảy lên bục." | Hạ pha 1 | Chết 3 lần: NOVA gợi ý đứng bục và đề nghị (không ép) độ khó Cốt truyện |
+| S10 | Thorna pha 2 và 3 | Né Rễ Trồi và Hoa Nở | NOVA: "Nó mạnh lên. Giữ nhịp né." | Hạ boss | Như S09 |
+| S11 | Thorna bại | Xem thoại | Thorna: "Nó không phải... lỗi. Hãy hỏi... AEGIS." | Hết thoại | Bỏ qua được |
+| S12 | Nhận vũ khí | Xem vũ khí mới | NOVA: "Vũ khí mới: Vine Lash. Tôi phát hiện dữ liệu lạ trong nó." | Xác nhận | Không cần xử lý |
+| S13 | Sau S12 | Đổi vũ khí và thử | NOVA: "Nhấn `{ĐỔI_VK}` để đổi vũ khí. Vũ khí boss tốn năng lượng (thanh dưới thanh máu)." | Đổi và bắn 1 lần | Nhắc lại ở màn Kết quả nếu chưa làm |
+
+## 5. Giai đoạn 4 và 5: sau Stage 1 và mở dần
+
+### 5.1 Giai đoạn 4: sau Stage 1
+
+| ID | Kích hoạt | Người chơi làm | Hiển thị và lời thoại | Hoàn thành khi | Nếu vướng |
+| --- | --- | --- | --- | --- | --- |
+| R01 | Màn Kết quả Stage 1 | Xem thưởng | NOVA: "EXP giúp lên cấp, Core Bit để mua đồ, Data Chip rất hiếm." | Bấm Tiếp | Không cần xử lý |
+| R02 | Lên cấp | Vào Xưởng | Mira: "Cậu lên cấp rồi. Vào Xưởng của tôi đi." Xưởng mở | Vào Xưởng | Nút Xưởng nhấp nháy |
+| R03 | Xưởng, tab Kỹ năng | Học 1 kỹ năng | NOVA: "Mỗi kỹ năng tốn 1 điểm. Đặt lại miễn phí bất cứ lúc nào, cứ thử." | Học 1 kỹ năng | Làm nổi một nút rẻ |
+| R04 | Quầy Mira | Mua món đầu tiên | Mira: "Có Core Bit thì vào quầy xem hàng." Làm nổi một món rẻ | Mua 1 món (có xác nhận) | Thiếu tiền: tặng 150 Core Bit một lần |
+| R05 | Bảng Nhiệm Vụ | Nhận nhiệm vụ | Mira: "Giúp tôi tìm 5 hạt giống ở Verdant nhé." | Nhận nhiệm vụ | Không ép làm |
+| R06 | Màn Chuẩn bị của màn kế | Gán booster | NOVA: "Booster dùng một lần trong màn." Làm nổi ô booster | Gán 1 booster (nếu có) | Bỏ qua được |
+
+### 5.2 Giai đoạn 5: mở dần
+
+| ID | Kích hoạt | Người chơi làm | Hiển thị và lời thoại | Hoàn thành khi | Nếu vướng |
+| --- | --- | --- | --- | --- | --- |
+| D01 | Hạ boss thứ nhất | Hiểu thứ tự màn tự do | NOVA: "Từ giờ bạn chọn thứ tự màn. Mỗi boss yếu trước vũ khí của một boss khác." | Xem | Không cần xử lý |
+| D02 | Lần đầu thấy Capsule khóa | Ghi nhớ quay lại | NOVA: "Capsule này cần vũ khí bạn chưa có. Quay lại sau." | Xem | Biểu tượng khóa trên bản đồ nhỏ |
+| D03 | Nhận vũ khí boss thứ 2 | Thử điểm yếu | NOVA: "Boss yếu trước vũ khí khác. Thử đổi vũ khí khi đánh." | Xem | Không cần xử lý |
+| D04 | Nhận module đầu tiên | Lắp module | Mira: "Module cho khả năng phụ. Lắp được 3 ô." | Lắp 1 module | Bỏ qua được |
+| D05 | Sau Stage 2 | Mở Tủ skin | Mira: "Muốn đổi diện mạo? Vào Tủ skin." | Xem | Tùy chọn |
+| D06 | Chết 3 lần liên tiếp ở một đoạn | Nhận gợi ý | NOVA: "Thử vũ khí khắc chế, đổi booster hoặc bật chế độ Cốt truyện." | Chọn hoặc đóng | Tối đa 1 lần mỗi màn |
+| D07 | Nhặt Sub-Tank lần đầu | Hồi máu tay | NOVA: "Sub-Tank hồi máu khi bạn chạm vào biểu tượng." | Dùng 1 lần | Nhắc khi máu thấp |
+| D08 | Điểm chọn cốt truyện đầu tiên | Hiểu lựa chọn | NOVA: "Lựa chọn của bạn ảnh hưởng kết thúc. Có thể chọn lại sau." | Chọn | Không cần xử lý |
+| D09 | Phá đảo Thường | Biết có độ khó mới | Thông báo: "Mở khóa độ khó Thử thách: thưởng nhiều hơn, kẻ địch mạnh hơn." | Xem | Không cần xử lý |
+
+## 6. Giai đoạn 6 và 7: live-ops, quảng cáo, mua hàng và endgame
+
+**Quy tắc quảng cáo và mua hàng trong hướng dẫn:** không có quảng cáo hay popup mua hàng ở Prologue và Stage 1; quảng cáo rewarded đầu tiên chỉ hiện sau khi hạ boss Stage 1; interstitial bật từ ngày 2; tối đa 1 popup ưu đãi mỗi phiên; luôn có nút đóng.
+
+### 6.1 Giai đoạn 6: live-ops, quảng cáo, mua hàng
+
+| ID | Kích hoạt | Người chơi làm | Hiển thị và lời thoại | Hoàn thành khi | Nếu vướng |
+| --- | --- | --- | --- | --- | --- |
+| L01 | Sau Stage 1, vào Hub | Mở bảng 7 ngày tân thủ | Mira: "Mỗi ngày có quà. Làm nhiệm vụ để mở rương." | Mở bảng | Không bắt buộc |
+| L02 | Đăng nhập ngày thứ 2 | Nhận quà đăng nhập | Lịch 30 ngày, tick ngày 2 | Nhận quà | Lỡ ngày không mất chuỗi |
+| L03 | Sau Stage 1, vào Hub | Quay vòng quay | Mira: "Quay miễn phí mỗi ngày một lần." Tỷ lệ luôn xem được | Quay 1 lần | Không bắt buộc |
+| L04 | Lần chết đầu tiên (màn thường) sau khi qua Stage 1 | Làm quen hồi sinh bằng quảng cáo | Chú thích: "Tự nguyện: xem quảng cáo để hồi sinh tại chỗ. Về checkpoint vẫn miễn phí." | Chọn một lựa chọn | Không hiện nếu chưa qua Stage 1 |
+| L05 | Ngày thứ 2, lần vào Hub đầu | Gói khởi đầu | Popup một lần: "Gói khởi đầu" | Mua hoặc đóng | Tối đa 1 popup mỗi phiên |
+| L06 | Lần đầu thấy Quà miễn phí ở Hub | Nhận quà | Chú thích: "Quà miễn phí mỗi 4 giờ." | Nhận | Cyber+ nhận không cần xem |
+| L07 | Lần đầu mở Cửa hàng hoặc Cài đặt | Biết có Cyber+ | Chỉ hiện trong màn Cửa hàng/Cài đặt, không popup | Xem | Không ép |
+| L08 | Lần đầu vào Nhiệm vụ ngày | Hiểu nhiệm vụ | Mira: "Làm nhiệm vụ để đầy thanh điểm và mở rương." | Xem | Không cần xử lý |
+
+### 6.2 Giai đoạn 7: endgame
+
+| ID | Kích hoạt | Người chơi làm | Hiển thị và lời thoại | Hoàn thành khi | Nếu vướng |
+| --- | --- | --- | --- | --- | --- |
+| E01 | Hạ AEGIS (bất kỳ kết thúc) | Vào Vùng Eclipse | NOVA: "Eclipse vẫn còn trong các khu vực cũ. Vào Vùng Eclipse." | Vào Vùng Eclipse | Nút nhấp nháy |
+| E02 | Farm Run lần đầu | Chọn màn và Mức Eclipse 1 | "Mỗi mức tăng độ khó và phần thưởng." | Hoàn thành 1 lượt | Mặc định Mức 1 |
+| E03 | Nhận Chip đầu tiên | Lắp Chip | NOVA: "Chip Lõi tăng chỉ số. Lắp vào ô tương ứng." | Lắp 1 Chip | Nút Lắp nhấp nháy |
+| E04 | Mở tỷ lệ rơi | Xem tỷ lệ và bảo hiểm xui | Chú thích: "Tỷ lệ luôn hiển thị. Nhiều lần không ra đồ hiếm sẽ có bảo hiểm." | Xem | Không cần xử lý |
+| E05 | Đủ Core Bit | Nâng cấp Chip | NOVA: "Nâng cấp không có rủi ro thất bại." | Nâng +1 | Không cần xử lý |
+| E06 | Có màn đạt 3 sao | Quét (Sweep) | NOVA: "Màn đạt 3 sao có thể quét để nhận thưởng nhanh." | Quét 1 lần | Hiện số lượt còn lại |
+| E07 | Nhận Mảnh vũ khí | Weapon Mastery | Mira: "Mảnh vũ khí nâng Mastery cho từng vũ khí." | Nâng 1 cấp | Tùy chọn |
+
+## 7. Quy tắc thích ứng và chống vướng
+
+| Tình huống | Xử lý `[PLACEHOLDER]` |
+| --- | --- |
+| Người chơi làm đúng trước khi gợi ý hiện | Đánh dấu bước xong, bỏ qua lời thoại |
+| **Bậc gợi ý 1:** không tiến triển sau 8–10 giây | Nhấp nháy nút hoặc mũi tên chỉ hướng |
+| **Bậc gợi ý 2:** thất bại 3 lần | Hiện bóng mờ minh họa thao tác và nhắc lại lời thoại bằng câu khác |
+| **Bậc gợi ý 3:** thất bại 6 lần (chỉ ở Prologue và Stage 1) | Giảm độ khó khu vực: đạn chậm 20%, dây leo chậm 15%, thêm checkpoint; hiện nút "Bỏ qua bước này" |
+| **Bậc gợi ý 4:** chết nhiều ở boss | Đề nghị (không ép) độ khó Cốt truyện |
+| Chết ở bước hướng dẫn | Hồi sinh ngay tại bước, không quay lại đầu màn |
+| Người chơi có kinh nghiệm (5 bước liền hoàn thành trước gợi ý) | Hiện đề nghị rút gọn hướng dẫn |
+| Bỏ qua hướng dẫn | Nút ở F04, hoặc giữ nút Bỏ qua 1,5 giây; đưa tới checkpoint P07 và hiện màn tóm tắt điều khiển |
+| Thoát app giữa chừng | Lưu bước hiện tại; quay lại ở checkpoint hoặc bước gần nhất |
+| Đổi thiết bị điều khiển | Biểu tượng nút đổi ngay |
+| Xem lại | Menu tạm dừng, mục Trợ giúp: liệt kê các bước đã học, bấm để xem lại minh họa |
+
+Không có bước nào bắt buộc người chơi thua hay mua hàng; không bước nào khóa quá 10 giây.
+
+## 8. Biểu tượng nút, văn bản, trợ năng và bản địa hóa
+
+### 8.1 Biểu tượng nút theo thiết bị
+
+| Mã | Bàn phím | Tay cầm | Cảm ứng |
+| --- | --- | --- | --- |
+| `{DI_CHUYỂN}` | A/D hoặc mũi tên | Cần trái | Cần ảo nổi |
+| `{NHẢY}` | K | A | Nút Nhảy |
+| `{BẮN}` | J | X | Nút Bắn |
+| `{LƯỚT}` | L | B | Nút Lướt |
+| `{ĐỔI_VK}` | Q / E | LB / RB | Hai nút đổi vũ khí |
+| `{TẠM_DỪNG}` | Esc | Start | Nút II |
+| `{TƯƠNG_TÁC}` | E | Y | Chạm vào khu |
+
+Biểu tượng cập nhật theo thiết bị được dùng gần nhất; nếu người chơi đổi phím thì hiện phím mới.
+
+### 8.2 Văn bản và trợ năng
+
+- Mỗi lời thoại tối đa 2 dòng, chữ ≥ 16 sp, độ tương phản cao; chạm để hiện hết dòng.
+- Telegraph không chỉ dùng màu: kèm hình dạng và âm thanh để người mù màu nhận biết.
+- Tùy chọn: chữ cỡ lớn, giảm hiệu ứng nhấp nháy, giảm rung, tự bắn, giảm tốc độ game 10–30%, hộp thoại tự tiến, cảnh báo âm thanh cho đòn boss.
+- Không lồng tiếng: lời thoại bằng văn bản và âm thanh biểu cảm.
+
+### 8.3 Bản địa hóa
+
+- Khóa chuỗi: `tut.<ID>.text` và `tut.<ID>.hint2` (ví dụ `tut.P08.text`); hai ngôn ngữ ban đầu: tiếng Việt và tiếng Anh.
+- Không ghép chuỗi bằng nối câu; dùng biến `{NHẢY}`, `{BẮN}`... trong cùng một chuỗi.
+- Chừa chỗ cho tiếng Anh dài hơn tiếng Việt tới khoảng 30%; kiểm tra tràn chữ ở màn hình nhỏ.
+
+## 9. Đo lường
+
+| Sự kiện | Tham số |
+| --- | --- |
+| `tutorial_step_start` | id, phase |
+| `tutorial_step_complete` | id, time\_sec, attempts |
+| `tutorial_step_fail` | id, count |
+| `tutorial_hint_shown` | id, level (1–4) |
+| `tutorial_skip` | id, scope (step, prologue) |
+| `tutorial_phase_complete` | phase, total\_time\_sec |
+
+| Báo động `[PLACEHOLDER]` | Hành động |
+| --- | --- |
+| Bỏ cuộc tại một bước > 3% | Xem lại thiết kế bước đó (làm dễ, thêm gợi ý) |
+| Gợi ý bậc 3 hiện ở > 15% người chơi tại một bước | Làm dễ khu vực hoặc đổi cách dạy |
+| Thời gian một bước > gấp 2 lần dự kiến | Rút ngắn hoặc làm rõ lời thoại |
+| Hơn 15% bỏ qua hướng dẫn | Xem lại độ dài và nhịp Prologue |
+| Phễu: Prologue → Hub → Stage 1 → boss Stage 1 | Tỷ lệ qua mỗi mốc ≥ 90% / 85% / 70% |
+
+## 10. Kỹ thuật và prompt
+
+- **TutorialManager theo dữ liệu:** các bước nằm trong `03-Data/tutorial.json` (sinh từ các bảng ở trên); không viết cứng trong mã.
+- **Máy trạng thái:** mỗi bước có kích hoạt (`trigger`), yêu cầu (`require`), giao diện (`ui`), bậc gợi ý (`hints`), cờ `skipIfDone`.
+- **Lưu tiến độ:** danh sách bước đã xong lưu cục bộ và đồng bộ cloud; đổi thiết bị không học lại.
+- **Công tắc:** mỗi bước bật/tắt bằng Remote Config để chỉnh sau soft launch.
+- **Không phụ thuộc quảng cáo/IAP:** các bước L chỉ chạy khi điều kiện ở mục 6 đúng.
+
+Mẫu một bước:
+
+```json
+{"id":"P08","phase":1,"trigger":{"event":"enter_zone","zone":"orange_block"},
+ "require":{"action":"charge_shot_hit","target":"charge_block"},
+ "ui":{"speaker":"NOVA","text":"tut.P08.text","highlight":["{BẮN}"],"overlay":"charge_bar_ghost"},
+ "hints":[{"afterSec":5,"overlay":"charge_bar_ghost"},{"afterFails":3,"text":"tut.P08.hint2"}],
+ "skipIfDone":true}
+```
+
+**Prompt ChatGPT**
+
+- **P-TUT-01:** "Viết TutorialManager đọc 03-Data/tutorial.json: máy trạng thái bước, sự kiện kích hoạt và yêu cầu, lưu tiến độ, bật/tắt bằng Remote Config. Có test."
+- **P-TUT-02:** "Viết lớp giao diện hướng dẫn: hộp thoại NOVA/Mira, làm nổi nút, mũi tên chỉ hướng, bóng mờ minh họa, làm mờ phần không liên quan; biểu tượng nút tự đổi theo thiết bị (mục 8.1)."
+- **P-TUT-03:** "Viết bộ gợi ý thích ứng theo 4 bậc ở mục 7: phát hiện làm đúng trước, đếm thất bại, giảm độ khó khu vực, nút Bỏ qua bước. Có test cho từng bậc."
+- **P-TUT-04:** "Viết test tự động chạy Prologue và Stage 1 bằng đầu vào giả lập, kiểm tra mọi bước hoàn thành và sự kiện đo lường gửi đúng."
+
+## 11. Wireframe hướng dẫn
+
+**Đã có từ trước:** TutKeys, TutRun, TutJump, TutCharge, TutDash, TutWall (Prologue và Stage 1).
+
+**Vẽ thêm (6 màn):**
+
+| Màn | Bước |
+| --- | --- |
+| Thiết lập nhanh nút cảm ứng | F03 |
+| Hub: làm nổi Menu nhanh và Cổng Chiến dịch | H02, H03 |
+| Xưởng: làm nổi kỹ năng và Shop | R03, R04 |
+| Thang gợi ý 4 bậc | Mục 7 |
+| Menu Trợ giúp (xem lại hướng dẫn) | Mục 7 |
+| Xác nhận bỏ qua hướng dẫn và tóm tắt điều khiển | F04 |
