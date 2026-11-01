@@ -548,16 +548,35 @@ Lưu ý rủi ro: trình duyệt di động (đặc biệt Safari iOS) có thể
 
 ## 16. Phạm vi và lộ trình
 
+Dự án làm theo **hai giai đoạn có cổng chặn**. Giai đoạn 1 chỉ trả lời một câu hỏi: *game có vui không* (mục 1.2). Không làm máy chủ, quảng cáo, IAP hay live-ops cho đến khi qua cổng. Lý do: kế hoạch cũ cần khoảng 560 giờ (28 tuần × 20 giờ) cho 12 màn, 9 boss, 8 mini-boss, \~350 spritesheet, backend, kiếm tiền và endgame; riêng một màn kiểu này có boss đã mất khoảng 80–150 giờ với một người làm.
+
+**Giai đoạn 1: chứng minh game vui (MVP)**
+
 | Mốc | Nội dung | Tiêu chí hoàn thành |
 | --- | --- | --- |
-| **Prototype** | Điều khiển + 1 màn xám + 1 boss | Nhảy–lướt–bắn *sướng* trên cả PC và cảm ứng |
-| **Vertical slice** | Prologue + Stage 1 + Thorna, cây kỹ năng rút gọn, Shop khung | Onboarding ≥ 90% |
-| **Alpha** | 4 màn + Hub + toàn bộ hệ thống RPG + cloud save + bảng xếp hạng cơ bản + khung máy chủ và analytics | Kinh tế và lưu dữ liệu không vỡ |
-| **Beta** | Đủ 8 màn + Citadel + 3 kết thúc + Shop đầy đủ + 6 độ khó | Playtest cân bằng theo mức upgrade |
+| **Prototype** | Điều khiển + 1 màn xám + 1 boss | Nhảy–lướt–bắn *sướng* trên cả PC và **cảm ứng** (cảm ứng là tiêu chí chính) |
+| **Vertical slice** | Prologue + Stage 1 + Thorna, cây kỹ năng rút gọn | Onboarding ≥ 90% |
+| **MVP** | Prologue + Stage 1–4 (Verdant, Prism, Cryo, Cirrus) + 4 boss, Hub dạng menu, Xưởng (kỹ năng, module), Shop chỉ có Upgrade, 3 độ khó (Cốt truyện, Thường, Thử thách), lưu cục bộ + mã sao lưu, bản web | Qua **cổng MVP** bên dưới |
+
+**Cổng MVP** (đo với \~50 người chơi thử bản web, không có quảng cáo hay IAP) `[PLACEHOLDER]`:
+
+- Hoàn thành Prologue ≥ 90%; hoàn thành Stage 1 ≥ 70%; ≥ 50% người bắt đầu chơi xong cả 4 màn.
+- Quay lại chơi ngày hôm sau ≥ 35%.
+- ≥ 60% người chơi xong nói muốn chơi tiếp màn 5; ≥ 70% dùng đúng vũ khí khắc chế ở ít nhất 2 boss.
+- Chênh lệch tỷ lệ thua giữa cảm ứng và bàn phím ≤ 40% (mục 17).
+
+Không qua cổng thì sửa cảm giác chơi và thiết kế màn, **không** thêm hệ thống.
+
+**Giai đoạn 2: mở rộng (chỉ sau khi qua cổng MVP)**
+
+| Mốc | Nội dung | Tiêu chí hoàn thành |
+| --- | --- | --- |
+| **Alpha** | Stage 5–8 + Hub đầy đủ + toàn bộ hệ thống RPG + Shop đầy đủ | Kinh tế và lưu dữ liệu không vỡ |
+| **Beta** | Citadel + 3 kết thúc + cloud save + bảng xếp hạng cơ bản + khung máy chủ và analytics | Playtest cân bằng theo mức upgrade |
 | **Live-ops MVP** | Đăng nhập, 7 ngày tân thủ, vòng quay, nhiệm vụ ngày; rewarded ads; IAP Gem, Starter Pack, Cyber+; Gem do máy chủ giữ; Remote Config; đồng ý quảng cáo và xác nhận tuổi | Mua và khôi phục đúng; không lỗi nhân đôi Gem |
 | **Endgame MVP** | Farm Run, Boss Hunt, Chip Lõi, Sweep, Weapon Mastery, bảng xếp hạng Tiêu chuẩn | Vòng farm 3–6 phút; tỷ lệ rơi hiển thị đúng |
 | **Soft launch** | Việt Nam cộng một thị trường tiếng Anh nhỏ, 4–6 tuần | Qua cổng KPI (mục 17) |
-| **Ra mắt toàn cầu và mùa đầu** | Eclipse Rift, Season Pass, sự kiện, kiếm tiền bản web, iOS | KPI ổn định 2 tuần |
+| **Ra mắt toàn cầu và mùa đầu** | Eclipse Rift, Season Pass, sự kiện, kiếm tiền bản web, iOS, độ khó Ác mộng/Huyền thoại/Overclock | KPI ổn định 2 tuần |
 | **Sau ra mắt** | Mỗi 2 tuần 1 sự kiện, mỗi 4 tuần 1 mùa, mỗi tháng 1 bản vá cân bằng | Nhịp nội dung ổn định |
 
 ## 17. Chỉ số thành công và định nghĩa “hỏng”
@@ -590,7 +609,7 @@ Lưu ý rủi ro: trình duyệt di động (đặc biệt Safari iOS) có thể
 | Rủi ro | Mức | Giảm thiểu |
 | --- | --- | --- |
 | Điều khiển cảm ứng kém chính xác | Cao | Playtest sớm, Assist, bố cục tùy chỉnh, lướt/nhảy có buffer |
-| Phạm vi quá lớn (8 màn + Citadel + Shop + cloud + live-ops + endgame + kiếm tiền) | Cao | Làm theo mốc, MVP trước, tái sử dụng asset, cắt hoạt ảnh ít quan trọng |
+| Phạm vi quá lớn (8 màn + Citadel + Shop + cloud + live-ops + endgame + kiếm tiền) | Rất cao | Hai giai đoạn có cổng chặn (mục 16): MVP 4 màn, không máy chủ và không kiếm tiền cho đến khi qua cổng; tái sử dụng asset, cắt hoạt ảnh ít quan trọng |
 | Bị coi là pay-to-win | Cao | Không bán chỉ số hay Chip Lõi; bảng Tiêu chuẩn; cùng trần sức mạnh cho mọi người |
 | Mệt vì quảng cáo | Trung bình | Rewarded tự nguyện; interstitial giới hạn bằng Remote Config; Cyber+ tắt hẳn |
 | Gian lận (Gem, rơi đồ, bảng xếp hạng) | Cao | Máy chủ giữ gốc, kiểm tra biên lai, seed và chuỗi input |

@@ -26,19 +26,29 @@ Vòng lặp cho mỗi tính năng nhỏ:
 
 ## 2. Lộ trình theo sprint (1 sprint = 1 tuần)
 
+Làm theo hai giai đoạn của GDD mục 16. **Giai đoạn 2 chỉ bắt đầu khi qua cổng MVP.**
+
+**Giai đoạn 1: chứng minh game vui (khoảng 19 tuần)**
+
 | Sprint | Mốc | Module (xem `02-Module.md`) | Asset (xem `05-Assets`) |
 |---|---|---|---|
 | 1 | Khởi động | M0 Dự án, M1 Khung game | Style bible, tờ thiết kế Kai, bảng màu |
-| 2–3 | **Prototype** | M2 Đầu vào, M3 Nhân vật | Kai: idle, run, nhảy, đáp (P0); ô gạch xám |
-| 4–5 | | M4 Chiến đấu, M5 Kẻ địch, M7 Màn chơi | Hiệu ứng Buster, Drone Lính, tileset phòng thí nghiệm |
-| 6–8 | **Vertical slice** | M6 Boss (Thorna), M10 HUD cơ bản, M11 lưu cục bộ | Toàn bộ Prologue và Stage 1 (nhóm P1) |
-| 9–12 | **Alpha** | M8 RPG, M9 Shop, M10 Hub và Xưởng, Stage 2–4 | Nhóm P2 |
-| 13–16 | **Beta** | Stage 5–8, Citadel, kết thúc, M12 Âm thanh | Nhóm P3 |
-| 17–19 | Live-ops MVP | M13 Live-ops, M14 Kiếm tiền, M16 Phân tích, M11 cloud, M17 Đóng gói | UI Live-ops (P4) |
-| 20–22 | Endgame MVP | M15 Endgame | Chip Lõi, biểu tượng (P4) |
-| 23–28 | Soft launch | M18 QA, chỉnh bằng Remote Config | Ảnh cửa hàng (P5) |
+| 2–4 | **Prototype** | M2 Đầu vào (cảm ứng ngay từ đầu), M3 Nhân vật, M4 Chiến đấu cơ bản, 1 boss xám | Kai: idle, run, nhảy, đáp (P0); ô gạch xám |
+| 5–9 | **Vertical slice** | M5 Kẻ địch, M7 Màn chơi, M6 Boss (Thorna), M10 HUD cơ bản, M11 lưu cục bộ, TutorialManager | Toàn bộ Prologue và Stage 1 (nhóm P1) |
+| 10–17 | **MVP** | Stage 2–4 (Prism, Cryo, Cirrus; khoảng 2,5 tuần mỗi màn), M8 RPG rút gọn, Xưởng, Shop chỉ Upgrade, 3 độ khó, bản web | Nhóm P2 (chỉ phần của Stage 2–4) |
+| 18–19 | **Cổng MVP** | Playtest \~50 người, sửa cảm giác chơi và màn | Không thêm asset mới |
 
-Tổng khoảng 28 tuần (7 tháng). Nếu asset là điểm nghẽn (rất có thể), cho phép chạy asset song song **trước** code một sprint.
+**Giai đoạn 2: mở rộng (ước lượng lại sau cổng MVP, dự kiến 30–40 tuần)**
+
+| Mốc | Module | Asset |
+|---|---|---|
+| Alpha | Stage 5–8, M8 RPG đầy đủ, M9 Shop đầy đủ, M10 Hub | Nhóm P3 (Stage 5–8) |
+| Beta | Citadel, kết thúc, M12 Âm thanh, M11 cloud | Nhóm P3 còn lại |
+| Live-ops MVP | M13 Live-ops, M14 Kiếm tiền, M16 Phân tích, M17 Đóng gói | UI Live-ops (P4) |
+| Endgame MVP | M15 Endgame | Chip Lõi, biểu tượng (P4) |
+| Soft launch | M18 QA, chỉnh bằng Remote Config | Ảnh cửa hàng (P5) |
+
+Nếu asset là điểm nghẽn (rất có thể), cho phép chạy asset song song **trước** code một sprint. Sau 3 sprint đầu, đo tốc độ thật rồi ước lượng lại toàn bộ bảng này.
 
 ## 3. Nhịp mỗi tuần
 
