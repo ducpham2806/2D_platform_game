@@ -21,6 +21,7 @@ Vòng lặp cho mỗi tính năng nhỏ:
 - Một thay đổi một commit; nhánh Git theo module; gắn tag ở cuối mỗi mốc.
 - Giữ file `CONTEXT.md` ở gốc dự án: tóm tắt kiến trúc, quyết định đã chốt, danh sách module và trạng thái. Cập nhật sau mỗi sprint rồi dán vào cuộc trò chuyện mới.
 - Khi cuộc trò chuyện quá dài và ChatGPT bắt đầu sai, mở cuộc mới với `CONTEXT.md` + file đang làm.
+- **Cuối mỗi phiên làm việc** (bắt buộc): tóm tắt và ghi lại những gì đã làm vào `04-Dev-Plan/06-Nhat-ky-phien.md` (xem quy tắc ở `CLAUDE.md`).
 
 **Định nghĩa "xong" cho một module:** chạy được trên cả PC và điện thoại; qua tiêu chí nghiệm thu trong tài liệu đặc tả; có test cho phần logic; không lỗi console; được ghi vào `CONTEXT.md`.
 
@@ -34,7 +35,7 @@ Làm theo hai giai đoạn của GDD mục 16. **Giai đoạn 2 chỉ bắt đ�
 |---|---|---|---|
 | 1 | Khởi động (**code xong**, xem `game/CONTEXT.md`) | M0 Dự án, M1 Khung game | Style bible, tờ thiết kế Kai, bảng màu |
 | 2–4 | **Prototype** (Sprint 2: **M2**, Sprint 3: **M3**, Sprint 4: **M4 + boss xám** code xong; công cụ cổng Prototype xong, đo tự động đạt; còn chơi thử với 5 người thật theo `05-Cong-Prototype.md`) | M2 Đầu vào (cảm ứng ngay từ đầu), M3 Nhân vật, M4 Chiến đấu cơ bản, 1 boss xám | Kai: idle, run, nhảy, đáp (P0); ô gạch xám |
-| 5–9 | **Vertical slice** (Sprint 5: **M5** code xong, có phòng thử kẻ địch) | M5 Kẻ địch, M7 Màn chơi, M6 Boss (Thorna), M10 HUD cơ bản, M11 lưu cục bộ, TutorialManager | Toàn bộ Prologue và Stage 1 (nhóm P1) |
+| 5–9 | **Vertical slice** (Sprint 5: **M5** code xong, có phòng thử kẻ địch; Sprint 6: **khung M7** code xong: nạp bản đồ Tiled, checkpoint, hố, gai, dây leo đu, phòng khóa, vật chắn, bí mật, có phòng thử màn chơi) | M5 Kẻ địch, M7 Màn chơi, M6 Boss (Thorna), M10 HUD cơ bản, M11 lưu cục bộ, TutorialManager | Toàn bộ Prologue và Stage 1 (nhóm P1) |
 | 10–17 | **MVP** | Stage 2–4 (Prism, Cryo, Cirrus; khoảng 2,5 tuần mỗi màn), M8 RPG rút gọn, Xưởng, Shop chỉ Upgrade, 3 độ khó, bản web | Nhóm P2 (chỉ phần của Stage 2–4) |
 | 18–19 | **Cổng MVP** | Playtest \~50 người, sửa cảm giác chơi và màn | Không thêm asset mới |
 

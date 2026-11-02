@@ -25,6 +25,19 @@ function tick(timer: number, dt: number): number {
 const DROP_THROUGH_SEC = 0.2;
 
 /**
+ * Bệ di động (dây leo đu...): mặt trên là một bục một chiều rộng `w` ở (x, y). `dx`, `dy` là
+ * quãng bệ vừa đi trong bước này, để chở người đứng trên. Nhảy khỏi bệ cộng `jumpBonus` lực nhảy.
+ */
+export interface Platform {
+  x: number;
+  y: number;
+  w: number;
+  dx: number;
+  dy: number;
+  jumpBonus: number;
+}
+
+/**
  * Vật lý và máy trạng thái của Kai (GDD 5.1, player.json). Logic thuần, bước cố định.
  * Thứ tự mỗi bước: đếm giờ → lướt → di chuyển ngang → nhảy → trọng lực → va chạm → trạng thái.
  */
@@ -53,6 +66,10 @@ export class PlayerPhysics {
   private hurtTime = 0;
   private dropThrough = 0;
   private wallJumpedThisStep = false;
+  /** Bệ đang đứng trên (nếu có). */
+  private riding: Platform | undefined;
+  /** Các bệ di động của màn; thế giới cập nhật vị trí trước mỗi bước. */
+  platforms: readonly Platform[] = [];
 
   constructor(
     private params: PlayerParams,
@@ -85,8 +102,42 @@ export class PlayerPhysics {
     this.dashIFrames = 0;
     this.hurtTime = 0;
     this.dropThrough = 0;
+    this.riding = undefined;
+    // Sự kiện cũ (nhất là "chết") không được mang sang sau khi hồi sinh, nếu không bước đầu
+    // tiên sau hồi sinh lại báo chết và Kai chết lặp mãi.
+    this.events = noEvents();
     this.grounded = groundBelow(this.box, this.map) !== undefined;
     this.state = 'idle';
+  }
+
+  /** Đang đứng trên bệ di động (không tính chỗ đứng an toàn khi chạm gai). */
+  get onPlatform(): boolean {
+    return this.riding !== undefined;
+  }
+
+  /**
+   * Chạm gai (đặc tả Stage 1 mục 3): mất `damage` máu (trừ khi đang bất tử sau cú đánh trước;
+   * bất tử của lướt không cứu), rồi về chỗ (x giữa, đáy) an toàn và bất tử như khi bị đánh.
+   * Hết máu thì chết tại chỗ. Trả về true nếu mất máu.
+   */
+  hitHazard(damage: number, safeX: number, safeBottom: number): boolean {
+    if (this.state === 'dead') return false;
+    const hurt = this.iFrames <= 0 && damage > 0;
+    if (hurt) {
+      this.hp = Math.max(0, this.hp - damage);
+      this.events.hurt = true;
+    }
+    if (this.hp <= 0) {
+      this.state = 'dead';
+      this.events.died = true;
+      this.vx = 0;
+      this.riding = undefined;
+      return hurt;
+    }
+    const iFrames = Math.max(this.iFrames, this.params.iFramesAfterHitSec);
+    this.respawn(safeX, safeBottom, this.hp);
+    this.iFrames = iFrames;
+    return hurt;
   }
 
   /** Đổi thông số vật lý khi đang chơi (bảng chỉnh cảm giác). Hộp va chạm giữ nguyên. */
@@ -154,12 +205,14 @@ export class PlayerPhysics {
     this.dropThrough = tick(this.dropThrough, dt);
 
     if (this.state === 'dead') {
+      this.riding = undefined;
       const vyBefore = this.vy;
       this.applyGravity(dt, false);
       this.moveBody(dt, vyBefore);
       return this.events;
     }
 
+    this.carry();
     const control = this.hurtTime <= 0;
     const dir = input.moveX > 0 ? 1 : input.moveX < 0 ? -1 : 0;
     if (control && input.jumpPressed) this.buffer = p.bufferSec;
@@ -234,8 +287,14 @@ export class PlayerPhysics {
 
   private tryJump(input: PlayerInput): void {
     const p = this.params;
-    if (this.grounded && input.downHeld && groundBelow(this.box, this.map) === 'oneWay') {
+    const below = groundBelow(this.box, this.map);
+    if (
+      this.grounded &&
+      input.downHeld &&
+      (below === 'oneWay' || (below === undefined && this.riding))
+    ) {
       this.dropThrough = DROP_THROUGH_SEC;
+      this.riding = undefined;
       this.grounded = false;
       this.buffer = 0;
       this.coyote = 0;
@@ -244,7 +303,8 @@ export class PlayerPhysics {
     if (this.grounded || this.coyote > 0) {
       if (this.dashing && p.dashJump) this.dashCarry = true;
       this.endDash();
-      this.vy = -p.jumpSpeed;
+      this.vy = -p.jumpSpeed * (1 + (this.riding?.jumpBonus ?? 0));
+      this.riding = undefined;
       this.jumping = true;
       this.grounded = false;
       this.buffer = 0;
@@ -293,11 +353,51 @@ export class PlayerPhysics {
       this.vx = 0;
       if (this.dashing) this.endDash();
     }
+    const prevBottom = this.bottom;
     const hitY = moveY(this.box, ((vyBefore + this.vy) / 2) * dt, this.map, this.dropThrough > 0);
     if (hitY !== 0) this.vy = 0;
     if (hitY === -1) this.jumping = false;
+    this.landOnPlatform(prevBottom);
     this.grounded =
-      this.vy >= 0 && this.dropThrough <= 0 && groundBelow(this.box, this.map) !== undefined;
+      this.vy >= 0 &&
+      this.dropThrough <= 0 &&
+      (this.riding !== undefined || groundBelow(this.box, this.map) !== undefined);
+  }
+
+  /** Đứng trên bệ di động thì đi theo bệ (vẫn bị tường chặn); bệ rời khỏi chân thì thôi chở. */
+  private carry(): void {
+    const r = this.riding;
+    if (!r) return;
+    if (!this.platforms.includes(r)) {
+      this.riding = undefined;
+      return;
+    }
+    moveX(this.box, r.dx, this.map);
+    moveY(this.box, r.y - this.bottom, this.map, true);
+    if (this.box.x + this.box.w <= r.x || this.box.x >= r.x + r.w) {
+      this.riding = undefined;
+      this.grounded = groundBelow(this.box, this.map) !== undefined;
+    }
+  }
+
+  /**
+   * Rơi xuống (hoặc đang đứng) trên mặt bệ di động thì đáp lên bệ. Mặt bệ là bục một chiều:
+   * chỉ đỡ khi chân ở trên mặt bệ trước bước này (so với vị trí cũ hoặc mới của bệ).
+   */
+  private landOnPlatform(prevBottom: number): void {
+    this.riding = undefined;
+    if (this.vy < 0 || this.dropThrough > 0) return;
+    const eps = 0.01;
+    for (const p of this.platforms) {
+      if (this.box.x + this.box.w <= p.x || this.box.x >= p.x + p.w) continue;
+      const top = p.y;
+      if (prevBottom <= Math.max(top, top - p.dy) + eps && this.bottom >= top - eps) {
+        this.box.y = top - this.box.h;
+        this.vy = 0;
+        this.riding = p;
+        return;
+      }
+    }
   }
 
   private deriveState(dir: number): PlayerStateName {

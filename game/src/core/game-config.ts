@@ -5,10 +5,12 @@ import { parseWeapons, type WeaponsData } from './weapons-config';
 import { type BossData, checkBossRules, parseBosses } from './boss-config';
 import { checkEnemyRules, type EnemiesData, parseEnemies } from './enemy-config';
 import { evaluateFormula } from '../logic/formula';
+import { parseStageMechanics, type StageMechanics } from './stage-mechanics-config';
 
 export { ConfigError } from './json-check';
 export { parsePlayer, type PlayerData } from './player-config';
 export { parseWeapons, type WeaponsData } from './weapons-config';
+export type { StageMechanics } from './stage-mechanics-config';
 
 /**
  * Kiểu và kiểm tra dữ liệu cấu hình đọc từ public/data (nguồn: 03-Data).
@@ -40,6 +42,8 @@ export interface LevelSyncData {
 
 export interface StagesData {
   stages: StageData[];
+  /** Cơ chế màn chơi (M7): hồi sinh, hố, gai, dây leo. */
+  mechanics: StageMechanics;
   levelSync: LevelSyncData;
 }
 
@@ -105,6 +109,7 @@ export function parseStages(value: unknown): StagesData {
     throw new ConfigError('stages.levelSync.enabled: cần boolean');
   return {
     stages,
+    mechanics: parseStageMechanics(s.mechanics),
     levelSync: {
       enabled: sync.enabled,
       belowMin: num(sync.belowMin, 'stages.levelSync.belowMin', { min: 0 }),
@@ -225,6 +230,17 @@ export function checkDesignInvariants(config: GameConfig): string[] {
         errors.push(`stages.${stage.id}.enemies: kẻ địch "${id}" chưa có trong enemies.json`);
       }
     }
+  }
+
+  // Gai và hố không giết ngay Kai cấp 1 đầy máu, kể cả ở độ khó khó nhất (đặc tả mục 3).
+  const mech = config.stages.mechanics;
+  const worstTaken = Math.max(...config.difficulties.map((d) => d.damageTaken));
+  for (const [name, damage] of [
+    ['spikes', mech.spikes.damage],
+    ['pit', mech.pit.damage],
+  ] as const) {
+    if (Math.round(damage * worstTaken) >= baseHp)
+      errors.push(`stages.mechanics.${name}.damage: ${damage} giết ngay Kai cấp 1 (${baseHp} máu)`);
   }
 
   return errors;

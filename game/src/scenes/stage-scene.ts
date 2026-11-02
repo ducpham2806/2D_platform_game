@@ -16,10 +16,11 @@ import type { TuningData } from '../logic/playtest/tuning';
 import type { PlayerStateName } from '../logic/player/player-physics';
 import { StageWorld } from '../logic/world/stage-world';
 import type { WorldEvents, WorldInput } from '../logic/world/world-types';
-import { STAGE_DEFS, type StageDefId } from '../stages';
+import { buildStageLayout, STAGE_DEFS, type StageDefId } from '../stages';
 import type { StageDef } from '../stages/stage-def';
 import { StageHud } from './stage/stage-hud';
 import { StagePlaytest, tunedData } from './stage/stage-playtest';
+import { barrierCells, drawMechanics } from './stage/mechanics-renderer';
 import { chargeGlowColor, drawDynamic, drawStaticMap } from './stage/stage-renderer';
 
 const STATE_COLORS: Readonly<Record<PlayerStateName, number>> = {
@@ -58,7 +59,8 @@ export class StageScene extends Phaser.Scene {
   private hud?: StageHud;
   private playtest?: StagePlaytest;
   private prev = { x: 0, y: 0 };
-  private cameraLocked = false;
+  /** Khung camera đang khóa: 'boss', số thứ tự phòng khóa, hoặc undefined (theo người chơi). */
+  private cameraLock: string | undefined;
   private def: StageDef = STAGE_DEFS.gray;
 
   constructor() {
@@ -77,23 +79,23 @@ export class StageScene extends Phaser.Scene {
     const difficulty = config.difficulties.find((d) => d.id === 'normal') ?? config.difficulties[0];
     if (!boss || !difficulty) throw new Error('Thiếu dữ liệu boss xám hoặc độ khó Thường');
     this.stepper.reset();
-    this.cameraLocked = false;
+    this.cameraLock = undefined;
     // Dữ liệu gốc từ 03-Data; khi bật ?tune=1 thì áp thêm phần đã chỉnh lưu trên máy.
     const base: TuningData = { player: config.player, weapons: config.weapons, boss };
     const tuned = tunedData(base);
     const world = new StageWorld({
-      rows: this.def.rows,
+      layout: buildStageLayout(this.def, TILE_SIZE),
       tileSize: TILE_SIZE,
       stepSec: FIXED_STEP_MS / 1000,
       ...tuned,
       difficulty,
       seed: WORLD_SEED,
       enemies: config.enemies,
-      enemyMarkers: this.def.enemyMarkers,
+      mechanics: config.stages.mechanics,
     });
     this.world = world;
 
-    drawStaticMap(this.add.graphics(), world.map, world.gateCol);
+    drawStaticMap(this.add.graphics(), world.map, barrierCells(world));
     this.dynamic = this.add.graphics();
     this.glow = this.add.graphics();
     const pl = world.player;
@@ -144,7 +146,10 @@ export class StageScene extends Phaser.Scene {
       this.playtest?.record(ev, FIXED_STEP_MS / 1000);
     }
     this.updateCamera(world);
-    if (this.dynamic) drawDynamic(this.dynamic, world, time);
+    if (this.dynamic) {
+      drawDynamic(this.dynamic, world, time);
+      drawMechanics(this.dynamic, world, time);
+    }
     this.syncSprites(this.stepper.alpha);
     const ctx = input.glyphContext();
     this.hud?.update(world, formatGlyphs('{ĐỔI_VK}', ctx));
@@ -201,19 +206,47 @@ export class StageScene extends Phaser.Scene {
     if (ev.emptyWeapon) hud?.flash('Hết năng lượng vũ khí', 600);
     if (ev.enemyKilled) camera.shake(60, 0.002);
     if (ev.healed > 0) hud?.flash(`+${ev.healed} máu`, 500);
+    if (ev.checkpoint !== undefined) hud?.flash(`Checkpoint ${ev.checkpoint}`, 900);
+    if (ev.fellInPit) camera.shake(80, 0.003);
+    if (ev.spikeHit) camera.shake(90, 0.004);
+    if (ev.roomLocked) hud?.flash('Phòng khóa: hạ hết kẻ địch', 1200);
+    if (ev.roomCleared) hud?.flash('Cửa mở', 900);
+    if (ev.barrierBroken) camera.shake(100, 0.004);
+    if (ev.secretFound) {
+      const label = world.secrets.find((s) => s.spawn.item === ev.secretFound)?.spawn.label;
+      hud?.flash(`Nhặt được: ${label ?? ev.secretFound}`, 1400);
+    }
   }
 
-  /** Trong phòng boss, khóa camera đúng khung đấu trường (rộng đúng một màn hình). */
+  /**
+   * Trong phòng boss, khóa camera đúng khung đấu trường (rộng đúng một màn hình); trong phòng
+   * khóa đang đóng cửa, khóa camera trong phòng (gồm hai cột cửa).
+   */
   private updateCamera(world: StageWorld): void {
-    const lock = world.phase === 'boss' && world.gateCol !== undefined;
-    if (lock === this.cameraLocked) return;
-    this.cameraLocked = lock;
+    const roomIndex = world.rooms.findIndex((r) => r.state === 'locked');
+    const lock =
+      world.phase === 'boss' && world.gateCol !== undefined
+        ? 'boss'
+        : roomIndex >= 0
+          ? `room${roomIndex}`
+          : undefined;
+    if (lock === this.cameraLock) return;
+    this.cameraLock = lock;
     const camera = this.cameras.main;
-    if (lock && world.gateCol !== undefined) {
+    const room = world.rooms[roomIndex];
+    if (lock === 'boss' && world.gateCol !== undefined) {
       camera.setBounds(
         world.gateCol * TILE_SIZE,
         0,
         (world.map.cols - world.gateCol) * TILE_SIZE,
+        world.map.heightPx,
+      );
+    } else if (room) {
+      const r = room.spawn;
+      camera.setBounds(
+        r.first * TILE_SIZE,
+        0,
+        (r.last - r.first + 1) * TILE_SIZE,
         world.map.heightPx,
       );
     } else {

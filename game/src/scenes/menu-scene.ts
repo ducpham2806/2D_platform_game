@@ -20,16 +20,25 @@ export class MenuScene extends Phaser.Scene {
     const enemies = (): void => {
       this.scene.start(SceneKey.Stage, { stage: 'enemies' });
     };
-    textButton(this, cx, 70, 'Vào màn thử', () => this.scene.start(SceneKey.Stage));
-    textButton(this, cx, 90, 'Phòng thử kẻ địch', enemies);
-    textButton(this, cx, 110, 'Hub Arkon', () => this.scene.start(SceneKey.Hub));
+    const mechanics = (): void => {
+      this.scene.start(SceneKey.Stage, { stage: 'mechanics' });
+    };
+    textButton(this, cx, 62, 'Vào màn thử', () => this.scene.start(SceneKey.Stage));
+    textButton(this, cx, 79, 'Phòng thử kẻ địch', enemies);
+    textButton(this, cx, 96, 'Phòng thử màn chơi', mechanics);
+    textButton(this, cx, 113, 'Hub Arkon', () => this.scene.start(SceneKey.Hub));
     textButton(this, cx, 130, 'Điều khiển', () => this.scene.start(SceneKey.Controls));
-    textButton(this, cx, 150, 'Kết quả chơi thử', () => this.scene.start(SceneKey.Playtest));
+    textButton(this, cx, 147, 'Kết quả chơi thử', () => this.scene.start(SceneKey.Playtest));
     this.add
-      .text(cx, 178, 'Enter: vào màn  ·  K: kẻ địch  ·  H: Hub  ·  C: Điều khiển  ·  R: Kết quả', {
-        ...MUTED_STYLE,
-        fontSize: '8px',
-      })
+      .text(
+        cx,
+        178,
+        'Enter: màn thử · K: kẻ địch · M: màn chơi · H: Hub · C: Điều khiển · R: Kết quả',
+        {
+          ...MUTED_STYLE,
+          fontSize: '8px',
+        },
+      )
       .setOrigin(0.5);
 
     const keyboard = this.input.keyboard;
@@ -38,5 +47,6 @@ export class MenuScene extends Phaser.Scene {
     keyboard?.once('keydown-C', () => this.scene.start(SceneKey.Controls));
     keyboard?.once('keydown-R', () => this.scene.start(SceneKey.Playtest));
     keyboard?.once('keydown-K', enemies);
+    keyboard?.once('keydown-M', mechanics);
   }
 }

@@ -150,6 +150,7 @@ describe('chỉnh cảm giác khi đang chơi', () => {
       weapons: config.weapons,
       boss: config.bosses.gray!,
       difficulty: config.difficulties.find((d) => d.id === 'normal')!,
+      mechanics: config.stages.mechanics,
       seed: 1,
     });
     world.step({ ...IDLE_INPUT, moveX: 1 });

@@ -40,6 +40,8 @@ Hai giới hạn của bài đo, cần xác nhận trên máy thật ở buổi 
 
 Phần logic còn rất dư: một bước logic tốn 0,3 ms ở CPU chậm 6×, so với 16,7 ms của một khung hình.
 
+**Lưu ý bản build (02/11/2026, Sprint 6):** các bản trước Sprint 6 có lỗi chết lặp: sau lần chết đầu tiên, Kai hồi sinh rồi chết lại liên tục. Chỉ dùng bản build từ Sprint 6 trở đi cho đợt chơi thử. Từ Sprint 6, rơi hố theo đặc tả Stage 1 (mất 20 máu, về checkpoint, không chết nếu còn máu); nhật ký vẫn tính rơi hố là một lần hỏng ở đoạn đó.
+
 ## 3. Bản web để chơi thử
 
 Workflow `.github/workflows/pages.yml` build và đăng `game/dist` lên GitHub Pages mỗi khi `main` có thay đổi (hoặc bấm chạy tay ở tab Actions). Nó chạy test trước, nên không đăng bản có dữ liệu `03-Data` lệch nhau.

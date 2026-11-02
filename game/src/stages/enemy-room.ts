@@ -1,4 +1,4 @@
-import type { StageDef } from './stage-def';
+import type { AsciiStageDef } from './stage-def';
 
 /**
  * Phòng thử kẻ địch (M5), mỗi đoạn giới thiệu một loại rồi trộn lại ở cuối:
@@ -21,7 +21,8 @@ export const ENEMY_ROOM_ROWS: readonly string[] = [
   '####################################################################################################',
 ];
 
-export const ENEMY_ROOM: StageDef = {
+export const ENEMY_ROOM: AsciiStageDef = {
+  kind: 'ascii',
   id: 'enemies',
   name: 'Phòng thử kẻ địch',
   rows: ENEMY_ROOM_ROWS,

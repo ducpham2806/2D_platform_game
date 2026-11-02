@@ -11,10 +11,10 @@ import { ProjectilePool, type Projectile } from '@/logic/combat/projectiles';
 import { createEnemy, type ShieldCharger } from '@/logic/enemy/behaviors';
 import type { Enemy, EnemyContext } from '@/logic/enemy/enemy';
 import { TileMap } from '@/logic/tilemap';
-import { spawnDistanceViolations } from '@/logic/world/enemy-field';
+import { layoutFromRows, spawnDistanceViolations } from '@/logic/stage/layout';
 import { StageWorld } from '@/logic/world/stage-world';
 import { IDLE_INPUT, type WorldInput } from '@/logic/world/world-types';
-import { STAGE_DEFS } from '@/stages';
+import { buildStageLayout, STAGE_DEFS } from '@/stages';
 import { loadData } from './helpers';
 
 const DT = FIXED_STEP_MS / 1000;
@@ -259,6 +259,7 @@ function roomWorld(rows: readonly string[], markers = STAGE_DEFS.enemies.enemyMa
     weapons: config.weapons,
     boss: config.bosses.gray!,
     difficulty: config.difficulties.find((d) => d.id === 'normal')!,
+    mechanics: config.stages.mechanics,
     seed: 3,
     enemies: config.enemies,
     enemyMarkers: markers,
@@ -268,16 +269,16 @@ function roomWorld(rows: readonly string[], markers = STAGE_DEFS.enemies.enemyMa
 describe('kẻ địch trong màn', () => {
   it('mọi màn dựng sẵn: kẻ địch cách điểm xuất phát ≥ 6 ô và có trong enemies.json', () => {
     for (const def of Object.values(STAGE_DEFS)) {
-      const m = TileMap.fromRows(def.rows, t);
-      expect(spawnDistanceViolations(m, def.enemyMarkers, 6), def.id).toEqual([]);
-      for (const p of Object.values(def.enemyMarkers))
-        expect(enemies.enemies[p.enemy], p.enemy).toBeDefined();
+      const layout = buildStageLayout(def, t);
+      const min = config.stages.mechanics.minEnemySpawnTiles;
+      expect(spawnDistanceViolations(layout, min), def.id).toEqual([]);
+      for (const e of layout.enemies) expect(enemies.enemies[e.enemy], e.enemy).toBeDefined();
     }
   });
 
   it('phát hiện kẻ địch đặt sát điểm xuất phát', () => {
-    const m = TileMap.fromRows(['#..P..R..#', '##########'], t);
-    expect(spawnDistanceViolations(m, { R: { enemy: 'drone_linh' } }, 6)).toHaveLength(1);
+    const layout = layoutFromRows(['#..P..R..#', '##########'], t, { R: { enemy: 'drone_linh' } });
+    expect(spawnDistanceViolations(layout, 6)).toHaveLength(1);
   });
 
   it('hạ kẻ địch: cộng EXP, rơi Core Bit, đi qua thì nhặt; chết thì kẻ địch dựng lại', () => {
@@ -337,6 +338,7 @@ describe('kẻ địch trong màn', () => {
       weapons: config.weapons,
       boss: config.bosses.gray!,
       difficulty: config.difficulties.find((d) => d.id === 'normal')!,
+      mechanics: config.stages.mechanics,
       seed: 3,
       enemies: always,
       enemyMarkers: STAGE_DEFS.enemies.enemyMarkers,

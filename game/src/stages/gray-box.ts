@@ -1,4 +1,4 @@
-import type { StageDef, StageSection } from './stage-def';
+import type { AsciiStageDef, StageSection } from './stage-def';
 
 /**
  * Màn xám thử cảm giác điều khiển (mốc Prototype). Theo nhịp dạy của Prologue và Stage 1:
@@ -6,7 +6,7 @@ import type { StageDef, StageSection } from './stage-def';
  * hành lang trần thấp (cao 2 ô) → hố 5 ô phải lướt + nhảy (dash-jump) → cửa 'D' → phòng boss
  * 18 ô với 2 bục một chiều cao 3 ô ('B' là chỗ boss đứng). 'T' bia tập bắn, 'S' bia có khiên.
  * Ký hiệu: xem logic/tilemap.ts.
- * Bản đồ thật của từng màn sẽ làm bằng Tiled ở M7.
+ * Bản đồ thật của từng màn làm bằng Tiled (xem game/maps/README.md).
  */
 export const GRAY_BOX_ROWS: readonly string[] = [
   '#....................................................##########.............#..................#',
@@ -38,7 +38,8 @@ export const GRAY_BOX_SECTIONS: readonly StageSection[] = [
   { id: 'boss', label: 'Phòng boss', fromCol: 76 },
 ];
 
-export const GRAY_BOX: StageDef = {
+export const GRAY_BOX: AsciiStageDef = {
+  kind: 'ascii',
   id: 'gray',
   name: 'Màn xám',
   rows: GRAY_BOX_ROWS,
