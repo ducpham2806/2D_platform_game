@@ -1,19 +1,48 @@
 {
   "speedTilesPerSec": 5.5,
+  "hitboxPx": {
+    "width": 12,
+    "height": 24,
+    "note": "Hộp va chạm của Kai, px logic (ô 16 px). Sprite 48x48 vẽ quanh hộp này [PLACEHOLDER]"
+  },
   "jump": {
     "minTiles": 1.2,
     "maxTiles": 4.5,
     "coyoteSec": 0.1,
-    "bufferSec": 0.12
+    "bufferSec": 0.12,
+    "apexSec": 0.4,
+    "fallGravityMul": 1.6,
+    "maxFallTilesPerSec": 15,
+    "note": "Trọng lực suy ra từ maxTiles và apexSec để độ cao nhảy luôn đúng GDD 5.1; rơi nặng hơn lên (fallGravityMul) cho cảm giác chắc tay; thả nút sớm thì cắt vận tốc để chỉ cao minTiles [PLACEHOLDER]"
   },
   "dash": {
     "tiles": 3,
     "durationSec": 0.25,
     "cooldownSec": 0.6,
-    "iFrameSec": 0.1
+    "iFrameSec": 0.1,
+    "note": "Lướt dưới đất; lướt trên không là kỹ năng Phantom (GDD 6.2), bật qua abilities.airDash. Nhảy trong lúc lướt giữ tốc độ lướt tới khi chạm đất (dash-jump) [PLACEHOLDER]"
   },
   "wallSlideTilesPerSec": 2,
+  "wallJump": {
+    "pushTilesPerSec": 6,
+    "lockSec": 0.15,
+    "note": "Nhảy tường: bật ra khỏi tường với vận tốc ngang này, khóa điều khiển ngang lockSec để không dính lại tường ngay [PLACEHOLDER]"
+  },
   "iFramesAfterHitSec": 1.0,
+  "hurt": {
+    "stunSec": 0.3,
+    "knockbackTilesPerSec": {
+      "x": 5,
+      "y": 6
+    },
+    "note": "Bị đánh: mất điều khiển stunSec, bật lùi xa nguồn sát thương [PLACEHOLDER]"
+  },
+  "abilities": {
+    "airDash": false,
+    "wallJump": true,
+    "dashJump": true,
+    "note": "Lướt và bám tường có sẵn qua cốt truyện (GDD 6.2); lướt trên không mở bằng kỹ năng Phantom"
+  },
   "level": {
     "max": 30,
     "expFormula": "40*L^1.4",
@@ -21,12 +50,22 @@
     "atk": "10+0.25*(L-1)",
     "spPerLevelFrom2": 1,
     "spPerBoss": 1,
-    "storyPowerCap": {"damageMul": 2.2, "hpMul": 2.5, "note": "cấp + upgrade + module trong cốt truyện [PLACEHOLDER]"}
+    "storyPowerCap": {
+      "damageMul": 2.2,
+      "hpMul": 2.5,
+      "note": "cấp + upgrade + module trong cốt truyện [PLACEHOLDER]"
+    }
   },
   "inPlaceRevivePerStage": {
     "max": 1,
-    "sharedBy": ["module:second_wind", "booster:second_chance", "ad:AD_REVIVE"],
-    "excludes": ["nano_cell"]
+    "sharedBy": [
+      "module:second_wind",
+      "booster:second_chance",
+      "ad:AD_REVIVE"
+    ],
+    "excludes": [
+      "nano_cell"
+    ]
   },
   "moduleSlots": {
     "start": 3,

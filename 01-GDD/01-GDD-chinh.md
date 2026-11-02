@@ -204,6 +204,8 @@ Hologram của Lin chỉ xuất hiện trong Phòng Hồ Sơ, gắn với nhật
 | Đổi vũ khí | Chuyển nhanh giữa Arc Cannon và vũ khí boss | Không dừng thời gian |
 | Bất tử sau bị đánh | Khung nhấp nháy | 1,0 s |
 
+Thông số vật lý bổ sung khi làm M3 (đều `[PLACEHOLDER]`, ở `03-Data/player.json`): thời gian lên đỉnh 0,4 s (trọng lực suy ra từ độ cao 4,5 ô nên độ cao luôn đúng bảng trên); rơi nặng gấp 1,6 lần lúc lên; tốc độ rơi tối đa 15 ô/s; hộp va chạm 12 × 24 px; nhảy tường bật ra 6 ô/s và khóa điều khiển ngang 0,15 s; bị đánh mất điều khiển 0,3 s, bật lùi 5 ô/s ngang và 6 ô/s lên. Lướt trên không là kỹ năng nhánh Phantom (mục 6.2), mặc định tắt; nhảy khi đang lướt giữ tốc độ lướt trên không (dash-jump).
+
 **Đặc tả cơ chế: Bắn nạp**
 
 - **Mục đích:** thưởng cho việc canh thời điểm và tạo quyết định rủi ro/lợi ích.

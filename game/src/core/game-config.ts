@@ -1,21 +1,15 @@
 import { type ControlsConfig, parseControls } from './controls-config';
+import { arr, ConfigError, isObject, num, obj, str } from './json-check';
+import { parsePlayer, type PlayerData } from './player-config';
+
+export { ConfigError } from './json-check';
+export { parsePlayer, type PlayerData } from './player-config';
 
 /**
  * Kiểu và kiểm tra dữ liệu cấu hình đọc từ public/data (nguồn: 03-Data).
  * Logic thuần, không phụ thuộc Phaser. Mọi chỉ số gameplay phải đi qua đây,
  * không viết cứng trong mã.
  */
-
-export interface PlayerData {
-  speedTilesPerSec: number;
-  jump: { minTiles: number; maxTiles: number; coyoteSec: number; bufferSec: number };
-  dash: { tiles: number; durationSec: number; cooldownSec: number; iFrameSec: number };
-  wallSlideTilesPerSec: number;
-  iFramesAfterHitSec: number;
-  level: { max: number; expFormula: string; hp: string; atk: string };
-  inPlaceRevivePerStage: { max: number };
-  moduleSlots: { start: number; at10: number; at20: number };
-}
 
 export interface ArcCannonData {
   damage: number;
@@ -89,87 +83,6 @@ export interface GameConfig {
   controls: ControlsConfig;
   /** Các file chưa có module dùng (shop, economy, modules, endgame…), giữ nguyên dạng thô. */
   raw: Readonly<Record<string, unknown>>;
-}
-
-export class ConfigError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'ConfigError';
-  }
-}
-
-type Json = Record<string, unknown>;
-
-function isObject(value: unknown): value is Json {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
-function obj(value: unknown, path: string): Json {
-  if (!isObject(value)) throw new ConfigError(`${path}: cần một object`);
-  return value;
-}
-
-function num(value: unknown, path: string, opts: { min?: number } = {}): number {
-  if (typeof value !== 'number' || !Number.isFinite(value)) {
-    throw new ConfigError(`${path}: cần một số`);
-  }
-  if (opts.min !== undefined && value < opts.min) {
-    throw new ConfigError(`${path}: phải ≥ ${opts.min} (đang là ${value})`);
-  }
-  return value;
-}
-
-function str(value: unknown, path: string): string {
-  if (typeof value !== 'string' || value.length === 0) {
-    throw new ConfigError(`${path}: cần một chuỗi khác rỗng`);
-  }
-  return value;
-}
-
-function arr(value: unknown, path: string): unknown[] {
-  if (!Array.isArray(value)) throw new ConfigError(`${path}: cần một mảng`);
-  return value;
-}
-
-export function parsePlayer(value: unknown): PlayerData {
-  const p = obj(value, 'player');
-  const jump = obj(p.jump, 'player.jump');
-  const dash = obj(p.dash, 'player.dash');
-  const level = obj(p.level, 'player.level');
-  const revive = obj(p.inPlaceRevivePerStage, 'player.inPlaceRevivePerStage');
-  const slots = obj(p.moduleSlots, 'player.moduleSlots');
-  const minTiles = num(jump.minTiles, 'player.jump.minTiles', { min: 0 });
-  const maxTiles = num(jump.maxTiles, 'player.jump.maxTiles', { min: 0 });
-  if (minTiles > maxTiles) throw new ConfigError('player.jump: minTiles lớn hơn maxTiles');
-  return {
-    speedTilesPerSec: num(p.speedTilesPerSec, 'player.speedTilesPerSec', { min: 0 }),
-    jump: {
-      minTiles,
-      maxTiles,
-      coyoteSec: num(jump.coyoteSec, 'player.jump.coyoteSec', { min: 0 }),
-      bufferSec: num(jump.bufferSec, 'player.jump.bufferSec', { min: 0 }),
-    },
-    dash: {
-      tiles: num(dash.tiles, 'player.dash.tiles', { min: 0 }),
-      durationSec: num(dash.durationSec, 'player.dash.durationSec', { min: 0 }),
-      cooldownSec: num(dash.cooldownSec, 'player.dash.cooldownSec', { min: 0 }),
-      iFrameSec: num(dash.iFrameSec, 'player.dash.iFrameSec', { min: 0 }),
-    },
-    wallSlideTilesPerSec: num(p.wallSlideTilesPerSec, 'player.wallSlideTilesPerSec', { min: 0 }),
-    iFramesAfterHitSec: num(p.iFramesAfterHitSec, 'player.iFramesAfterHitSec', { min: 0 }),
-    level: {
-      max: num(level.max, 'player.level.max', { min: 1 }),
-      expFormula: str(level.expFormula, 'player.level.expFormula'),
-      hp: str(level.hp, 'player.level.hp'),
-      atk: str(level.atk, 'player.level.atk'),
-    },
-    inPlaceRevivePerStage: { max: num(revive.max, 'player.inPlaceRevivePerStage.max', { min: 0 }) },
-    moduleSlots: {
-      start: num(slots.start, 'player.moduleSlots.start', { min: 0 }),
-      at10: num(slots.at10, 'player.moduleSlots.at10', { min: 0 }),
-      at20: num(slots.at20, 'player.moduleSlots.at20', { min: 0 }),
-    },
-  };
 }
 
 export function parseWeapons(value: unknown): WeaponsData {
