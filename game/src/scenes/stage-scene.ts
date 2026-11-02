@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { DEBUG } from '../debug/flags';
 import {
   FIXED_STEP_MS,
   LOGIC_HEIGHT,
@@ -11,11 +12,13 @@ import type { InputService } from '../input/input-service';
 import { FixedStep } from '../logic/fixed-step';
 import type { InputSnapshot } from '../logic/input/actions';
 import { formatGlyphs } from '../logic/input/glyphs';
+import type { TuningData } from '../logic/playtest/tuning';
 import type { PlayerStateName } from '../logic/player/player-physics';
 import { StageWorld } from '../logic/world/stage-world';
 import type { WorldEvents, WorldInput } from '../logic/world/world-types';
 import { GRAY_BOX_ROWS } from '../stages/gray-box';
 import { StageHud } from './stage/stage-hud';
+import { StagePlaytest, tunedData } from './stage/stage-playtest';
 import { chargeGlowColor, drawDynamic, drawStaticMap } from './stage/stage-renderer';
 
 const STATE_COLORS: Readonly<Record<PlayerStateName, number>> = {
@@ -52,6 +55,7 @@ export class StageScene extends Phaser.Scene {
   private eye?: Phaser.GameObjects.Rectangle;
   private glow?: Phaser.GameObjects.Graphics;
   private hud?: StageHud;
+  private playtest?: StagePlaytest;
   private prev = { x: 0, y: 0 };
   private cameraLocked = false;
 
@@ -67,13 +71,14 @@ export class StageScene extends Phaser.Scene {
     if (!boss || !difficulty) throw new Error('Thiếu dữ liệu boss xám hoặc độ khó Thường');
     this.stepper.reset();
     this.cameraLocked = false;
+    // Dữ liệu gốc từ 03-Data; khi bật ?tune=1 thì áp thêm phần đã chỉnh lưu trên máy.
+    const base: TuningData = { player: config.player, weapons: config.weapons, boss };
+    const tuned = tunedData(base);
     const world = new StageWorld({
       rows: GRAY_BOX_ROWS,
       tileSize: TILE_SIZE,
       stepSec: FIXED_STEP_MS / 1000,
-      player: config.player,
-      weapons: config.weapons,
-      boss,
+      ...tuned,
       difficulty,
       seed: WORLD_SEED,
     });
@@ -99,7 +104,8 @@ export class StageScene extends Phaser.Scene {
     this.controls = input;
     input.setGameplayActive(true);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => input.setGameplayActive(false));
-    if (import.meta.env.DEV) {
+    this.playtest = new StagePlaytest(this, world, input, base);
+    if (DEBUG) {
       this.input.keyboard?.on('keydown-T', () =>
         world.player.applyHit(DEBUG_HIT_DAMAGE, world.player.centerX + world.player.facing * 8),
       );
@@ -111,6 +117,11 @@ export class StageScene extends Phaser.Scene {
     const input = this.controls;
     const world = this.world;
     if (!input || !world) return;
+    if (this.playtest?.paused) {
+      // Bảng chơi thử đang mở: trận đứng yên, không bù bước khi đóng bảng.
+      this.stepper.reset();
+      return;
+    }
     const steps = this.stepper.advance(delta);
     for (let i = 0; i < steps; i += 1) {
       const snap = input.step();
@@ -119,7 +130,9 @@ export class StageScene extends Phaser.Scene {
         return;
       }
       this.prev = { x: world.player.box.x, y: world.player.box.y };
-      this.react(world.step(this.toWorldInput(snap, input)), world);
+      const ev = world.step(this.toWorldInput(snap, input));
+      this.react(ev, world);
+      this.playtest?.record(ev, FIXED_STEP_MS / 1000);
     }
     this.updateCamera(world);
     if (this.dynamic) drawDynamic(this.dynamic, world, time);
@@ -132,7 +145,7 @@ export class StageScene extends Phaser.Scene {
         ctx,
       ),
     );
-    if (import.meta.env.DEV) {
+    if (DEBUG) {
       this.hud?.debug.setText(
         `${world.player.state} · chết ${world.deaths} · FPS ${Math.round(this.game.loop.actualFps)}`,
       );

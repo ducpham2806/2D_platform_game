@@ -58,12 +58,17 @@ export class WeaponLoadout {
   private sinceBossWeapon = 0;
 
   constructor(
-    private readonly data: WeaponsData,
+    private data: WeaponsData,
     private readonly tileSize: number,
   ) {
     this.slots = [
       { name: ARC_CANNON, kind: 'buster', energy: data.energyMax, cost: 0, behavior: null },
     ];
+  }
+
+  /** Đổi dữ liệu vũ khí khi đang chơi (bảng chỉnh cảm giác). */
+  setData(data: WeaponsData): void {
+    this.data = data;
   }
 
   get energyMax(): number {

@@ -41,11 +41,18 @@ src/
   logic/formula.ts        tính công thức trong dữ liệu ("100+4*(L-1)") không dùng eval (thuần)
   logic/rng.ts            ngẫu nhiên có hạt giống (test lặp lại được)
   core/*-config.ts        kiểm tra từng file dữ liệu: player, weapons, bosses, controls (thuần)
-  stages/gray-box.ts      màn xám Prototype (ASCII); bản đồ Tiled thật thuộc M7
-  scenes/                 Boot → Preload → Menu, Hub, Stage, Controls
-  scenes/stage/           vẽ màn chơi (renderer) và HUD (máu, năng lượng, vũ khí, máu boss)
+  logic/playtest/         nhật ký chơi thử, tổng hợp theo ngưỡng "hỏng" GDD 17, xuất/gộp JSON,
+                          danh sách thông số của bảng chỉnh cảm giác (thuần)
+  stages/gray-box.ts      màn xám Prototype (ASCII) và các đoạn của nó; bản đồ Tiled thật thuộc M7
+  scenes/                 Boot → Preload → Menu, Hub, Stage, Controls, Playtest (kết quả chơi thử)
+  scenes/stage/           vẽ màn chơi (renderer), HUD (máu, năng lượng, vũ khí, máu boss),
+                          gắn công cụ chơi thử vào màn (stage-playtest.ts)
+  playtest/               bảng HTML: phiếu chấm 1–5, bảng chỉnh cảm giác, kết quả, xuất JSON
+  debug/flags.ts          cờ DEBUG (?debug=1) và TUNE (?tune=1); bản dev luôn bật
 tests/                    Vitest cho phần thuần, đọc thẳng 03-Data
 scripts/sync-data.mjs     chép dữ liệu 03-Data → public/data
+scripts/gate-check.mjs    đo cổng Prototype bằng Playwright: dung lượng, thời gian vào game, FPS khi
+                          CPU chậm, độ trễ phím/chạm (xem 04-Dev-Plan/05-Cong-Prototype.md)
 ```
 
 ## Quyết định đã chốt
@@ -61,7 +68,9 @@ scripts/sync-data.mjs     chép dữ liệu 03-Data → public/data
 - Hai nút đổi vũ khí trên wireframe LayoutEdit chỉ 44 px; dữ liệu nâng lên 48 dp theo GDD.
 - **Vật lý Kai (M3):** trọng lực và vận tốc nhảy suy ra từ `jump.maxTiles` và `jump.apexSec`, nên độ cao nhảy luôn đúng GDD 5.1 khi chỉnh cảm giác; rơi nặng hơn lên (`fallGravityMul`). Vị trí dời theo vận tốc trung bình của bước để quỹ đạo khớp công thức. Coyote trừ giờ _sau_ khi xét nhảy (đủ 6 bước = 0,1 s). Đồng hồ còn dưới 1 µs coi như hết (tránh sai số dấu phẩy động). Va chạm trục X rồi Y, chia quãng đi tối đa nửa ô mỗi lần nên không xuyên tường. Ngoài cạnh trái/phải bản đồ là tường, dưới đáy là hố.
 - Lướt trên không tắt mặc định (`abilities.airDash`), vì GDD 6.2 xếp nó vào nhánh Phantom. Nhảy khi đang lướt giữ tốc độ lướt trên không tới khi đáp (dash-jump). Nhảy tường khóa điều khiển ngang `wallJump.lockSec` để không dính lại tường.
-- Phím T (chỉ bản dev) gây 10 sát thương thử để xem bật lùi và bất tử. Bản dev cũng gắn `window.__cvWorld` để thử và test trình duyệt.
+- Phím T gây 10 sát thương thử để xem bật lùi và bất tử; `window.__cvGame`/`__cvWorld` để thử và đo bằng trình duyệt. Cả hai chỉ có ở bản dev hoặc khi mở bằng `?debug=1` (bản build trên Pages).
+- **Cổng Prototype:** mỗi lần vào màn thử là một phiên nhật ký (thời gian theo thiết bị, chết theo đoạn, lượt đánh và thời gian thắng boss, điểm 1–5) lưu ở `localStorage` `cv.playtest` (tối đa 200 phiên, phiên < 10 s không lưu). Không gửi đi đâu: người thử sao chép JSON và gửi tay; người tổng hợp gộp ở màn Kết quả chơi thử. Bảng chỉnh cảm giác (`?tune=1`, F2) đổi thông số ngay qua `world.retune()`, lưu phần đã đổi ở `cv.tuning` và chỉ áp khi bật `?tune=1`. Khi bảng HTML mở thì trận dừng hẳn (không bù bước khi đóng), lớp cảm ứng ẩn, phím bấm trong bảng không lọt vào game (`KeyboardSource` bỏ qua phím có đích nằm trong `.cv-panel`).
+- Bản web đăng lên GitHub Pages bằng `.github/workflows/pages.yml` mỗi khi `main` đổi (đường dẫn tương đối `base: './'` nên chạy được ở thư mục con của Pages).
 - **Chiến đấu (M4):** sát thương gây ra tính bằng "phát Arc Cannon gốc" (= 1), máu kẻ địch/boss cùng đơn vị; sát thương nhận vào tính bằng máu người chơi, nhân `damageTaken` của độ khó, làm tròn, tối thiểu 1. Hệ số công = công(cấp)/công(cấp 1) tính bằng công thức trong `player.json`. Điểm yếu (×2,5, choáng 0,5 s) lấy từ chính vũ khí đang bắn. Mỗi viên chỉ trúng một mục tiêu một lần; đạn nạp đầy xuyên 1 mục tiêu; roi Vine Lash trúng mọi mục tiêu trong tầm một lần.
 - Đạn nạp (vừa/đầy) luôn bắn được khi thả nút, không tính vào giới hạn 3 đạn thường. Bị trúng đòn khi đang nạp thì mất hết (GDD 5.1). Tự bắn và hỗ trợ ngắm chỉ có tác dụng khi thiết bị gần nhất là cảm ứng.
 - Hit-stop 3 bước khi trúng bằng đạn nạp đầy hoặc trúng điểm yếu (`weapons.json` `hitStopSteps`), làm ở StageWorld nên mọi thứ cùng dừng.
@@ -72,11 +81,12 @@ scripts/sync-data.mjs     chép dữ liệu 03-Data → public/data
 | ID         | Module           | Trạng thái                                                                                                                                                                                                                                                                                                                             |
 | ---------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | M0         | Dự án và công cụ | **Xong** (Sprint 1): dev/build/test/lint/format, alias `@/`, CI GitHub Actions                                                                                                                                                                                                                                                         |
-| M1         | Khung game       | **Xong phần khung** (Sprint 1): Boot/Preload/Menu/Hub/Stage, scale nguyên, nhắc xoay ngang, nạp + kiểm tra JSON, event bus. Còn chờ: nạp atlas khi có asset; đo 60 FPS trên điện thoại tầm trung thật                                                                                                                                  |
+| M1         | Khung game       | **Xong phần khung** (Sprint 1): Boot/Preload/Menu/Hub/Stage, scale nguyên, nhắc xoay ngang, nạp + kiểm tra JSON, event bus. Đo tự động: 60 FPS khi CPU chậm 4–6× (`npm run gate-check`). Còn chờ: nạp atlas khi có asset; xác nhận 60 FPS trên điện thoại thật                                                                         |
 | M2         | Đầu vào          | **Xong** (Sprint 2): bàn phím, tay cầm, cảm ứng (cần ảo nổi/cố định, 6 nút, đa chạm, rung), đổi phím/nút có hoán đổi, chỉnh bố cục kéo thả + cỡ/độ trong suốt/thuận tay trái, lưu cài đặt, biểu tượng nút theo thiết bị. Tự bắn và hỗ trợ ngắm có tác dụng từ M4. Chưa làm: vuốt vào biểu tượng vũ khí để đổi (GDD 5.2, cần HUD ở M10) |
 | M3         | Nhân vật         | **Xong** (Sprint 3): chạy, nhảy biến thiên, coyote 0,1 s, jump buffer 0,12 s, lướt 3 ô/0,25 s (hồi 0,6 s, bất tử 0,1 s), dash-jump, bám và nhảy tường, bục một chiều (xuống + nhảy để xuyên), bị đánh (bật lùi, bất tử 1 s), chết, rơi hố, hồi sinh; màn xám thử cảm giác. Chưa: sprite và hoạt ảnh (chờ asset nhóm P0)                |
 | M4         | Chiến đấu        | **Xong** (Sprint 4): Arc Cannon tối đa 3 đạn, 3 mức nạp, bị trúng mất nạp, giữ nạp 2 s khi đổi vũ khí, tự bắn, hỗ trợ ngắm nhẹ; sát thương, điểm yếu, choáng, độ khó; vũ khí boss theo dữ liệu với năng lượng 28 và tự hồi (Vine Lash làm thật); hit-stop                                                                              |
 | M6         | Boss             | **Khung xong** (Sprint 4): boss xám theo dữ liệu, 3 pha, 4 đòn (bắn thẳng, lao ngang, nhảy đập + sóng đất, mưa đạn có khe né rồi choáng), phòng boss khóa cửa, thưởng vũ khí, đấu lại. Còn: Thorna thật theo đặc tả Stage 1 (Vertical slice)                                                                                           |
+| Cổng       | Cổng Prototype   | **Công cụ xong**: bản web trên Pages, nhật ký + phiếu chấm + màn Kết quả, bảng chỉnh cảm giác, đo tự động đạt mọi ngưỡng. Còn: chơi thử với 5 người thật (`04-Dev-Plan/05-Cong-Prototype.md`)                                                                                                                                          |
 | M5, M7–M18 |                  | Chưa làm (M5 kẻ địch, M7 màn chơi Tiled là phần tiếp của Vertical slice)                                                                                                                                                                                                                                                               |
 
 ## Lệnh
@@ -87,4 +97,5 @@ npm run dev        # chạy thử ở http://localhost:5173
 npm test           # test logic thuần
 npm run lint       # ESLint
 npm run build      # typecheck + bản build trong dist/
+npm run gate-check # đo cổng Prototype trên bản build (cần Playwright + Chromium)
 ```

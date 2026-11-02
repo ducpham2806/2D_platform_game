@@ -19,7 +19,8 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "gate-check": "node scripts/gate-check.mjs"
   },
   "dependencies": {
     "phaser": "3.90.0"

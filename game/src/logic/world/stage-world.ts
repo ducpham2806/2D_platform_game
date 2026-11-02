@@ -64,7 +64,7 @@ export class StageWorld {
   readonly gateRows: number[];
   private readonly bossSpawn: { x: number; y: number } | undefined;
 
-  constructor(private readonly setup: WorldSetup) {
+  constructor(private setup: WorldSetup) {
     const t = setup.tileSize;
     this.map = TileMap.fromRows(setup.rows, t);
     this.rng = createRng(setup.seed);
@@ -107,6 +107,23 @@ export class StageWorld {
     const b = this.map.markers.find((m) => m.ch === 'B');
     this.bossSpawn = b ? { x: (b.col + 0.5) * t, y: (b.row + 1) * t } : undefined;
     this.boss = this.makeBoss();
+  }
+
+  /** Dữ liệu đang dùng (bảng chỉnh cảm giác đọc để hiện giá trị hiện tại). */
+  get tuning(): Pick<WorldSetup, 'player' | 'weapons' | 'boss'> {
+    return { player: this.setup.player, weapons: this.setup.weapons, boss: this.setup.boss };
+  }
+
+  /**
+   * Đổi thông số khi đang chơi (bảng chỉnh cảm giác ở cổng Prototype). Vật lý Kai và vũ khí
+   * đổi ngay; boss mới tạo (đấu lại, hồi sinh) dùng dữ liệu boss mới.
+   */
+  retune(patch: Partial<Pick<WorldSetup, 'player' | 'weapons' | 'boss'>>): void {
+    this.setup = { ...this.setup, ...patch };
+    if (patch.player) {
+      this.player.setParams(playerParams(patch.player, this.setup.tileSize, this.setup.stepSec));
+    }
+    if (patch.weapons) this.loadout.setData(patch.weapons);
   }
 
   get respawning(): boolean {

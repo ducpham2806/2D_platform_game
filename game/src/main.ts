@@ -1,10 +1,12 @@
 import Phaser from 'phaser';
+import { DEBUG } from './debug/flags';
 import { LOGIC_HEIGHT, LOGIC_WIDTH } from './core/constants';
 import { currentLayout } from './core/phaser-scale';
 import { BootScene } from './scenes/boot-scene';
 import { ControlsScene } from './scenes/controls-scene';
 import { HubScene } from './scenes/hub-scene';
 import { MenuScene } from './scenes/menu-scene';
+import { PlaytestScene } from './scenes/playtest-scene';
 import { PreloadScene } from './scenes/preload-scene';
 import { StageScene } from './scenes/stage-scene';
 import './style.css';
@@ -25,9 +27,9 @@ const game = new Phaser.Game({
   },
   fps: { target: 60 },
   input: { activePointers: 3 },
-  scene: [BootScene, PreloadScene, MenuScene, HubScene, StageScene, ControlsScene],
+  scene: [BootScene, PreloadScene, MenuScene, HubScene, StageScene, ControlsScene, PlaytestScene],
 });
 
-if (import.meta.env.DEV) {
+if (DEBUG) {
   (window as unknown as { __cvGame?: Phaser.Game }).__cvGame = game;
 }

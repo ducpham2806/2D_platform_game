@@ -49,6 +49,8 @@ export class KeyboardSource {
       callback(e.code);
       return;
     }
+    // Đang thao tác trong bảng HTML (chơi thử, chỉnh cảm giác): phím thuộc về bảng, không phải game.
+    if (e.target instanceof Element && e.target.closest('.cv-panel')) return;
     const actions = actionsFor(this.bindings, e.code);
     if (actions.length === 0) return;
     // Chặn cuộn trang bằng mũi tên/Space khi phím đó là phím game.

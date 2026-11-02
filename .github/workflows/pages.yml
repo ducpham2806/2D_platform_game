@@ -1,0 +1,54 @@
+# Đăng bản web của game lên GitHub Pages để chơi thử trên máy tính và điện thoại (cổng Prototype).
+# Cần bật một lần: Settings → Pages → Build and deployment → Source: "GitHub Actions".
+# Link sau khi đăng: https://<chủ repo>.github.io/<tên repo>/  (thêm ?tune=1 để hiện bảng chỉnh cảm giác).
+name: Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Chỉ giữ lần đăng mới nhất; lần đang chạy dở bị thay bằng lần mới.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build game/
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: game
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: game/package-lock.json
+      - run: npm ci
+      - run: npm run sync-data
+      # Không đăng bản có dữ liệu 03-Data lệch nhau.
+      - run: npm test
+      - run: npm run build
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: game/dist
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

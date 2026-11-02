@@ -20,3 +20,18 @@ export const GRAY_BOX_ROWS: readonly string[] = [
   '#..P..T........##...##.S.##.................#...............................D...............B..#',
   '##########..####################################################.....###########################',
 ];
+
+/**
+ * Các đoạn của màn xám, để nhật ký chơi thử biết người chơi chết hay bỏ cuộc ở đâu
+ * (GDD 17: "hơn 30% người thử bỏ cuộc ở cùng một đoạn" là hỏng). fromCol: cột ô bắt đầu.
+ */
+export const GRAY_BOX_SECTIONS: ReadonlyArray<{ id: string; label: string; fromCol: number }> = [
+  { id: 'start', label: 'Xuất phát + bia', fromCol: 0 },
+  { id: 'gap', label: 'Khe 2 ô', fromCol: 9 },
+  { id: 'steps', label: 'Bậc + bia khiên', fromCol: 14 },
+  { id: 'oneway', label: 'Bục một chiều', fromCol: 28 },
+  { id: 'well', label: 'Giếng nhảy tường', fromCol: 38 },
+  { id: 'corridor', label: 'Hành lang thấp', fromCol: 51 },
+  { id: 'pit', label: 'Hố lướt + nhảy', fromCol: 63 },
+  { id: 'boss', label: 'Phòng boss', fromCol: 76 },
+];
