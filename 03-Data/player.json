@@ -1,0 +1,36 @@
+{
+  "speedTilesPerSec": 5.5,
+  "jump": {
+    "minTiles": 1.2,
+    "maxTiles": 4.5,
+    "coyoteSec": 0.1,
+    "bufferSec": 0.12
+  },
+  "dash": {
+    "tiles": 3,
+    "durationSec": 0.25,
+    "cooldownSec": 0.6,
+    "iFrameSec": 0.1
+  },
+  "wallSlideTilesPerSec": 2,
+  "iFramesAfterHitSec": 1.0,
+  "level": {
+    "max": 30,
+    "expFormula": "40*L^1.4",
+    "hp": "100+4*(L-1)",
+    "atk": "10+0.25*(L-1)",
+    "spPerLevelFrom2": 1,
+    "spPerBoss": 1,
+    "storyPowerCap": {"damageMul": 2.2, "hpMul": 2.5, "note": "cấp + upgrade + module trong cốt truyện [PLACEHOLDER]"}
+  },
+  "inPlaceRevivePerStage": {
+    "max": 1,
+    "sharedBy": ["module:second_wind", "booster:second_chance", "ad:AD_REVIVE"],
+    "excludes": ["nano_cell"]
+  },
+  "moduleSlots": {
+    "start": 3,
+    "at10": 4,
+    "at20": 5
+  }
+}

@@ -1,0 +1,125 @@
+{
+  "upgrades": [
+    {
+      "id": "arc_core",
+      "maxLevel": 5,
+      "effectPerLevel": "+5% damage",
+      "baseCost": 400,
+      "costGrowth": 1.25
+    },
+    {
+      "id": "armor_plating",
+      "maxLevel": 5,
+      "effectPerLevel": "-4% damage taken",
+      "baseCost": 400,
+      "costGrowth": 1.25
+    },
+    {
+      "id": "energy_cell",
+      "maxLevel": 5,
+      "effectPerLevel": "+10% weapon energy",
+      "baseCost": 250,
+      "costGrowth": 1.25
+    },
+    {
+      "id": "nano_cell_cap",
+      "maxLevel": 4,
+      "effectPerLevel": "+25% heal per sub-tank",
+      "baseCost": 400,
+      "costGrowth": 1.25
+    },
+    {
+      "id": "dash_coil",
+      "maxLevel": 3,
+      "effectPerLevel": "-10% dash cooldown",
+      "baseCost": 500,
+      "costGrowth": 1.25
+    },
+    {
+      "id": "magnet_range",
+      "maxLevel": 3,
+      "effectPerLevel": "+1 tile magnet",
+      "baseCost": 200,
+      "costGrowth": 1.25
+    },
+    {
+      "id": "booster_slot",
+      "maxLevel": 1,
+      "effectPerLevel": "unlock 3rd booster slot",
+      "baseCost": 1000,
+      "costGrowth": 1.25
+    }
+  ],
+  "boosters": [
+    {
+      "id": "shield_cell",
+      "effect": "block first hit",
+      "cost": 150,
+      "maxStock": 9
+    },
+    {
+      "id": "repair_kit",
+      "effect": "heal 50% below 25% hp once",
+      "cost": 200,
+      "maxStock": 9
+    },
+    {
+      "id": "overcharge",
+      "effect": "+30% charge speed",
+      "cost": 250,
+      "maxStock": 9
+    },
+    {
+      "id": "magnet_pulse",
+      "effect": "pull items within 6 tiles",
+      "cost": 120,
+      "maxStock": 9
+    },
+    {
+      "id": "second_chance",
+      "effect": "revive once with 50% hp",
+      "cost": 400,
+      "maxStock": 9
+    },
+    {
+      "id": "boss_scanner",
+      "effect": "show boss phase thresholds + warn before signature attack (weakness hint is free via NOVA, tutorial D10)",
+      "cost": 100,
+      "maxStock": 9
+    }
+  ],
+  "skinParts": [
+    "head",
+    "body",
+    "arm_buster",
+    "legs",
+    "core",
+    "dash_trail"
+  ],
+  "skinRarity": {
+    "common": {
+      "coreBit": [
+        300,
+        800
+      ]
+    },
+    "rare": {
+      "coreBit": [
+        1500,
+        3000
+      ]
+    },
+    "epic": {
+      "dataChip": [
+        3,
+        6
+      ]
+    },
+    "achievement": {
+      "sold": false
+    }
+  },
+  "skinsAffectStats": false,
+  "hitboxFixed": true,
+  "refundUpgradePct": 100
+}

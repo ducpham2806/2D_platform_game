@@ -1,0 +1,71 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  overscroll-behavior: none;
+}
+
+#game {
+  width: 100%;
+  height: 100%;
+}
+
+#game canvas {
+  image-rendering: pixelated;
+}
+
+/* Chỉ chơi ngang (GDD mục 5.2): cầm dọc thì che game và nhắc xoay. */
+#rotate-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 12px;
+  background: #000;
+  color: #e8f1ff;
+  font:
+    16px/1.4 system-ui,
+    sans-serif;
+  text-align: center;
+  padding: 24px;
+}
+
+body.portrait #rotate-overlay {
+  display: flex;
+}
+
+#rotate-overlay .icon {
+  width: 48px;
+  height: 80px;
+  border: 3px solid #4fd1ff;
+  border-radius: 8px;
+  animation: rotate-hint 1.6s ease-in-out infinite;
+}
+
+@keyframes rotate-hint {
+  0%,
+  30% {
+    transform: rotate(0deg);
+  }
+  60%,
+  100% {
+    transform: rotate(-90deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #rotate-overlay .icon {
+    animation: none;
+    transform: rotate(-90deg);
+  }
+}

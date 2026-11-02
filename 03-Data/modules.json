@@ -1,0 +1,34 @@
+[
+  {
+    "id": "magnet_core",
+    "effect": "pull core bit 3 tiles"
+  },
+  {
+    "id": "last_stand",
+    "effect": "+30% damage below 20% hp"
+  },
+  {
+    "id": "phase_step",
+    "effect": "dash leaves stun afterimage"
+  },
+  {
+    "id": "energy_siphon",
+    "effect": "kill restores 2% weapon energy"
+  },
+  {
+    "id": "spike_guard",
+    "effect": "immune to spikes"
+  },
+  {
+    "id": "second_wind",
+    "effect": "heal 20% once per stage"
+  },
+  {
+    "id": "scholar",
+    "effect": "+15% exp"
+  },
+  {
+    "id": "echo_shot",
+    "effect": "charge shot leaves residual wave"
+  }
+]

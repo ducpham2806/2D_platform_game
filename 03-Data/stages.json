@@ -1,0 +1,257 @@
+{
+  "stages": [
+    {
+      "index": 1,
+      "id": "verdant_gardens",
+      "name": "Verdant Gardens",
+      "recommendedLevel": "2-4",
+      "mechanic": "dây leo đẩy/kéo, bẫy gai",
+      "enemies": [
+        "drone_linh",
+        "buom_sat",
+        "thap_gai",
+        "linh_ken"
+      ],
+      "miniBoss": "bramble_golem",
+      "boss": "thorna",
+      "weaponGranted": "Vine Lash",
+      "bossWeakness": "Ember Burst",
+      "armorCache": "head_mk1",
+      "armorCacheRequiresWeapon": "Prism Beam",
+      "coreBitBase": 225,
+      "segments": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "checkpoints": 4,
+      "sideQuestId": "sq_verdant_gardens",
+      "memoryLog": 1
+    },
+    {
+      "index": 2,
+      "id": "prism_institute",
+      "name": "Prism Institute",
+      "recommendedLevel": "4-7",
+      "mechanic": "laser, gương phản xạ",
+      "enemies": [
+        "guong_quang",
+        "thap_laser",
+        "buom_sat",
+        "linh_ken"
+      ],
+      "miniBoss": "prism_sentinel",
+      "boss": "lumen",
+      "weaponGranted": "Prism Beam",
+      "bossWeakness": "Vine Lash",
+      "armorCache": "body_mk1",
+      "armorCacheRequiresWeapon": "Frost Shard",
+      "coreBitBase": 300,
+      "segments": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "checkpoints": 4,
+      "sideQuestId": "sq_prism_institute",
+      "memoryLog": 2
+    },
+    {
+      "index": 3,
+      "id": "cryo_vault",
+      "name": "Cryo Vault",
+      "recommendedLevel": "5-8",
+      "mechanic": "sàn trơn, băng vỡ",
+      "enemies": [
+        "nguoi_tuyet_may",
+        "thap_bang",
+        "drone_linh",
+        "linh_ken"
+      ],
+      "miniBoss": "frost_titan",
+      "boss": "cryo",
+      "weaponGranted": "Frost Shard",
+      "bossWeakness": "Prism Beam",
+      "armorCache": "arm_mk1",
+      "armorCacheRequiresWeapon": "Gale Cutter",
+      "coreBitBase": 375,
+      "segments": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "checkpoints": 4,
+      "sideQuestId": "sq_cryo_vault",
+      "memoryLog": 3
+    },
+    {
+      "index": 4,
+      "id": "cirrus_tower",
+      "name": "Cirrus Tower",
+      "recommendedLevel": "7-10",
+      "mechanic": "gió đổi hướng, bệ mây",
+      "enemies": [
+        "chim_cat_gio",
+        "coi_xoay",
+        "buom_sat",
+        "linh_ken"
+      ],
+      "miniBoss": "gale_roc",
+      "boss": "aeris",
+      "weaponGranted": "Gale Cutter",
+      "bossWeakness": "Frost Shard",
+      "armorCache": "leg_mk1",
+      "armorCacheRequiresWeapon": "Quake Drill",
+      "coreBitBase": 450,
+      "segments": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "checkpoints": 4,
+      "sideQuestId": "sq_cirrus_tower",
+      "memoryLog": 4
+    },
+    {
+      "index": 5,
+      "id": "bedrock_mines",
+      "name": "Bedrock Mines",
+      "recommendedLevel": "8-12",
+      "mechanic": "tường phá được, hầm sập",
+      "enemies": [
+        "sau_khoan",
+        "tru_roi_da",
+        "drone_linh",
+        "linh_ken"
+      ],
+      "miniBoss": "rock_wyrm",
+      "boss": "terra",
+      "weaponGranted": "Quake Drill",
+      "bossWeakness": "Gale Cutter",
+      "armorCache": "head_mk2",
+      "armorCacheRequiresWeapon": "Chain Bolt",
+      "coreBitBase": 525,
+      "segments": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "checkpoints": 4,
+      "sideQuestId": "sq_bedrock_mines",
+      "memoryLog": 5
+    },
+    {
+      "index": 6,
+      "id": "ion_station",
+      "name": "Ion Station",
+      "recommendedLevel": "10-14",
+      "mechanic": "cổng điện bật/tắt theo nhịp",
+      "enemies": [
+        "cuon_tesla",
+        "drone_tinh_dien",
+        "buom_sat",
+        "linh_ken"
+      ],
+      "miniBoss": "tesla_core",
+      "boss": "voltaire",
+      "weaponGranted": "Chain Bolt",
+      "bossWeakness": "Quake Drill",
+      "armorCache": "body_mk2",
+      "armorCacheRequiresWeapon": "Torrent Wave",
+      "coreBitBase": 600,
+      "segments": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "checkpoints": 4,
+      "sideQuestId": "sq_ion_station",
+      "memoryLog": 6
+    },
+    {
+      "index": 7,
+      "id": "abyss_harbor",
+      "name": "Abyss Harbor",
+      "recommendedLevel": "12-16",
+      "mechanic": "bơi, dòng nước, áp suất",
+      "enemies": [
+        "cua_may",
+        "sua_dien",
+        "thap_gai",
+        "linh_ken"
+      ],
+      "miniBoss": "kraken_may",
+      "boss": "marina",
+      "weaponGranted": "Torrent Wave",
+      "bossWeakness": "Chain Bolt",
+      "armorCache": "arm_mk2",
+      "armorCacheRequiresWeapon": "Ember Burst",
+      "coreBitBase": 675,
+      "segments": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "checkpoints": 4,
+      "sideQuestId": "sq_abyss_harbor",
+      "memoryLog": 7
+    },
+    {
+      "index": 8,
+      "id": "magma_foundry",
+      "name": "Magma Foundry",
+      "recommendedLevel": "14-18",
+      "mechanic": "dung nham dâng, băng chuyền",
+      "enemies": [
+        "drone_linh",
+        "robot_han",
+        "lo_phun",
+        "linh_ken"
+      ],
+      "miniBoss": "slag_golem",
+      "boss": "pyra",
+      "weaponGranted": "Ember Burst",
+      "bossWeakness": "Torrent Wave",
+      "armorCache": "leg_mk2",
+      "armorCacheRequiresWeapon": "Vine Lash",
+      "coreBitBase": 750,
+      "segments": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "checkpoints": 4,
+      "sideQuestId": "sq_magma_foundry",
+      "memoryLog": 8
+    }
+  ],
+  "citadel": {
+    "count": 3,
+    "coreBitBase": [
+      800,
+      900,
+      1000
+    ]
+  },
+  "final": {
+    "boss": "aegis",
+    "phases": 2,
+    "coreBitBase": 1200
+  },
+  "note": "Stage 2-8 chọn thứ tự tự do sau Prologue + Stage 1. Thứ tự index là thứ tự khuyến nghị và trùng với vòng khắc chế: vũ khí của Stage k là điểm yếu của boss Stage k+1; Ember Burst (Stage 8) khép vòng về Thorna ở Citadel. Két giáp của Stage k cần vũ khí của Stage k+1 (Stage 8 cần Vine Lash).",
+  "levelSync": {
+    "enabled": true,
+    "belowMin": 2,
+    "aboveMax": 2,
+    "appliesTo": "stages 1-8 trong cốt truyện; Citadel và màn cuối không áp dụng",
+    "note": "Cấp hiệu dụng khi tính máu/công = clamp(cấp thật, min-2, max+2) theo recommendedLevel của màn [PLACEHOLDER]"
+  }
+}

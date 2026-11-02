@@ -1,0 +1,145 @@
+{
+  "unlock": "after_final_boss",
+  "modes": [
+    "farm_run",
+    "boss_hunt",
+    "eclipse_rift"
+  ],
+  "eclipseLevels": {
+    "min": 1,
+    "max": 10,
+    "enemyHpDmgPerLevelPct": 15,
+    "baseDifficulty": "normal",
+    "modifiers": [
+      {
+        "fromLevel": 2,
+        "id": "elite_swap",
+        "desc": "Một phần kẻ địch thường thành Tinh nhuệ"
+      },
+      {
+        "fromLevel": 4,
+        "id": "new_patterns",
+        "desc": "Mẫu đòn mới cho kẻ địch và boss"
+      },
+      {
+        "fromLevel": 6,
+        "id": "remix_layout",
+        "desc": "Đoạn B và C dùng bố cục remix (đảo chiều, thêm bẫy)"
+      },
+      {
+        "fromLevel": 8,
+        "id": "boss_phase4",
+        "desc": "Boss thêm pha thứ 4; không rơi vật phẩm hồi máu"
+      },
+      {
+        "fromLevel": 10,
+        "id": "no_mid_checkpoint",
+        "desc": "Chỉ còn checkpoint trước mini-boss và trước boss"
+      }
+    ],
+    "note": "Thay cho các độ khó Ác mộng/Huyền thoại/Overclock cũ: độ khó tăng bằng biến thể (modifiers) là chính, chỉ số chỉ +15% mỗi mức [PLACEHOLDER]"
+  },
+  "rift": {
+    "floors": 100,
+    "seasonDays": 28,
+    "unlockRequires": "all_8_boss_hunt_at_level_3"
+  },
+  "chip": {
+    "slots": [
+      "head",
+      "body",
+      "arm",
+      "legs",
+      "core",
+      "extra"
+    ],
+    "sets": 8,
+    "upgrade": {
+      "min": 0,
+      "max": 15,
+      "failChance": 0
+    },
+    "rarity": [
+      {
+        "id": "common",
+        "p": 60.0,
+        "main": 5,
+        "sub": 0
+      },
+      {
+        "id": "rare",
+        "p": 28.0,
+        "main": 8,
+        "sub": 1
+      },
+      {
+        "id": "epic",
+        "p": 10.0,
+        "main": 12,
+        "sub": 2
+      },
+      {
+        "id": "legendary",
+        "p": 1.9,
+        "main": 18,
+        "sub": 3
+      },
+      {
+        "id": "mythic",
+        "p": 0.1,
+        "main": 25,
+        "sub": 4
+      }
+    ],
+    "pity": {
+      "legendary": 80,
+      "mythic": 600,
+      "firstBossHuntClear": "epic_or_better"
+    }
+  },
+  "mastery": {
+    "maxLevel": 10,
+    "maxDamagePct": 30,
+    "maxEnergyCostReductionPct": 20
+  },
+  "sweep": {
+    "freePerDay": 5,
+    "cyberPlusExtra": 5,
+    "adExtra": 2,
+    "gemExtraMax": 5
+  },
+  "doubleDrop": {
+    "freePerDay": 3,
+    "maxPerDay": 10
+  },
+  "serverAuthoritativeDrops": true,
+  "leaderboards": [
+    "standard",
+    "open"
+  ],
+  "costs": {
+    "chipUpgradeCoreBit": "200*1.2^(n-1)",
+    "chipUpgradeCrystals": "ceil(n/2)",
+    "masteryShards": "6*n",
+    "farmRun": {
+      "chipsPerRun": 3,
+      "coreBitPerRun": 250,
+      "shardsPerRun": 6
+    },
+    "bossHunt": {
+      "chipsPerRun": 2,
+      "crystalsPerRun": 4,
+      "sameSetAsBoss": true
+    },
+    "runMinutes": 5
+  },
+  "simulationResults": {
+    "firstLegendaryRunsMean": 13.5,
+    "fourOfSixLegendarySetRunsMean": 114,
+    "sixOfSixLegendarySetRunsMean": 291,
+    "firstMythicRunsMean": 151,
+    "coreBitFor6ChipsTo15": 86448,
+    "crystalsFor6Chips": 384,
+    "masteryShardsPerWeapon": 330
+  }
+}

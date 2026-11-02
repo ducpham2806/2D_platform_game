@@ -1,0 +1,28 @@
+[
+  {
+    "id": "story",
+    "damageTaken": 0.5,
+    "enemyHp": 0.8,
+    "rewardMul": 0.5,
+    "unlock": null,
+    "checkpoints": "more"
+  },
+  {
+    "id": "normal",
+    "damageTaken": 1.0,
+    "enemyHp": 1.0,
+    "rewardMul": 1,
+    "unlock": null,
+    "checkpoints": "normal"
+  },
+  {
+    "id": "challenge",
+    "damageTaken": 1.5,
+    "enemyHp": 1.25,
+    "rewardMul": 1.5,
+    "unlock": "per stage: clear that stage on normal",
+    "checkpoints": "fewer",
+    "newAttackPatterns": true,
+    "note": "Mẫu đòn mới cho kẻ địch và boss (trước thuộc Ác mộng). Các độ khó Ác mộng, Huyền thoại, Overclock đã bỏ từ GDD 0.6; thử thách sâu hơn nằm ở Mức Eclipse (endgame.json)."
+  }
+]

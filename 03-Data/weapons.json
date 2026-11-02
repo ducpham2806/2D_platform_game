@@ -1,0 +1,93 @@
+{
+  "arcCannon": {
+    "damage": 1,
+    "maxOnScreen": 3,
+    "charge": {
+      "timeSec": 1.2,
+      "damageMul": 3,
+      "pierce": 1
+    }
+  },
+  "bossWeapons": [
+    {
+      "name": "Vine Lash",
+      "from": "Thorna",
+      "weakBoss": [
+        "Lumen"
+      ],
+      "damageVsWeak": 2.5,
+      "weakStunSec": 0.5,
+      "energyCostOf28": 4
+    },
+    {
+      "name": "Ember Burst",
+      "from": "Pyra",
+      "weakBoss": [
+        "Thorna"
+      ],
+      "damageVsWeak": 2.5,
+      "weakStunSec": 0.5,
+      "energyCostOf28": null
+    },
+    {
+      "name": "Torrent Wave",
+      "from": "Marina",
+      "weakBoss": [
+        "Pyra"
+      ],
+      "damageVsWeak": 2.5,
+      "weakStunSec": 0.5,
+      "energyCostOf28": null
+    },
+    {
+      "name": "Chain Bolt",
+      "from": "Voltaire",
+      "weakBoss": [
+        "Marina"
+      ],
+      "damageVsWeak": 2.5,
+      "weakStunSec": 0.5,
+      "energyCostOf28": null
+    },
+    {
+      "name": "Quake Drill",
+      "from": "Terra",
+      "weakBoss": [
+        "Voltaire"
+      ],
+      "damageVsWeak": 2.5,
+      "weakStunSec": 0.5,
+      "energyCostOf28": null
+    },
+    {
+      "name": "Gale Cutter",
+      "from": "Aeris",
+      "weakBoss": [
+        "Terra"
+      ],
+      "damageVsWeak": 2.5,
+      "weakStunSec": 0.5,
+      "energyCostOf28": null
+    },
+    {
+      "name": "Frost Shard",
+      "from": "Cryo",
+      "weakBoss": [
+        "Aeris"
+      ],
+      "damageVsWeak": 2.5,
+      "weakStunSec": 0.5,
+      "energyCostOf28": null
+    },
+    {
+      "name": "Prism Beam",
+      "from": "Lumen",
+      "weakBoss": [
+        "Cryo"
+      ],
+      "damageVsWeak": 2.5,
+      "weakStunSec": 0.5,
+      "energyCostOf28": null
+    }
+  ]
+}
