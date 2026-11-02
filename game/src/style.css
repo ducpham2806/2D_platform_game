@@ -69,3 +69,142 @@ body.portrait #rotate-overlay {
     transform: rotate(-90deg);
   }
 }
+
+/* Lớp điều khiển cảm ứng (input/touch-overlay.ts). Đơn vị px CSS = dp. */
+.touch-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  display: none;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  --touch-opacity: 0.6;
+}
+
+.touch-layer[data-mode='play'],
+.touch-layer[data-mode='edit'] {
+  display: block;
+}
+
+.touch-button,
+.touch-stick-base,
+.touch-stick-knob {
+  position: absolute;
+  box-sizing: border-box;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: var(--touch-opacity);
+  pointer-events: none;
+  color: #e8f1ff;
+  font:
+    600 14px/1 system-ui,
+    sans-serif;
+}
+
+.touch-button {
+  border: 2px solid rgba(232, 241, 255, 0.85);
+  background: rgba(29, 42, 59, 0.55);
+}
+
+.touch-button.active {
+  background: rgba(79, 209, 255, 0.55);
+}
+
+.touch-stick-base {
+  border: 2px solid rgba(232, 241, 255, 0.6);
+  background: rgba(29, 42, 59, 0.35);
+}
+
+.touch-stick-knob {
+  background: rgba(232, 241, 255, 0.7);
+}
+
+.touch-layer[data-mode='edit'] {
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.touch-layer[data-mode='edit'] .touch-button {
+  border-style: dashed;
+  opacity: 1;
+}
+
+.touch-editor {
+  position: fixed;
+  z-index: 6;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(360px, calc(100vw - 32px));
+  max-height: calc(100vh - 24px);
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #121c2b;
+  border: 1px solid #2f4766;
+  color: #e8f1ff;
+  font:
+    14px/1.4 system-ui,
+    sans-serif;
+  touch-action: auto;
+}
+
+.touch-editor-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.touch-editor.collapsed .touch-editor-header {
+  margin-bottom: 0;
+}
+
+.touch-editor-title {
+  flex: 1;
+  font-weight: 600;
+}
+
+.touch-editor button {
+  min-width: 72px;
+  min-height: 40px;
+  border-radius: 8px;
+  border: 1px solid #2f4766;
+  background: #1d2a3b;
+  color: #e8f1ff;
+  font: inherit;
+}
+
+.touch-editor button.primary {
+  background: #4fd1ff;
+  border-color: #4fd1ff;
+  color: #0f1724;
+  font-weight: 600;
+}
+
+.touch-editor-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 36px;
+}
+
+.touch-editor-row select,
+.touch-editor-row input[type='range'] {
+  max-width: 55%;
+}
+
+.touch-editor-row input[type='checkbox'] {
+  width: 22px;
+  height: 22px;
+}
+
+.touch-editor-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 10px;
+}

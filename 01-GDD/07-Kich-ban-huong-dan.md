@@ -209,7 +209,7 @@ Không có bước nào bắt buộc người chơi thua hay mua hàng; không b
 | `{LƯỚT}` | L | B | Nút Lướt |
 | `{ĐỔI_VK}` | Q / E | LB / RB | Hai nút đổi vũ khí |
 | `{TẠM_DỪNG}` | Esc | Start | Nút II |
-| `{TƯƠNG_TÁC}` | E | Y | Chạm vào khu |
+| `{TƯƠNG_TÁC}` | W / ↑ (E dành cho đổi vũ khí, GDD 5.2) | Y | Chạm vào khu |
 
 Biểu tượng cập nhật theo thiết bị được dùng gần nhất; nếu người chơi đổi phím thì hiện phím mới.
 

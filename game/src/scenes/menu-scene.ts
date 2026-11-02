@@ -18,11 +18,15 @@ export class MenuScene extends Phaser.Scene {
     this.add.text(cx, 60, 'bản khung (Sprint 1)', MUTED_STYLE).setOrigin(0.5);
 
     textButton(this, cx, 96, 'Vào màn thử', () => this.scene.start(SceneKey.Stage));
-    textButton(this, cx, 122, 'Hub Arkon', () => this.scene.start(SceneKey.Hub));
-    this.add.text(cx, 170, 'Enter: vào màn  ·  H: Hub', MUTED_STYLE).setOrigin(0.5);
+    textButton(this, cx, 118, 'Hub Arkon', () => this.scene.start(SceneKey.Hub));
+    textButton(this, cx, 140, 'Điều khiển', () => this.scene.start(SceneKey.Controls));
+    this.add
+      .text(cx, 174, 'Enter: vào màn  ·  H: Hub  ·  C: Điều khiển', MUTED_STYLE)
+      .setOrigin(0.5);
 
     const keyboard = this.input.keyboard;
     keyboard?.once('keydown-ENTER', () => this.scene.start(SceneKey.Stage));
     keyboard?.once('keydown-H', () => this.scene.start(SceneKey.Hub));
+    keyboard?.once('keydown-C', () => this.scene.start(SceneKey.Controls));
   }
 }

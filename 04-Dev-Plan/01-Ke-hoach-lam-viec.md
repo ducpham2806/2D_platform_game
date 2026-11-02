@@ -33,7 +33,7 @@ Làm theo hai giai đoạn của GDD mục 16. **Giai đoạn 2 chỉ bắt đ�
 | Sprint | Mốc | Module (xem `02-Module.md`) | Asset (xem `05-Assets`) |
 |---|---|---|---|
 | 1 | Khởi động (**code xong**, xem `game/CONTEXT.md`) | M0 Dự án, M1 Khung game | Style bible, tờ thiết kế Kai, bảng màu |
-| 2–4 | **Prototype** | M2 Đầu vào (cảm ứng ngay từ đầu), M3 Nhân vật, M4 Chiến đấu cơ bản, 1 boss xám | Kai: idle, run, nhảy, đáp (P0); ô gạch xám |
+| 2–4 | **Prototype** (Sprint 2: **M2 code xong**) | M2 Đầu vào (cảm ứng ngay từ đầu), M3 Nhân vật, M4 Chiến đấu cơ bản, 1 boss xám | Kai: idle, run, nhảy, đáp (P0); ô gạch xám |
 | 5–9 | **Vertical slice** | M5 Kẻ địch, M7 Màn chơi, M6 Boss (Thorna), M10 HUD cơ bản, M11 lưu cục bộ, TutorialManager | Toàn bộ Prologue và Stage 1 (nhóm P1) |
 | 10–17 | **MVP** | Stage 2–4 (Prism, Cryo, Cirrus; khoảng 2,5 tuần mỗi màn), M8 RPG rút gọn, Xưởng, Shop chỉ Upgrade, 3 độ khó, bản web | Nhóm P2 (chỉ phần của Stage 2–4) |
 | 18–19 | **Cổng MVP** | Playtest \~50 người, sửa cảm giác chơi và màn | Không thêm asset mới |

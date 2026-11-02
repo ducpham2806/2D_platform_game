@@ -2,9 +2,11 @@ import type Phaser from 'phaser';
 import { EventBus } from './event-bus';
 import type { GameConfig } from './game-config';
 import type { GameEventBus, GameEvents } from './game-events';
+import type { InputService } from '../input/input-service';
 
 const BUS_KEY = 'cv.bus';
 const CONFIG_KEY = 'cv.config';
+const INPUT_KEY = 'cv.input';
 
 /** Gắn event bus dùng chung vào registry của game (gọi một lần ở BootScene). */
 export function installBus(game: Phaser.Game): GameEventBus {
@@ -29,4 +31,14 @@ export function getConfig(scene: Phaser.Scene): GameConfig {
   const config = scene.registry.get(CONFIG_KEY) as GameConfig | undefined;
   if (!config) throw new Error('Cấu hình chưa được nạp (PreloadScene phải chạy trước)');
   return config;
+}
+
+export function setInput(scene: Phaser.Scene, input: InputService): void {
+  scene.registry.set(INPUT_KEY, input);
+}
+
+export function getInput(scene: Phaser.Scene): InputService {
+  const input = scene.registry.get(INPUT_KEY) as InputService | undefined;
+  if (!input) throw new Error('InputService chưa được tạo (PreloadScene phải chạy trước)');
+  return input;
 }

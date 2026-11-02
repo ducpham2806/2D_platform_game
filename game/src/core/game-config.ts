@@ -1,3 +1,5 @@
+import { type ControlsConfig, parseControls } from './controls-config';
+
 /**
  * Kiểu và kiểm tra dữ liệu cấu hình đọc từ public/data (nguồn: 03-Data).
  * Logic thuần, không phụ thuộc Phaser. Mọi chỉ số gameplay phải đi qua đây,
@@ -75,6 +77,7 @@ export const REQUIRED_DATA_FILES = [
   'shop',
   'economy',
   'modules',
+  'controls',
 ] as const;
 export type RequiredDataFile = (typeof REQUIRED_DATA_FILES)[number];
 
@@ -83,6 +86,7 @@ export interface GameConfig {
   weapons: WeaponsData;
   stages: StagesData;
   difficulties: DifficultyData[];
+  controls: ControlsConfig;
   /** Các file chưa có module dùng (shop, economy, modules, endgame…), giữ nguyên dạng thô. */
   raw: Readonly<Record<string, unknown>>;
 }
@@ -339,6 +343,7 @@ export function parseGameConfig(files: Readonly<Record<string, unknown>>): GameC
     weapons: parseWeapons(files.weapons),
     stages: parseStages(files.stages),
     difficulties: parseDifficulties(files.difficulties),
+    controls: parseControls(files.controls),
     raw: { ...files },
   };
   const errors = checkDesignInvariants(config);

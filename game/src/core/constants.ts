@@ -17,6 +17,7 @@ export const SceneKey = {
   Menu: 'menu',
   Hub: 'hub',
   Stage: 'stage',
+  Controls: 'controls',
 } as const;
 export type SceneKey = (typeof SceneKey)[keyof typeof SceneKey];
 
