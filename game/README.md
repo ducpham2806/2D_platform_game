@@ -14,7 +14,7 @@ npm run dev
 
 Mở http://localhost:5173. Màn hình chính có ba lựa chọn:
 
-- **Vào màn thử:** phòng xám 20 × 12 ô. Di chuyển khối giữ chỗ bằng A/D hoặc ←/→, cần trái tay cầm, hoặc cần ảo trên điện thoại. Dải dưới cùng sáng lên khi giữ (xanh) hoặc vừa bấm (vàng) từng hành động, để kiểm tra đầu vào. Esc, Start hoặc nút II để quay lại.
+- **Vào màn thử:** màn xám thử cảm giác điều khiển, dài 74 ô: khe 2 ô, bậc cao 1/3/4 ô, bục một chiều, giếng 8 ô phải nhảy tường, hành lang trần thấp, hố 5 ô phải lướt + nhảy. Kai là khối giữ chỗ đổi màu theo trạng thái (xanh: đứng/chạy, vàng: lướt, tím: bám tường, đỏ: bị đánh). Phím: A/D hoặc ←/→, K nhảy (giữ lâu nhảy cao), L lướt, S/↓ + K rơi xuyên bục, Esc quay lại; tay cầm và cảm ứng như màn Điều khiển. Bản dev: phím T gây 10 sát thương thử.
 - **Hub Arkon:** khung menu.
 - **Điều khiển:** đổi phím bàn phím, đổi nút tay cầm, và mở chế độ kéo thả bố cục nút cảm ứng.
 
