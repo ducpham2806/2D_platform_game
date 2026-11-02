@@ -1,4 +1,5 @@
 import type { BossData } from '../../core/boss-config';
+import type { EnemiesData } from '../../core/enemy-config';
 import type { DifficultyData } from '../../core/game-config';
 import type { PlayerData } from '../../core/player-config';
 import type { WeaponsData } from '../../core/weapons-config';
@@ -6,11 +7,13 @@ import { GrayBoss } from '../boss/gray-boss';
 import { WeaponLoadout } from '../combat/loadout';
 import { ProjectilePool } from '../combat/projectiles';
 import { TrainingTarget } from '../combat/targets';
+import type { Enemy } from '../enemy/enemy';
 import { evaluateFormula } from '../formula';
 import { playerParams } from '../player/player-params';
 import { PlayerPhysics } from '../player/player-physics';
 import { createRng, type Rng } from '../rng';
 import { Tile, TileMap } from '../tilemap';
+import { EnemyField, type EnemyMarkers } from './enemy-field';
 import { resolveEnemyHits, resolvePlayerHits } from './hits';
 import { noWorldEvents, type WorldEvents, type WorldInput, type WorldPhase } from './world-types';
 
@@ -23,6 +26,9 @@ export interface WorldSetup {
   boss: BossData;
   difficulty: DifficultyData;
   seed: number;
+  /** Kẻ địch thường (M5): dữ liệu và ký hiệu đặt trên bản đồ. Không có thì màn không có kẻ địch. */
+  enemies?: EnemiesData;
+  enemyMarkers?: EnemyMarkers;
 }
 
 /** Bia tập bắn: máu (phát Arc Cannon) và thời gian dựng lại. Chỉ dùng trong màn xám. */
@@ -53,6 +59,8 @@ export class StageWorld {
   readonly arena: { first: number; last: number } | undefined;
   /** Đang dừng hình (hit-stop), tính bằng số bước còn lại. */
   hitStop = 0;
+  /** Kẻ địch thường, vật phẩm rơi, EXP và Core Bit của lượt chơi. */
+  readonly field: EnemyField | undefined;
 
   private readonly rng: Rng;
   private readonly attackMul: number;
@@ -64,7 +72,7 @@ export class StageWorld {
   readonly gateRows: number[];
   private readonly bossSpawn: { x: number; y: number } | undefined;
 
-  constructor(private readonly setup: WorldSetup) {
+  constructor(private setup: WorldSetup) {
     const t = setup.tileSize;
     this.map = TileMap.fromRows(setup.rows, t);
     this.rng = createRng(setup.seed);
@@ -104,9 +112,40 @@ export class StageWorld {
         );
       }
     }
+    this.field = setup.enemies
+      ? new EnemyField(
+          setup.enemies,
+          this.map,
+          setup.enemyMarkers ?? {},
+          setup.difficulty.enemyHp,
+          () => nextId++,
+          setup.seed + 1,
+        )
+      : undefined;
     const b = this.map.markers.find((m) => m.ch === 'B');
     this.bossSpawn = b ? { x: (b.col + 0.5) * t, y: (b.row + 1) * t } : undefined;
     this.boss = this.makeBoss();
+  }
+
+  /** Dữ liệu đang dùng (bảng chỉnh cảm giác đọc để hiện giá trị hiện tại). */
+  get tuning(): Pick<WorldSetup, 'player' | 'weapons' | 'boss'> {
+    return { player: this.setup.player, weapons: this.setup.weapons, boss: this.setup.boss };
+  }
+
+  /**
+   * Đổi thông số khi đang chơi (bảng chỉnh cảm giác ở cổng Prototype). Vật lý Kai và vũ khí
+   * đổi ngay; boss mới tạo (đấu lại, hồi sinh) dùng dữ liệu boss mới.
+   */
+  retune(patch: Partial<Pick<WorldSetup, 'player' | 'weapons' | 'boss'>>): void {
+    this.setup = { ...this.setup, ...patch };
+    if (patch.player) {
+      this.player.setParams(playerParams(patch.player, this.setup.tileSize, this.setup.stepSec));
+    }
+    if (patch.weapons) this.loadout.setData(patch.weapons);
+  }
+
+  get enemies(): readonly Enemy[] {
+    return this.field?.enemies ?? [];
   }
 
   get respawning(): boolean {
@@ -177,23 +216,28 @@ export class StageWorld {
       ev.bossLanded = be.landed;
       if (be.defeated) this.onBossDefeated(ev);
     }
+    this.field?.step(pl, this.pool, dt);
     this.pool.update(dt, this.map);
 
+    const killed: Enemy[] = [];
     this.hitStop = resolvePlayerHits(
       this.pool,
-      this.targets,
-      this.boss,
+      { targets: this.targets, enemies: this.enemies, boss: this.boss },
       this.setup.weapons,
       this.attackMul,
       ev,
+      killed,
     );
+    this.field?.onKilled(killed, pl);
     resolveEnemyHits(
       this.pool,
+      this.field?.active(pl) ?? [],
       this.phase === 'boss' ? this.boss : undefined,
       pl,
       this.setup.difficulty.damageTaken,
       ev,
     );
+    this.field?.updatePickups(pl, dt, ev);
 
     this.updateArena(ev);
     if (pe.died || pe.fellOut || pl.state === 'dead') {
@@ -277,6 +321,7 @@ export class StageWorld {
     pl.respawn(this.checkpoint.x, this.checkpoint.y);
     this.pool.clear();
     this.loadout.refill();
+    this.field?.reset();
     if (this.phase === 'boss') {
       // Chết trong phòng boss: hồi sinh trong phòng, boss đầy máu, trận bắt đầu lại.
       this.boss = this.makeBoss();

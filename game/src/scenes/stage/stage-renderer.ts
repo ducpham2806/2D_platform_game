@@ -3,6 +3,7 @@ import type { GrayBoss } from '../../logic/boss/gray-boss';
 import type { Projectile } from '../../logic/combat/projectiles';
 import { Tile, type TileMap } from '../../logic/tilemap';
 import type { StageWorld } from '../../logic/world/stage-world';
+import { drawEnemies, drawPickups } from './enemy-renderer';
 
 /** Màu khối giữ chỗ (chưa có sprite). Mỗi loại đạn một màu để dễ đọc khi chơi thử. */
 const PROJECTILE_COLORS: Readonly<Record<Projectile['kind'], number>> = {
@@ -13,6 +14,7 @@ const PROJECTILE_COLORS: Readonly<Record<Projectile['kind'], number>> = {
   enemyShot: 0xff8787,
   shockwave: 0xffa94d,
   drop: 0xff6b6b,
+  bomb: 0xd99cff,
 };
 
 /** Vẽ phần tĩnh của bản đồ một lần (nền, lưới, khối đặc, bục một chiều). */
@@ -40,7 +42,10 @@ export function drawStaticMap(
   }
 }
 
-/** Vẽ mọi thứ thay đổi theo bước: cửa, bia, boss và telegraph, đạn. Gọi mỗi khung, sau clear(). */
+/**
+ * Vẽ mọi thứ thay đổi theo bước: cửa, bia, boss và telegraph, kẻ địch, vật phẩm, đạn.
+ * Gọi mỗi khung, sau clear().
+ */
 export function drawDynamic(
   g: Phaser.GameObjects.Graphics,
   world: StageWorld,
@@ -66,6 +71,8 @@ export function drawDynamic(
     if (target.shieldUp) g.fillStyle(0x7fd1ff, 1).fillRect(b.x - 4, b.y + 2, 3, b.h - 4);
   }
   if (world.boss) drawBoss(g, world.boss, t, world.map, timeMs);
+  drawEnemies(g, world.enemies, timeMs);
+  if (world.field) drawPickups(g, world.field.pickups.all, timeMs);
   for (const p of world.pool.all) {
     g.fillStyle(PROJECTILE_COLORS[p.kind], p.kind === 'sweep' ? 0.6 : 1).fillRect(
       p.x,

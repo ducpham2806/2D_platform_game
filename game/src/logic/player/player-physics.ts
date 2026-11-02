@@ -55,7 +55,7 @@ export class PlayerPhysics {
   private wallJumpedThisStep = false;
 
   constructor(
-    private readonly params: PlayerParams,
+    private params: PlayerParams,
     private readonly map: TileMap,
     spawnX: number,
     spawnBottom: number,
@@ -87,6 +87,11 @@ export class PlayerPhysics {
     this.dropThrough = 0;
     this.grounded = groundBelow(this.box, this.map) !== undefined;
     this.state = 'idle';
+  }
+
+  /** Đổi thông số vật lý khi đang chơi (bảng chỉnh cảm giác). Hộp va chạm giữ nguyên. */
+  setParams(params: PlayerParams): void {
+    this.params = params;
   }
 
   get centerX(): number {

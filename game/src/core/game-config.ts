@@ -3,6 +3,7 @@ import { arr, ConfigError, isObject, num, obj, str } from './json-check';
 import { parsePlayer, type PlayerData } from './player-config';
 import { parseWeapons, type WeaponsData } from './weapons-config';
 import { type BossData, checkBossRules, parseBosses } from './boss-config';
+import { checkEnemyRules, type EnemiesData, parseEnemies } from './enemy-config';
 import { evaluateFormula } from '../logic/formula';
 
 export { ConfigError } from './json-check';
@@ -27,6 +28,8 @@ export interface StageData {
   armorCacheRequiresWeapon: string;
   coreBitBase: number;
   checkpoints: number;
+  /** id kẻ địch thường của màn (enemies.json). */
+  enemies: string[];
 }
 
 export interface LevelSyncData {
@@ -47,6 +50,9 @@ export interface DifficultyData {
   rewardMul: number;
 }
 
+/** Số màn (tính từ Stage 1) đã có dữ liệu kẻ địch trong enemies.json; tăng dần khi làm các màn sau. */
+export const STAGES_WITH_ENEMY_DATA = 1;
+
 /** Các file bắt buộc phải có và hợp lệ thì game mới chạy. */
 export const REQUIRED_DATA_FILES = [
   'player',
@@ -58,6 +64,7 @@ export const REQUIRED_DATA_FILES = [
   'modules',
   'controls',
   'bosses',
+  'enemies',
 ] as const;
 export type RequiredDataFile = (typeof REQUIRED_DATA_FILES)[number];
 
@@ -68,6 +75,7 @@ export interface GameConfig {
   difficulties: DifficultyData[];
   controls: ControlsConfig;
   bosses: Record<string, BossData>;
+  enemies: EnemiesData;
   /** Các file chưa có module dùng (shop, economy, modules, endgame…), giữ nguyên dạng thô. */
   raw: Readonly<Record<string, unknown>>;
 }
@@ -89,6 +97,7 @@ export function parseStages(value: unknown): StagesData {
       armorCacheRequiresWeapon: str(st.armorCacheRequiresWeapon, `${p}.armorCacheRequiresWeapon`),
       coreBitBase: num(st.coreBitBase, `${p}.coreBitBase`, { min: 0 }),
       checkpoints: num(st.checkpoints, `${p}.checkpoints`, { min: 1 }),
+      enemies: arr(st.enemies, `${p}.enemies`).map((e, j) => str(e, `${p}.enemies[${j}]`)),
     };
   });
   const sync = obj(s.levelSync, 'stages.levelSync');
@@ -208,6 +217,16 @@ export function checkDesignInvariants(config: GameConfig): string[] {
     }
   }
 
+  // Kẻ địch: telegraph ≥ 0,4 s, không chết ngay một đòn; các màn đã làm có đủ dữ liệu kẻ địch.
+  errors.push(...checkEnemyRules(config.enemies, baseHp));
+  for (const stage of stages.filter((s) => s.index <= STAGES_WITH_ENEMY_DATA)) {
+    for (const id of stage.enemies) {
+      if (!config.enemies.enemies[id]) {
+        errors.push(`stages.${stage.id}.enemies: kẻ địch "${id}" chưa có trong enemies.json`);
+      }
+    }
+  }
+
   return errors;
 }
 
@@ -224,6 +243,7 @@ export function parseGameConfig(files: Readonly<Record<string, unknown>>): GameC
     difficulties: parseDifficulties(files.difficulties),
     controls: parseControls(files.controls),
     bosses: parseBosses(files.bosses),
+    enemies: parseEnemies(files.enemies),
     raw: { ...files },
   };
   const errors = checkDesignInvariants(config);

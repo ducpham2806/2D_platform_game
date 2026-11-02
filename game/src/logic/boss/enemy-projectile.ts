@@ -4,7 +4,7 @@ import type { ProjectilePool, ProjectileSpec } from '../combat/projectiles';
 /** Tạo đạn của kẻ địch (bắn thẳng, sóng đất, mưa rơi). Sát thương tính bằng máu người chơi. */
 export function enemyProjectile(
   tileSize: number,
-  kind: 'enemyShot' | 'shockwave' | 'drop',
+  kind: 'enemyShot' | 'shockwave' | 'drop' | 'bomb',
   x: number,
   y: number,
   size: { w: number; h: number },

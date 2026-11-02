@@ -2,8 +2,9 @@
  * Lưới ô cho va chạm (logic thuần). Tạo từ các dòng ký tự để dựng màn xám nhanh:
  *   '#' khối đặc, '=' bục một chiều (đứng lên được, nhảy xuyên từ dưới lên), '.' trống,
  *   'P' điểm xuất phát của Kai, 'B' boss, 'T' bia tập bắn, 'S' bia có khiên mặt trái,
- *   'D' cửa phòng boss (trống, đóng lại khi vào đấu trường). Mọi ký hiệu chữ đều là ô trống
- *   và được ghi vào `markers` để thế giới đặt đối tượng.
+ *   'D' cửa phòng boss (trống, đóng lại khi vào đấu trường); các chữ hoa khác là kẻ địch theo
+ *   bảng của từng màn (StageDef.enemyMarkers). Mọi ký hiệu chữ đều là ô trống và được ghi vào
+ *   `markers` để thế giới đặt đối tượng.
  * Bản đồ Tiled thật (M7) sẽ đổ vào cùng cấu trúc này.
  */
 export const Tile = {
@@ -16,11 +17,6 @@ export type Tile = (typeof Tile)[keyof typeof Tile];
 const CHAR_TO_TILE: Readonly<Record<string, Tile>> = {
   '.': Tile.Empty,
   ' ': Tile.Empty,
-  P: Tile.Empty,
-  B: Tile.Empty,
-  T: Tile.Empty,
-  S: Tile.Empty,
-  D: Tile.Empty,
   '#': Tile.Solid,
   '=': Tile.OneWay,
 };
@@ -33,7 +29,7 @@ export class TileMap {
     private readonly tiles: Uint8Array,
     /** Tâm đáy ô 'P' (px), hoặc undefined nếu không có. */
     readonly spawn: { x: number; y: number } | undefined,
-    /** Các ký hiệu chữ (P, B, T, S, D) và vị trí ô của chúng. */
+    /** Các ký hiệu chữ hoa và vị trí ô của chúng. */
     readonly markers: ReadonlyArray<{ ch: string; col: number; row: number }>,
   ) {}
 
@@ -46,7 +42,8 @@ export class TileMap {
     rows.forEach((row, y) => {
       for (let x = 0; x < cols; x += 1) {
         const ch = row[x] ?? '.';
-        const tile = CHAR_TO_TILE[ch];
+        // Mọi chữ hoa là ký hiệu đặt đối tượng, đứng trên ô trống.
+        const tile = /[A-Z]/.test(ch) ? Tile.Empty : CHAR_TO_TILE[ch];
         if (tile === undefined) throw new Error(`Ký tự lạ "${ch}" ở dòng ${y}, cột ${x}`);
         tiles[y * cols + x] = tile;
         if (ch === 'P') spawn = { x: (x + 0.5) * tileSize, y: (y + 1) * tileSize };
