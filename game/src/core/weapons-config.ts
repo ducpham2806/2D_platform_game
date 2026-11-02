@@ -1,10 +1,7 @@
 /** Kiểu và kiểm tra weapons.json (logic thuần). */
-import { arr, ConfigError, type Json, num, obj, str } from './json-check';
+import { arr, ConfigError, type Json, num, obj, size, type SizePx, str } from './json-check';
 
-export interface SizePx {
-  w: number;
-  h: number;
-}
+export type { SizePx } from './json-check';
 
 export interface ChargeLevelData {
   timeSec: number;
@@ -57,11 +54,6 @@ export interface WeaponsData {
 function bool(value: unknown, path: string): boolean {
   if (typeof value !== 'boolean') throw new ConfigError(`${path}: cần true/false`);
   return value;
-}
-
-function size(value: unknown, path: string): SizePx {
-  const s = obj(value, path);
-  return { w: num(s.w, `${path}.w`, { min: 1 }), h: num(s.h, `${path}.h`, { min: 1 }) };
 }
 
 function chargeLevel(value: unknown, path: string): ChargeLevelData {

@@ -1,7 +1,7 @@
 import type { TileMap } from '../tilemap';
 
 export type ProjectileKind =
-  'shot' | 'mid' | 'charged' | 'sweep' | 'enemyShot' | 'shockwave' | 'drop';
+  'shot' | 'mid' | 'charged' | 'sweep' | 'enemyShot' | 'shockwave' | 'drop' | 'bomb';
 
 /** Đạn, sóng, roi… mọi hộp gây sát thương có thời hạn. (x, y) là góc trên trái, px. */
 export interface Projectile {
@@ -27,6 +27,8 @@ export interface Projectile {
   ttl: number;
   /** Gắn theo người chơi (roi): thế giới tự đặt lại vị trí mỗi bước. */
   attached: boolean;
+  /** Trọng lực (px/s²) cho đạn rơi như hạt nổ của Bướm Sắt; không có thì bay thẳng. */
+  gravity?: number;
   alive: boolean;
   /** Đã trúng mục tiêu nào (mỗi viên chỉ trúng một mục tiêu một lần). */
   hitIds: Set<number>;
@@ -83,6 +85,7 @@ export class ProjectilePool {
         continue;
       }
       if (p.attached) continue;
+      if (p.gravity) p.vy += p.gravity * dt;
       const dx = p.vx * dt;
       const dy = p.vy * dt;
       p.x += dx;

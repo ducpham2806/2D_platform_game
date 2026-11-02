@@ -16,7 +16,8 @@ import type { TuningData } from '../logic/playtest/tuning';
 import type { PlayerStateName } from '../logic/player/player-physics';
 import { StageWorld } from '../logic/world/stage-world';
 import type { WorldEvents, WorldInput } from '../logic/world/world-types';
-import { GRAY_BOX_ROWS } from '../stages/gray-box';
+import { STAGE_DEFS, type StageDefId } from '../stages';
+import type { StageDef } from '../stages/stage-def';
 import { StageHud } from './stage/stage-hud';
 import { StagePlaytest, tunedData } from './stage/stage-playtest';
 import { chargeGlowColor, drawDynamic, drawStaticMap } from './stage/stage-renderer';
@@ -58,9 +59,15 @@ export class StageScene extends Phaser.Scene {
   private playtest?: StagePlaytest;
   private prev = { x: 0, y: 0 };
   private cameraLocked = false;
+  private def: StageDef = STAGE_DEFS.gray;
 
   constructor() {
     super(SceneKey.Stage);
+  }
+
+  /** `scene.start(SceneKey.Stage, { stage: 'enemies' })` chọn màn; mặc định là màn xám. */
+  init(data: { stage?: StageDefId } | undefined): void {
+    this.def = STAGE_DEFS[data?.stage ?? 'gray'];
   }
 
   create(): void {
@@ -75,12 +82,14 @@ export class StageScene extends Phaser.Scene {
     const base: TuningData = { player: config.player, weapons: config.weapons, boss };
     const tuned = tunedData(base);
     const world = new StageWorld({
-      rows: GRAY_BOX_ROWS,
+      rows: this.def.rows,
       tileSize: TILE_SIZE,
       stepSec: FIXED_STEP_MS / 1000,
       ...tuned,
       difficulty,
       seed: WORLD_SEED,
+      enemies: config.enemies,
+      enemyMarkers: this.def.enemyMarkers,
     });
     this.world = world;
 
@@ -104,7 +113,7 @@ export class StageScene extends Phaser.Scene {
     this.controls = input;
     input.setGameplayActive(true);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => input.setGameplayActive(false));
-    this.playtest = new StagePlaytest(this, world, input, base);
+    this.playtest = new StagePlaytest(this, world, input, base, this.def.playtest);
     if (DEBUG) {
       this.input.keyboard?.on('keydown-T', () =>
         world.player.applyHit(DEBUG_HIT_DAMAGE, world.player.centerX + world.player.facing * 8),
@@ -190,6 +199,8 @@ export class StageScene extends Phaser.Scene {
       );
     }
     if (ev.emptyWeapon) hud?.flash('Hết năng lượng vũ khí', 600);
+    if (ev.enemyKilled) camera.shake(60, 0.002);
+    if (ev.healed > 0) hud?.flash(`+${ev.healed} máu`, 500);
   }
 
   /** Trong phòng boss, khóa camera đúng khung đấu trường (rộng đúng một màn hình). */

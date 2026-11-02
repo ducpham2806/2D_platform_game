@@ -2,8 +2,7 @@
  * Kiểu và kiểm tra bosses.json (logic thuần), kèm các nguyên tắc của GDD 9:
  * telegraph ≥ minTelegraphSec kể cả khi pha cuối tăng tốc, và không đòn nào gây chết ngay.
  */
-import { arr, ConfigError, type Json, num, obj, str } from './json-check';
-import type { SizePx } from './weapons-config';
+import { arr, ConfigError, type Json, num, obj, size, type SizePx, str } from './json-check';
 
 export type BossAttackId = 'shot' | 'charge' | 'slam' | 'rain';
 const ATTACK_IDS: readonly BossAttackId[] = ['shot', 'charge', 'slam', 'rain'];
@@ -62,11 +61,6 @@ export interface BossData {
   minTelegraphSec: number;
   phases: BossPhaseData[];
   attacks: { shot: ShotAttack; charge: ChargeAttack; slam: SlamAttack; rain: RainAttack };
-}
-
-function size(value: unknown, path: string): SizePx {
-  const s = obj(value, path);
-  return { w: num(s.w, `${path}.w`, { min: 1 }), h: num(s.h, `${path}.h`, { min: 1 }) };
 }
 
 function parseBoss(id: string, value: unknown): BossData {

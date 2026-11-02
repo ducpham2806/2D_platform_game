@@ -11,6 +11,8 @@ export class StageHud {
   private readonly bars: Phaser.GameObjects.Graphics;
   private readonly weapon: Phaser.GameObjects.Text;
   private readonly bossName: Phaser.GameObjects.Text;
+  /** Core Bit và EXP nhặt được trong lượt (khi màn có kẻ địch). */
+  private readonly loot: Phaser.GameObjects.Text;
   private readonly message: Phaser.GameObjects.Text;
   readonly hint: Phaser.GameObjects.Text;
   readonly debug: Phaser.GameObjects.Text;
@@ -23,6 +25,11 @@ export class StageHud {
       .setDepth(10);
     this.bossName = scene.add
       .text(LOGIC_WIDTH - 8, 4, '', { ...MUTED_STYLE, fontSize: '8px' })
+      .setOrigin(1, 0)
+      .setScrollFactor(0)
+      .setDepth(10);
+    this.loot = scene.add
+      .text(LOGIC_WIDTH - 8, 4, '', { ...MUTED_STYLE, fontSize: '8px', color: '#ffd166' })
       .setOrigin(1, 0)
       .setScrollFactor(0)
       .setDepth(10);
@@ -88,8 +95,11 @@ export class StageHud {
           g.fillStyle(0xffffff, 0.8).fillRect(x + (w * ph.untilHpPct) / 100, 15, 1, 7);
       }
       this.bossName.setText(`${boss.data.name} · pha ${boss.phase + 1}`);
+      this.loot.setText('');
     } else {
       this.bossName.setText('');
+      const field = world.field;
+      this.loot.setText(field ? `Core Bit ${field.coreBits}  ·  EXP ${field.exp}` : '');
     }
   }
 }

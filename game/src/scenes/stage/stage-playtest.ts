@@ -47,6 +47,8 @@ export class StagePlaytest {
     private readonly world: StageWorld,
     private readonly input: InputService,
     private readonly base: TuningData,
+    /** Ghi nhật ký và hỏi phiếu chấm (chỉ màn xám của cổng Prototype); bảng chỉnh vẫn dùng được. */
+    private readonly recording: boolean,
   ) {
     if (TUNE) {
       const button = document.createElement('button');
@@ -69,6 +71,7 @@ export class StagePlaytest {
 
   /** Gọi sau mỗi bước logic với sự kiện của bước đó. */
   record(ev: WorldEvents, dt: number): void {
+    if (!this.recording) return;
     const world = this.world;
     const section = sectionAt(GRAY_BOX_SECTIONS, Math.floor(world.player.centerX / TILE_SIZE));
     if (ev.playerDied) this.recorder.death(section);
@@ -124,7 +127,7 @@ export class StagePlaytest {
 
   private save(): void {
     this.sinceSave = 0;
-    if (this.recorder.session.durationSec >= PLAYTEST_MIN_SEC) {
+    if (this.recording && this.recorder.session.durationSec >= PLAYTEST_MIN_SEC) {
       saveSession(this.store, this.recorder.session);
     }
   }

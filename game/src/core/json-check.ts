@@ -39,3 +39,13 @@ export function arr(value: unknown, path: string): unknown[] {
   if (!Array.isArray(value)) throw new ConfigError(`${path}: cần một mảng`);
   return value;
 }
+
+export interface SizePx {
+  w: number;
+  h: number;
+}
+
+export function size(value: unknown, path: string): SizePx {
+  const s = obj(value, path);
+  return { w: num(s.w, `${path}.w`, { min: 1 }), h: num(s.h, `${path}.h`, { min: 1 }) };
+}

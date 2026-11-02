@@ -42,6 +42,13 @@ export interface WorldEvents {
   hitTarget: boolean;
   blocked: boolean;
   shieldBroken: boolean;
+  /** Phát phá khiên làm mòn khiên Lính Kén nhưng chưa vỡ. */
+  shieldHit: boolean;
+  hitEnemy: boolean;
+  enemyKilled: boolean;
+  /** Core Bit vừa nhặt, máu vừa hồi trong bước này. */
+  coreBitGained: number;
+  healed: number;
   hitBoss: boolean;
   weakHit: boolean;
   playerHurt: boolean;
@@ -62,6 +69,11 @@ export function noWorldEvents(): WorldEvents {
     hitTarget: false,
     blocked: false,
     shieldBroken: false,
+    shieldHit: false,
+    hitEnemy: false,
+    enemyKilled: false,
+    coreBitGained: 0,
+    healed: 0,
     hitBoss: false,
     weakHit: false,
     playerHurt: false,

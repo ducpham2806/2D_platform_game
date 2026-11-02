@@ -89,6 +89,13 @@ HP kẻ địch tính bằng số phát Arc Cannon ở sát thương gốc; máu
 
 Quy tắc chung: mọi đòn có telegraph ≥ 0,4 s; không có kẻ địch xuất hiện sát người chơi (khoảng cách xuất hiện ≥ 6 tile); kẻ địch rơi vật phẩm hồi máu theo xác suất 8% (không rơi khi người chơi đầy máu) `[PLACEHOLDER]`.
 
+Số liệu và hành vi nằm ở `03-Data/enemies.json` (game kiểm tra telegraph ≥ 0,4 s và không đòn nào chết ngay mỗi khi nạp dữ liệu). Cách hiểu khi làm M5 `[PLACEHOLDER]`:
+
+- **Drone Lính** bay lơ lửng đi tuần, bắn nhắm vào người chơi (Prologue cần drone bay cao 3 tile). Bản Prologue chậm hơn và có cờ "vô hại" đặt trên bản đồ cho nhịp 1–3.
+- **Lính Kén:** "2 phát" là 2 phát nạp đầy làm vỡ khiên; bắn từ phía sau thì trúng ngay. Người chơi đứng sau lưng quá 0,8 s thì nó quay lại. Nó không bước khỏi mép gờ.
+- **Core Bit** rơi thành tối đa 3 viên phải nhặt (để module Magnet Core có ý nghĩa), biến mất sau 10 s; EXP cộng ngay khi hạ. Viên hồi máu hồi 20 máu, biến mất sau 8 s.
+- Kẻ địch chỉ hoạt động khi người chơi cách trong 12 tile theo chiều ngang. Khi người chơi hồi sinh ở checkpoint, mọi kẻ địch dựng lại; Core Bit và EXP đã nhặt vẫn giữ.
+
 ## 5. Boss Thorna
 
 **Chủ đề:** Warden của Vườn Sinh Học, một cây khổng lồ có lõi máy. Đây là boss đầu tiên nên mẫu đòn rõ ràng, khe né rộng, và có thể thắng chỉ bằng Arc Cannon.
