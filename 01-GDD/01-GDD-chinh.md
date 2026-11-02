@@ -206,6 +206,8 @@ Hologram của Lin chỉ xuất hiện trong Phòng Hồ Sơ, gắn với nhật
 
 Thông số vật lý bổ sung khi làm M3 (đều `[PLACEHOLDER]`, ở `03-Data/player.json`): thời gian lên đỉnh 0,4 s (trọng lực suy ra từ độ cao 4,5 ô nên độ cao luôn đúng bảng trên); rơi nặng gấp 1,6 lần lúc lên; tốc độ rơi tối đa 15 ô/s; hộp va chạm 12 × 24 px; nhảy tường bật ra 6 ô/s và khóa điều khiển ngang 0,15 s; bị đánh mất điều khiển 0,3 s, bật lùi 5 ô/s ngang và 6 ô/s lên. Lướt trên không là kỹ năng nhánh Phantom (mục 6.2), mặc định tắt; nhảy khi đang lướt giữ tốc độ lướt trên không (dash-jump).
 
+Thông số chiến đấu bổ sung khi làm M4 (đều `[PLACEHOLDER]`, ở `03-Data/weapons.json`): đạn Arc Cannon bay 14 ô/s, tầm 16 ô, cách nhau tối thiểu 0,12 s; mức nạp vừa sau 0,5 s (×2, chưa xuyên, chưa phá khiên); đạn nạp luôn bắn được khi thả nút (không tính vào giới hạn 3 đạn); tự bắn (cảm ứng) bắn mỗi 0,2 s trong lúc vẫn nạp; năng lượng vũ khí boss tự hồi 1 nấc/s sau 3 s không dùng; dừng hình (hit-stop) 3 bước khi trúng bằng đạn nạp đầy hoặc trúng điểm yếu.
+
 **Đặc tả cơ chế: Bắn nạp**
 
 - **Mục đích:** thưởng cho việc canh thời điểm và tạo quyết định rủi ro/lợi ích.
@@ -421,6 +423,8 @@ Mở sau khi hạ AEGIS. Farm miễn phí, không giới hạn thể lực.
 3. **Pha 3 (dưới 30%):** nhanh hơn 20% và có một đòn “đỉnh”, nhưng luôn có khe né.
 
 Nguyên tắc: boss không bao giờ gây sát thương chết ngay trong một đòn ở độ khó Thường.
+
+Dữ liệu boss nằm ở `03-Data/bosses.json`; khi nạp game tự kiểm tra hai nguyên tắc trên (telegraph sau khi tăng tốc vẫn ≥ 0,5 s, không đòn nào ≥ máu người chơi cấp 1). Boss xám (thử nghiệm) dùng cho mốc Prototype: 3 pha, 4 đòn (Bắn thẳng, Lao ngang, Nhảy đập kèm sóng đất, đòn đỉnh Mưa đạn chừa 3 khe né rồi choáng 2 s); thắng lần đầu nhận Vine Lash, đấu lại thì Vine Lash là điểm yếu.
 
 ### 9.1 Kẻ địch, mini-boss và boss theo màn
 

@@ -1,12 +1,55 @@
 {
+  "_note": "Vũ khí (GDD 5.1, 7). Sát thương tính bằng 'phát Arc Cannon gốc' (= 1); máu kẻ địch và boss dùng cùng đơn vị. Mọi số là [PLACEHOLDER], chỉnh sau playtest.",
+  "energyMax": 28,
+  "energyRegen": {
+    "perSec": 1,
+    "afterNoFireSec": 3,
+    "note": "Tự hồi chậm khi không dùng vũ khí boss một lúc (GDD 7)"
+  },
+  "hitStopSteps": {
+    "charged": 3,
+    "weakness": 3,
+    "note": "Dừng hình 3 bước khi trúng bằng đạn nạp đầy hoặc trúng điểm yếu (GDD 4: hit-stop 2-3 khung)"
+  },
   "arcCannon": {
     "damage": 1,
     "maxOnScreen": 3,
+    "fireIntervalSec": 0.12,
+    "autoFireIntervalSec": 0.2,
+    "projectile": {
+      "speedTilesPerSec": 14,
+      "rangeTiles": 16,
+      "sizePx": {
+        "w": 6,
+        "h": 4
+      }
+    },
+    "muzzleOffsetPx": {
+      "x": 8,
+      "y": 9
+    },
+    "midCharge": {
+      "timeSec": 0.5,
+      "damageMul": 2,
+      "pierce": 0,
+      "breaksShield": false,
+      "sizePx": {
+        "w": 10,
+        "h": 8
+      }
+    },
     "charge": {
       "timeSec": 1.2,
       "damageMul": 3,
-      "pierce": 1
-    }
+      "pierce": 1,
+      "breaksShield": true,
+      "sizePx": {
+        "w": 16,
+        "h": 12
+      }
+    },
+    "chargeKeepAfterSwapSec": 2,
+    "note": "3 mức nạp: thường, nạp vừa (0,5 s), nạp đầy (1,2 s). Bị trúng đòn khi đang nạp thì mất hết; nạp đầy rồi đổi vũ khí thì giữ 2 s (GDD 5.1). Tự bắn (cảm ứng): giữ nút thì vừa bắn liên tục vừa nạp, thả ra bắn đạn nạp."
   },
   "bossWeapons": [
     {
@@ -17,7 +60,16 @@
       ],
       "damageVsWeak": 2.5,
       "weakStunSec": 0.5,
-      "energyCostOf28": 4
+      "energyCostOf28": 4,
+      "behavior": {
+        "type": "sweep",
+        "rangeTiles": 4,
+        "heightPx": 14,
+        "damageMul": 2,
+        "activeSec": 0.18,
+        "cooldownSec": 0.35,
+        "note": "Roi quét ngang tầm 4 ô, 2× Arc Cannon (đặc tả Prologue & Stage 1, mục 5)"
+      }
     },
     {
       "name": "Ember Burst",
@@ -27,7 +79,8 @@
       ],
       "damageVsWeak": 2.5,
       "weakStunSec": 0.5,
-      "energyCostOf28": null
+      "energyCostOf28": null,
+      "behavior": null
     },
     {
       "name": "Torrent Wave",
@@ -37,7 +90,8 @@
       ],
       "damageVsWeak": 2.5,
       "weakStunSec": 0.5,
-      "energyCostOf28": null
+      "energyCostOf28": null,
+      "behavior": null
     },
     {
       "name": "Chain Bolt",
@@ -47,7 +101,8 @@
       ],
       "damageVsWeak": 2.5,
       "weakStunSec": 0.5,
-      "energyCostOf28": null
+      "energyCostOf28": null,
+      "behavior": null
     },
     {
       "name": "Quake Drill",
@@ -57,7 +112,8 @@
       ],
       "damageVsWeak": 2.5,
       "weakStunSec": 0.5,
-      "energyCostOf28": null
+      "energyCostOf28": null,
+      "behavior": null
     },
     {
       "name": "Gale Cutter",
@@ -67,7 +123,8 @@
       ],
       "damageVsWeak": 2.5,
       "weakStunSec": 0.5,
-      "energyCostOf28": null
+      "energyCostOf28": null,
+      "behavior": null
     },
     {
       "name": "Frost Shard",
@@ -77,7 +134,8 @@
       ],
       "damageVsWeak": 2.5,
       "weakStunSec": 0.5,
-      "energyCostOf28": null
+      "energyCostOf28": null,
+      "behavior": null
     },
     {
       "name": "Prism Beam",
@@ -87,7 +145,8 @@
       ],
       "damageVsWeak": 2.5,
       "weakStunSec": 0.5,
-      "energyCostOf28": null
+      "energyCostOf28": null,
+      "behavior": null
     }
   ]
 }

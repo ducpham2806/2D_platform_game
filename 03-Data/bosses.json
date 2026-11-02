@@ -1,0 +1,95 @@
+{
+  "_note": "Boss (GDD 9: mẫu 3 pha, telegraph ≥ 0,5 s, không đòn nào chết ngay ở Thường). Máu tính bằng phát Arc Cannon gốc; sát thương tính bằng máu người chơi (100 ở cấp 1). Mọi số là [PLACEHOLDER].",
+  "gray": {
+    "name": "Boss xám (thử nghiệm)",
+    "note": "Boss khung cho mốc Prototype, để thử cảm giác bắn - né - đọc telegraph. Thắng lần đầu nhận Vine Lash; đấu lại thì Vine Lash là điểm yếu (khoảnh khắc 'à, thì ra thế' của GDD 1.2). Thorna thật làm ở M6. Máu 100 như Thorna: bắn liên tục không né mất khoảng 23 giây, chơi thật có né nhắm 60-90 giây như đặc tả Thorna.",
+    "hp": 100,
+    "sizePx": {
+      "w": 28,
+      "h": 32
+    },
+    "contactDamage": 10,
+    "weakness": "Vine Lash",
+    "idleSec": 0.9,
+    "minTelegraphSec": 0.5,
+    "phases": [
+      {
+        "untilHpPct": 60,
+        "speedMul": 1,
+        "attacks": [
+          "shot",
+          "charge"
+        ]
+      },
+      {
+        "untilHpPct": 30,
+        "speedMul": 1,
+        "attacks": [
+          "shot",
+          "slam",
+          "charge"
+        ]
+      },
+      {
+        "untilHpPct": 0,
+        "speedMul": 1.2,
+        "attacks": [
+          "slam",
+          "shot",
+          "rain"
+        ]
+      }
+    ],
+    "attacks": {
+      "shot": {
+        "label": "Bắn thẳng",
+        "telegraphSec": 0.6,
+        "count": 3,
+        "intervalSec": 0.35,
+        "speedTilesPerSec": 7,
+        "damage": 12,
+        "recoverSec": 0.4,
+        "sizePx": {
+          "w": 8,
+          "h": 8
+        }
+      },
+      "charge": {
+        "label": "Lao ngang",
+        "telegraphSec": 0.8,
+        "speedTilesPerSec": 10,
+        "damage": 15,
+        "recoverSec": 0.6
+      },
+      "slam": {
+        "label": "Nhảy đập",
+        "telegraphSec": 0.6,
+        "airSec": 0.9,
+        "damage": 15,
+        "shockwave": {
+          "speedTilesPerSec": 6,
+          "damage": 12,
+          "sizePx": {
+            "w": 10,
+            "h": 10
+          }
+        },
+        "recoverSec": 0.6
+      },
+      "rain": {
+        "label": "Mưa đạn (đòn đỉnh)",
+        "telegraphSec": 1.0,
+        "activeSec": 1.2,
+        "fallSpeedTilesPerSec": 9,
+        "damage": 18,
+        "safeGaps": 3,
+        "gapWidthTiles": 2,
+        "stunAfterSec": 2,
+        "sizePx": {
+          "w": 10,
+          "h": 10
+        }
+      }
+    }
+  }
+}
