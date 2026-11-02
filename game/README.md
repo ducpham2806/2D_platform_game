@@ -12,7 +12,13 @@ npm install
 npm run dev
 ```
 
-Mở http://localhost:5173. Màn hình chính có hai lựa chọn: **Vào màn thử** (phòng xám 20 × 12 ô, ←/→ hoặc A/D để di chuyển khối giữ chỗ, Esc để quay lại) và **Hub Arkon** (khung menu).
+Mở http://localhost:5173. Màn hình chính có ba lựa chọn:
+
+- **Vào màn thử:** phòng xám 20 × 12 ô. Di chuyển khối giữ chỗ bằng A/D hoặc ←/→, cần trái tay cầm, hoặc cần ảo trên điện thoại. Dải dưới cùng sáng lên khi giữ (xanh) hoặc vừa bấm (vàng) từng hành động, để kiểm tra đầu vào. Esc, Start hoặc nút II để quay lại.
+- **Hub Arkon:** khung menu.
+- **Điều khiển:** đổi phím bàn phím, đổi nút tay cầm, và mở chế độ kéo thả bố cục nút cảm ứng.
+
+**Thử cảm ứng trên máy tính:** mở DevTools của Chrome, bật chế độ thiết bị (Ctrl+Shift+M), chọn một điện thoại và xoay ngang, rồi tải lại trang. Nút cảm ứng hiện khi vào màn thử và chạm vào màn hình. Thử thật trên điện thoại: chạy `npm run dev -- --host` rồi mở địa chỉ mạng LAN in ra trên điện thoại cùng mạng Wi-Fi.
 
 ## Kiểm tra
 

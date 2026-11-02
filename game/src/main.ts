@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { LOGIC_HEIGHT, LOGIC_WIDTH } from './core/constants';
 import { currentLayout } from './core/phaser-scale';
 import { BootScene } from './scenes/boot-scene';
+import { ControlsScene } from './scenes/controls-scene';
 import { HubScene } from './scenes/hub-scene';
 import { MenuScene } from './scenes/menu-scene';
 import { PreloadScene } from './scenes/preload-scene';
@@ -24,7 +25,7 @@ const game = new Phaser.Game({
   },
   fps: { target: 60 },
   input: { activePointers: 3 },
-  scene: [BootScene, PreloadScene, MenuScene, HubScene, StageScene],
+  scene: [BootScene, PreloadScene, MenuScene, HubScene, StageScene, ControlsScene],
 });
 
 if (import.meta.env.DEV) {

@@ -1,0 +1,54 @@
+{
+  "_note": "Điều khiển mặc định (GDD mục 5.2, kịch bản hướng dẫn mục 8.1). Bàn phím dùng KeyboardEvent.code; tay cầm dùng chỉ số nút của Gamepad API (bố cục standard). Bố cục cảm ứng lấy từ wireframe LayoutEdit (màn 844x390): vị trí là khoảng cách từ góc neo tới TÂM nút, đơn vị px CSS (= dp). [PLACEHOLDER] cho mọi con số, chỉnh sau playtest trên máy thật.",
+  "keyboard": {
+    "left": ["KeyA", "ArrowLeft"],
+    "right": ["KeyD", "ArrowRight"],
+    "up": ["KeyW", "ArrowUp"],
+    "down": ["KeyS", "ArrowDown"],
+    "jump": ["KeyK"],
+    "shoot": ["KeyJ"],
+    "dash": ["KeyL"],
+    "swapPrev": ["KeyQ"],
+    "swapNext": ["KeyE"],
+    "pause": ["Escape"],
+    "interact": ["KeyW", "ArrowUp"]
+  },
+  "gamepad": {
+    "buttons": {
+      "jump": [0],
+      "dash": [1],
+      "shoot": [2],
+      "interact": [3],
+      "swapPrev": [4],
+      "swapNext": [5],
+      "pause": [9],
+      "up": [12],
+      "down": [13],
+      "left": [14],
+      "right": [15]
+    },
+    "stickDeadzone": 0.25
+  },
+  "touch": {
+    "minButtonDp": 48,
+    "sizePresets": { "small": 0.85, "medium": 1, "large": 1.2 },
+    "defaultSizePreset": "medium",
+    "defaultOpacity": 0.6,
+    "opacityRange": [0.2, 1],
+    "stick": {
+      "radiusDp": 60,
+      "deadzone": 0.2,
+      "zoneWidthFraction": 0.45,
+      "zoneTopFraction": 0.25,
+      "fixedCenter": { "left": 90, "bottom": 90 }
+    },
+    "buttons": [
+      { "id": "shoot", "action": "shoot", "label": "Bắn", "anchor": "bottom-right", "x": 156, "y": 62, "sizeDp": 76 },
+      { "id": "jump", "action": "jump", "label": "Nhảy", "anchor": "bottom-right", "x": 66, "y": 72, "sizeDp": 76 },
+      { "id": "dash", "action": "dash", "label": "Lướt", "anchor": "bottom-right", "x": 112, "y": 162, "sizeDp": 64 },
+      { "id": "swapPrev", "action": "swapPrev", "label": "VK <", "anchor": "bottom-right", "x": 262, "y": 132, "sizeDp": 48 },
+      { "id": "swapNext", "action": "swapNext", "label": "VK >", "anchor": "bottom-right", "x": 262, "y": 80, "sizeDp": 48 },
+      { "id": "pause", "action": "pause", "label": "II", "anchor": "top-right", "x": 32, "y": 30, "sizeDp": 48 }
+    ]
+  }
+}

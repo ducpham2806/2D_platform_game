@@ -7,7 +7,9 @@ import {
   SceneKey,
 } from '../core/constants';
 import { ConfigError, parseGameConfig } from '../core/game-config';
-import { getBus, setConfig } from '../core/phaser-services';
+import { getBus, setConfig, setInput } from '../core/phaser-services';
+import { LocalStorageStore } from '../input/browser-store';
+import { InputService } from '../input/input-service';
 import { MUTED_STYLE, TEXT_STYLE } from './ui';
 
 const MANIFEST_KEY = 'data:manifest';
@@ -71,6 +73,7 @@ export class PreloadScene extends Phaser.Scene {
     try {
       const config = parseGameConfig(files);
       setConfig(this, config);
+      setInput(this, new InputService(config.controls, new LocalStorageStore(), getBus(this)));
       getBus(this).emit('config:ready', { config });
       this.scene.start(SceneKey.Menu);
     } catch (error) {
