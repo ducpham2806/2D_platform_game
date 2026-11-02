@@ -11,6 +11,7 @@ Tóm tắt để dán vào đầu mỗi phiên làm việc mới (theo `04-Dev-P
 - **Kiểm tra dữ liệu:** `src/core/game-config.ts` kiểm tra kiểu từng file bắt buộc và các bất biến thiết kế giữa nhiều file (vòng khắc chế, Két giáp, cấp khuyến nghị, weapons khớp stages, hệ số thưởng khớp độ khó). Dữ liệu sai thì game dừng ở màn tải với thông báo lỗi, và test/CI báo đỏ.
 - **Giao tiếp giữa module:** event bus có kiểu (`src/core/event-bus.ts`, danh sách sự kiện ở `src/core/game-events.ts`), không gọi chéo trực tiếp.
 - **Logic thuần:** `src/logic/` và `src/core/` không import Phaser (ESLint chặn), trừ các file `src/core/phaser-*.ts`. Test chạy trên Node, không cần trình duyệt.
+- **Thế giới màn chơi (M4):** `src/logic/world/stage-world.ts` gom Kai, vũ khí, đạn, bia, boss, cửa phòng boss, hồi sinh và hit-stop thành một bước logic thuần `world.step(WorldInput)` trả về `WorldEvents`. Scene chỉ đổi `InputSnapshot` → `WorldInput`, vẽ trạng thái và tạo hiệu ứng theo sự kiện. Nhờ vậy test mô phỏng được cả trận đánh boss.
 - **Đầu vào (M2):** gameplay chỉ đọc `InputSnapshot` (hành động trừu tượng: `held`/`pressed`/`released`, `moveX`/`moveY`, thiết bị gần nhất) bằng `getInput(scene).step()`, gọi **đúng một lần mỗi bước logic**. Không module nào đọc phím, nút hay chạm trực tiếp. Bấm rồi nhả trong cùng một bước vẫn có `pressed = true` (cần cho jump buffer ở M3). Bàn phím đọc theo `KeyboardEvent.code` nên không phụ thuộc bộ gõ tiếng Việt.
 
 ## Cấu trúc
@@ -33,8 +34,16 @@ src/
                           HTML + bảng chỉnh bố cục, InputService gom tất cả
   logic/tilemap.ts        lưới ô va chạm ('#' đặc, '=' bục một chiều, 'P' điểm xuất phát) (thuần)
   logic/player/           vật lý + máy trạng thái của Kai, va chạm AABB trên lưới ô (thuần)
+  logic/combat/           sát thương, đạn (pool), bộ vũ khí (Arc Cannon 3 mức nạp, vũ khí boss
+                          theo dữ liệu, năng lượng 28), bia tập bắn (thuần)
+  logic/boss/             boss theo dữ liệu (máy trạng thái 3 pha), chọn khe né Mưa đạn (thuần)
+  logic/world/            StageWorld: ghép mọi thứ thành một bước logic; xử lý trúng đòn (thuần)
+  logic/formula.ts        tính công thức trong dữ liệu ("100+4*(L-1)") không dùng eval (thuần)
+  logic/rng.ts            ngẫu nhiên có hạt giống (test lặp lại được)
+  core/*-config.ts        kiểm tra từng file dữ liệu: player, weapons, bosses, controls (thuần)
   stages/gray-box.ts      màn xám Prototype (ASCII); bản đồ Tiled thật thuộc M7
   scenes/                 Boot → Preload → Menu, Hub, Stage, Controls
+  scenes/stage/           vẽ màn chơi (renderer) và HUD (máu, năng lượng, vũ khí, máu boss)
 tests/                    Vitest cho phần thuần, đọc thẳng 03-Data
 scripts/sync-data.mjs     chép dữ liệu 03-Data → public/data
 ```
@@ -52,17 +61,23 @@ scripts/sync-data.mjs     chép dữ liệu 03-Data → public/data
 - Hai nút đổi vũ khí trên wireframe LayoutEdit chỉ 44 px; dữ liệu nâng lên 48 dp theo GDD.
 - **Vật lý Kai (M3):** trọng lực và vận tốc nhảy suy ra từ `jump.maxTiles` và `jump.apexSec`, nên độ cao nhảy luôn đúng GDD 5.1 khi chỉnh cảm giác; rơi nặng hơn lên (`fallGravityMul`). Vị trí dời theo vận tốc trung bình của bước để quỹ đạo khớp công thức. Coyote trừ giờ _sau_ khi xét nhảy (đủ 6 bước = 0,1 s). Đồng hồ còn dưới 1 µs coi như hết (tránh sai số dấu phẩy động). Va chạm trục X rồi Y, chia quãng đi tối đa nửa ô mỗi lần nên không xuyên tường. Ngoài cạnh trái/phải bản đồ là tường, dưới đáy là hố.
 - Lướt trên không tắt mặc định (`abilities.airDash`), vì GDD 6.2 xếp nó vào nhánh Phantom. Nhảy khi đang lướt giữ tốc độ lướt trên không tới khi đáp (dash-jump). Nhảy tường khóa điều khiển ngang `wallJump.lockSec` để không dính lại tường.
-- Phím T (chỉ bản dev) gây 10 sát thương thử để xem bật lùi và bất tử.
+- Phím T (chỉ bản dev) gây 10 sát thương thử để xem bật lùi và bất tử. Bản dev cũng gắn `window.__cvWorld` để thử và test trình duyệt.
+- **Chiến đấu (M4):** sát thương gây ra tính bằng "phát Arc Cannon gốc" (= 1), máu kẻ địch/boss cùng đơn vị; sát thương nhận vào tính bằng máu người chơi, nhân `damageTaken` của độ khó, làm tròn, tối thiểu 1. Hệ số công = công(cấp)/công(cấp 1) tính bằng công thức trong `player.json`. Điểm yếu (×2,5, choáng 0,5 s) lấy từ chính vũ khí đang bắn. Mỗi viên chỉ trúng một mục tiêu một lần; đạn nạp đầy xuyên 1 mục tiêu; roi Vine Lash trúng mọi mục tiêu trong tầm một lần.
+- Đạn nạp (vừa/đầy) luôn bắn được khi thả nút, không tính vào giới hạn 3 đạn thường. Bị trúng đòn khi đang nạp thì mất hết (GDD 5.1). Tự bắn và hỗ trợ ngắm chỉ có tác dụng khi thiết bị gần nhất là cảm ứng.
+- Hit-stop 3 bước khi trúng bằng đạn nạp đầy hoặc trúng điểm yếu (`weapons.json` `hitStopSteps`), làm ở StageWorld nên mọi thứ cùng dừng.
+- **Boss:** đòn lặp theo danh sách của pha (dễ học, không ngẫu nhiên), trừ vị trí khe né Mưa đạn (ngẫu nhiên có hạt giống). Telegraph sau khi chia `speedMul` không ngắn hơn `minTelegraphSec`; dữ liệu boss vi phạm GDD 9 (telegraph ngắn, đòn chết ngay) bị chặn ngay lúc nạp. Chết trong phòng boss thì hồi sinh trong phòng, boss đầy máu lại. Boss xám máu 100 như Thorna; bắn liên tục không né mất khoảng 23 giây (test mô phỏng).
 
 ## Module và trạng thái
 
-| ID     | Module           | Trạng thái                                                                                                                                                                                                                                                                                                                                              |
-| ------ | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| M0     | Dự án và công cụ | **Xong** (Sprint 1): dev/build/test/lint/format, alias `@/`, CI GitHub Actions                                                                                                                                                                                                                                                                          |
-| M1     | Khung game       | **Xong phần khung** (Sprint 1): Boot/Preload/Menu/Hub/Stage, scale nguyên, nhắc xoay ngang, nạp + kiểm tra JSON, event bus. Còn chờ: nạp atlas khi có asset; đo 60 FPS trên điện thoại tầm trung thật                                                                                                                                                   |
-| M2     | Đầu vào          | **Xong** (Sprint 2): bàn phím, tay cầm, cảm ứng (cần ảo nổi/cố định, 6 nút, đa chạm, rung), đổi phím/nút có hoán đổi, chỉnh bố cục kéo thả + cỡ/độ trong suốt/thuận tay trái, lưu cài đặt, biểu tượng nút theo thiết bị. Tự bắn và hỗ trợ ngắm mới lưu cài đặt, có tác dụng từ M4. Chưa làm: vuốt vào biểu tượng vũ khí để đổi (GDD 5.2, cần HUD ở M10) |
-| M3     | Nhân vật         | **Xong** (Sprint 3): chạy, nhảy biến thiên, coyote 0,1 s, jump buffer 0,12 s, lướt 3 ô/0,25 s (hồi 0,6 s, bất tử 0,1 s), dash-jump, bám và nhảy tường, bục một chiều (xuống + nhảy để xuyên), bị đánh (bật lùi, bất tử 1 s), chết, rơi hố, hồi sinh; màn xám thử cảm giác. Chưa: sprite và hoạt ảnh (chờ asset nhóm P0)                                 |
-| M4–M18 |                  | Chưa làm                                                                                                                                                                                                                                                                                                                                                |
+| ID         | Module           | Trạng thái                                                                                                                                                                                                                                                                                                                             |
+| ---------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| M0         | Dự án và công cụ | **Xong** (Sprint 1): dev/build/test/lint/format, alias `@/`, CI GitHub Actions                                                                                                                                                                                                                                                         |
+| M1         | Khung game       | **Xong phần khung** (Sprint 1): Boot/Preload/Menu/Hub/Stage, scale nguyên, nhắc xoay ngang, nạp + kiểm tra JSON, event bus. Còn chờ: nạp atlas khi có asset; đo 60 FPS trên điện thoại tầm trung thật                                                                                                                                  |
+| M2         | Đầu vào          | **Xong** (Sprint 2): bàn phím, tay cầm, cảm ứng (cần ảo nổi/cố định, 6 nút, đa chạm, rung), đổi phím/nút có hoán đổi, chỉnh bố cục kéo thả + cỡ/độ trong suốt/thuận tay trái, lưu cài đặt, biểu tượng nút theo thiết bị. Tự bắn và hỗ trợ ngắm có tác dụng từ M4. Chưa làm: vuốt vào biểu tượng vũ khí để đổi (GDD 5.2, cần HUD ở M10) |
+| M3         | Nhân vật         | **Xong** (Sprint 3): chạy, nhảy biến thiên, coyote 0,1 s, jump buffer 0,12 s, lướt 3 ô/0,25 s (hồi 0,6 s, bất tử 0,1 s), dash-jump, bám và nhảy tường, bục một chiều (xuống + nhảy để xuyên), bị đánh (bật lùi, bất tử 1 s), chết, rơi hố, hồi sinh; màn xám thử cảm giác. Chưa: sprite và hoạt ảnh (chờ asset nhóm P0)                |
+| M4         | Chiến đấu        | **Xong** (Sprint 4): Arc Cannon tối đa 3 đạn, 3 mức nạp, bị trúng mất nạp, giữ nạp 2 s khi đổi vũ khí, tự bắn, hỗ trợ ngắm nhẹ; sát thương, điểm yếu, choáng, độ khó; vũ khí boss theo dữ liệu với năng lượng 28 và tự hồi (Vine Lash làm thật); hit-stop                                                                              |
+| M6         | Boss             | **Khung xong** (Sprint 4): boss xám theo dữ liệu, 3 pha, 4 đòn (bắn thẳng, lao ngang, nhảy đập + sóng đất, mưa đạn có khe né rồi choáng), phòng boss khóa cửa, thưởng vũ khí, đấu lại. Còn: Thorna thật theo đặc tả Stage 1 (Vertical slice)                                                                                           |
+| M5, M7–M18 |                  | Chưa làm (M5 kẻ địch, M7 màn chơi Tiled là phần tiếp của Vertical slice)                                                                                                                                                                                                                                                               |
 
 ## Lệnh
 

@@ -1,34 +1,19 @@
 import { type ControlsConfig, parseControls } from './controls-config';
 import { arr, ConfigError, isObject, num, obj, str } from './json-check';
 import { parsePlayer, type PlayerData } from './player-config';
+import { parseWeapons, type WeaponsData } from './weapons-config';
+import { type BossData, checkBossRules, parseBosses } from './boss-config';
+import { evaluateFormula } from '../logic/formula';
 
 export { ConfigError } from './json-check';
 export { parsePlayer, type PlayerData } from './player-config';
+export { parseWeapons, type WeaponsData } from './weapons-config';
 
 /**
  * Kiểu và kiểm tra dữ liệu cấu hình đọc từ public/data (nguồn: 03-Data).
  * Logic thuần, không phụ thuộc Phaser. Mọi chỉ số gameplay phải đi qua đây,
  * không viết cứng trong mã.
  */
-
-export interface ArcCannonData {
-  damage: number;
-  maxOnScreen: number;
-  charge: { timeSec: number; damageMul: number; pierce: number };
-}
-
-export interface BossWeaponData {
-  name: string;
-  from: string;
-  weakBoss: string[];
-  damageVsWeak: number;
-  weakStunSec: number;
-}
-
-export interface WeaponsData {
-  arcCannon: ArcCannonData;
-  bossWeapons: BossWeaponData[];
-}
 
 export interface StageData {
   index: number;
@@ -72,6 +57,7 @@ export const REQUIRED_DATA_FILES = [
   'economy',
   'modules',
   'controls',
+  'bosses',
 ] as const;
 export type RequiredDataFile = (typeof REQUIRED_DATA_FILES)[number];
 
@@ -81,38 +67,9 @@ export interface GameConfig {
   stages: StagesData;
   difficulties: DifficultyData[];
   controls: ControlsConfig;
+  bosses: Record<string, BossData>;
   /** Các file chưa có module dùng (shop, economy, modules, endgame…), giữ nguyên dạng thô. */
   raw: Readonly<Record<string, unknown>>;
-}
-
-export function parseWeapons(value: unknown): WeaponsData {
-  const w = obj(value, 'weapons');
-  const arc = obj(w.arcCannon, 'weapons.arcCannon');
-  const charge = obj(arc.charge, 'weapons.arcCannon.charge');
-  const bossWeapons = arr(w.bossWeapons, 'weapons.bossWeapons').map((item, i) => {
-    const b = obj(item, `weapons.bossWeapons[${i}]`);
-    return {
-      name: str(b.name, `weapons.bossWeapons[${i}].name`),
-      from: str(b.from, `weapons.bossWeapons[${i}].from`),
-      weakBoss: arr(b.weakBoss, `weapons.bossWeapons[${i}].weakBoss`).map((x, j) =>
-        str(x, `weapons.bossWeapons[${i}].weakBoss[${j}]`),
-      ),
-      damageVsWeak: num(b.damageVsWeak, `weapons.bossWeapons[${i}].damageVsWeak`, { min: 1 }),
-      weakStunSec: num(b.weakStunSec, `weapons.bossWeapons[${i}].weakStunSec`, { min: 0 }),
-    };
-  });
-  return {
-    arcCannon: {
-      damage: num(arc.damage, 'weapons.arcCannon.damage', { min: 0 }),
-      maxOnScreen: num(arc.maxOnScreen, 'weapons.arcCannon.maxOnScreen', { min: 1 }),
-      charge: {
-        timeSec: num(charge.timeSec, 'weapons.arcCannon.charge.timeSec', { min: 0 }),
-        damageMul: num(charge.damageMul, 'weapons.arcCannon.charge.damageMul', { min: 1 }),
-        pierce: num(charge.pierce, 'weapons.arcCannon.charge.pierce', { min: 0 }),
-      },
-    },
-    bossWeapons,
-  };
 }
 
 export function parseStages(value: unknown): StagesData {
@@ -242,6 +199,15 @@ export function checkDesignInvariants(config: GameConfig): string[] {
     errors.push('economy.difficultyRewardMul: cần object theo id độ khó');
   }
 
+  // Boss: telegraph, không chết ngay một đòn (GDD 9), điểm yếu là vũ khí có thật.
+  const baseHp = evaluateFormula(config.player.level.hp, { L: 1 });
+  for (const boss of Object.values(config.bosses)) {
+    errors.push(...checkBossRules(boss, baseHp));
+    if (!config.weapons.bossWeapons.some((w) => w.name === boss.weakness)) {
+      errors.push(`bosses.${boss.id}.weakness: không có vũ khí ${boss.weakness}`);
+    }
+  }
+
   return errors;
 }
 
@@ -257,6 +223,7 @@ export function parseGameConfig(files: Readonly<Record<string, unknown>>): GameC
     stages: parseStages(files.stages),
     difficulties: parseDifficulties(files.difficulties),
     controls: parseControls(files.controls),
+    bosses: parseBosses(files.bosses),
     raw: { ...files },
   };
   const errors = checkDesignInvariants(config);
