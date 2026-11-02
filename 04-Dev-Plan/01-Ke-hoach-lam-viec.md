@@ -68,3 +68,58 @@ Nếu asset là điểm nghẽn (rất có thể), cho phép chạy asset song s
 | Hình không nhất quán, sai lưới | Xem `05-Assets/01-Huong-dan-asset.md`: một tư thế một lần, có ảnh tham chiếu, xử lý bằng script |
 | Phạm vi phình to | Chỉ làm P0, P1 rồi chơi thử trước khi sang P2; cắt tính năng, không cắt chất lượng cảm giác chơi |
 | Mất thành quả | Git từ ngày đầu, sao lưu từ xa |
+
+## 5. Đã làm (cập nhật 2026-11-02)
+
+Phần này tóm tắt mọi việc đã xong để người làm sau đọc là nắm được. Chi tiết kỹ thuật (kiến trúc, quyết định, trạng thái từng module) ở `game/CONTEXT.md`; cách chạy ở `game/README.md`. **Việc chủ dự án cần tự làm** ở `06-Viec-can-lam.md`.
+
+### 5.1 Rà soát và sửa thiết kế (GDD 0.4 → 0.6)
+
+Nhập gói thiết kế v0.4, đánh giá cốt truyện, gameplay, đường cong học, rồi sửa theo thứ tự ưu tiên:
+
+| Việc | Ở đâu |
+|---|---|
+| Thứ tự màn khuyến nghị khớp vòng khắc chế vũ khí | `01-GDD/01-GDD-chinh.md`, `03-Data/stages.json` |
+| Nén tăng trưởng chỉ số RPG, thêm đồng bộ cấp (level sync), **1 lần hồi sinh tại chỗ mỗi lượt** cho mọi nguồn | GDD mục 6, 10; `player.json`, `stages.json` |
+| Chia lộ trình thành **2 giai đoạn có cổng chặn** (MVP 4 màn, chưa máy chủ, chưa kiếm tiền) | GDD mục 16, mục 2 của file này |
+| Mở hệ thống dần dần, người chơi điều khiển Kai trong 15 giây đầu | GDD, `07-Kich-ban-huong-dan.md` |
+| Viết lại cấu trúc cốt truyện, đổi các tên quá giống Mega Man X | GDD, wireframe |
+| Hướng dẫn giọng nhân vật; viết lại thoại hướng dẫn theo giọng | `08-Giong-nhan-vat.md`, `07-Kich-ban-huong-dan.md` |
+| Trụ cột 3 và 5 khớp mô hình free-to-play (GDD 0.5) | GDD mục 1 |
+| **Cắt độ khó cốt truyện từ 6 còn 3** (Cốt truyện, Thường, Thử thách); chiều sâu chuyển sang Mức Eclipse ở endgame | GDD, `difficulties.json`, `economy.json`, `endgame.json` |
+| Thoại 3 biến thể cho 7 Warden còn lại, bản tiếng Anh, script sinh thoại | `09-Thoai-Warden.md`, `03-Data/dialogue_wardens.json`, `04-Dev-Plan/tools/dialogue/` |
+| Tính lại doanh thu quảng cáo theo giới hạn 1 lần hồi sinh | `06-Ke-hoach-quang-cao.md` |
+| Cập nhật wireframe theo thứ tự màn mới, mở khóa theo giai đoạn, Két giáp | `02-Wireframes/` |
+
+### 5.2 Code (thư mục `game/`, Phaser 3 + TypeScript + Vite)
+
+Mỗi sprint là một pull request đã merge vào `main` (PR #1–#5), CI xanh.
+
+| Sprint | Kết quả | Có thể thử ở đâu |
+|---|---|---|
+| 1 (M0, M1) | Khung dự án: build/test/lint/format, CI; Boot → Preload → Menu/Hub/Stage; phóng to theo hệ số nguyên, nhắc xoay ngang; nạp và **kiểm tra chéo toàn bộ `03-Data`** (sai là game dừng ở màn tải và test đỏ) | `npm run dev` |
+| 2 (M2) | Đầu vào: bàn phím, tay cầm, **cảm ứng** (cần ảo, 6 nút, đa chạm), đổi phím/nút, kéo thả bố cục nút cảm ứng, lưu cài đặt, biểu tượng nút theo thiết bị | Menu → Điều khiển |
+| 3 (M3) | Kai: chạy, nhảy biến thiên, coyote 0,1 s, jump buffer 0,12 s, lướt, dash-jump, bám và nhảy tường, bục một chiều, bị đánh, chết, hồi sinh; màn xám 96 ô | Menu → Vào màn thử |
+| 4 (M4 + boss xám) | Arc Cannon 3 mức nạp, vũ khí boss theo dữ liệu (Vine Lash), điểm yếu, choáng, hit-stop; boss xám 3 pha 4 đòn có báo trước, phòng boss khóa cửa, đấu lại | Màn thử → phòng boss |
+| Cổng Prototype | Bản web trên GitHub Pages; nhật ký chơi thử + phiếu chấm 1–5 + màn Kết quả (có dấu hiệu "hỏng" GDD 17); bảng chỉnh cảm giác (`?tune=1`); bài đo tự động `npm run gate-check` (đạt mọi ngưỡng) | `05-Cong-Prototype.md` |
+| 5 (M5) | 5 loại kẻ địch thường của Prologue và Stage 1 theo `03-Data/enemies.json`, telegraph ≥ 0,4 s, tầm hoạt động, rơi Core Bit (phải nhặt) và viên máu, EXP; phòng thử kẻ địch | Menu → Phòng thử kẻ địch |
+
+Số liệu chốt: 172 test tự động; bản build 1,4 MB; 60 FPS khi CPU chậm 4–6×; độ trễ trong game p95 dưới 25 ms. Mọi đồ họa vẫn là **khối màu giữ chỗ** (chưa có sprite).
+
+### 5.3 Cách làm tiếp (cho người làm sau)
+
+1. Đọc `game/CONTEXT.md` (kiến trúc, quyết định đã chốt, bảng module), rồi `game/README.md`.
+2. Mọi chỉ số nằm trong `03-Data/*.json`; không viết cứng trong mã. Logic thuần ở `game/src/logic` và `game/src/core` (không import Phaser, test chạy trên Node).
+3. Trước khi đẩy code: `npm run lint && npm run format:check && npm run typecheck && npm test && npm run build` trong `game/`. CI chạy đúng các lệnh này.
+4. Mỗi sprint một pull request; cập nhật `game/CONTEXT.md`, `game/README.md` và bảng mục 2 khi xong.
+
+### 5.4 Việc code tiếp theo (Vertical slice, Sprint 6–9)
+
+| Thứ tự | Việc | Ghi chú |
+|---|---|---|
+| Sprint 6 | **M6:** boss Thorna theo đặc tả Stage 1 mục 5 (Gai Quạt, Dây Quất, Rễ Trồi, Hoa Nở; pha 60%/30%) và mini-boss Bramble Golem | Mở rộng bộ máy boss theo dữ liệu đang có (`logic/boss/`); kiểm tra telegraph ≥ 0,5 s, không đòn > 18 |
+| Sprint 7 | **M7:** nạp bản đồ Tiled cho Prologue và Stage 1 (4 checkpoint, phòng khóa, gai 30 sát thương, dây leo đu, hố rơi −20 máu, bí mật) | Đổ vào cùng cấu trúc `TileMap` + `StageDef`; giữ test "kẻ địch cách checkpoint ≥ 6 ô" |
+| Sprint 8 | **M10** HUD cơ bản theo wireframe, **M11** lưu cục bộ + mã sao lưu, **TutorialManager** theo `07-Kich-ban-huong-dan.md` | Prologue nhịp 1–3 dùng cờ `harmless` đã có |
+| Sprint 9 | Ghép Prologue → Hub → Stage 1, chơi thử Vertical slice | Tiêu chí: Prologue hoàn thành ≥ 90%, Stage 1 ≥ 70% |
+
+**Không chốt thiết kế màn Prologue và Stage 1 trước khi qua cổng Prototype** (xem `05-Cong-Prototype.md` mục 6); phần mã ở trên làm song song được.
