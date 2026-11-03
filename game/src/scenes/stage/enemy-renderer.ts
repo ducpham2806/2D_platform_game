@@ -1,5 +1,5 @@
 import type Phaser from 'phaser';
-import { ShieldCharger } from '../../logic/enemy/behaviors';
+import { Golem, ShieldCharger } from '../../logic/enemy/behaviors';
 import type { Enemy } from '../../logic/enemy/enemy';
 import type { Pickup } from '../../logic/world/pickups';
 
@@ -10,6 +10,7 @@ const BODY_COLORS = {
   spikeTurret: 0x5fa35f,
   butterfly: 0xb48cff,
   shieldCharger: 0x9c7c4f,
+  golem: 0x3f7f4f,
 } as const;
 
 /** Vật phẩm sắp biến mất thì nhấp nháy trong chừng này giây cuối. */
@@ -57,6 +58,12 @@ export function drawEnemies(
       }
     }
     if (e instanceof ShieldCharger && e.state === 'dash') color = 0xff8787;
+    if (e instanceof Golem) {
+      // Báo trước: nhấp nháy cam nhanh dần; lao: đỏ; pha 2: ánh đỏ ở ngực.
+      if (e.telegraphing)
+        color = Math.floor(timeMs / (140 - 90 * e.telegraphProgress)) % 2 === 0 ? 0xffa94d : color;
+      if (e.state === 'dash') color = 0xff8787;
+    }
     if (e.flash > 0) color = 0xffffff;
     g.fillStyle(color, e.harmless ? 0.6 : 1).fillRect(x, y, w, h);
     if (e.harmless) g.lineStyle(1, 0x7bd389, 1).strokeRect(x - 1, y - 1, w + 2, h + 2);
@@ -70,6 +77,15 @@ export function drawEnemies(
       g.fillStyle(0x0f1724, 1).fillRect(e.facing > 0 ? front : front - 5, b.y + 4, 5, 3);
     } else if (d.behavior === 'butterfly') {
       g.fillStyle(0x0f1724, 1).fillRect(b.x + b.w / 2 - 1, b.y + 2, 2, b.h - 4);
+    }
+    if (e instanceof Golem) {
+      g.fillStyle(0x0f1724, 1).fillRect(e.facing > 0 ? b.x + b.w - 8 : b.x + 4, b.y + 6, 4, 4);
+      g.fillStyle(e.phase === 2 ? 0xff6b6b : 0x7bd389, 1).fillRect(
+        b.x + b.w / 2 - 3,
+        b.y + 14,
+        6,
+        6,
+      );
     }
     if (e instanceof ShieldCharger && e.shieldUp) {
       const sx = e.facing > 0 ? b.x + b.w : b.x - 3;

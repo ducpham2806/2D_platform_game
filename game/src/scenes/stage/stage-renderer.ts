@@ -1,5 +1,5 @@
 import type Phaser from 'phaser';
-import type { GrayBoss } from '../../logic/boss/gray-boss';
+import type { Boss } from '../../logic/boss/boss';
 import type { Projectile } from '../../logic/combat/projectiles';
 import { Tile, type TileMap } from '../../logic/tilemap';
 import type { StageWorld } from '../../logic/world/stage-world';
@@ -15,6 +15,9 @@ const PROJECTILE_COLORS: Readonly<Record<Projectile['kind'], number>> = {
   shockwave: 0xffa94d,
   drop: 0xff6b6b,
   bomb: 0xd99cff,
+  lash: 0x7bd389,
+  root: 0x8b5e3c,
+  seed: 0xb2f2bb,
 };
 
 /**
@@ -95,7 +98,7 @@ export function drawDynamic(
 
 function drawBoss(
   g: Phaser.GameObjects.Graphics,
-  boss: GrayBoss,
+  boss: Boss,
   t: number,
   map: TileMap,
   timeMs: number,
@@ -121,12 +124,24 @@ function drawBoss(
         boss.slamTargetX,
         11 * t - 8,
       );
-    } else if (boss.attack === 'rain') {
+    } else if (boss.attack === 'rain' || boss.attack === 'bloom') {
       // Cột cảnh báo mờ suốt chiều cao: chỗ không có cột là khe an toàn.
       for (const col of boss.rainCols)
         g.fillStyle(0xff6b6b, a * 0.35).fillRect(col * t + 1, t, t - 2, 10 * t);
+    } else if (boss.attack === 'thorns') {
+      for (let x = 0; x < 10; x += 1) {
+        const dx = boss.facing * (b.w / 2 + 6 + x * 8);
+        g.fillStyle(0xff8787, a).fillRect(b.x + b.w / 2 + dx, boss.shotLaneY - 1, 4, 2);
+      }
+    } else if (boss.attack === 'lash') {
+      const left = boss.facing > 0 ? b.x + b.w : b.x - boss.lashReachPx;
+      g.fillStyle(0xff8787, a * 0.6).fillRect(left, b.y + b.h - 4, boss.lashReachPx, 4);
+    } else if (boss.attack === 'roots') {
+      // Vết nứt trên sàn ở chỗ rễ sắp mọc.
+      for (const x of boss.rootXs) g.fillStyle(0xffd166, a).fillRect(x - 6, b.y + b.h - 2, 12, 2);
     }
-    g.fillStyle(blink ? 0xffa94d : 0x8a94a6, 1).fillRect(b.x, b.y, b.w, b.h);
+    const tint = boss.data.id === 'gray' ? 0x8a94a6 : 0x3f8f5a;
+    g.fillStyle(blink ? 0xffa94d : tint, 1).fillRect(b.x, b.y, b.w, b.h);
   } else {
     const color =
       boss.flash > 0
@@ -135,7 +150,9 @@ function drawBoss(
           ? 0x9be7ff
           : boss.state === 'active'
             ? 0xff6b6b
-            : 0x8a94a6;
+            : boss.data.id === 'gray'
+              ? 0x8a94a6
+              : 0x3f8f5a;
     g.fillStyle(color, 1).fillRect(b.x, b.y, b.w, b.h);
   }
   // Mắt chỉ hướng.

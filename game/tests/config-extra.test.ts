@@ -37,8 +37,8 @@ describe('boss xám (GDD 9)', () => {
 
   it('phát hiện telegraph quá ngắn và đòn chết ngay', () => {
     const fast = structuredClone(boss);
-    fast.attacks.charge.telegraphSec = 0.55;
-    fast.attacks.rain.damage = 120;
+    fast.attacks.charge!.telegraphSec = 0.55;
+    fast.attacks.rain!.damage = 120;
     const errors = checkBossRules(fast, 100).join('\n');
     expect(errors).toMatch(/charge: telegraph/);
     expect(errors).toMatch(/chết ngay/);

@@ -23,17 +23,25 @@ export class MenuScene extends Phaser.Scene {
     const mechanics = (): void => {
       this.scene.start(SceneKey.Stage, { stage: 'mechanics' });
     };
-    textButton(this, cx, 62, 'Vào màn thử', () => this.scene.start(SceneKey.Stage));
-    textButton(this, cx, 79, 'Phòng thử kẻ địch', enemies);
-    textButton(this, cx, 96, 'Phòng thử màn chơi', mechanics);
-    textButton(this, cx, 113, 'Hub Arkon', () => this.scene.start(SceneKey.Hub));
-    textButton(this, cx, 130, 'Điều khiển', () => this.scene.start(SceneKey.Controls));
-    textButton(this, cx, 147, 'Kết quả chơi thử', () => this.scene.start(SceneKey.Playtest));
+    const thorna = (): void => {
+      this.scene.start(SceneKey.Stage, { stage: 'thorna' });
+    };
+    const golem = (): void => {
+      this.scene.start(SceneKey.Stage, { stage: 'golem' });
+    };
+    textButton(this, cx, 58, 'Vào màn thử', () => this.scene.start(SceneKey.Stage));
+    textButton(this, cx, 73, 'Phòng thử kẻ địch', enemies);
+    textButton(this, cx, 88, 'Phòng thử màn chơi', mechanics);
+    textButton(this, cx, 103, 'Boss Thorna', thorna);
+    textButton(this, cx, 118, 'Mini-boss Bramble Golem', golem);
+    textButton(this, cx, 133, 'Hub Arkon', () => this.scene.start(SceneKey.Hub));
+    textButton(this, cx, 148, 'Điều khiển', () => this.scene.start(SceneKey.Controls));
+    textButton(this, cx, 163, 'Kết quả chơi thử', () => this.scene.start(SceneKey.Playtest));
     this.add
       .text(
         cx,
-        178,
-        'Enter: màn thử · K: kẻ địch · M: màn chơi · H: Hub · C: Điều khiển · R: Kết quả',
+        182,
+        'Enter: màn thử · K: kẻ địch · M: màn chơi · B: Thorna · G: Golem · H: Hub · C · R',
         {
           ...MUTED_STYLE,
           fontSize: '8px',
@@ -48,5 +56,7 @@ export class MenuScene extends Phaser.Scene {
     keyboard?.once('keydown-R', () => this.scene.start(SceneKey.Playtest));
     keyboard?.once('keydown-K', enemies);
     keyboard?.once('keydown-M', mechanics);
+    keyboard?.once('keydown-B', thorna);
+    keyboard?.once('keydown-G', golem);
   }
 }

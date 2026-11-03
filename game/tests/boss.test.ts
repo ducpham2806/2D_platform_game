@@ -3,7 +3,7 @@ import { type BossAttackId, parseBosses } from '@/core/boss-config';
 import { FIXED_STEP_MS, TILE_SIZE } from '@/core/constants';
 import { ProjectilePool } from '@/logic/combat/projectiles';
 import { TrainingTarget } from '@/logic/combat/targets';
-import { GrayBoss } from '@/logic/boss/gray-boss';
+import { Boss } from '@/logic/boss/boss';
 import { planRain } from '@/logic/boss/rain';
 import { createRng } from '@/logic/rng';
 import { TileMap } from '@/logic/tilemap';
@@ -18,8 +18,8 @@ const ARENA = TileMap.fromRows(
 const FLOOR = 11 * TILE_SIZE;
 const PLAYER = { playerX: 4 * TILE_SIZE, playerY: FLOOR - 12 };
 
-function makeBoss(seed = 1): { boss: GrayBoss; pool: ProjectilePool } {
-  const boss = new GrayBoss(
+function makeBoss(seed = 1): { boss: Boss; pool: ProjectilePool } {
+  const boss = new Boss(
     data,
     ARENA,
     16 * TILE_SIZE,
@@ -30,7 +30,7 @@ function makeBoss(seed = 1): { boss: GrayBoss; pool: ProjectilePool } {
   return { boss, pool: new ProjectilePool() };
 }
 
-function setHpPct(boss: GrayBoss, pct: number): void {
+function setHpPct(boss: Boss, pct: number): void {
   boss.hp = (data.hp * pct) / 100;
 }
 
@@ -89,7 +89,7 @@ describe('boss xám: vòng đòn và pha (GDD 9)', () => {
 });
 
 describe('từng đòn', () => {
-  function runUntil(boss: GrayBoss, pool: ProjectilePool, attack: BossAttackId, ctx = PLAYER) {
+  function runUntil(boss: Boss, pool: ProjectilePool, attack: BossAttackId, ctx = PLAYER) {
     for (let i = 0; i < 60 * 40; i += 1) {
       const ev = boss.step(ctx, pool, DT);
       pool.update(DT, ARENA);
@@ -122,7 +122,7 @@ describe('từng đòn', () => {
     for (let i = 0; i < 180; i += 1) {
       boss.step(PLAYER, pool, DT);
       if (boss.box.x <= TILE_SIZE + 0.01) touched = true;
-      if (boss.state === 'active') expect(boss.touchDamage).toBe(data.attacks.charge.damage);
+      if (boss.state === 'active') expect(boss.touchDamage).toBe(data.attacks.charge!.damage);
     }
     expect(touched).toBe(true);
     expect(['recover', 'idle', 'telegraph']).toContain(boss.state);
@@ -148,7 +148,7 @@ describe('từng đòn', () => {
     boss.activate();
     runUntil(boss, pool, 'rain');
     const cols = [...boss.rainCols];
-    expect(cols.length).toBe(18 - data.attacks.rain.safeGaps * data.attacks.rain.gapWidthTiles);
+    expect(cols.length).toBe(18 - data.attacks.rain!.safeGaps * data.attacks.rain!.gapWidthTiles);
     while (boss.state === 'telegraph') boss.step(PLAYER, pool, DT);
     expect(pool.count('enemy', ['drop'])).toBe(cols.length);
     let stunnedSteps = 0;
@@ -156,7 +156,7 @@ describe('từng đòn', () => {
       boss.step(PLAYER, pool, DT);
       if (boss.state === 'stunned') stunnedSteps += 1;
     }
-    expect(stunnedSteps * DT).toBeCloseTo(data.attacks.rain.stunAfterSec, 1);
+    expect(stunnedSteps * DT).toBeCloseTo(data.attacks.rain!.stunAfterSec, 1);
   });
 });
 
@@ -178,7 +178,7 @@ describe('Mưa đạn luôn có khe né', () => {
   });
 
   it('khe rộng 2 ô vừa người Kai (12 px) có dư', () => {
-    expect(2 * TILE_SIZE - data.attacks.rain.sizePx.w).toBeGreaterThan(12);
+    expect(2 * TILE_SIZE - data.attacks.rain!.sizePx.w).toBeGreaterThan(12);
   });
 
   it('báo lỗi khi đấu trường quá hẹp', () => {

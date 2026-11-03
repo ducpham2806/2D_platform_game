@@ -1,4 +1,4 @@
-import type { BossAttackId, BossData } from '../../core/boss-config';
+import { attackOf, type BossAttackId, type BossData } from '../../core/boss-config';
 import type { OutgoingHit } from '../combat/damage';
 import type { ProjectilePool } from '../combat/projectiles';
 import { type Box, groundBelow, moveX, moveY } from '../player/collision';
@@ -8,7 +8,9 @@ import { type BossContext, type BossEvents, type BossState, noEvents } from './b
 import { enemyProjectile, spawnRainDrops, spawnShockwaves } from './enemy-projectile';
 
 export type { BossContext, BossEvents, BossState } from './boss-types';
-import { planRain } from './rain';
+import { planBloom, planRain } from './rain';
+
+const DEG = Math.PI / 180;
 
 /** Trọng lực của boss (px/s²) chỉ dùng để rơi về sàn; đòn Nhảy đập tự tính quỹ đạo riêng. */
 const BOSS_GRAVITY = 1400;
@@ -18,7 +20,7 @@ const BOSS_GRAVITY = 1400;
  * của pha hiện tại. Pha đổi theo % máu; pha cuối nhanh hơn speedMul nhưng telegraph không ngắn
  * hơn minTelegraphSec. Trúng điểm yếu thì choáng, mọi đồng hồ đứng yên.
  */
-export class GrayBoss {
+export class Boss {
   readonly box: Box;
   hp: number;
   state: BossState = 'waiting';
@@ -31,6 +33,9 @@ export class GrayBoss {
   shotLaneY = 0;
   slamTargetX = 0;
   rainCols: number[] = [];
+  /** Thorna: tâm các cột Rễ Trồi (vết nứt trên sàn khi báo trước) và hướng/độ dài Dây Quất. */
+  rootXs: number[] = [];
+  lashReachPx = 0;
   /** Tiến độ telegraph 0..1 để vẽ hiệu ứng báo trước. */
   telegraphProgress = 0;
 
@@ -39,6 +44,7 @@ export class GrayBoss {
   private stun = 0;
   private cursor = 0;
   private shotsLeft = 0;
+  private rootsSpawned = 0;
   private vx = 0;
   private vy = 0;
   private airborne = false;
@@ -75,8 +81,10 @@ export class GrayBoss {
 
   /** Sát thương khi chạm vào boss: đòn lao/nhảy đập mạnh hơn va chạm thường. */
   get touchDamage(): number {
-    if (this.state === 'active' && this.attack === 'charge') return this.data.attacks.charge.damage;
-    if (this.state === 'active' && this.attack === 'slam') return this.data.attacks.slam.damage;
+    if (this.state === 'active' && this.attack === 'charge')
+      return attackOf(this.data, 'charge').damage;
+    if (this.state === 'active' && this.attack === 'slam')
+      return attackOf(this.data, 'slam').damage;
     return this.data.contactDamage;
   }
 
@@ -140,17 +148,18 @@ export class GrayBoss {
   }
 
   private telegraphFor(id: BossAttackId): number {
-    return Math.max(this.data.minTelegraphSec, this.scaled(this.data.attacks[id].telegraphSec));
+    return Math.max(this.data.minTelegraphSec, this.scaled(attackOf(this.data, id).telegraphSec));
   }
 
   private think(ctx: BossContext, pool: ProjectilePool, ev: BossEvents): void {
     switch (this.state) {
       case 'idle':
-        this.vx = 0;
         this.facing = ctx.playerX < this.centerX ? -1 : 1;
+        this.vx = this.walkVelocity(ctx);
         if (this.timer <= 0) this.startAttack(ctx, ev);
         break;
       case 'telegraph':
+        this.vx = 0;
         this.telegraphProgress = 1 - Math.max(0, this.timer) / this.telegraphTotal;
         if (this.timer <= 0) this.beginActive(pool);
         break;
@@ -176,8 +185,11 @@ export class GrayBoss {
     ev.attackStarted = id;
     if (id === 'shot') this.shotLaneY = ctx.playerY;
     if (id === 'slam') this.slamTargetX = ctx.playerX;
+    if (id === 'thorns') this.shotLaneY = this.laneNear(ctx.playerY);
+    if (id === 'lash') this.lashReachPx = this.clearReach(attackOf(this.data, 'lash'));
+    if (id === 'roots') this.rootXs = this.planRoots(ctx.playerX);
     if (id === 'rain') {
-      const r = this.data.attacks.rain;
+      const r = attackOf(this.data, 'rain');
       this.rainCols = planRain(
         this.arenaCols.first,
         this.arenaCols.last,
@@ -186,22 +198,82 @@ export class GrayBoss {
         this.rng,
       ).dropCols;
     }
+    if (id === 'bloom') {
+      const b = attackOf(this.data, 'bloom');
+      this.rainCols = planBloom(
+        this.arenaCols.first,
+        this.arenaCols.last,
+        b.safeGaps,
+        b.gapWidthTiles,
+        b.seeds,
+        this.rng,
+      ).dropCols;
+    }
+  }
+
+  /** Boss đi chậm về phía người chơi khi nghỉ, dừng khi đã đủ gần. */
+  private walkVelocity(ctx: BossContext): number {
+    const walk = this.data.walk;
+    if (!walk) return 0;
+    const t = this.map.tileSize;
+    const dx = ctx.playerX - this.centerX;
+    if (Math.abs(dx) <= walk.keepDistanceTiles * t) return 0;
+    return Math.sign(dx) * walk.speedTilesPerSec * t * this.speedMul;
+  }
+
+  /** Làn bắn gai: ngang tầm người chơi nhưng nằm trong thân boss. */
+  private laneNear(playerY: number): number {
+    const margin = 6;
+    return Math.min(Math.max(playerY, this.box.y + margin), this.box.y + this.box.h - margin);
+  }
+
+  /** Tầm Dây Quất thật sự (px) trước khi chạm tường, để hộp đòn không nằm trong ô đặc. */
+  private clearReach(lash: { reachTiles: number; heightPx: number }): number {
+    const t = this.map.tileSize;
+    const top = Math.floor((this.box.y + this.box.h - lash.heightPx) / t);
+    const bottom = Math.floor((this.box.y + this.box.h - 1e-6) / t);
+    let tiles = 0;
+    let col =
+      this.facing > 0
+        ? Math.floor((this.box.x + this.box.w) / t)
+        : Math.floor((this.box.x - 1e-6) / t);
+    while (tiles < lash.reachTiles) {
+      let blocked = false;
+      for (let row = top; row <= bottom; row += 1) if (this.map.isSolid(col, row)) blocked = true;
+      if (blocked) break;
+      tiles += 1;
+      col += this.facing;
+    }
+    return tiles * t;
+  }
+
+  /** Tâm các cột rễ, từ trái sang phải, quanh chỗ người chơi đang đứng, trong đấu trường. */
+  private planRoots(playerX: number): number[] {
+    const r = attackOf(this.data, 'roots');
+    const t = this.map.tileSize;
+    const lo = this.arenaCols.first * t + r.sizePx.w / 2;
+    const hi = (this.arenaCols.last + 1) * t - r.sizePx.w / 2;
+    const xs: number[] = [];
+    for (let i = 0; i < r.count; i += 1) {
+      const x = playerX + (i - (r.count - 1) / 2) * r.spacingTiles * t;
+      xs.push(Math.min(Math.max(x, lo), hi));
+    }
+    return xs;
   }
 
   private beginActive(pool: ProjectilePool): void {
-    const a = this.data.attacks;
     const t = this.map.tileSize;
     switch (this.attack) {
       case 'shot':
-        this.shotsLeft = a.shot.count;
+        this.shotsLeft = attackOf(this.data, 'shot').count;
         this.enter('active', 0);
         break;
       case 'charge':
-        this.vx = this.facing * a.charge.speedTilesPerSec * t * this.speedMul;
+        this.vx = this.facing * attackOf(this.data, 'charge').speedTilesPerSec * t * this.speedMul;
         this.enter('active', 10);
         break;
       case 'slam': {
-        const air = this.scaled(a.slam.airSec);
+        const air = this.scaled(attackOf(this.data, 'slam').airSec);
         this.vx = (this.slamTargetX - this.centerX) / air;
         this.vy = (-BOSS_GRAVITY * air) / 2;
         this.airborne = true;
@@ -209,24 +281,75 @@ export class GrayBoss {
         break;
       }
       case 'rain':
-        spawnRainDrops(pool, this.map.tileSize, this.rainCols, this.data.attacks.rain);
-        this.enter('active', a.rain.activeSec);
+        spawnRainDrops(pool, t, this.rainCols, attackOf(this.data, 'rain'));
+        this.enter('active', attackOf(this.data, 'rain').activeSec);
         break;
+      case 'thorns': {
+        const a = attackOf(this.data, 'thorns');
+        for (let i = 0; i < a.count; i += 1) {
+          const angle =
+            a.count === 1 ? 0 : (-a.spreadDeg / 2 + (a.spreadDeg * i) / (a.count - 1)) * DEG;
+          const speed = a.speedTilesPerSec * t * this.speedMul;
+          pool.spawn(
+            enemyProjectile(
+              t,
+              'enemyShot',
+              this.centerX + this.facing * (this.box.w / 2) - a.sizePx.w / 2,
+              this.shotLaneY - a.sizePx.h / 2,
+              a.sizePx,
+              this.facing * Math.cos(angle) * speed,
+              Math.sin(angle) * speed,
+              a.damage,
+            ),
+          );
+        }
+        this.enter('recover', this.scaled(a.recoverSec));
+        break;
+      }
+      case 'lash': {
+        const a = attackOf(this.data, 'lash');
+        const reach = this.lashReachPx;
+        if (reach > 0) {
+          const x = this.facing > 0 ? this.box.x + this.box.w : this.box.x - reach;
+          const spec = enemyProjectile(
+            t,
+            'lash',
+            x,
+            this.box.y + this.box.h - a.heightPx,
+            { w: reach, h: a.heightPx },
+            0,
+            0,
+            a.damage,
+          );
+          pool.spawn({ ...spec, ttl: a.activeSec });
+        }
+        this.enter('active', a.activeSec);
+        break;
+      }
+      case 'roots':
+        this.rootsSpawned = 0;
+        this.enter('active', 0);
+        break;
+      case 'bloom': {
+        const b = attackOf(this.data, 'bloom');
+        spawnRainDrops(pool, t, this.rainCols, { ...b, sizePx: b.sizePx }, 'seed');
+        this.enter('active', b.activeSec);
+        break;
+      }
       default:
         this.enter('recover', 0.5);
     }
   }
 
   private runActive(pool: ProjectilePool): void {
-    const a = this.data.attacks;
     const t = this.map.tileSize;
     switch (this.attack) {
-      case 'shot':
+      case 'shot': {
+        const s = attackOf(this.data, 'shot');
         if (this.timer <= 0 && this.shotsLeft > 0) {
-          const s = a.shot;
           pool.spawn(
             enemyProjectile(
-              this.map.tileSize,
+              t,
               'enemyShot',
               this.centerX + this.facing * (this.box.w / 2) - s.sizePx.w / 2,
               this.shotLaneY - s.sizePx.h / 2,
@@ -240,25 +363,61 @@ export class GrayBoss {
           this.timer = this.scaled(s.intervalSec);
         }
         if (this.shotsLeft <= 0 && this.timer <= 0)
-          this.enter('recover', this.scaled(a.shot.recoverSec));
+          this.enter('recover', this.scaled(s.recoverSec));
         break;
+      }
       case 'charge':
         // Dừng khi đụng tường (xử lý trong physics).
-        if (this.timer <= 0) this.enter('recover', this.scaled(a.charge.recoverSec));
+        if (this.timer <= 0)
+          this.enter('recover', this.scaled(attackOf(this.data, 'charge').recoverSec));
         break;
       case 'slam':
         break;
       case 'rain':
         if (this.timer <= 0) {
           this.rainCols = [];
-          this.enter('stunned', a.rain.stunAfterSec);
+          this.enter('stunned', attackOf(this.data, 'rain').stunAfterSec);
+        }
+        break;
+      case 'lash':
+        if (this.timer <= 0)
+          this.enter('recover', this.scaled(attackOf(this.data, 'lash').recoverSec));
+        break;
+      case 'roots': {
+        const r = attackOf(this.data, 'roots');
+        const x = this.rootXs[this.rootsSpawned];
+        if (this.timer <= 0 && x !== undefined) {
+          const floor = this.box.y + this.box.h;
+          const spec = enemyProjectile(
+            t,
+            'root',
+            x - r.sizePx.w / 2,
+            floor - r.sizePx.h,
+            r.sizePx,
+            0,
+            0,
+            r.damage,
+          );
+          pool.spawn({ ...spec, ttl: r.activeSec });
+          this.rootsSpawned += 1;
+          this.timer = this.scaled(r.intervalSec);
+        }
+        if (this.rootsSpawned >= this.rootXs.length && this.timer <= 0) {
+          this.rootXs = [];
+          this.enter('recover', this.scaled(r.recoverSec));
+        }
+        break;
+      }
+      case 'bloom':
+        if (this.timer <= 0) {
+          this.rainCols = [];
+          this.enter('stunned', attackOf(this.data, 'bloom').stunAfterSec);
         }
         break;
     }
   }
 
   private physics(dt: number, ev: BossEvents, pool: ProjectilePool): void {
-    const a = this.data.attacks;
     if (this.airborne || groundBelow(this.box, this.map) === undefined)
       this.vy += BOSS_GRAVITY * dt;
     else this.vy = 0;
@@ -266,7 +425,7 @@ export class GrayBoss {
     if (hitX !== 0) {
       this.vx = 0;
       if (this.state === 'active' && this.attack === 'charge')
-        this.enter('recover', this.scaled(a.charge.recoverSec));
+        this.enter('recover', this.scaled(attackOf(this.data, 'charge').recoverSec));
     }
     const hitY = moveY(this.box, this.vy * dt, this.map, true);
     if (hitY === 1) {
@@ -282,10 +441,10 @@ export class GrayBoss {
             this.centerX,
             this.box.y + this.box.h,
             this.box.w / 2,
-            this.data.attacks.slam.shockwave,
+            attackOf(this.data, 'slam').shockwave,
             this.speedMul,
           );
-          this.enter('recover', this.scaled(a.slam.recoverSec));
+          this.enter('recover', this.scaled(attackOf(this.data, 'slam').recoverSec));
         }
       }
     }

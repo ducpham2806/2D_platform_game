@@ -98,9 +98,9 @@ export class StageHud {
       this.loot.setText('');
     } else {
       this.bossName.setText('');
-      const field = world.field;
       const room = world.lockedRoom;
-      const loot = field ? `Core Bit ${field.coreBits}  ·  EXP ${field.exp}` : '';
+      const loot =
+        world.field || world.exp > 0 ? `Core Bit ${world.coreBits}  ·  EXP ${world.exp}` : '';
       this.loot.setText(room ? `${loot}\nCòn ${room.remaining} kẻ địch` : loot);
     }
   }

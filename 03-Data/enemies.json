@@ -184,6 +184,58 @@
         "cooldownSec": 1.5,
         "turnDelaySec": 0.8
       }
+    },
+    "bramble_golem": {
+      "name": "Bramble Golem (mini-boss)",
+      "behavior": "golem",
+      "note": "Mini-boss cuối đoạn C (phòng khóa). Pha 1: giậm đất 0,7 s rồi tạo sóng đất chạy ra hai bên. Dưới 50% máu (pha 2): báo trước 0,7 s, tung 3 hạt nổ lên cao rơi xuống quanh mình, rồi báo trước 0,5 s và lao 4 ô. Đi chậm về phía người chơi giữa các đòn.",
+      "hp": 60,
+      "sizePx": {
+        "w": 28,
+        "h": 30
+      },
+      "contactDamage": 12,
+      "exp": 60,
+      "coreBit": 30,
+      "moveSpeedTilesPerSec": 0.8,
+      "phase2HpPct": 50,
+      "attack": {
+        "cooldownSec": 1.2,
+        "slam": {
+          "telegraphSec": 0.7,
+          "recoverSec": 1.0,
+          "shockwave": {
+            "speedTilesPerSec": 6,
+            "damage": 15,
+            "sizePx": {
+              "w": 10,
+              "h": 10
+            }
+          }
+        },
+        "bombs": {
+          "telegraphSec": 0.7,
+          "count": 3,
+          "spreadFactor": 1.2,
+          "lobSpeedTilesPerSec": 2.5,
+          "gravityTilesPerSec2": 30,
+          "recoverSec": 0.5,
+          "projectile": {
+            "speedTilesPerSec": 3,
+            "damage": 10,
+            "sizePx": {
+              "w": 8,
+              "h": 8
+            }
+          }
+        },
+        "dash": {
+          "telegraphSec": 0.5,
+          "dashTiles": 4,
+          "dashSpeedTilesPerSec": 9,
+          "recoverSec": 1.2
+        }
+      }
     }
   }
 }

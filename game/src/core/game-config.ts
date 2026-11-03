@@ -23,6 +23,8 @@ export interface StageData {
   id: string;
   name: string;
   recommendedLevel: string;
+  /** id mini-boss (enemies.json khi màn đã làm; còn lại là tên dự kiến). */
+  miniBoss: string;
   boss: string;
   weaponGranted: string;
   bossWeakness: string;
@@ -94,6 +96,7 @@ export function parseStages(value: unknown): StagesData {
       id: str(st.id, `${p}.id`),
       name: str(st.name, `${p}.name`),
       recommendedLevel: str(st.recommendedLevel, `${p}.recommendedLevel`),
+      miniBoss: str(st.miniBoss, `${p}.miniBoss`),
       boss: str(st.boss, `${p}.boss`),
       weaponGranted: str(st.weaponGranted, `${p}.weaponGranted`),
       bossWeakness: str(st.bossWeakness, `${p}.bossWeakness`),
@@ -222,9 +225,28 @@ export function checkDesignInvariants(config: GameConfig): string[] {
     }
   }
 
+  // Boss đã có dữ liệu phải khớp màn: thưởng là vũ khí của màn, điểm yếu là vũ khí của màn trước.
+  for (const stage of stages) {
+    const bossData = config.bosses[stage.boss];
+    if (!bossData) continue;
+    if (bossData.reward !== stage.weaponGranted) {
+      errors.push(
+        `bosses.${bossData.id}.reward: ${bossData.reward} phải là weaponGranted của màn ${stage.index} (${stage.weaponGranted})`,
+      );
+    }
+    if (bossData.weakness !== stage.bossWeakness) {
+      errors.push(
+        `bosses.${bossData.id}.weakness: ${bossData.weakness} phải là bossWeakness của màn ${stage.index} (${stage.bossWeakness})`,
+      );
+    }
+  }
+
   // Kẻ địch: telegraph ≥ 0,4 s, không chết ngay một đòn; các màn đã làm có đủ dữ liệu kẻ địch.
   errors.push(...checkEnemyRules(config.enemies, baseHp));
   for (const stage of stages.filter((s) => s.index <= STAGES_WITH_ENEMY_DATA)) {
+    if (!config.enemies.enemies[stage.miniBoss]) {
+      errors.push(`stages.${stage.id}.miniBoss: "${stage.miniBoss}" chưa có trong enemies.json`);
+    }
     for (const id of stage.enemies) {
       if (!config.enemies.enemies[id]) {
         errors.push(`stages.${stage.id}.enemies: kẻ địch "${id}" chưa có trong enemies.json`);

@@ -4,7 +4,7 @@ import type { ProjectilePool, ProjectileSpec } from '../combat/projectiles';
 /** Tạo đạn của kẻ địch (bắn thẳng, sóng đất, mưa rơi). Sát thương tính bằng máu người chơi. */
 export function enemyProjectile(
   tileSize: number,
-  kind: 'enemyShot' | 'shockwave' | 'drop' | 'bomb',
+  kind: 'enemyShot' | 'shockwave' | 'drop' | 'bomb' | 'lash' | 'root' | 'seed',
   x: number,
   y: number,
   size: { w: number; h: number },
@@ -37,13 +37,14 @@ export function spawnRainDrops(
   pool: ProjectilePool,
   tileSize: number,
   cols: readonly number[],
-  rain: RainAttack,
+  rain: Pick<RainAttack, 'fallSpeedTilesPerSec' | 'damage' | 'sizePx'>,
+  kind: 'drop' | 'seed' = 'drop',
 ): void {
   for (const col of cols) {
     pool.spawn(
       enemyProjectile(
         tileSize,
-        'drop',
+        kind,
         col * tileSize + (tileSize - rain.sizePx.w) / 2,
         tileSize,
         rain.sizePx,

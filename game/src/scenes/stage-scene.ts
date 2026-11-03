@@ -75,9 +75,10 @@ export class StageScene extends Phaser.Scene {
   create(): void {
     getBus(this).emit('scene:changed', { key: SceneKey.Stage });
     const config = getConfig(this);
-    const boss = config.bosses.gray;
+    const bossId = this.def.boss ?? 'gray';
+    const boss = config.bosses[bossId];
     const difficulty = config.difficulties.find((d) => d.id === 'normal') ?? config.difficulties[0];
-    if (!boss || !difficulty) throw new Error('Thiếu dữ liệu boss xám hoặc độ khó Thường');
+    if (!boss || !difficulty) throw new Error(`Thiếu dữ liệu boss "${bossId}" hoặc độ khó Thường`);
     this.stepper.reset();
     this.cameraLock = undefined;
     // Dữ liệu gốc từ 03-Data; khi bật ?tune=1 thì áp thêm phần đã chỉnh lưu trên máy.
