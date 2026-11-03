@@ -4,7 +4,7 @@ import type { DifficultyData } from '../../core/game-config';
 import type { PlayerData } from '../../core/player-config';
 import type { StageMechanics } from '../../core/stage-mechanics-config';
 import type { WeaponsData } from '../../core/weapons-config';
-import { GrayBoss } from '../boss/gray-boss';
+import { Boss } from '../boss/boss';
 import { WeaponLoadout } from '../combat/loadout';
 import { ProjectilePool } from '../combat/projectiles';
 import { TrainingTarget } from '../combat/targets';
@@ -62,7 +62,7 @@ export class StageWorld {
   readonly loadout: WeaponLoadout;
   readonly pool = new ProjectilePool();
   readonly targets: TrainingTarget[] = [];
-  boss: GrayBoss | undefined;
+  boss: Boss | undefined;
   phase: WorldPhase = 'explore';
   deaths = 0;
   /** Cột ô của cửa và của đấu trường (bên trong hai tường). */
@@ -95,6 +95,9 @@ export class StageWorld {
   /** Chỗ đứng an toàn gần nhất (tâm, đáy) để đưa về khi chạm gai. */
   private safe: { x: number; y: number };
   private everWon = false;
+  /** EXP và Core Bit thưởng khi thắng boss lần đầu (cộng thêm vào của kẻ địch thường). */
+  private bossExp = 0;
+  private bossCoreBits = 0;
   /** Các dòng ô của cửa phòng boss (ô 'D'). */
   readonly gateRows: number[];
   private readonly bossSpawn: { x: number; y: number } | undefined;
@@ -411,9 +414,9 @@ export class StageWorld {
     return out;
   }
 
-  private makeBoss(): GrayBoss | undefined {
+  private makeBoss(): Boss | undefined {
     if (!this.bossSpawn || !this.arena) return undefined;
-    return new GrayBoss(
+    return new Boss(
       this.setup.boss,
       this.map,
       this.bossSpawn.x,
@@ -447,6 +450,16 @@ export class StageWorld {
     }
   }
 
+  /** EXP tích lũy trong lượt chơi màn (kẻ địch thường + boss). */
+  get exp(): number {
+    return (this.field?.exp ?? 0) + this.bossExp;
+  }
+
+  /** Core Bit nhặt được trong lượt chơi màn (kẻ địch thường + boss). */
+  get coreBits(): number {
+    return (this.field?.coreBits ?? 0) + this.bossCoreBits;
+  }
+
   private onBossDefeated(ev: WorldEvents): void {
     ev.bossDefeated = true;
     this.phase = 'won';
@@ -454,8 +467,10 @@ export class StageWorld {
     this.pool.clear('enemy');
     if (!this.everWon) {
       this.everWon = true;
-      const reward = this.setup.boss.weakness;
+      const reward = this.setup.boss.reward;
       if (this.loadout.grant(reward)) ev.weaponGranted = reward;
+      this.bossExp += this.setup.boss.rewardExp;
+      this.bossCoreBits += this.setup.boss.rewardCoreBit;
     }
     this.checkpoint = this.checkpointPoint();
   }

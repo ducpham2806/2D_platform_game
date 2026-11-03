@@ -2,10 +2,12 @@ import type {
   ButterflyData,
   DroneData,
   EnemyData,
+  GolemData,
   ShieldChargerData,
   TurretData,
 } from '../../core/enemy-config';
 import type { Projectile } from '../combat/projectiles';
+import { spawnShockwaves } from '../boss/enemy-projectile';
 import { Enemy, type EnemyContext, type EnemyHitResult } from './enemy';
 
 const DEG = Math.PI / 180;
@@ -226,6 +228,132 @@ export class ShieldCharger extends Enemy {
   }
 }
 
+type GolemState = 'walk' | 'slamTelegraph' | 'bombTelegraph' | 'dashTelegraph' | 'dash' | 'recover';
+
+/**
+ * Bramble Golem (mini-boss): đi chậm về phía người chơi. Pha 1: giậm đất (báo trước) rồi tung
+ * hai sóng đất chạy ra hai bên. Pha 2 (máu ≤ phase2HpPct): báo trước, tung `count` hạt nổ lên
+ * cao rơi quanh mình, báo trước lần nữa rồi lao `dashTiles` ô.
+ */
+export class Golem extends Enemy {
+  declare readonly data: GolemData;
+  state: GolemState = 'walk';
+  /** Tiến độ báo trước 0..1 để vẽ. */
+  telegraphProgress = 0;
+  private timer = 0;
+  private cooldown = 0;
+  private dashed = 0;
+  private telegraphTotal = 1;
+
+  constructor(...args: ConstructorParameters<typeof Enemy>) {
+    super(...args);
+    this.resetBehavior();
+  }
+
+  get phase(): 1 | 2 {
+    return this.hp / this.maxHp <= this.data.phase2HpPct / 100 ? 2 : 1;
+  }
+
+  protected override behave(ctx: EnemyContext, dt: number): void {
+    const a = this.data.attack;
+    const t = this.tileSize;
+    this.cooldown = Math.max(0, this.cooldown - dt);
+    switch (this.state) {
+      case 'walk': {
+        this.faceToward(ctx.playerX);
+        const next = this.box.x + this.facing * this.data.moveSpeedTilesPerSec * t * dt;
+        if (Math.abs(ctx.playerX - this.centerX) > 3 * t && !this.blocked(ctx.map, next))
+          this.box.x = next;
+        if (this.cooldown <= 0) this.enter(this.phase === 1 ? 'slamTelegraph' : 'bombTelegraph');
+        return;
+      }
+      case 'slamTelegraph':
+      case 'bombTelegraph':
+      case 'dashTelegraph':
+        this.timer -= dt;
+        this.telegraphProgress = 1 - Math.max(0, this.timer) / this.telegraphTotal;
+        if (this.timer > 1e-9) return;
+        if (this.state === 'slamTelegraph') this.doSlam(ctx);
+        else if (this.state === 'bombTelegraph') this.doBombs(ctx);
+        else {
+          this.dashed = 0;
+          this.enter('dash');
+        }
+        return;
+      case 'dash': {
+        const step = a.dash.dashSpeedTilesPerSec * t * dt;
+        const nextX = this.box.x + this.facing * step;
+        if (this.blocked(ctx.map, nextX) || this.dashed >= a.dash.dashTiles * t) {
+          this.enter('recover', a.dash.recoverSec);
+          return;
+        }
+        this.box.x = nextX;
+        this.dashed += step;
+        return;
+      }
+      case 'recover':
+        this.timer -= dt;
+        if (this.timer <= 1e-9) {
+          this.cooldown = a.cooldownSec;
+          this.enter('walk');
+        }
+        return;
+    }
+  }
+
+  private doSlam(ctx: EnemyContext): void {
+    const s = this.data.attack.slam;
+    const wave = this.harmless ? { ...s.shockwave, damage: 0 } : s.shockwave;
+    spawnShockwaves(
+      ctx.pool,
+      this.tileSize,
+      this.centerX,
+      this.box.y + this.box.h,
+      this.box.w / 2,
+      wave,
+      1,
+    );
+    this.enter('recover', s.recoverSec);
+  }
+
+  private doBombs(ctx: EnemyContext): void {
+    const b = this.data.attack.bombs;
+    for (let i = 0; i < b.count; i += 1) {
+      const dirX = (i - (b.count - 1) / 2) * b.spreadFactor;
+      this.fire(
+        ctx,
+        b.projectile,
+        dirX,
+        -b.lobSpeedTilesPerSec,
+        'bomb',
+        b.gravityTilesPerSec2 * this.tileSize,
+      );
+    }
+    this.faceToward(ctx.playerX);
+    this.enter('dashTelegraph');
+  }
+
+  private enter(state: GolemState, seconds?: number): void {
+    const a = this.data.attack;
+    this.state = state;
+    if (state === 'slamTelegraph') this.telegraphTotal = a.slam.telegraphSec;
+    if (state === 'bombTelegraph') this.telegraphTotal = a.bombs.telegraphSec;
+    if (state === 'dashTelegraph') this.telegraphTotal = a.dash.telegraphSec;
+    this.timer = seconds ?? this.telegraphTotal;
+    this.telegraphProgress = 0;
+    this.telegraphing =
+      state === 'slamTelegraph' || state === 'bombTelegraph' || state === 'dashTelegraph';
+  }
+
+  protected override resetBehavior(): void {
+    this.state = 'walk';
+    this.timer = 0;
+    this.cooldown = this.data.attack.cooldownSec;
+    this.dashed = 0;
+    this.telegraphProgress = 0;
+  }
+}
+
 /** Tạo kẻ địch đúng loại theo `behavior` trong dữ liệu. */
 export function createEnemy(
   id: number,
@@ -246,5 +374,7 @@ export function createEnemy(
       return new Butterfly(...args);
     case 'shieldCharger':
       return new ShieldCharger(...args);
+    case 'golem':
+      return new Golem(...args);
   }
 }

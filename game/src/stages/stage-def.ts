@@ -21,6 +21,8 @@ interface StageDefBase {
   name: string;
   /** Ghi nhật ký chơi thử của cổng Prototype (chỉ màn xám). */
   playtest: boolean;
+  /** id boss trong bosses.json; không có thì dùng boss xám. */
+  boss?: string;
 }
 
 /** Màn dựng bằng ASCII (màn xám, phòng thử kẻ địch). Ký hiệu: logic/tilemap.ts, logic/stage/layout.ts. */

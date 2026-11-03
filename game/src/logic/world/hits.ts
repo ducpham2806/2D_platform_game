@@ -1,5 +1,5 @@
 import type { WeaponsData } from '../../core/weapons-config';
-import type { GrayBoss } from '../boss/gray-boss';
+import type { Boss } from '../boss/boss';
 import { incomingDamage, outgoingDamage } from '../combat/damage';
 import { overlaps, type Projectile, type ProjectilePool } from '../combat/projectiles';
 import type { TrainingTarget } from '../combat/targets';
@@ -30,7 +30,7 @@ const BOSS_ID = -1;
 export interface HitTargets {
   targets: readonly TrainingTarget[];
   enemies: readonly Enemy[];
-  boss: GrayBoss | undefined;
+  boss: Boss | undefined;
 }
 
 /**
@@ -117,7 +117,7 @@ export function resolvePlayerHits(
 export function resolveEnemyHits(
   pool: ProjectilePool,
   enemies: readonly Enemy[],
-  boss: GrayBoss | undefined,
+  boss: Boss | undefined,
   player: PlayerPhysics,
   damageTaken: number,
   ev: WorldEvents,

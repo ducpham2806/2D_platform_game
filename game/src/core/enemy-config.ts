@@ -4,8 +4,14 @@
  */
 import { ConfigError, type Json, num, obj, size, type SizePx, str } from './json-check';
 
-export type EnemyBehavior = 'drone' | 'turret' | 'butterfly' | 'shieldCharger';
-const BEHAVIORS: readonly EnemyBehavior[] = ['drone', 'turret', 'butterfly', 'shieldCharger'];
+export type EnemyBehavior = 'drone' | 'turret' | 'butterfly' | 'shieldCharger' | 'golem';
+const BEHAVIORS: readonly EnemyBehavior[] = [
+  'drone',
+  'turret',
+  'butterfly',
+  'shieldCharger',
+  'golem',
+];
 
 export interface EnemyProjectileData {
   speedTilesPerSec: number;
@@ -83,7 +89,41 @@ export interface ShieldChargerData extends EnemyCommon {
   };
 }
 
-export type EnemyData = DroneData | TurretData | ButterflyData | ShieldChargerData;
+/**
+ * Bramble Golem (mini-boss): đi chậm về phía người chơi. Pha 1 giậm đất tạo sóng hai bên; khi máu
+ * xuống dưới `phase2HpPct` thì tung hạt nổ rồi lao tới.
+ */
+export interface GolemData extends EnemyCommon {
+  behavior: 'golem';
+  moveSpeedTilesPerSec: number;
+  /** Vào pha 2 khi máu còn không quá mức này (%). */
+  phase2HpPct: number;
+  attack: {
+    cooldownSec: number;
+    slam: {
+      telegraphSec: number;
+      recoverSec: number;
+      shockwave: { speedTilesPerSec: number; damage: number; sizePx: SizePx };
+    };
+    bombs: {
+      telegraphSec: number;
+      count: number;
+      spreadFactor: number;
+      lobSpeedTilesPerSec: number;
+      gravityTilesPerSec2: number;
+      recoverSec: number;
+      projectile: EnemyProjectileData;
+    };
+    dash: {
+      telegraphSec: number;
+      dashTiles: number;
+      dashSpeedTilesPerSec: number;
+      recoverSec: number;
+    };
+  };
+}
+
+export type EnemyData = DroneData | TurretData | ButterflyData | ShieldChargerData | GolemData;
 
 export interface PickupRules {
   /** Xác suất rơi viên hồi máu khi hạ kẻ địch (không rơi khi người chơi đầy máu). */
@@ -191,6 +231,61 @@ function parseEnemy(id: string, value: unknown): EnemyData {
         },
       };
     }
+    case 'golem': {
+      const slam = obj(a.slam, `${pa}.slam`);
+      const wave = obj(slam.shockwave, `${pa}.slam.shockwave`);
+      const bombs = obj(a.bombs, `${pa}.bombs`);
+      const dash = obj(a.dash, `${pa}.dash`);
+      return {
+        ...base,
+        behavior: 'golem',
+        moveSpeedTilesPerSec: num(e.moveSpeedTilesPerSec, `${p}.moveSpeedTilesPerSec`, { min: 0 }),
+        phase2HpPct: num(e.phase2HpPct, `${p}.phase2HpPct`, { min: 1 }),
+        attack: {
+          cooldownSec: num(a.cooldownSec, `${pa}.cooldownSec`, { min: 0 }),
+          slam: {
+            telegraphSec: num(slam.telegraphSec, `${pa}.slam.telegraphSec`, { min: 0 }),
+            recoverSec: num(slam.recoverSec, `${pa}.slam.recoverSec`, { min: 0 }),
+            shockwave: {
+              speedTilesPerSec: num(
+                wave.speedTilesPerSec,
+                `${pa}.slam.shockwave.speedTilesPerSec`,
+                {
+                  min: 1,
+                },
+              ),
+              damage: num(wave.damage, `${pa}.slam.shockwave.damage`, { min: 0 }),
+              sizePx: size(wave.sizePx, `${pa}.slam.shockwave.sizePx`),
+            },
+          },
+          bombs: {
+            telegraphSec: num(bombs.telegraphSec, `${pa}.bombs.telegraphSec`, { min: 0 }),
+            count: num(bombs.count, `${pa}.bombs.count`, { min: 1 }),
+            spreadFactor: num(bombs.spreadFactor, `${pa}.bombs.spreadFactor`, { min: 0 }),
+            lobSpeedTilesPerSec: num(bombs.lobSpeedTilesPerSec, `${pa}.bombs.lobSpeedTilesPerSec`, {
+              min: 0.5,
+            }),
+            gravityTilesPerSec2: num(bombs.gravityTilesPerSec2, `${pa}.bombs.gravityTilesPerSec2`, {
+              min: 1,
+            }),
+            recoverSec: num(bombs.recoverSec, `${pa}.bombs.recoverSec`, { min: 0 }),
+            projectile: projectile(bombs.projectile, `${pa}.bombs.projectile`),
+          },
+          dash: {
+            telegraphSec: num(dash.telegraphSec, `${pa}.dash.telegraphSec`, { min: 0 }),
+            dashTiles: num(dash.dashTiles, `${pa}.dash.dashTiles`, { min: 0.5 }),
+            dashSpeedTilesPerSec: num(
+              dash.dashSpeedTilesPerSec,
+              `${pa}.dash.dashSpeedTilesPerSec`,
+              {
+                min: 1,
+              },
+            ),
+            recoverSec: num(dash.recoverSec, `${pa}.dash.recoverSec`, { min: 0 }),
+          },
+        },
+      };
+    }
     case 'shieldCharger':
       return {
         ...base,
@@ -263,11 +358,27 @@ function attackTiming(e: EnemyData): { telegraphSec: number; cycleSec: number } 
       return { telegraphSec: e.attack.telegraphSec, cycleSec: e.attack.intervalSec };
     case 'shieldCharger':
       return { telegraphSec: e.attack.telegraphSec, cycleSec: Infinity };
+    case 'golem':
+      return {
+        telegraphSec: Math.min(
+          e.attack.slam.telegraphSec,
+          e.attack.bombs.telegraphSec,
+          e.attack.dash.telegraphSec,
+        ),
+        cycleSec: Infinity,
+      };
   }
 }
 
 function attackDamage(e: EnemyData): number {
-  return e.behavior === 'shieldCharger' ? e.contactDamage : e.attack.projectile.damage;
+  switch (e.behavior) {
+    case 'shieldCharger':
+      return e.contactDamage;
+    case 'golem':
+      return Math.max(e.attack.slam.shockwave.damage, e.attack.bombs.projectile.damage);
+    default:
+      return e.attack.projectile.damage;
+  }
 }
 
 /**

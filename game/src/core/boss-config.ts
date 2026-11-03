@@ -4,8 +4,18 @@
  */
 import { arr, ConfigError, type Json, num, obj, size, type SizePx, str } from './json-check';
 
-export type BossAttackId = 'shot' | 'charge' | 'slam' | 'rain';
-const ATTACK_IDS: readonly BossAttackId[] = ['shot', 'charge', 'slam', 'rain'];
+export type BossAttackId =
+  'shot' | 'charge' | 'slam' | 'rain' | 'thorns' | 'lash' | 'roots' | 'bloom';
+const ATTACK_IDS: readonly BossAttackId[] = [
+  'shot',
+  'charge',
+  'slam',
+  'rain',
+  'thorns',
+  'lash',
+  'roots',
+  'bloom',
+];
 
 export interface BossPhaseData {
   /** Pha này kéo dài tới khi máu còn dưới mức này (%); pha cuối là 0. */
@@ -50,110 +60,265 @@ export interface RainAttack {
   sizePx: SizePx;
 }
 
+/** Thorna — Gai Quạt: bắn `count` gai xòe quạt `spreadDeg` ngang tầm người chơi. */
+export interface ThornsAttack {
+  telegraphSec: number;
+  count: number;
+  spreadDeg: number;
+  speedTilesPerSec: number;
+  damage: number;
+  recoverSec: number;
+  sizePx: SizePx;
+}
+
+/** Thorna — Dây Quất: vung dây ngang mặt đất dài `reachTiles` ô, tồn tại `activeSec`. */
+export interface LashAttack {
+  telegraphSec: number;
+  reachTiles: number;
+  heightPx: number;
+  activeSec: number;
+  damage: number;
+  recoverSec: number;
+}
+
+/** Thorna — Rễ Trồi: `count` cột rễ mọc từ sàn lần lượt trái sang phải, cách nhau `spacingTiles` ô. */
+export interface RootsAttack {
+  telegraphSec: number;
+  count: number;
+  spacingTiles: number;
+  intervalSec: number;
+  activeSec: number;
+  damage: number;
+  recoverSec: number;
+  sizePx: SizePx;
+}
+
+/** Thorna — Hoa Nở (đòn đỉnh): `seeds` hạt rơi từ trần, chừa `safeGaps` khe an toàn, rồi choáng. */
+export interface BloomAttack {
+  telegraphSec: number;
+  seeds: number;
+  fallSpeedTilesPerSec: number;
+  activeSec: number;
+  damage: number;
+  safeGaps: number;
+  gapWidthTiles: number;
+  stunAfterSec: number;
+  sizePx: SizePx;
+}
+
+export interface BossAttacks {
+  shot?: ShotAttack;
+  charge?: ChargeAttack;
+  slam?: SlamAttack;
+  rain?: RainAttack;
+  thorns?: ThornsAttack;
+  lash?: LashAttack;
+  roots?: RootsAttack;
+  bloom?: BloomAttack;
+}
+
 export interface BossData {
   id: string;
   name: string;
   hp: number;
   sizePx: SizePx;
   contactDamage: number;
+  /** Vũ khí gây 2,5× sát thương và choáng (GDD 1.2). */
   weakness: string;
+  /** Vũ khí nhận được khi thắng lần đầu (Thorna: Vine Lash, còn điểm yếu là Ember Burst). */
+  reward: string;
+  /** EXP và Core Bit nhận ở lần thắng đầu. */
+  rewardExp: number;
+  rewardCoreBit: number;
   idleSec: number;
   minTelegraphSec: number;
+  /** Boss đi chậm về phía người chơi khi nghỉ giữa các đòn; không có thì đứng yên. */
+  walk?: { speedTilesPerSec: number; keepDistanceTiles: number };
   phases: BossPhaseData[];
-  attacks: { shot: ShotAttack; charge: ChargeAttack; slam: SlamAttack; rain: RainAttack };
+  attacks: BossAttacks;
+}
+
+/** Dữ liệu một đòn; ném lỗi nếu đòn có trong danh sách pha mà thiếu dữ liệu. */
+export function attackOf<K extends BossAttackId>(
+  boss: Pick<BossData, 'id' | 'attacks'>,
+  id: K,
+): NonNullable<BossAttacks[K]> {
+  const a = boss.attacks[id];
+  if (!a) throw new ConfigError(`bosses.${boss.id}.attacks.${id}: thiếu dữ liệu đòn`);
+  return a as NonNullable<BossAttacks[K]>;
+}
+
+function parseShot(v: Json, p: string): ShotAttack {
+  return {
+    telegraphSec: num(v.telegraphSec, `${p}.telegraphSec`, { min: 0 }),
+    count: num(v.count, `${p}.count`, { min: 1 }),
+    intervalSec: num(v.intervalSec, `${p}.intervalSec`, { min: 0.05 }),
+    speedTilesPerSec: num(v.speedTilesPerSec, `${p}.speedTilesPerSec`, { min: 1 }),
+    damage: num(v.damage, `${p}.damage`, { min: 0 }),
+    recoverSec: num(v.recoverSec, `${p}.recoverSec`, { min: 0 }),
+    sizePx: size(v.sizePx, `${p}.sizePx`),
+  };
+}
+
+function parseCharge(v: Json, p: string): ChargeAttack {
+  return {
+    telegraphSec: num(v.telegraphSec, `${p}.telegraphSec`, { min: 0 }),
+    speedTilesPerSec: num(v.speedTilesPerSec, `${p}.speedTilesPerSec`, { min: 1 }),
+    damage: num(v.damage, `${p}.damage`, { min: 0 }),
+    recoverSec: num(v.recoverSec, `${p}.recoverSec`, { min: 0 }),
+  };
+}
+
+function parseSlam(v: Json, p: string): SlamAttack {
+  const wave = obj(v.shockwave, `${p}.shockwave`);
+  return {
+    telegraphSec: num(v.telegraphSec, `${p}.telegraphSec`, { min: 0 }),
+    airSec: num(v.airSec, `${p}.airSec`, { min: 0.2 }),
+    damage: num(v.damage, `${p}.damage`, { min: 0 }),
+    shockwave: {
+      speedTilesPerSec: num(wave.speedTilesPerSec, `${p}.shockwave.speedTilesPerSec`, { min: 1 }),
+      damage: num(wave.damage, `${p}.shockwave.damage`, { min: 0 }),
+      sizePx: size(wave.sizePx, `${p}.shockwave.sizePx`),
+    },
+    recoverSec: num(v.recoverSec, `${p}.recoverSec`, { min: 0 }),
+  };
+}
+
+function parseRain(v: Json, p: string): RainAttack {
+  return {
+    telegraphSec: num(v.telegraphSec, `${p}.telegraphSec`, { min: 0 }),
+    activeSec: num(v.activeSec, `${p}.activeSec`, { min: 0.1 }),
+    fallSpeedTilesPerSec: num(v.fallSpeedTilesPerSec, `${p}.fallSpeedTilesPerSec`, { min: 1 }),
+    damage: num(v.damage, `${p}.damage`, { min: 0 }),
+    safeGaps: num(v.safeGaps, `${p}.safeGaps`, { min: 1 }),
+    gapWidthTiles: num(v.gapWidthTiles, `${p}.gapWidthTiles`, { min: 1 }),
+    stunAfterSec: num(v.stunAfterSec, `${p}.stunAfterSec`, { min: 0 }),
+    sizePx: size(v.sizePx, `${p}.sizePx`),
+  };
+}
+
+function parseThorns(v: Json, p: string): ThornsAttack {
+  return {
+    telegraphSec: num(v.telegraphSec, `${p}.telegraphSec`, { min: 0 }),
+    count: num(v.count, `${p}.count`, { min: 1 }),
+    spreadDeg: num(v.spreadDeg, `${p}.spreadDeg`, { min: 0 }),
+    speedTilesPerSec: num(v.speedTilesPerSec, `${p}.speedTilesPerSec`, { min: 1 }),
+    damage: num(v.damage, `${p}.damage`, { min: 0 }),
+    recoverSec: num(v.recoverSec, `${p}.recoverSec`, { min: 0 }),
+    sizePx: size(v.sizePx, `${p}.sizePx`),
+  };
+}
+
+function parseLash(v: Json, p: string): LashAttack {
+  return {
+    telegraphSec: num(v.telegraphSec, `${p}.telegraphSec`, { min: 0 }),
+    reachTiles: num(v.reachTiles, `${p}.reachTiles`, { min: 1 }),
+    heightPx: num(v.heightPx, `${p}.heightPx`, { min: 1 }),
+    activeSec: num(v.activeSec, `${p}.activeSec`, { min: 0.05 }),
+    damage: num(v.damage, `${p}.damage`, { min: 0 }),
+    recoverSec: num(v.recoverSec, `${p}.recoverSec`, { min: 0 }),
+  };
+}
+
+function parseRoots(v: Json, p: string): RootsAttack {
+  return {
+    telegraphSec: num(v.telegraphSec, `${p}.telegraphSec`, { min: 0 }),
+    count: num(v.count, `${p}.count`, { min: 1 }),
+    spacingTiles: num(v.spacingTiles, `${p}.spacingTiles`, { min: 1 }),
+    intervalSec: num(v.intervalSec, `${p}.intervalSec`, { min: 0.05 }),
+    activeSec: num(v.activeSec, `${p}.activeSec`, { min: 0.05 }),
+    damage: num(v.damage, `${p}.damage`, { min: 0 }),
+    recoverSec: num(v.recoverSec, `${p}.recoverSec`, { min: 0 }),
+    sizePx: size(v.sizePx, `${p}.sizePx`),
+  };
+}
+
+function parseBloom(v: Json, p: string): BloomAttack {
+  return {
+    telegraphSec: num(v.telegraphSec, `${p}.telegraphSec`, { min: 0 }),
+    seeds: num(v.seeds, `${p}.seeds`, { min: 1 }),
+    fallSpeedTilesPerSec: num(v.fallSpeedTilesPerSec, `${p}.fallSpeedTilesPerSec`, { min: 1 }),
+    activeSec: num(v.activeSec, `${p}.activeSec`, { min: 0.1 }),
+    damage: num(v.damage, `${p}.damage`, { min: 0 }),
+    safeGaps: num(v.safeGaps, `${p}.safeGaps`, { min: 1 }),
+    gapWidthTiles: num(v.gapWidthTiles, `${p}.gapWidthTiles`, { min: 1 }),
+    stunAfterSec: num(v.stunAfterSec, `${p}.stunAfterSec`, { min: 0 }),
+    sizePx: size(v.sizePx, `${p}.sizePx`),
+  };
 }
 
 function parseBoss(id: string, value: unknown): BossData {
   const p = `bosses.${id}`;
   const b = obj(value, p);
-  const a = obj(b.attacks, `${p}.attacks`);
-  const shot: Json = obj(a.shot, `${p}.attacks.shot`);
-  const charge: Json = obj(a.charge, `${p}.attacks.charge`);
-  const slam: Json = obj(a.slam, `${p}.attacks.slam`);
-  const wave: Json = obj(slam.shockwave, `${p}.attacks.slam.shockwave`);
-  const rain: Json = obj(a.rain, `${p}.attacks.rain`);
+  const raw = obj(b.attacks, `${p}.attacks`);
+  const attacks: BossAttacks = {};
+  const take = <T>(key: BossAttackId, parse: (v: Json, path: string) => T): T | undefined =>
+    raw[key] === undefined
+      ? undefined
+      : parse(obj(raw[key], `${p}.attacks.${key}`), `${p}.attacks.${key}`);
+  for (const key of Object.keys(raw)) {
+    if (!ATTACK_IDS.includes(key as BossAttackId))
+      throw new ConfigError(`${p}.attacks.${key}: đòn "${key}" không tồn tại`);
+  }
+  const shot = take('shot', parseShot);
+  const charge = take('charge', parseCharge);
+  const slam = take('slam', parseSlam);
+  const rain = take('rain', parseRain);
+  const thorns = take('thorns', parseThorns);
+  const lash = take('lash', parseLash);
+  const roots = take('roots', parseRoots);
+  const bloom = take('bloom', parseBloom);
+  if (shot) attacks.shot = shot;
+  if (charge) attacks.charge = charge;
+  if (slam) attacks.slam = slam;
+  if (rain) attacks.rain = rain;
+  if (thorns) attacks.thorns = thorns;
+  if (lash) attacks.lash = lash;
+  if (roots) attacks.roots = roots;
+  if (bloom) attacks.bloom = bloom;
   const phases = arr(b.phases, `${p}.phases`).map((item, i) => {
     const ph = obj(item, `${p}.phases[${i}]`);
-    const attacks = arr(ph.attacks, `${p}.phases[${i}].attacks`).map((x, j) => {
+    const list = arr(ph.attacks, `${p}.phases[${i}].attacks`).map((x, j) => {
       const name = str(x, `${p}.phases[${i}].attacks[${j}]`);
       if (!ATTACK_IDS.includes(name as BossAttackId)) {
         throw new ConfigError(`${p}.phases[${i}].attacks[${j}]: đòn "${name}" không tồn tại`);
       }
+      if (attacks[name as BossAttackId] === undefined) {
+        throw new ConfigError(`${p}.phases[${i}].attacks[${j}]: thiếu dữ liệu đòn "${name}"`);
+      }
       return name as BossAttackId;
     });
-    if (attacks.length === 0) throw new ConfigError(`${p}.phases[${i}]: cần ít nhất một đòn`);
+    if (list.length === 0) throw new ConfigError(`${p}.phases[${i}]: cần ít nhất một đòn`);
     return {
       untilHpPct: num(ph.untilHpPct, `${p}.phases[${i}].untilHpPct`, { min: 0 }),
       speedMul: num(ph.speedMul, `${p}.phases[${i}].speedMul`, { min: 0.5 }),
-      attacks,
+      attacks: list,
     };
   });
   if (phases.length === 0) throw new ConfigError(`${p}.phases: cần ít nhất một pha`);
-  return {
+  const out: BossData = {
     id,
     name: str(b.name, `${p}.name`),
     hp: num(b.hp, `${p}.hp`, { min: 1 }),
     sizePx: size(b.sizePx, `${p}.sizePx`),
     contactDamage: num(b.contactDamage, `${p}.contactDamage`, { min: 0 }),
     weakness: str(b.weakness, `${p}.weakness`),
+    reward: str(b.reward, `${p}.reward`),
+    rewardExp: num(b.rewardExp, `${p}.rewardExp`, { min: 0 }),
+    rewardCoreBit: num(b.rewardCoreBit, `${p}.rewardCoreBit`, { min: 0 }),
     idleSec: num(b.idleSec, `${p}.idleSec`, { min: 0 }),
     minTelegraphSec: num(b.minTelegraphSec, `${p}.minTelegraphSec`, { min: 0 }),
     phases,
-    attacks: {
-      shot: {
-        telegraphSec: num(shot.telegraphSec, `${p}.attacks.shot.telegraphSec`, { min: 0 }),
-        count: num(shot.count, `${p}.attacks.shot.count`, { min: 1 }),
-        intervalSec: num(shot.intervalSec, `${p}.attacks.shot.intervalSec`, { min: 0.05 }),
-        speedTilesPerSec: num(shot.speedTilesPerSec, `${p}.attacks.shot.speedTilesPerSec`, {
-          min: 1,
-        }),
-        damage: num(shot.damage, `${p}.attacks.shot.damage`, { min: 0 }),
-        recoverSec: num(shot.recoverSec, `${p}.attacks.shot.recoverSec`, { min: 0 }),
-        sizePx: size(shot.sizePx, `${p}.attacks.shot.sizePx`),
-      },
-      charge: {
-        telegraphSec: num(charge.telegraphSec, `${p}.attacks.charge.telegraphSec`, { min: 0 }),
-        speedTilesPerSec: num(charge.speedTilesPerSec, `${p}.attacks.charge.speedTilesPerSec`, {
-          min: 1,
-        }),
-        damage: num(charge.damage, `${p}.attacks.charge.damage`, { min: 0 }),
-        recoverSec: num(charge.recoverSec, `${p}.attacks.charge.recoverSec`, { min: 0 }),
-      },
-      slam: {
-        telegraphSec: num(slam.telegraphSec, `${p}.attacks.slam.telegraphSec`, { min: 0 }),
-        airSec: num(slam.airSec, `${p}.attacks.slam.airSec`, { min: 0.2 }),
-        damage: num(slam.damage, `${p}.attacks.slam.damage`, { min: 0 }),
-        shockwave: {
-          speedTilesPerSec: num(
-            wave.speedTilesPerSec,
-            `${p}.attacks.slam.shockwave.speedTilesPerSec`,
-            {
-              min: 1,
-            },
-          ),
-          damage: num(wave.damage, `${p}.attacks.slam.shockwave.damage`, { min: 0 }),
-          sizePx: size(wave.sizePx, `${p}.attacks.slam.shockwave.sizePx`),
-        },
-        recoverSec: num(slam.recoverSec, `${p}.attacks.slam.recoverSec`, { min: 0 }),
-      },
-      rain: {
-        telegraphSec: num(rain.telegraphSec, `${p}.attacks.rain.telegraphSec`, { min: 0 }),
-        activeSec: num(rain.activeSec, `${p}.attacks.rain.activeSec`, { min: 0.1 }),
-        fallSpeedTilesPerSec: num(
-          rain.fallSpeedTilesPerSec,
-          `${p}.attacks.rain.fallSpeedTilesPerSec`,
-          {
-            min: 1,
-          },
-        ),
-        damage: num(rain.damage, `${p}.attacks.rain.damage`, { min: 0 }),
-        safeGaps: num(rain.safeGaps, `${p}.attacks.rain.safeGaps`, { min: 1 }),
-        gapWidthTiles: num(rain.gapWidthTiles, `${p}.attacks.rain.gapWidthTiles`, { min: 1 }),
-        stunAfterSec: num(rain.stunAfterSec, `${p}.attacks.rain.stunAfterSec`, { min: 0 }),
-        sizePx: size(rain.sizePx, `${p}.attacks.rain.sizePx`),
-      },
-    },
+    attacks,
   };
+  if (b.walk !== undefined) {
+    const w = obj(b.walk, `${p}.walk`);
+    out.walk = {
+      speedTilesPerSec: num(w.speedTilesPerSec, `${p}.walk.speedTilesPerSec`, { min: 0 }),
+      keepDistanceTiles: num(w.keepDistanceTiles, `${p}.walk.keepDistanceTiles`, { min: 0 }),
+    };
+  }
+  return out;
 }
 
 export function parseBosses(value: unknown): Record<string, BossData> {
@@ -166,31 +331,47 @@ export function parseBosses(value: unknown): Record<string, BossData> {
   return out;
 }
 
+/** Sát thương lớn nhất của từng đòn (kể cả sóng đất) để kiểm tra quy tắc. */
+function attackDamages(boss: BossData): number[] {
+  const a = boss.attacks;
+  return [
+    a.shot?.damage,
+    a.charge?.damage,
+    a.slam?.damage,
+    a.slam?.shockwave.damage,
+    a.rain?.damage,
+    a.thorns?.damage,
+    a.lash?.damage,
+    a.roots?.damage,
+    a.bloom?.damage,
+  ].filter((d): d is number => d !== undefined);
+}
+
 /**
  * Nguyên tắc GDD 9 cho mọi boss: telegraph sau khi chia speedMul vẫn ≥ minTelegraphSec;
- * không đòn nào (kể cả va chạm) gây ≥ máu người chơi cấp 1 ở độ khó Thường.
+ * không đòn nào (kể cả va chạm) gây ≥ máu người chơi cấp 1 ở độ khó Thường; đòn đỉnh có khe né
+ * và Thorna (đặc tả mục 5) không có đòn nào quá 18 sát thương.
  */
 export function checkBossRules(boss: BossData, playerBaseHp: number): string[] {
   const errors: string[] = [];
   const maxSpeed = Math.max(...boss.phases.map((ph) => ph.speedMul));
   for (const id of ATTACK_IDS) {
-    const telegraph = boss.attacks[id].telegraphSec / maxSpeed;
+    const attack = boss.attacks[id];
+    if (!attack) continue;
+    const telegraph = attack.telegraphSec / maxSpeed;
     if (telegraph + 1e-9 < boss.minTelegraphSec) {
       errors.push(
         `${boss.id}.${id}: telegraph ${telegraph.toFixed(2)} s sau tăng tốc < ${boss.minTelegraphSec} s`,
       );
     }
   }
-  const damages = [
-    boss.contactDamage,
-    boss.attacks.shot.damage,
-    boss.attacks.charge.damage,
-    boss.attacks.slam.damage,
-    boss.attacks.slam.shockwave.damage,
-    boss.attacks.rain.damage,
-  ];
-  if (Math.max(...damages) >= playerBaseHp) {
+  if (Math.max(boss.contactDamage, ...attackDamages(boss)) >= playerBaseHp) {
     errors.push(`${boss.id}: có đòn gây ≥ ${playerBaseHp} sát thương (chết ngay một đòn)`);
+  }
+  for (const id of ['rain', 'bloom'] as const) {
+    const gaps = boss.attacks[id]?.safeGaps;
+    if (gaps !== undefined && gaps < 1)
+      errors.push(`${boss.id}.${id}: phải có ít nhất một khe an toàn`);
   }
   const thresholds = boss.phases.map((ph) => ph.untilHpPct);
   for (let i = 1; i < thresholds.length; i += 1) {

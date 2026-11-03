@@ -1,7 +1,17 @@
 import type { TileMap } from '../tilemap';
 
 export type ProjectileKind =
-  'shot' | 'mid' | 'charged' | 'sweep' | 'enemyShot' | 'shockwave' | 'drop' | 'bomb';
+  | 'shot'
+  | 'mid'
+  | 'charged'
+  | 'sweep'
+  | 'enemyShot'
+  | 'shockwave'
+  | 'drop'
+  | 'bomb'
+  | 'lash'
+  | 'root'
+  | 'seed';
 
 /** Đạn, sóng, roi… mọi hộp gây sát thương có thời hạn. (x, y) là góc trên trái, px. */
 export interface Projectile {

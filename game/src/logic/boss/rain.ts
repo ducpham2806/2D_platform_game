@@ -36,3 +36,26 @@ export function planRain(
   for (let c = firstCol; c <= lastCol; c += 1) if (!safe.has(c)) dropCols.push(c);
   return { dropCols, gapStarts };
 }
+
+/**
+ * Đòn Hoa Nở: như Mưa đạn nhưng chỉ rơi `seeds` hạt, rải đều trên các cột không thuộc khe an
+ * toàn. Cột bị bỏ trống thêm khe né, nên số khe an toàn không bao giờ ít hơn `gaps`.
+ */
+export function planBloom(
+  firstCol: number,
+  lastCol: number,
+  gaps: number,
+  gapWidth: number,
+  seeds: number,
+  rng: Rng,
+): { dropCols: number[]; gapStarts: number[] } {
+  const plan = planRain(firstCol, lastCol, gaps, gapWidth, rng);
+  const all = plan.dropCols;
+  if (all.length <= seeds) return plan;
+  const dropCols: number[] = [];
+  for (let i = 0; i < seeds; i += 1) {
+    const col = all[Math.floor(((i + 0.5) * all.length) / seeds)];
+    if (col !== undefined) dropCols.push(col);
+  }
+  return { dropCols, gapStarts: plan.gapStarts };
+}

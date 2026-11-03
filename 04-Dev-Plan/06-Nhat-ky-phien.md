@@ -19,6 +19,32 @@ Mẫu:
 
 ---
 
+## 2026-11-03: Sprint 6, M6 Boss (Thorna + Bramble Golem)
+
+- **Nhánh / commit:** `ccr-b2db3ef4-uu41jr`.
+- **Mục tiêu:** người dùng đồng ý làm M6: Thorna thật theo đặc tả Prologue & Stage 1 mục 5 và mini-boss Bramble Golem.
+- **Đã làm:**
+  - Đổi `GrayBoss` thành `Boss` (`src/logic/boss/boss.ts`), dùng chung cho boss xám và Thorna. `bosses.json` → `attacks` khai đòn nào dùng đòn đó; đòn có trong danh sách pha mà thiếu dữ liệu thì báo lỗi khi nạp.
+  - **Thorna** (`03-Data/bosses.json`): HP 100, 3 pha tại 60% / 30%, pha 3 nhanh hơn 20%. Gai Quạt (5 gai xòe 60° ngang tầm người), Dây Quất (hộp ngang sát sàn dài 6 ô, cắt ngắn khi sát tường), Rễ Trồi (3 cột rễ mọc lần lượt trái → phải, vết nứt báo trước), Hoa Nở (12 hạt rơi, 3 khe an toàn, rồi choáng 2 s). Đi chậm về phía người chơi khi nghỉ.
+  - Thưởng tách khỏi điểm yếu: `weakness` Ember Burst, `reward` Vine Lash, `rewardExp` 120, `rewardCoreBit` 80 (cộng một lần ở lần thắng đầu, đọc qua `world.exp` / `world.coreBits`; HUD hiện cả phần của boss).
+  - **Bramble Golem** (`enemies.json`, `behavior: golem`): 60 máu, pha 1 giậm đất 0,7 s → 2 sóng đất 15 sát thương; từ ≤ 50% máu thì tung 3 hạt nổ (10 sát thương), báo trước 0,5 s rồi lao 4 ô. Chạy trong phòng khóa như kẻ địch thường; rơi 60 EXP và Core Bit.
+  - Kiểm tra dữ liệu mới: `reward` phải bằng `weaponGranted` và `weakness` bằng `bossWeakness` của màn; `miniBoss` của màn đã làm phải có trong `enemies.json`; telegraph của mọi đòn Golem ≥ 0,4 s.
+  - Phòng thử: `thorna-room.ts` (đấu trường 24 × 12 ô, 3 bục cao 3 ô, menu phím B) và `golem-room.ts` (phòng khóa 20 ô, phím G). `StageDef.boss` chọn boss; scene không còn cứng boss xám.
+  - Hiển thị: Thorna màu xanh lục với báo trước riêng từng đòn (vạch gai, vạch dây sát sàn, vết nứt vàng, cột hạt); Golem nhấp nháy cam khi báo trước, đỏ khi lao.
+  - Tài liệu: `game/README.md`, `game/CONTEXT.md`, bảng sprint trong `01-Ke-hoach-lam-viec.md`.
+- **File chính:** `game/src/logic/boss/boss.ts`, `rain.ts`, `enemy-projectile.ts`; `game/src/core/boss-config.ts`, `enemy-config.ts`, `game-config.ts`; `game/src/logic/enemy/behaviors.ts`; `game/src/stages/thorna-room.ts`, `golem-room.ts`; `game/tests/thorna.test.ts`, `golem.test.ts`; `03-Data/bosses.json`, `enemies.json`.
+- **Quyết định:**
+  - Gai Quạt báo trước 0,6 s thay vì 0,5 s của đặc tả: pha 3 tăng tốc 20% sẽ còn 0,5 s, vẫn đạt luật "đòn boss ≥ 0,5 s". Số này là `[PLACEHOLDER]`, chỉnh sau playtest.
+  - Rễ Trồi nhắm quanh chỗ người chơi đứng lúc bắt đầu báo trước (3 cột cách 3 ô); Hoa Nở thưa hạt (12 hạt) nên có thêm chỗ né ngoài 3 khe bắt buộc.
+  - Bramble Golem làm thành kẻ địch (không dùng lớp Boss) để tái dùng phòng khóa, EXP và Core Bit có sẵn.
+  - Đấu trường Thorna 24 ô rộng hơn khung 20 ô nên camera đi theo Kai trong đấu trường.
+- **Lỗi tìm thấy / đã sửa:** boss giữ vận tốc đi bộ của lúc nghỉ khi vào báo trước nên trượt trong lúc báo trước (test Dây Quất bắt được). Đã đặt vận tốc về 0 khi báo trước.
+- **Kiểm tra:** `npm test` 216 test (thêm 24: `thorna.test.ts`, `golem.test.ts`), `npm run lint`, `npm run format:check`, `npm run build` đều đạt. Chạy bản build bằng Chromium: vào phòng Thorna (boss xanh, gai bay, thanh máu có vạch pha) và phòng Golem (cửa khóa, "Còn 1 kẻ địch"); không có lỗi console.
+- **Còn dở / chưa làm:** thoại trước/sau trận của Thorna (cần hệ thống thoại), 1 SP (cần hệ thống cấp, M8), sprite, bản đồ thật phòng boss Stage 1 và đoạn C (làm bằng Tiled, chờ cổng Prototype), chưa chơi thử cảm giác với người thật (thời gian thắng 60–90 s mới đo bằng mô phỏng, chưa đo bằng người).
+- **Tiếp theo:**
+  1. Người dùng: chơi thử phòng Thorna và Golem (phím B, G ở menu) xem cảm giác khe né, thời gian báo trước, độ khó; ghi nhận xét để chỉnh `bosses.json`.
+  2. Code: M11 lưu cục bộ (checkpoint, vật phẩm bí mật, Vine Lash đã nhận), M10 HUD cơ bản, TutorialManager.
+
 ## 2026-11-03: Hỏi đáp, xác định việc tiếp theo
 
 - **Nhánh / commit:** `ccr-b2db3ef4-uu41jr`.
