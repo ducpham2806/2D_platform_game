@@ -17,13 +17,13 @@ Giai đoạn 2 chỉ bắt đầu khi qua cổng MVP. Chi tiết từng module �
 
 **Giai đoạn 1: chứng minh game vui (khoảng 19 tuần)**
 
-| Sprint | Mốc            | Module                                                                            | Trạng thái                                                                   |
-| ------ | -------------- | --------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| 1      | Khởi động      | M0, M1                                                                            | Code xong                                                                    |
-| 2–4    | Prototype      | M2 Đầu vào, M3 Nhân vật, M4 Chiến đấu, boss xám                                   | Code xong, đo tự động đạt; **còn chơi thử 5 người** (`05-Cong-Prototype.md`) |
-| 5–9    | Vertical slice | M5 Kẻ địch, M7 Màn chơi, M6 Boss, M10 HUD cơ bản, M11 lưu cục bộ, TutorialManager | M5, khung M7, M6 code xong (Sprint 5–6); **tiếp:** M11, M10, TutorialManager |
-| 10–17  | MVP            | Stage 2–4, M8 RPG rút gọn, Xưởng, Shop chỉ Upgrade, 3 độ khó, bản web             | Chưa                                                                         |
-| 18–19  | Cổng MVP       | Playtest khoảng 50 người, sửa cảm giác chơi và màn                                | Chưa                                                                         |
+| Sprint | Mốc            | Module                                                                            | Trạng thái                                                                                         |
+| ------ | -------------- | --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| 1      | Khởi động      | M0, M1                                                                            | Code xong                                                                                          |
+| 2–4    | Prototype      | M2 Đầu vào, M3 Nhân vật, M4 Chiến đấu, boss xám                                   | Code xong, đo tự động đạt; **còn chơi thử 5 người** (`05-Cong-Prototype.md`)                       |
+| 5–9    | Vertical slice | M5 Kẻ địch, M7 Màn chơi, M6 Boss, M10 HUD cơ bản, M11 lưu cục bộ, TutorialManager | M5, khung M7, M6 (Sprint 5–6), M11 lưu cục bộ (Sprint 7) code xong; **tiếp:** M10, TutorialManager |
+| 10–17  | MVP            | Stage 2–4, M8 RPG rút gọn, Xưởng, Shop chỉ Upgrade, 3 độ khó, bản web             | Chưa                                                                                               |
+| 18–19  | Cổng MVP       | Playtest khoảng 50 người, sửa cảm giác chơi và màn                                | Chưa                                                                                               |
 
 Asset theo mốc (xem `05-Assets`): Sprint 1 style bible, Kai, bảng màu; Prototype nhóm P0; Vertical slice Prologue và Stage 1 (P1); MVP nhóm P2 phần Stage 2–4.
 

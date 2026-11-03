@@ -7,9 +7,11 @@ import {
   SceneKey,
 } from '../core/constants';
 import { ConfigError, parseGameConfig } from '../core/game-config';
-import { getBus, setConfig, setInput } from '../core/phaser-services';
+import { getBus, setConfig, setInput, setSave } from '../core/phaser-services';
 import { LocalStorageStore } from '../input/browser-store';
 import { InputService } from '../input/input-service';
+import { SaveManager } from '../logic/save/save-manager';
+import { openBrowserSaveStore } from '../save/browser-save-store';
 import { MUTED_STYLE, TEXT_STYLE } from './ui';
 
 const MANIFEST_KEY = 'data:manifest';
@@ -61,11 +63,11 @@ export class PreloadScene extends Phaser.Scene {
     for (const name of names) {
       this.load.json(`data:${name}`, `${DATA_BASE_PATH}/${name}.json`);
     }
-    this.load.once(Phaser.Loader.Events.COMPLETE, () => this.finish(names));
+    this.load.once(Phaser.Loader.Events.COMPLETE, () => void this.finish(names));
     this.load.start();
   }
 
-  private finish(names: string[]): void {
+  private async finish(names: string[]): Promise<void> {
     const files: Record<string, unknown> = {};
     for (const name of names) {
       files[name] = this.cache.json.get(`data:${name}`);
@@ -75,6 +77,9 @@ export class PreloadScene extends Phaser.Scene {
       setConfig(this, config);
       setInput(this, new InputService(config.controls, new LocalStorageStore(), getBus(this)));
       getBus(this).emit('config:ready', { config });
+      const save = await SaveManager.open(await openBrowserSaveStore());
+      if (save.lastError) console.warn(save.lastError);
+      setSave(this, save);
       this.scene.start(SceneKey.Menu);
     } catch (error) {
       const message = error instanceof ConfigError ? error.message : String(error);

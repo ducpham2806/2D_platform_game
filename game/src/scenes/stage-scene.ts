@@ -7,13 +7,14 @@ import {
   SceneKey,
   TILE_SIZE,
 } from '../core/constants';
-import { getBus, getConfig, getInput } from '../core/phaser-services';
+import { getBus, getConfig, getInput, getSave } from '../core/phaser-services';
 import type { InputService } from '../input/input-service';
 import { FixedStep } from '../logic/fixed-step';
 import type { InputSnapshot } from '../logic/input/actions';
 import { formatGlyphs } from '../logic/input/glyphs';
 import type { TuningData } from '../logic/playtest/tuning';
 import type { PlayerStateName } from '../logic/player/player-physics';
+import { StageSave, stageSaveSetup } from '../logic/save/stage-save';
 import { StageWorld } from '../logic/world/stage-world';
 import type { WorldEvents, WorldInput } from '../logic/world/world-types';
 import { buildStageLayout, STAGE_DEFS, type StageDefId } from '../stages';
@@ -58,6 +59,8 @@ export class StageScene extends Phaser.Scene {
   private glow?: Phaser.GameObjects.Graphics;
   private hud?: StageHud;
   private playtest?: StagePlaytest;
+  /** Ghi tiến trình vào bản lưu (M11); màn chơi thử của cổng Prototype không lưu. */
+  private saver: StageSave | undefined;
   private prev = { x: 0, y: 0 };
   /** Khung camera đang khóa: 'boss', số thứ tự phòng khóa, hoặc undefined (theo người chơi). */
   private cameraLock: string | undefined;
@@ -84,6 +87,9 @@ export class StageScene extends Phaser.Scene {
     // Dữ liệu gốc từ 03-Data; khi bật ?tune=1 thì áp thêm phần đã chỉnh lưu trên máy.
     const base: TuningData = { player: config.player, weapons: config.weapons, boss };
     const tuned = tunedData(base);
+    // Màn chơi thử (cổng Prototype) luôn bắt đầu như nhau để số liệu các phiên so sánh được.
+    const save = this.def.playtest ? undefined : getSave(this);
+    const fromSave = save ? stageSaveSetup(save.data, this.def.id, bossId) : {};
     const world = new StageWorld({
       layout: buildStageLayout(this.def, TILE_SIZE),
       tileSize: TILE_SIZE,
@@ -93,8 +99,22 @@ export class StageScene extends Phaser.Scene {
       seed: WORLD_SEED,
       enemies: config.enemies,
       mechanics: config.stages.mechanics,
+      ...fromSave,
     });
     this.world = world;
+    this.saver = save ? new StageSave(save, this.def.id, bossId) : undefined;
+    if (save) {
+      // Thoát màn (về menu) hoặc đóng/ẩn trang: cộng Core Bit, EXP, thời gian chưa ghi.
+      const flushRun = (): void => {
+        this.saver?.exit(world);
+      };
+      window.addEventListener('pagehide', flushRun);
+      this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+        window.removeEventListener('pagehide', flushRun);
+        flushRun();
+        this.saver = undefined;
+      });
+    }
 
     drawStaticMap(this.add.graphics(), world.map, barrierCells(world));
     this.dynamic = this.add.graphics();
@@ -105,6 +125,8 @@ export class StageScene extends Phaser.Scene {
     this.prev = { x: pl.box.x, y: pl.box.y };
     this.hud = new StageHud(this);
     this.tweens.add({ targets: this.hud.hint, alpha: 0.25, delay: 8000, duration: 800 });
+    if (world.checkpointIndex > 0)
+      this.hud.flash(`Tiếp tục từ checkpoint ${world.checkpointIndex}`);
     this.syncSprites(0);
 
     const camera = this.cameras.main;
@@ -144,6 +166,7 @@ export class StageScene extends Phaser.Scene {
       this.prev = { x: world.player.box.x, y: world.player.box.y };
       const ev = world.step(this.toWorldInput(snap, input));
       this.react(ev, world);
+      this.saver?.step(ev, world, FIXED_STEP_MS / 1000);
       this.playtest?.record(ev, FIXED_STEP_MS / 1000);
     }
     this.updateCamera(world);
@@ -207,7 +230,8 @@ export class StageScene extends Phaser.Scene {
     if (ev.emptyWeapon) hud?.flash('Hết năng lượng vũ khí', 600);
     if (ev.enemyKilled) camera.shake(60, 0.002);
     if (ev.healed > 0) hud?.flash(`+${ev.healed} máu`, 500);
-    if (ev.checkpoint !== undefined) hud?.flash(`Checkpoint ${ev.checkpoint}`, 900);
+    if (ev.checkpoint !== undefined)
+      hud?.flash(`Checkpoint ${ev.checkpoint}${this.saver ? ' · đã lưu' : ''}`, 900);
     if (ev.fellInPit) camera.shake(80, 0.003);
     if (ev.spikeHit) camera.shake(90, 0.004);
     if (ev.roomLocked) hud?.flash('Phòng khóa: hạ hết kẻ địch', 1200);

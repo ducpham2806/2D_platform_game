@@ -391,3 +391,8 @@ body.portrait #rotate-overlay {
 .cv-results-table td:first-child {
   text-align: left;
 }
+
+.cv-save textarea {
+  height: 72px;
+  margin-bottom: 6px;
+}
