@@ -33,4 +33,5 @@ export const GOLEM_ROOM: AsciiStageDef = {
   ],
   enemyMarkers: { G: { enemy: 'bramble_golem' } },
   playtest: false,
+  tutorial: 'stage1',
 };

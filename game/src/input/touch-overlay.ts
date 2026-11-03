@@ -97,6 +97,12 @@ export class TouchOverlay {
     this.layout();
   }
 
+  /** Làm nhấp nháy các nút của một hành động (gợi ý hướng dẫn); undefined để tắt. */
+  setHighlight(action: string | undefined): void {
+    for (const b of this.config.buttons)
+      this.buttonEls.get(b.id)?.classList.toggle('hint', b.action === action);
+  }
+
   /** Đổi chữ trên nút vuốt (biểu tượng vũ khí) theo vũ khí đang cầm. */
   setSwipeLabel(label: string): void {
     for (const b of this.config.buttons) {

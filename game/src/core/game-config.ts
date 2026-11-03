@@ -6,6 +6,7 @@ import { type BossData, checkBossRules, parseBosses } from './boss-config';
 import { checkEnemyRules, type EnemiesData, parseEnemies } from './enemy-config';
 import { evaluateFormula } from '../logic/formula';
 import { parseStageMechanics, type StageMechanics } from './stage-mechanics-config';
+import { parseTutorial, type TutorialData } from './tutorial-config';
 
 export { ConfigError } from './json-check';
 export { parsePlayer, type PlayerData } from './player-config';
@@ -71,6 +72,7 @@ export const REQUIRED_DATA_FILES = [
   'controls',
   'bosses',
   'enemies',
+  'tutorial',
 ] as const;
 export type RequiredDataFile = (typeof REQUIRED_DATA_FILES)[number];
 
@@ -82,6 +84,7 @@ export interface GameConfig {
   controls: ControlsConfig;
   bosses: Record<string, BossData>;
   enemies: EnemiesData;
+  tutorial: TutorialData;
   /** Các file chưa có module dùng (shop, economy, modules, endgame…), giữ nguyên dạng thô. */
   raw: Readonly<Record<string, unknown>>;
 }
@@ -274,6 +277,7 @@ export function parseGameConfig(files: Readonly<Record<string, unknown>>): GameC
   if (missing.length > 0) {
     throw new ConfigError(`Thiếu file dữ liệu: ${missing.join(', ')}`);
   }
+  const enemies = parseEnemies(files.enemies);
   const config: GameConfig = {
     player: parsePlayer(files.player),
     weapons: parseWeapons(files.weapons),
@@ -281,7 +285,8 @@ export function parseGameConfig(files: Readonly<Record<string, unknown>>): GameC
     difficulties: parseDifficulties(files.difficulties),
     controls: parseControls(files.controls),
     bosses: parseBosses(files.bosses),
-    enemies: parseEnemies(files.enemies),
+    enemies,
+    tutorial: parseTutorial(files.tutorial, new Set(Object.keys(enemies.enemies))),
     raw: { ...files },
   };
   const errors = checkDesignInvariants(config);

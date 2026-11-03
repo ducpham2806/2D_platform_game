@@ -4,6 +4,14 @@ Các mục cũ chuyển từ `04-Dev-Plan/06-Nhat-ky-phien.md`, mới nhất ở
 
 ---
 
+## 2026-11-03: Hỏi đáp, việc tiếp theo trong kế hoạch
+
+- **Nhánh / commit:** `claude/condense-plan-archive-logs-kqnyvb`.
+- **Mục tiêu:** người dùng hỏi công việc tiếp theo trong kế hoạch.
+- **Đã làm:** đọc mục nhật ký mới nhất và bảng lộ trình, trả lời. Không đổi code.
+- **Kiểm tra:** không áp dụng (chỉ hỏi đáp).
+- **Tiếp theo:** không đổi so với mục bên dưới: (1) người dùng chơi thử phòng Thorna/Golem và cổng Prototype 5 người; (2) code M11 lưu cục bộ, rồi M10 HUD cơ bản, TutorialManager.
+
 ## 2026-11-03: Rút gọn kế hoạch, lưu trữ nhật ký cũ
 
 - **Nhánh / commit:** `claude/condense-plan-archive-logs-kqnyvb`.

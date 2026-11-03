@@ -36,6 +36,11 @@ export interface SaveData {
   inventory: {
     coreBits: number;
   };
+  /** Hướng dẫn: bước đã xong (đổi máy không học lại), và người chơi tắt hướng dẫn. */
+  tutorial: {
+    done: string[];
+    off: boolean;
+  };
 }
 
 export function defaultSave(): SaveData {
@@ -47,6 +52,7 @@ export function defaultSave(): SaveData {
     progress: { bossesDefeated: [], stages: {} },
     character: { exp: 0, weapons: [] },
     inventory: { coreBits: 0 },
+    tutorial: { done: [], off: false },
   };
 }
 
@@ -96,6 +102,7 @@ export function parseSave(raw: unknown): SaveData {
   const progress = isRecord(raw.progress) ? raw.progress : {};
   const character = isRecord(raw.character) ? raw.character : {};
   const inventory = isRecord(raw.inventory) ? raw.inventory : {};
+  const tutorial = isRecord(raw.tutorial) ? raw.tutorial : {};
   return {
     version: SAVE_VERSION,
     revision: count(raw.revision),
@@ -107,6 +114,7 @@ export function parseSave(raw: unknown): SaveData {
     },
     character: { exp: count(character.exp), weapons: names(character.weapons) },
     inventory: { coreBits: count(inventory.coreBits) },
+    tutorial: { done: names(tutorial.done), off: tutorial.off === true },
   };
 }
 
@@ -172,6 +180,17 @@ export function addRewards(
     character: { ...save.character, exp: save.character.exp + exp },
     inventory: { ...save.inventory, coreBits: save.inventory.coreBits + coreBits },
   };
+}
+
+export function recordTutorialDone(save: SaveData, ids: readonly string[]): SaveData {
+  const fresh = ids.filter((id) => !save.tutorial.done.includes(id));
+  if (fresh.length === 0) return save;
+  return { ...save, tutorial: { ...save.tutorial, done: [...save.tutorial.done, ...fresh] } };
+}
+
+export function setTutorialOff(save: SaveData, off: boolean): SaveData {
+  if (save.tutorial.off === off) return save;
+  return { ...save, tutorial: { ...save.tutorial, off } };
 }
 
 /** Tóm tắt để hiện ở menu và (sau này) màn chọn khi xung đột cloud. */

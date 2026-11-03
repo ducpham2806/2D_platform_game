@@ -1,0 +1,139 @@
+{
+  "_note": "Các bước hướng dẫn (01-GDD/07-Kich-ban-huong-dan.md). Bước kích hoạt và hoàn thành theo 'tín hiệu' của màn chơi (danh sách ở game/src/core/tutorial-config.ts), không theo tọa độ bản đồ, để dùng lại khi có bản đồ thật. Lời thoại tối đa 2 dòng; {NHẢY}, {BẮN}... tự đổi theo thiết bị. Bậc gợi ý 3 (giảm độ khó khu vực) và 4 (đề nghị độ khó Cốt truyện) chưa làm. Prologue (P01–P13) thêm khi có bản đồ Prologue (sau cổng Prototype). Mọi số là [PLACEHOLDER].",
+  "rules": {
+    "showSec": 5,
+    "nearTiles": 8,
+    "maxTextChars": 120
+  },
+  "steps": [
+    {
+      "id": "S01",
+      "stage": "stage1",
+      "speaker": "NOVA",
+      "trigger": { "on": "wallSlide" },
+      "require": { "on": "wallJump", "count": 2 },
+      "text": "Lớp bám ở lòng bàn tay vẫn chạy. Nhảy vào tường để bám, {NHẢY} tiếp để leo.",
+      "highlight": "jump",
+      "fails": ["pit", "death"],
+      "hints": [
+        { "afterSec": 10, "text": "Bám tường rồi bấm {NHẢY}: Kai bật ra rồi bám lại bức đối diện.", "highlight": "jump" },
+        { "afterFails": 3, "text": "Đừng giữ hướng vào tường lúc nhảy. Bật ra, rồi hướng về tường bên kia." }
+      ],
+      "skipIfDone": true
+    },
+    {
+      "id": "S02",
+      "stage": "stage1",
+      "speaker": "NOVA",
+      "trigger": { "on": "section:vines" },
+      "require": { "on": "vine" },
+      "text": "Dây leo đang lắc. Đợi nó lại gần bờ rồi hẵng nhảy.",
+      "fails": ["pit"],
+      "hints": [{ "afterFails": 3, "text": "Nhảy khi đầu dây đi về phía cậu, đứng trên đầu dây để được chở." }],
+      "skipIfDone": true
+    },
+    {
+      "id": "S03",
+      "stage": "stage1",
+      "speaker": "NOVA",
+      "trigger": { "on": "spike" },
+      "text": "Gai kim loại. Không chết được, nhưng đau. Tôi kéo cậu về chỗ an toàn."
+    },
+    {
+      "id": "S04",
+      "stage": "stage1",
+      "speaker": "NOVA",
+      "trigger": { "on": "section:secrets" },
+      "text": "Tôi bắt được một tín hiệu yếu quanh đây... có thứ bị giấu."
+    },
+    {
+      "id": "S05",
+      "stage": "stage1",
+      "speaker": "NOVA",
+      "trigger": { "on": "roomLocked", "not": ["roomLocked:bramble_golem"] },
+      "require": { "on": "roomCleared" },
+      "text": "Cửa khóa từ. Khu này sạch kẻ địch thì nó mới mở."
+    },
+    {
+      "id": "S06",
+      "stage": "stage1",
+      "speaker": "NOVA",
+      "trigger": { "on": "near:linh_ken" },
+      "require": { "on": "shieldBroken" },
+      "text": "Khiên đó chặn đạn thường. Giữ {BẮN} để tích điện rồi thả, hoặc bắn sau lưng nó.",
+      "highlight": "shoot",
+      "fails": ["shieldBlocked"],
+      "hints": [{ "afterFails": 5, "text": "Đạn thường không qua được khiên. Giữ {BẮN} tới khi Kai sáng rồi thả.", "highlight": "shoot" }],
+      "skipIfDone": true
+    },
+    {
+      "id": "S07",
+      "stage": "stage1",
+      "speaker": "NOVA",
+      "trigger": { "on": "roomLocked:bramble_golem" },
+      "require": { "on": "roomCleared" },
+      "text": "Nó đập xuống là sóng đất lan ra. Nhảy qua.",
+      "highlight": "jump",
+      "fails": ["death"],
+      "hints": [{ "afterFails": 3, "text": "Thấy nó nhấp nháy cam là sắp giậm đất. Nhảy đúng lúc sóng chạy tới." }]
+    },
+    {
+      "id": "S08",
+      "stage": "stage1",
+      "speaker": "NOVA",
+      "trigger": { "on": "bossGate" },
+      "showSec": 3,
+      "cancelOn": ["bossDefeated"],
+      "text": "Năng lượng rất lớn sau cánh cửa này. Quan sát trước, rồi hẵng đánh."
+    },
+    {
+      "id": "S09",
+      "stage": "stage1",
+      "speaker": "NOVA",
+      "trigger": { "after": "S08" },
+      "require": { "on": "bossPhase" },
+      "cancelOn": ["bossDefeated"],
+      "text": "Sáng xanh: sắp bắn gai. Dây rung sát sàn: nhảy lên bục.",
+      "fails": ["death"],
+      "hints": [{ "afterFails": 3, "text": "Đứng trên bục thì Dây Quất không với tới. Bắn từ trên cao." }]
+    },
+    {
+      "id": "S10",
+      "stage": "stage1",
+      "speaker": "NOVA",
+      "trigger": { "after": "S09" },
+      "require": { "on": "bossDefeated" },
+      "skipIfDone": true,
+      "text": "Nó đang dồn sức. Giữ nhịp né.",
+      "fails": ["death"],
+      "hints": [{ "afterFails": 3, "text": "Vết nứt vàng là chỗ rễ sắp mọc. Hoa Nở luôn chừa khe không có cột đỏ." }]
+    },
+    {
+      "id": "S11",
+      "stage": "stage1",
+      "speaker": "Thorna",
+      "trigger": { "on": "bossDefeated" },
+      "showSec": 4,
+      "text": "Ngươi... không phải đến để chữa cho ta. Hãy hỏi AEGIS... ai đã ra lệnh."
+    },
+    {
+      "id": "S12",
+      "stage": "stage1",
+      "speaker": "NOVA",
+      "trigger": { "on": "weaponGranted" },
+      "showSec": 4,
+      "text": "Vine Lash. Trong này còn mã của Thorna... lạ thật, tôi thấy nó quen."
+    },
+    {
+      "id": "S13",
+      "stage": "stage1",
+      "speaker": "NOVA",
+      "trigger": { "after": "S12" },
+      "require": { "on": "fireWarden" },
+      "text": "{ĐỔI_VK} để đổi vũ khí, rồi {BẮN} thử. Vũ khí Warden ăn năng lượng riêng, xem thanh dưới thanh máu.",
+      "highlight": "swapNext",
+      "hints": [{ "afterSec": 8, "text": "Bấm {ĐỔI_VK} để cầm Vine Lash, rồi {BẮN}.", "highlight": "swapNext" }],
+      "skipIfDone": true
+    }
+  ]
+}

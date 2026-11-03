@@ -106,6 +106,11 @@ export class LockedRoom {
     return this.enemies.filter((e) => e.alive).length;
   }
 
+  /** Các loại kẻ địch (id trong enemies.json) của phòng. */
+  get kinds(): string[] {
+    return [...new Set(this.enemies.map((e) => e.data.id))];
+  }
+
   /** Vùng bên trong (px), giữa hai cột cửa. */
   inner(tileSize: number): { x: number; y: number; w: number; h: number } {
     const r = this.spawn;

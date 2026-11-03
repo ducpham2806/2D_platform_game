@@ -4,7 +4,7 @@ import { MenuCursor } from '../../logic/hud/menu-cursor';
 import type { InputSnapshot } from '../../logic/input/actions';
 import { MUTED_STYLE, TEXT_STYLE } from '../ui';
 
-export type PauseChoice = 'resume' | 'quit';
+export type PauseChoice = 'resume' | 'quit' | 'tutorial';
 
 interface Item {
   label: string;
@@ -20,19 +20,14 @@ const STICK_STEP = 0.6;
 const COLOR = { idle: '#1d2a3b', picked: '#2f6d8f', off: '#151d29' };
 
 /**
- * Menu tạm dừng (M10, wireframe Pause.html): Tiếp tục, Lắp module nhanh và Tùy chọn (chưa có,
+ * Menu tạm dừng (M10, wireframe Pause.html): Tiếp tục, Bật/Tắt hướng dẫn (màn có hướng dẫn), Lắp module nhanh và Tùy chọn (chưa có,
  * hiện mờ), Thoát về menu (bấm hai lần để xác nhận). Điều khiển bằng lên/xuống + Nhảy/Bắn
  * (bàn phím, tay cầm) hoặc chạm; bấm Tạm dừng lần nữa để tiếp tục.
  */
 export class PauseMenu {
   private readonly root: Phaser.GameObjects.GameObject[] = [];
-  private readonly items: Item[] = [
-    { label: 'Tiếp tục', choice: 'resume' },
-    { label: 'Lắp module nhanh (chưa có)', choice: undefined },
-    { label: 'Tùy chọn (chưa có)', choice: undefined },
-    { label: 'Thoát về menu', choice: 'quit' },
-  ];
-  private readonly cursor = new MenuCursor(this.items.map((i) => i.choice !== undefined));
+  private readonly items: Item[];
+  private readonly cursor: MenuCursor;
   private armedQuit = false;
   private stickHeld = false;
   private open = false;
@@ -41,7 +36,17 @@ export class PauseMenu {
     scene: Phaser.Scene,
     subtitle: string,
     private readonly onChoice: (choice: PauseChoice) => void,
+    /** Màn có hướng dẫn: trả về hướng dẫn đang bật hay tắt (thêm mục Bật/Tắt hướng dẫn). */
+    private readonly tutorialOn?: () => boolean,
   ) {
+    this.items = [
+      { label: 'Tiếp tục', choice: 'resume' },
+      ...(tutorialOn ? [{ label: '', choice: 'tutorial' as const }] : []),
+      { label: 'Lắp module nhanh (chưa có)', choice: undefined },
+      { label: 'Tùy chọn (chưa có)', choice: undefined },
+      { label: 'Thoát về menu', choice: 'quit' },
+    ];
+    this.cursor = new MenuCursor(this.items.map((i) => i.choice !== undefined));
     const cx = LOGIC_WIDTH / 2;
     const top = 30;
     const h = 34 + this.items.length * ITEM_GAP + 8;
@@ -134,6 +139,7 @@ export class PauseMenu {
       return;
     }
     if (choice) this.onChoice(choice);
+    if (choice === 'tutorial') this.refresh();
   }
 
   private refresh(): void {
@@ -145,6 +151,8 @@ export class PauseMenu {
         !enabled ? COLOR.off : i === this.cursor.index ? COLOR.picked : COLOR.idle,
       );
       if (item.choice === 'quit') t.setText(this.armedQuit ? 'Bấm lần nữa để thoát' : item.label);
+      if (item.choice === 'tutorial')
+        t.setText(this.tutorialOn?.() ? 'Tắt hướng dẫn' : 'Bật hướng dẫn');
     });
   }
 

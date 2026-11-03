@@ -15,6 +15,10 @@ import { formatGlyphs } from '../logic/input/glyphs';
 import type { TuningData } from '../logic/playtest/tuning';
 import type { PlayerStateName } from '../logic/player/player-physics';
 import { buildHud } from '../logic/hud/hud-model';
+import { recordTutorialDone, setTutorialOff } from '../logic/save/save-data';
+import type { SaveManager } from '../logic/save/save-manager';
+import { TutorialManager } from '../logic/tutorial/tutorial-manager';
+import { TutorialSignals } from '../logic/tutorial/tutorial-signals';
 import { StageSave, stageSaveSetup } from '../logic/save/stage-save';
 import { StageWorld } from '../logic/world/stage-world';
 import type { WorldEvents, WorldInput } from '../logic/world/world-types';
@@ -22,6 +26,7 @@ import { buildStageLayout, STAGE_DEFS, type StageDefId } from '../stages';
 import type { StageDef } from '../stages/stage-def';
 import { PauseMenu, type PauseChoice } from './stage/pause-menu';
 import { StageHud } from './stage/stage-hud';
+import { TutorialBox } from './stage/tutorial-box';
 import { StagePlaytest, tunedData } from './stage/stage-playtest';
 import { barrierCells, drawMechanics } from './stage/mechanics-renderer';
 import { chargeGlowColor, drawDynamic, drawStaticMap } from './stage/stage-renderer';
@@ -66,6 +71,10 @@ export class StageScene extends Phaser.Scene {
   /** Core Bit trong bản lưu lúc vào màn (HUD cộng thêm phần nhặt trong lượt). */
   private savedCoreBits = 0;
   private pause?: PauseMenu;
+  /** Hướng dẫn (chỉ màn có `tutorial` và có bản lưu). */
+  private tutorial:
+    { manager: TutorialManager; signals: TutorialSignals; box: TutorialBox } | undefined;
+  private save: SaveManager | undefined;
   private prev = { x: 0, y: 0 };
   /** Khung camera đang khóa: 'boss', số thứ tự phòng khóa, hoặc undefined (theo người chơi). */
   private cameraLock: string | undefined;
@@ -109,6 +118,7 @@ export class StageScene extends Phaser.Scene {
     });
     this.world = world;
     this.saver = save ? new StageSave(save, this.def.id, bossId) : undefined;
+    this.save = save;
     if (save) {
       // Thoát màn (về menu) hoặc đóng/ẩn trang: cộng Core Bit, EXP, thời gian chưa ghi.
       const flushRun = (): void => {
@@ -145,8 +155,28 @@ export class StageScene extends Phaser.Scene {
     input.setGameplayActive(true);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => input.setGameplayActive(false));
     this.playtest = new StagePlaytest(this, world, input, base, this.def.playtest);
+    this.tutorial =
+      save && this.def.tutorial
+        ? {
+            manager: new TutorialManager(
+              config.tutorial,
+              this.def.tutorial,
+              save.data.tutorial.done,
+              !save.data.tutorial.off,
+            ),
+            signals: new TutorialSignals(config.tutorial.rules.nearTiles),
+            box: new TutorialBox(this),
+          }
+        : undefined;
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => input.setTouchHighlight(undefined));
     // Chưa có chọn độ khó: màn luôn chơi ở Thường.
-    this.pause = new PauseMenu(this, `${this.def.name} · Thường`, (c) => this.onPauseChoice(c));
+    const tut = this.tutorial;
+    this.pause = new PauseMenu(
+      this,
+      `${this.def.name} · Thường`,
+      (c) => this.onPauseChoice(c),
+      tut ? () => tut.manager.isEnabled : undefined,
+    );
     if (DEBUG) {
       this.input.keyboard?.on('keydown-T', () =>
         world.player.applyHit(DEBUG_HIT_DAMAGE, world.player.centerX + world.player.facing * 8),
@@ -180,6 +210,7 @@ export class StageScene extends Phaser.Scene {
       const ev = world.step(this.toWorldInput(snap, input));
       this.react(ev, world);
       this.saver?.step(ev, world, FIXED_STEP_MS / 1000);
+      this.stepTutorial(ev, world);
       this.playtest?.record(ev, FIXED_STEP_MS / 1000);
     }
     this.updateCamera(world);
@@ -192,6 +223,11 @@ export class StageScene extends Phaser.Scene {
     const hud = buildHud(world, this.savedCoreBits);
     input.setWeaponLabel(hud.weapon.name);
     this.hud?.update(hud, input.device === 'touch', formatGlyphs('{ĐỔI_VK}', ctx));
+    const view = this.tutorial?.manager.view;
+    if (view)
+      this.tutorial?.box.show(view.speaker, formatGlyphs(view.text, ctx), view.hintLevel > 0);
+    else this.tutorial?.box.hide();
+    input.setTouchHighlight(view?.highlight);
     this.hud?.hint.setText(
       formatGlyphs(
         '{DI_CHUYỂN} · nhảy {NHẢY} · bắn {BẮN} (giữ để nạp) · lướt {LƯỚT} · {TẠM_DỪNG}',
@@ -211,7 +247,24 @@ export class StageScene extends Phaser.Scene {
     this.pause?.show();
   }
 
+  private stepTutorial(ev: WorldEvents, world: StageWorld): void {
+    const tut = this.tutorial;
+    if (!tut) return;
+    const frame = tut.signals.collect(world, ev);
+    const result = tut.manager.step(frame.signals, frame.moveTiles, FIXED_STEP_MS / 1000);
+    if (result.completed.length > 0)
+      this.save?.update((s) => recordTutorialDone(s, result.completed));
+  }
+
   private onPauseChoice(choice: PauseChoice): void {
+    if (choice === 'tutorial') {
+      const tut = this.tutorial;
+      if (!tut) return;
+      const on = !tut.manager.isEnabled;
+      tut.manager.setEnabled(on);
+      this.save?.update((s) => setTutorialOff(s, !on));
+      return;
+    }
     if (choice === 'quit') {
       this.scene.start(SceneKey.Menu);
       return;
