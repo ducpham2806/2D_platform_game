@@ -19,6 +19,15 @@ Mẫu:
 
 ---
 
+## 2026-11-03: Hỏi đáp, xác định việc tiếp theo
+
+- **Nhánh / commit:** `ccr-b2db3ef4-uu41jr`.
+- **Mục tiêu:** người dùng hỏi phần tiếp theo là gì.
+- **Đã làm:** đọc mục nhật ký mới nhất (2026-11-02) và trả lời. Không đổi code.
+- **Quyết định:** giữ nguyên lộ trình đã ghi ở mục "Tiếp theo" của phiên 2026-11-02.
+- **Kiểm tra:** không áp dụng (không đổi code).
+- **Tiếp theo:** (1) người dùng bật GitHub Pages và chơi thử cổng Prototype bằng bản build mới; (2) code M6 Thorna thật + Bramble Golem, rồi M11 lưu cục bộ, M10 HUD cơ bản, TutorialManager.
+
 ## 2026-11-02: Sprint 6, khung M7 Màn chơi
 
 - **Nhánh:** `ccr-93d525c1-j97gfr` (từ `main` sau PR #5).
