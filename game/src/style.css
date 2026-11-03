@@ -391,3 +391,37 @@ body.portrait #rotate-overlay {
 .cv-results-table td:first-child {
   text-align: left;
 }
+
+.cv-save textarea {
+  height: 72px;
+  margin-bottom: 6px;
+}
+
+/* Nút biểu tượng vũ khí (chạm = vũ khí sau, vuốt trái/phải = trước/sau). */
+.touch-button.touch-swipe {
+  border-radius: 12px;
+  font-size: 11px;
+  text-align: center;
+  line-height: 1.15;
+  padding: 2px;
+}
+
+/* Gợi ý hướng dẫn: nút cần bấm nhấp nháy. */
+.touch-button.hint {
+  animation: touch-hint 0.8s ease-in-out infinite;
+}
+
+@keyframes touch-hint {
+  50% {
+    border-color: #ffd166;
+    box-shadow: 0 0 12px #ffd166;
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .touch-button.hint {
+    animation: none;
+    border-color: #ffd166;
+  }
+}

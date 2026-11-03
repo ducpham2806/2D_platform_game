@@ -13,4 +13,5 @@ export const MECHANICS_ROOM: TiledStageDef = {
   name: 'Phòng thử màn chơi',
   map,
   playtest: false,
+  tutorial: 'stage1',
 };

@@ -8,6 +8,7 @@ import { HubScene } from './scenes/hub-scene';
 import { MenuScene } from './scenes/menu-scene';
 import { PlaytestScene } from './scenes/playtest-scene';
 import { PreloadScene } from './scenes/preload-scene';
+import { SaveScene } from './scenes/save-scene';
 import { StageScene } from './scenes/stage-scene';
 import './style.css';
 
@@ -27,7 +28,16 @@ const game = new Phaser.Game({
   },
   fps: { target: 60 },
   input: { activePointers: 3 },
-  scene: [BootScene, PreloadScene, MenuScene, HubScene, StageScene, ControlsScene, PlaytestScene],
+  scene: [
+    BootScene,
+    PreloadScene,
+    MenuScene,
+    HubScene,
+    StageScene,
+    ControlsScene,
+    PlaytestScene,
+    SaveScene,
+  ],
 });
 
 if (DEBUG) {

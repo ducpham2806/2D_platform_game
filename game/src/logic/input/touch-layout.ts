@@ -14,10 +14,14 @@ export interface TouchButtonConfig {
   /** Khoảng cách từ cạnh neo dọc tới tâm nút. */
   y: number;
   sizeDp: number;
+  /** Nút vuốt (biểu tượng vũ khí): chạm = vũ khí sau, vuốt trái/phải = trước/sau. */
+  swipe?: boolean;
 }
 
 export interface TouchConfig {
   minButtonDp: number;
+  /** Quãng vuốt ngang tối thiểu (dp) để tính là vuốt thay vì chạm. */
+  swipeMinDp: number;
   sizePresets: Record<SizePreset, number>;
   defaultSizePreset: SizePreset;
   defaultOpacity: number;
@@ -56,6 +60,7 @@ export interface ResolvedButton {
   cx: number;
   cy: number;
   size: number;
+  swipe: boolean;
 }
 
 export interface Rect {
@@ -132,6 +137,7 @@ export function resolveButtons(
       cx: clamp(point.cx, half, viewport.width - half),
       cy: clamp(point.cy, half, viewport.height - half),
       size,
+      swipe: button.swipe ?? false,
     };
   });
 }
@@ -178,4 +184,9 @@ export function fixedStickCenter(viewport: Viewport, config: TouchConfig, leftHa
 
 export function inRect(rect: Rect, x: number, y: number): boolean {
   return x >= rect.x && x <= rect.x + rect.width && y >= rect.y && y <= rect.y + rect.height;
+}
+
+/** Hành động của một lần chạm/vuốt trên nút vuốt: vuốt trái = vũ khí trước, còn lại = vũ khí sau. */
+export function swipeAction(dx: number, swipeMinDp: number): 'swapPrev' | 'swapNext' {
+  return dx <= -swipeMinDp ? 'swapPrev' : 'swapNext';
 }

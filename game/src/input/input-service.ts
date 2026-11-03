@@ -87,6 +87,16 @@ export class InputService {
     this.refreshOverlay();
   }
 
+  /** Chữ trên nút biểu tượng vũ khí của lớp cảm ứng (tên vũ khí đang cầm). */
+  setWeaponLabel(label: string): void {
+    this.overlay.setSwipeLabel(label);
+  }
+
+  /** Nhấp nháy nút cảm ứng của một hành động (gợi ý hướng dẫn); undefined để tắt. */
+  setTouchHighlight(action: Action | undefined): void {
+    this.overlay.setHighlight(action);
+  }
+
   glyphContext(): GlyphContext {
     return {
       device: this.device,

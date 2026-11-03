@@ -3,10 +3,12 @@ import { EventBus } from './event-bus';
 import type { GameConfig } from './game-config';
 import type { GameEventBus, GameEvents } from './game-events';
 import type { InputService } from '../input/input-service';
+import type { SaveManager } from '../logic/save/save-manager';
 
 const BUS_KEY = 'cv.bus';
 const CONFIG_KEY = 'cv.config';
 const INPUT_KEY = 'cv.input';
+const SAVE_KEY = 'cv.save';
 
 /** Gắn event bus dùng chung vào registry của game (gọi một lần ở BootScene). */
 export function installBus(game: Phaser.Game): GameEventBus {
@@ -41,4 +43,14 @@ export function getInput(scene: Phaser.Scene): InputService {
   const input = scene.registry.get(INPUT_KEY) as InputService | undefined;
   if (!input) throw new Error('InputService chưa được tạo (PreloadScene phải chạy trước)');
   return input;
+}
+
+export function setSave(scene: Phaser.Scene, save: SaveManager): void {
+  scene.registry.set(SAVE_KEY, save);
+}
+
+export function getSave(scene: Phaser.Scene): SaveManager {
+  const save = scene.registry.get(SAVE_KEY) as SaveManager | undefined;
+  if (!save) throw new Error('SaveManager chưa được tạo (PreloadScene phải chạy trước)');
+  return save;
 }

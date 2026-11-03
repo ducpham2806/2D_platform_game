@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { LOGIC_WIDTH, SceneKey } from '../core/constants';
-import { getBus } from '../core/phaser-services';
+import { getBus, getSave } from '../core/phaser-services';
+import { summarize } from '../logic/save/save-data';
 import { MUTED_STYLE, TEXT_STYLE, textButton } from './ui';
 
 /** Màn hình chính tạm thời (wireframe Main). Không đăng nhập, không quảng cáo. */
@@ -15,7 +16,15 @@ export class MenuScene extends Phaser.Scene {
     this.add
       .text(cx, 28, 'CYBER VANGUARD', { ...TEXT_STYLE, fontSize: '16px', color: '#4fd1ff' })
       .setOrigin(0.5);
-    this.add.text(cx, 44, 'bản Prototype', MUTED_STYLE).setOrigin(0.5);
+    const saved = summarize(getSave(this).data);
+    this.add
+      .text(
+        cx,
+        44,
+        `bản Prototype · boss đã hạ ${saved.bosses} · Core Bit ${saved.coreBits} · EXP ${saved.exp}`,
+        MUTED_STYLE,
+      )
+      .setOrigin(0.5);
 
     const enemies = (): void => {
       this.scene.start(SceneKey.Stage, { stage: 'enemies' });
@@ -36,12 +45,13 @@ export class MenuScene extends Phaser.Scene {
     textButton(this, cx, 118, 'Mini-boss Bramble Golem', golem);
     textButton(this, cx, 133, 'Hub Arkon', () => this.scene.start(SceneKey.Hub));
     textButton(this, cx, 148, 'Điều khiển', () => this.scene.start(SceneKey.Controls));
-    textButton(this, cx, 163, 'Kết quả chơi thử', () => this.scene.start(SceneKey.Playtest));
+    textButton(this, cx - 52, 163, 'Kết quả chơi thử', () => this.scene.start(SceneKey.Playtest));
+    textButton(this, cx + 52, 163, 'Dữ liệu lưu', () => this.scene.start(SceneKey.Save));
     this.add
       .text(
         cx,
         182,
-        'Enter: màn thử · K: kẻ địch · M: màn chơi · B: Thorna · G: Golem · H: Hub · C · R',
+        'Enter: màn thử · K: kẻ địch · M: màn chơi · B: Thorna · G: Golem · H: Hub · C · R · S',
         {
           ...MUTED_STYLE,
           fontSize: '8px',
@@ -54,6 +64,7 @@ export class MenuScene extends Phaser.Scene {
     keyboard?.once('keydown-H', () => this.scene.start(SceneKey.Hub));
     keyboard?.once('keydown-C', () => this.scene.start(SceneKey.Controls));
     keyboard?.once('keydown-R', () => this.scene.start(SceneKey.Playtest));
+    keyboard?.once('keydown-S', () => this.scene.start(SceneKey.Save));
     keyboard?.once('keydown-K', enemies);
     keyboard?.once('keydown-M', mechanics);
     keyboard?.once('keydown-B', thorna);

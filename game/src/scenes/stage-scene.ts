@@ -7,18 +7,26 @@ import {
   SceneKey,
   TILE_SIZE,
 } from '../core/constants';
-import { getBus, getConfig, getInput } from '../core/phaser-services';
+import { getBus, getConfig, getInput, getSave } from '../core/phaser-services';
 import type { InputService } from '../input/input-service';
 import { FixedStep } from '../logic/fixed-step';
 import type { InputSnapshot } from '../logic/input/actions';
 import { formatGlyphs } from '../logic/input/glyphs';
 import type { TuningData } from '../logic/playtest/tuning';
 import type { PlayerStateName } from '../logic/player/player-physics';
+import { buildHud } from '../logic/hud/hud-model';
+import { recordTutorialDone, setTutorialOff } from '../logic/save/save-data';
+import type { SaveManager } from '../logic/save/save-manager';
+import { TutorialManager } from '../logic/tutorial/tutorial-manager';
+import { TutorialSignals } from '../logic/tutorial/tutorial-signals';
+import { StageSave, stageSaveSetup } from '../logic/save/stage-save';
 import { StageWorld } from '../logic/world/stage-world';
 import type { WorldEvents, WorldInput } from '../logic/world/world-types';
 import { buildStageLayout, STAGE_DEFS, type StageDefId } from '../stages';
 import type { StageDef } from '../stages/stage-def';
+import { PauseMenu, type PauseChoice } from './stage/pause-menu';
 import { StageHud } from './stage/stage-hud';
+import { TutorialBox } from './stage/tutorial-box';
 import { StagePlaytest, tunedData } from './stage/stage-playtest';
 import { barrierCells, drawMechanics } from './stage/mechanics-renderer';
 import { chargeGlowColor, drawDynamic, drawStaticMap } from './stage/stage-renderer';
@@ -58,6 +66,15 @@ export class StageScene extends Phaser.Scene {
   private glow?: Phaser.GameObjects.Graphics;
   private hud?: StageHud;
   private playtest?: StagePlaytest;
+  /** Ghi tiến trình vào bản lưu (M11); màn chơi thử của cổng Prototype không lưu. */
+  private saver: StageSave | undefined;
+  /** Core Bit trong bản lưu lúc vào màn (HUD cộng thêm phần nhặt trong lượt). */
+  private savedCoreBits = 0;
+  private pause?: PauseMenu;
+  /** Hướng dẫn (chỉ màn có `tutorial` và có bản lưu). */
+  private tutorial:
+    { manager: TutorialManager; signals: TutorialSignals; box: TutorialBox } | undefined;
+  private save: SaveManager | undefined;
   private prev = { x: 0, y: 0 };
   /** Khung camera đang khóa: 'boss', số thứ tự phòng khóa, hoặc undefined (theo người chơi). */
   private cameraLock: string | undefined;
@@ -84,6 +101,10 @@ export class StageScene extends Phaser.Scene {
     // Dữ liệu gốc từ 03-Data; khi bật ?tune=1 thì áp thêm phần đã chỉnh lưu trên máy.
     const base: TuningData = { player: config.player, weapons: config.weapons, boss };
     const tuned = tunedData(base);
+    // Màn chơi thử (cổng Prototype) luôn bắt đầu như nhau để số liệu các phiên so sánh được.
+    const save = this.def.playtest ? undefined : getSave(this);
+    const fromSave = save ? stageSaveSetup(save.data, this.def.id, bossId) : {};
+    this.savedCoreBits = save?.data.inventory.coreBits ?? 0;
     const world = new StageWorld({
       layout: buildStageLayout(this.def, TILE_SIZE),
       tileSize: TILE_SIZE,
@@ -93,8 +114,23 @@ export class StageScene extends Phaser.Scene {
       seed: WORLD_SEED,
       enemies: config.enemies,
       mechanics: config.stages.mechanics,
+      ...fromSave,
     });
     this.world = world;
+    this.saver = save ? new StageSave(save, this.def.id, bossId) : undefined;
+    this.save = save;
+    if (save) {
+      // Thoát màn (về menu) hoặc đóng/ẩn trang: cộng Core Bit, EXP, thời gian chưa ghi.
+      const flushRun = (): void => {
+        this.saver?.exit(world);
+      };
+      window.addEventListener('pagehide', flushRun);
+      this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+        window.removeEventListener('pagehide', flushRun);
+        flushRun();
+        this.saver = undefined;
+      });
+    }
 
     drawStaticMap(this.add.graphics(), world.map, barrierCells(world));
     this.dynamic = this.add.graphics();
@@ -105,6 +141,8 @@ export class StageScene extends Phaser.Scene {
     this.prev = { x: pl.box.x, y: pl.box.y };
     this.hud = new StageHud(this);
     this.tweens.add({ targets: this.hud.hint, alpha: 0.25, delay: 8000, duration: 800 });
+    if (world.checkpointIndex > 0)
+      this.hud.flash(`Tiếp tục từ checkpoint ${world.checkpointIndex}`);
     this.syncSprites(0);
 
     const camera = this.cameras.main;
@@ -117,6 +155,28 @@ export class StageScene extends Phaser.Scene {
     input.setGameplayActive(true);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => input.setGameplayActive(false));
     this.playtest = new StagePlaytest(this, world, input, base, this.def.playtest);
+    this.tutorial =
+      save && this.def.tutorial
+        ? {
+            manager: new TutorialManager(
+              config.tutorial,
+              this.def.tutorial,
+              save.data.tutorial.done,
+              !save.data.tutorial.off,
+            ),
+            signals: new TutorialSignals(config.tutorial.rules.nearTiles),
+            box: new TutorialBox(this),
+          }
+        : undefined;
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => input.setTouchHighlight(undefined));
+    // Chưa có chọn độ khó: màn luôn chơi ở Thường.
+    const tut = this.tutorial;
+    this.pause = new PauseMenu(
+      this,
+      `${this.def.name} · Thường`,
+      (c) => this.onPauseChoice(c),
+      tut ? () => tut.manager.isEnabled : undefined,
+    );
     if (DEBUG) {
       this.input.keyboard?.on('keydown-T', () =>
         world.player.applyHit(DEBUG_HIT_DAMAGE, world.player.centerX + world.player.facing * 8),
@@ -137,13 +197,20 @@ export class StageScene extends Phaser.Scene {
     const steps = this.stepper.advance(delta);
     for (let i = 0; i < steps; i += 1) {
       const snap = input.step();
+      if (this.pause?.isOpen) {
+        // Menu tạm dừng: trận đứng yên, đầu vào chỉ dùng để chọn mục.
+        this.pause.handle(snap);
+        continue;
+      }
       if (snap.pressed.pause) {
-        this.scene.start(SceneKey.Menu);
-        return;
+        this.openPause(input);
+        continue;
       }
       this.prev = { x: world.player.box.x, y: world.player.box.y };
       const ev = world.step(this.toWorldInput(snap, input));
       this.react(ev, world);
+      this.saver?.step(ev, world, FIXED_STEP_MS / 1000);
+      this.stepTutorial(ev, world);
       this.playtest?.record(ev, FIXED_STEP_MS / 1000);
     }
     this.updateCamera(world);
@@ -153,7 +220,14 @@ export class StageScene extends Phaser.Scene {
     }
     this.syncSprites(this.stepper.alpha);
     const ctx = input.glyphContext();
-    this.hud?.update(world, formatGlyphs('{ĐỔI_VK}', ctx));
+    const hud = buildHud(world, this.savedCoreBits);
+    input.setWeaponLabel(hud.weapon.name);
+    this.hud?.update(hud, input.device === 'touch', formatGlyphs('{ĐỔI_VK}', ctx));
+    const view = this.tutorial?.manager.view;
+    if (view)
+      this.tutorial?.box.show(view.speaker, formatGlyphs(view.text, ctx), view.hintLevel > 0);
+    else this.tutorial?.box.hide();
+    input.setTouchHighlight(view?.highlight);
     this.hud?.hint.setText(
       formatGlyphs(
         '{DI_CHUYỂN} · nhảy {NHẢY} · bắn {BẮN} (giữ để nạp) · lướt {LƯỚT} · {TẠM_DỪNG}',
@@ -165,6 +239,39 @@ export class StageScene extends Phaser.Scene {
         `${world.player.state} · chết ${world.deaths} · FPS ${Math.round(this.game.loop.actualFps)}`,
       );
     }
+  }
+
+  private openPause(input: InputService): void {
+    // Ẩn lớp nút cảm ứng để chạm được vào các mục của menu trên canvas.
+    input.setGameplayActive(false);
+    this.pause?.show();
+  }
+
+  private stepTutorial(ev: WorldEvents, world: StageWorld): void {
+    const tut = this.tutorial;
+    if (!tut) return;
+    const frame = tut.signals.collect(world, ev);
+    const result = tut.manager.step(frame.signals, frame.moveTiles, FIXED_STEP_MS / 1000);
+    if (result.completed.length > 0)
+      this.save?.update((s) => recordTutorialDone(s, result.completed));
+  }
+
+  private onPauseChoice(choice: PauseChoice): void {
+    if (choice === 'tutorial') {
+      const tut = this.tutorial;
+      if (!tut) return;
+      const on = !tut.manager.isEnabled;
+      tut.manager.setEnabled(on);
+      this.save?.update((s) => setTutorialOff(s, !on));
+      return;
+    }
+    if (choice === 'quit') {
+      this.scene.start(SceneKey.Menu);
+      return;
+    }
+    this.pause?.hide();
+    this.controls?.setGameplayActive(true);
+    this.stepper.reset();
   }
 
   private toWorldInput(snap: InputSnapshot, input: InputService): WorldInput {
@@ -207,7 +314,8 @@ export class StageScene extends Phaser.Scene {
     if (ev.emptyWeapon) hud?.flash('Hết năng lượng vũ khí', 600);
     if (ev.enemyKilled) camera.shake(60, 0.002);
     if (ev.healed > 0) hud?.flash(`+${ev.healed} máu`, 500);
-    if (ev.checkpoint !== undefined) hud?.flash(`Checkpoint ${ev.checkpoint}`, 900);
+    if (ev.checkpoint !== undefined)
+      hud?.flash(`Checkpoint ${ev.checkpoint}${this.saver ? ' · đã lưu' : ''}`, 900);
     if (ev.fellInPit) camera.shake(80, 0.003);
     if (ev.spikeHit) camera.shake(90, 0.004);
     if (ev.roomLocked) hud?.flash('Phòng khóa: hạ hết kẻ địch', 1200);

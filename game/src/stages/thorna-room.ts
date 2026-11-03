@@ -31,5 +31,6 @@ export const THORNA_ROOM: AsciiStageDef = {
   ],
   enemyMarkers: {},
   playtest: false,
+  tutorial: 'stage1',
   boss: 'thorna',
 };

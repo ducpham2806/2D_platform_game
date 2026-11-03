@@ -41,6 +41,12 @@ export interface WorldSetup {
   spikeGuard?: boolean;
   /** Vào màn từ checkpoint đã lưu (số thứ tự từ 1; 0 hoặc không có = điểm xuất phát). */
   startCheckpoint?: number;
+  /** Từ bản lưu (M11): vũ khí boss đã nhận, có ngay khi vào màn. */
+  ownedWeapons?: readonly string[];
+  /** Từ bản lưu (M11): vật phẩm bí mật đã nhặt (theo `item`), không hiện lại. */
+  takenSecrets?: readonly string[];
+  /** Từ bản lưu (M11): boss của màn đã hạ, thắng lại không nhận thưởng lần đầu nữa. */
+  bossDefeated?: boolean;
 }
 
 /** Bia tập bắn: máu (phát Arc Cannon) và thời gian dựng lại. Chỉ dùng trong màn xám. */
@@ -78,7 +84,7 @@ export class StageWorld {
   readonly rooms: LockedRoom[];
   readonly barriers: Barrier[];
   readonly secrets: Secret[];
-  /** Vật phẩm bí mật đã nhặt trong lượt chơi (M11 sẽ lưu). */
+  /** Vật phẩm bí mật đã nhặt trong lượt chơi (StageSave ghi vào bản lưu). */
   readonly collected: string[] = [];
   /** Checkpoint đã chạm xa nhất (0 = điểm xuất phát). */
   checkpointIndex = 0;
@@ -128,6 +134,8 @@ export class StageWorld {
       maxHp,
     );
     this.loadout = new WeaponLoadout(setup.weapons, t);
+    for (const w of setup.ownedWeapons ?? []) this.loadout.grant(w);
+    this.everWon = setup.bossDefeated ?? false;
 
     let nextId = 1;
     const layout = this.layout;
@@ -163,7 +171,12 @@ export class StageWorld {
     this.rooms = layout.rooms.map((r) => new LockedRoom(r, this.map));
     if (this.field) for (const r of this.rooms) r.bind(this.field.enemies, layout.enemies);
     this.barriers = layout.barriers.map((b) => new Barrier(b, this.map));
-    this.secrets = layout.secrets.map((s) => makeSecret(s, t));
+    const taken = new Set(setup.takenSecrets ?? []);
+    this.secrets = layout.secrets.map((s) => {
+      const secret = makeSecret(s, t);
+      secret.taken = taken.has(s.item);
+      return secret;
+    });
   }
 
   /** Phòng khóa đang đóng cửa (camera khóa trong phòng, HUD đếm kẻ địch còn lại). */
