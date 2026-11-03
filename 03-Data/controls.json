@@ -31,6 +31,7 @@
   },
   "touch": {
     "minButtonDp": 48,
+    "swipeMinDp": 24,
     "sizePresets": { "small": 0.85, "medium": 1, "large": 1.2 },
     "defaultSizePreset": "medium",
     "defaultOpacity": 0.6,
@@ -48,6 +49,7 @@
       { "id": "dash", "action": "dash", "label": "Lướt", "anchor": "bottom-right", "x": 112, "y": 162, "sizeDp": 64 },
       { "id": "swapPrev", "action": "swapPrev", "label": "VK <", "anchor": "bottom-right", "x": 262, "y": 132, "sizeDp": 48 },
       { "id": "swapNext", "action": "swapNext", "label": "VK >", "anchor": "bottom-right", "x": 262, "y": 80, "sizeDp": 48 },
+      { "id": "weapon", "action": "swapNext", "label": "Arc Cannon", "anchor": "bottom-right", "x": 324, "y": 106, "sizeDp": 60, "swipe": true },
       { "id": "pause", "action": "pause", "label": "II", "anchor": "top-right", "x": 32, "y": 30, "sizeDp": 48 }
     ]
   }

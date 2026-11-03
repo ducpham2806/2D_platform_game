@@ -58,6 +58,12 @@ function parseButton(value: unknown, i: number, minDp: number): TouchButtonConfi
   if (typeof b.anchor !== 'string' || !ANCHORS.includes(b.anchor as Anchor)) {
     throw new ControlsConfigError(`${p}.anchor: phải là một trong ${ANCHORS.join(', ')}`);
   }
+  if (b.swipe !== undefined && typeof b.swipe !== 'boolean')
+    throw new ControlsConfigError(`${p}.swipe: cần true/false`);
+  const swipe = b.swipe === true;
+  // Nút vuốt (biểu tượng vũ khí, GDD 5.2): chạm = vũ khí sau, vuốt trái/phải = trước/sau.
+  if (swipe && b.action !== 'swapNext' && b.action !== 'swapPrev')
+    throw new ControlsConfigError(`${p}.swipe: chỉ dùng cho nút đổi vũ khí`);
   return {
     id: b.id,
     action: b.action,
@@ -67,6 +73,7 @@ function parseButton(value: unknown, i: number, minDp: number): TouchButtonConfi
     y: num(b.y, `${p}.y`, 0),
     // GDD mục 5.2: vùng bấm tối thiểu 48 dp, không có ngoại lệ.
     sizeDp: num(b.sizeDp, `${p}.sizeDp`, minDp),
+    ...(swipe ? { swipe } : {}),
   };
 }
 
@@ -123,6 +130,7 @@ export function parseControls(value: unknown): ControlsConfig {
     },
     touch: {
       minButtonDp,
+      swipeMinDp: num(t.swipeMinDp, 'controls.touch.swipeMinDp', 8, 200),
       sizePresets,
       defaultSizePreset: t.defaultSizePreset as SizePreset,
       defaultOpacity: num(

@@ -87,6 +87,11 @@ export class InputService {
     this.refreshOverlay();
   }
 
+  /** Chữ trên nút biểu tượng vũ khí của lớp cảm ứng (tên vũ khí đang cầm). */
+  setWeaponLabel(label: string): void {
+    this.overlay.setSwipeLabel(label);
+  }
+
   glyphContext(): GlyphContext {
     return {
       device: this.device,

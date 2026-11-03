@@ -14,11 +14,13 @@ import type { InputSnapshot } from '../logic/input/actions';
 import { formatGlyphs } from '../logic/input/glyphs';
 import type { TuningData } from '../logic/playtest/tuning';
 import type { PlayerStateName } from '../logic/player/player-physics';
+import { buildHud } from '../logic/hud/hud-model';
 import { StageSave, stageSaveSetup } from '../logic/save/stage-save';
 import { StageWorld } from '../logic/world/stage-world';
 import type { WorldEvents, WorldInput } from '../logic/world/world-types';
 import { buildStageLayout, STAGE_DEFS, type StageDefId } from '../stages';
 import type { StageDef } from '../stages/stage-def';
+import { PauseMenu, type PauseChoice } from './stage/pause-menu';
 import { StageHud } from './stage/stage-hud';
 import { StagePlaytest, tunedData } from './stage/stage-playtest';
 import { barrierCells, drawMechanics } from './stage/mechanics-renderer';
@@ -61,6 +63,9 @@ export class StageScene extends Phaser.Scene {
   private playtest?: StagePlaytest;
   /** Ghi tiến trình vào bản lưu (M11); màn chơi thử của cổng Prototype không lưu. */
   private saver: StageSave | undefined;
+  /** Core Bit trong bản lưu lúc vào màn (HUD cộng thêm phần nhặt trong lượt). */
+  private savedCoreBits = 0;
+  private pause?: PauseMenu;
   private prev = { x: 0, y: 0 };
   /** Khung camera đang khóa: 'boss', số thứ tự phòng khóa, hoặc undefined (theo người chơi). */
   private cameraLock: string | undefined;
@@ -90,6 +95,7 @@ export class StageScene extends Phaser.Scene {
     // Màn chơi thử (cổng Prototype) luôn bắt đầu như nhau để số liệu các phiên so sánh được.
     const save = this.def.playtest ? undefined : getSave(this);
     const fromSave = save ? stageSaveSetup(save.data, this.def.id, bossId) : {};
+    this.savedCoreBits = save?.data.inventory.coreBits ?? 0;
     const world = new StageWorld({
       layout: buildStageLayout(this.def, TILE_SIZE),
       tileSize: TILE_SIZE,
@@ -139,6 +145,8 @@ export class StageScene extends Phaser.Scene {
     input.setGameplayActive(true);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => input.setGameplayActive(false));
     this.playtest = new StagePlaytest(this, world, input, base, this.def.playtest);
+    // Chưa có chọn độ khó: màn luôn chơi ở Thường.
+    this.pause = new PauseMenu(this, `${this.def.name} · Thường`, (c) => this.onPauseChoice(c));
     if (DEBUG) {
       this.input.keyboard?.on('keydown-T', () =>
         world.player.applyHit(DEBUG_HIT_DAMAGE, world.player.centerX + world.player.facing * 8),
@@ -159,9 +167,14 @@ export class StageScene extends Phaser.Scene {
     const steps = this.stepper.advance(delta);
     for (let i = 0; i < steps; i += 1) {
       const snap = input.step();
+      if (this.pause?.isOpen) {
+        // Menu tạm dừng: trận đứng yên, đầu vào chỉ dùng để chọn mục.
+        this.pause.handle(snap);
+        continue;
+      }
       if (snap.pressed.pause) {
-        this.scene.start(SceneKey.Menu);
-        return;
+        this.openPause(input);
+        continue;
       }
       this.prev = { x: world.player.box.x, y: world.player.box.y };
       const ev = world.step(this.toWorldInput(snap, input));
@@ -176,7 +189,9 @@ export class StageScene extends Phaser.Scene {
     }
     this.syncSprites(this.stepper.alpha);
     const ctx = input.glyphContext();
-    this.hud?.update(world, formatGlyphs('{ĐỔI_VK}', ctx));
+    const hud = buildHud(world, this.savedCoreBits);
+    input.setWeaponLabel(hud.weapon.name);
+    this.hud?.update(hud, input.device === 'touch', formatGlyphs('{ĐỔI_VK}', ctx));
     this.hud?.hint.setText(
       formatGlyphs(
         '{DI_CHUYỂN} · nhảy {NHẢY} · bắn {BẮN} (giữ để nạp) · lướt {LƯỚT} · {TẠM_DỪNG}',
@@ -188,6 +203,22 @@ export class StageScene extends Phaser.Scene {
         `${world.player.state} · chết ${world.deaths} · FPS ${Math.round(this.game.loop.actualFps)}`,
       );
     }
+  }
+
+  private openPause(input: InputService): void {
+    // Ẩn lớp nút cảm ứng để chạm được vào các mục của menu trên canvas.
+    input.setGameplayActive(false);
+    this.pause?.show();
+  }
+
+  private onPauseChoice(choice: PauseChoice): void {
+    if (choice === 'quit') {
+      this.scene.start(SceneKey.Menu);
+      return;
+    }
+    this.pause?.hide();
+    this.controls?.setGameplayActive(true);
+    this.stepper.reset();
   }
 
   private toWorldInput(snap: InputSnapshot, input: InputService): WorldInput {

@@ -9,6 +9,7 @@ import {
   type ResolvedButton,
   resolveButtons,
   stickZone,
+  swipeAction,
   type TouchConfig,
   type TouchSettings,
   type Viewport,
@@ -38,6 +39,8 @@ export class TouchOverlay {
   private readonly stickKnob: HTMLDivElement;
   private buttons: ResolvedButton[] = [];
   private readonly pointerButtons = new Map<number, ResolvedButton>();
+  /** Chạm đang giữ trên nút vuốt: điểm bắt đầu theo chiều ngang. */
+  private readonly swipes = new Map<number, { button: ResolvedButton; x0: number }>();
   private stick: StickTouch | undefined;
   private drag: DragTouch | undefined;
   private mode: 'hidden' | 'play' | 'edit' = 'hidden';
@@ -63,6 +66,7 @@ export class TouchOverlay {
       el.className = 'touch-button';
       el.dataset.id = button.id;
       el.textContent = button.label;
+      if (button.swipe) el.classList.add('touch-swipe');
       this.buttonEls.set(button.id, el);
       this.root.append(el);
     }
@@ -91,6 +95,14 @@ export class TouchOverlay {
   setSettings(settings: TouchSettings): void {
     this.settings = settings;
     this.layout();
+  }
+
+  /** Đổi chữ trên nút vuốt (biểu tượng vũ khí) theo vũ khí đang cầm. */
+  setSwipeLabel(label: string): void {
+    for (const b of this.config.buttons) {
+      const el = b.swipe ? this.buttonEls.get(b.id) : undefined;
+      if (el && el.textContent !== label) el.textContent = label;
+    }
   }
 
   destroy(): void {
@@ -152,6 +164,11 @@ export class TouchOverlay {
         };
       return;
     }
+    if (hit?.swipe) {
+      this.swipes.set(e.pointerId, { button: hit, x0: e.clientX });
+      this.buttonEls.get(hit.id)?.classList.add('active');
+      return;
+    }
     if (hit) {
       this.pointerButtons.set(e.pointerId, hit);
       this.buttonEls.get(hit.id)?.classList.add('active');
@@ -193,6 +210,18 @@ export class TouchOverlay {
   private onUp(e: PointerEvent): void {
     if (this.drag && e.pointerId === this.drag.pointerId) {
       this.finishDrag();
+      return;
+    }
+    const swipe = this.swipes.get(e.pointerId);
+    if (swipe) {
+      this.swipes.delete(e.pointerId);
+      this.buttonEls.get(swipe.button.id)?.classList.remove('active');
+      if (e.type === 'pointercancel') return;
+      // Bấm rồi nhả trong cùng bước vẫn tính pressed (InputAggregator).
+      const action = swipeAction(e.clientX - swipe.x0, this.config.swipeMinDp);
+      this.aggregator.press('touch', action);
+      this.aggregator.release('touch', action);
+      if (this.settings.vibration && typeof navigator.vibrate === 'function') navigator.vibrate(8);
       return;
     }
     const button = this.pointerButtons.get(e.pointerId);
@@ -243,6 +272,7 @@ export class TouchOverlay {
 
   private releaseAll(): void {
     this.pointerButtons.clear();
+    this.swipes.clear();
     this.stick = undefined;
     this.drag = undefined;
     for (const el of this.buttonEls.values()) el.classList.remove('active');

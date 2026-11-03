@@ -396,3 +396,12 @@ body.portrait #rotate-overlay {
   height: 72px;
   margin-bottom: 6px;
 }
+
+/* Nút biểu tượng vũ khí (chạm = vũ khí sau, vuốt trái/phải = trước/sau). */
+.touch-button.touch-swipe {
+  border-radius: 12px;
+  font-size: 11px;
+  text-align: center;
+  line-height: 1.15;
+  padding: 2px;
+}
