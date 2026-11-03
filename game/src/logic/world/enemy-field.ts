@@ -4,36 +4,16 @@ import { createEnemy } from '../enemy/behaviors';
 import { type Enemy, isFlying } from '../enemy/enemy';
 import type { PlayerPhysics } from '../player/player-physics';
 import { createRng, type Rng } from '../rng';
+import type { EnemySpawn } from '../stage/layout';
 import type { TileMap } from '../tilemap';
 import { PickupPool } from './pickups';
 import type { WorldEvents } from './world-types';
 
-/** Ký hiệu trên bản đồ → kẻ địch (cùng dạng với StageDef.enemyMarkers). */
-export type EnemyMarkers = Readonly<Record<string, { enemy: string; harmless?: boolean }>>;
+/** Ký hiệu trên bản đồ ASCII → kẻ địch (giữ tên cũ cho các màn dựng sẵn). */
+export type { EnemyMarkers } from '../stage/layout';
 
 /**
- * Các vị trí đặt kẻ địch quá gần điểm xuất phát hoặc checkpoint ('P', 'C'), trái quy tắc
- * "khoảng cách xuất hiện ≥ 6 ô" (đặc tả mục 4). Dùng trong test cho mọi màn.
- */
-export function spawnDistanceViolations(
-  map: TileMap,
-  markers: EnemyMarkers,
-  minTiles: number,
-): string[] {
-  const safe = map.markers.filter((m) => m.ch === 'P' || m.ch === 'C');
-  const out: string[] = [];
-  for (const m of map.markers) {
-    if (!markers[m.ch]) continue;
-    for (const s of safe) {
-      const d = Math.hypot(m.col - s.col, m.row - s.row);
-      if (d < minTiles) out.push(`${m.ch} (${m.col},${m.row}) cách ${s.ch} ${d.toFixed(1)} ô`);
-    }
-  }
-  return out;
-}
-
-/**
- * Kẻ địch thường của một màn (M5): tạo từ ký hiệu trên bản đồ, chỉ hoạt động khi người chơi
+ * Kẻ địch thường của một màn (M5): tạo từ danh sách đặt sẵn của bố cục màn (cùng thứ tự), chỉ hoạt động khi người chơi
  * trong tầm, rơi Core Bit/viên máu khi bị hạ, cộng EXP, dựng lại khi người chơi hồi sinh.
  */
 export class EnemyField {
@@ -47,7 +27,7 @@ export class EnemyField {
   constructor(
     private readonly data: EnemiesData,
     private readonly map: TileMap,
-    markers: EnemyMarkers,
+    spawns: readonly EnemySpawn[],
     hpMul: number,
     nextId: () => number,
     seed: number,
@@ -55,15 +35,12 @@ export class EnemyField {
     const t = map.tileSize;
     this.rng = createRng(seed);
     this.pickups = new PickupPool(data.rules.pickups, t);
-    for (const m of map.markers) {
-      const place = markers[m.ch];
-      if (!place) continue;
-      const enemy = data.enemies[place.enemy];
-      if (!enemy)
-        throw new Error(`Bản đồ đặt kẻ địch "${place.enemy}" không có trong enemies.json`);
-      const x = (m.col + 0.5) * t;
-      const y = isFlying(enemy) ? (m.row + 0.5) * t : (m.row + 1) * t;
-      this.enemies.push(createEnemy(nextId(), enemy, x, y, hpMul, place.harmless ?? false, t));
+    for (const s of spawns) {
+      const enemy = data.enemies[s.enemy];
+      if (!enemy) throw new Error(`Bản đồ đặt kẻ địch "${s.enemy}" không có trong enemies.json`);
+      const x = (s.col + 0.5) * t;
+      const y = isFlying(enemy) ? (s.row + 0.5) * t : (s.row + 1) * t;
+      this.enemies.push(createEnemy(nextId(), enemy, x, y, hpMul, s.harmless, t));
     }
   }
 

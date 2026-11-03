@@ -1,0 +1,329 @@
+import { isObject, type Json } from '../../core/json-check';
+import { Tile, TileMap } from '../tilemap';
+import {
+  type BarrierSpawn,
+  type Cell,
+  edgeDoorCells,
+  type EnemySpawn,
+  type RoomSpawn,
+  type SecretSpawn,
+  type SectionSpawn,
+  type StageLayout,
+  type TargetSpawn,
+  type VineSpawn,
+} from './layout';
+
+/**
+ * Nạp bản đồ Tiled định dạng JSON (.json / .tmj, Tiled 1.8+) thành StageLayout (logic thuần).
+ *
+ * Quy ước (xem thêm game/maps/README.md):
+ * - Bản đồ trực giao, không vô hạn, ô vuông đúng `tileSize`; tileset nhúng trong bản đồ.
+ * - Lớp ô `ground`: ô có thuộc tính bool `solid`, `oneway` hoặc `hazard`; ô không có thuộc
+ *   tính nào tính là đặc. Lớp ô `hazards`: mọi ô là gai. Các lớp ô khác chỉ để trang trí.
+ *   Trùng ô thì đặc > gai > bục một chiều.
+ * - Lớp đối tượng `entities` và `triggers` (tên lớp không bắt buộc, chỉ cần đúng class):
+ *   spawn, checkpoint, enemy {enemy, harmless?}, target {shield?}, boss, gate (hình chữ nhật
+ *   phủ các ô cửa), vine {length?, phase?}, room (hình chữ nhật, mép trái/phải là cột cửa),
+ *   secret {item}, barrier (hình chữ nhật) {requiresWeapon}, section {id?} (tên = nhãn).
+ */
+
+/** Cờ lật/xoay nằm ở 4 bit cao của gid (Tiled 1.9+). */
+const GID_MASK = 0x0fffffff;
+const TILE_LAYERS = { ground: 'ground', hazards: 'hazards' } as const;
+const OBJECT_CLASSES = [
+  'spawn',
+  'checkpoint',
+  'enemy',
+  'target',
+  'boss',
+  'gate',
+  'vine',
+  'room',
+  'secret',
+  'barrier',
+  'section',
+] as const;
+type ObjectClass = (typeof OBJECT_CLASSES)[number];
+
+export class TiledError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'TiledError';
+  }
+}
+
+interface TiledObject {
+  id: number;
+  name: string;
+  cls: ObjectClass;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  point: boolean;
+  props: Readonly<Record<string, unknown>>;
+}
+
+function fail(where: string, msg: string): never {
+  throw new TiledError(`${where}: ${msg}`);
+}
+
+function int(v: unknown, where: string): number {
+  if (typeof v !== 'number' || !Number.isInteger(v) || v < 0) fail(where, 'cần số nguyên ≥ 0');
+  return v;
+}
+
+/** Mảng `properties` của Tiled → bảng tên → giá trị. */
+function propsOf(v: unknown, where: string): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  if (v === undefined) return out;
+  if (!Array.isArray(v)) fail(where, 'properties phải là mảng');
+  for (const p of v) {
+    if (!isObject(p) || typeof p.name !== 'string') fail(where, 'thuộc tính thiếu tên');
+    out[p.name] = p.value;
+  }
+  return out;
+}
+
+function propStr(props: Readonly<Record<string, unknown>>, key: string, where: string): string {
+  const v = props[key];
+  if (typeof v !== 'string' || v.length === 0) fail(where, `cần thuộc tính chuỗi "${key}"`);
+  return v;
+}
+
+function propNum(
+  props: Readonly<Record<string, unknown>>,
+  key: string,
+  where: string,
+): number | undefined {
+  const v = props[key];
+  if (v === undefined) return undefined;
+  if (typeof v !== 'number' || !Number.isFinite(v)) fail(where, `thuộc tính "${key}" phải là số`);
+  return v;
+}
+
+function propBool(props: Readonly<Record<string, unknown>>, key: string, where: string): boolean {
+  const v = props[key];
+  if (v === undefined) return false;
+  if (typeof v !== 'boolean') fail(where, `thuộc tính "${key}" phải là bool`);
+  return v;
+}
+
+/** gid → loại ô theo thuộc tính trong tileset nhúng. */
+function tileKinds(tilesets: unknown): Map<number, Tile> {
+  const kinds = new Map<number, Tile>();
+  if (!Array.isArray(tilesets)) fail('tilesets', 'cần một mảng');
+  tilesets.forEach((ts, i) => {
+    const where = `tilesets[${i}]`;
+    if (!isObject(ts)) fail(where, 'cần một object');
+    if (ts.source !== undefined)
+      fail(where, `tileset ngoài "${String(ts.source)}": hãy nhúng tileset vào bản đồ (Embed)`);
+    const first = int(ts.firstgid, `${where}.firstgid`);
+    const tiles = ts.tiles ?? [];
+    if (!Array.isArray(tiles)) fail(`${where}.tiles`, 'cần một mảng');
+    for (const t of tiles) {
+      if (!isObject(t)) continue;
+      const id = int(t.id, `${where}.tiles.id`);
+      const p = propsOf(t.properties, `${where}.tiles[${id}]`);
+      const w = `${where}.tiles[${id}]`;
+      if (propBool(p, 'solid', w)) kinds.set(first + id, Tile.Solid);
+      else if (propBool(p, 'hazard', w)) kinds.set(first + id, Tile.Hazard);
+      else if (propBool(p, 'oneway', w)) kinds.set(first + id, Tile.OneWay);
+    }
+  });
+  return kinds;
+}
+
+const PRIORITY: Readonly<Record<Tile, number>> = {
+  [Tile.Empty]: 0,
+  [Tile.OneWay]: 1,
+  [Tile.Hazard]: 2,
+  [Tile.Solid]: 3,
+};
+
+function readObject(o: unknown, where: string): TiledObject | undefined {
+  if (!isObject(o)) fail(where, 'cần một object');
+  // Tiled ≤ 1.8 ghi "type", 1.9 ghi "class", 1.10+ lại ghi "type".
+  const cls = o.type ?? o.class;
+  if (cls === undefined || cls === '') return undefined; // đối tượng ghi chú, bỏ qua
+  if (typeof cls !== 'string' || !(OBJECT_CLASSES as readonly string[]).includes(cls))
+    fail(where, `class "${String(cls)}" lạ (dùng: ${OBJECT_CLASSES.join(', ')})`);
+  const num = (v: unknown, k: string): number => {
+    if (typeof v !== 'number' || !Number.isFinite(v)) fail(where, `${k} phải là số`);
+    return v;
+  };
+  const w = o.width === undefined ? 0 : num(o.width, 'width');
+  const h = o.height === undefined ? 0 : num(o.height, 'height');
+  // Đối tượng ô (có gid) neo ở góc dưới trái; đưa về góc trên trái như hình chữ nhật.
+  const y = num(o.y, 'y') - (o.gid !== undefined ? h : 0);
+  return {
+    id: typeof o.id === 'number' ? o.id : 0,
+    name: typeof o.name === 'string' ? o.name : '',
+    cls: cls as ObjectClass,
+    x: num(o.x, 'x'),
+    y,
+    w,
+    h,
+    point: o.point === true || (w === 0 && h === 0),
+    props: propsOf(o.properties, where),
+  };
+}
+
+/**
+ * Đọc bản đồ Tiled. `tileSize` là cỡ ô của game (16); bản đồ khác cỡ thì báo lỗi.
+ * Mọi lỗi là TiledError có chỉ rõ lớp/đối tượng sai để sửa trong Tiled.
+ */
+export function layoutFromTiled(json: unknown, tileSize: number): StageLayout {
+  if (!isObject(json)) fail('bản đồ', 'cần một object JSON');
+  const m: Json = json;
+  if (m.orientation !== undefined && m.orientation !== 'orthogonal')
+    fail('bản đồ', 'chỉ hỗ trợ bản đồ trực giao (orthogonal)');
+  if (m.infinite === true) fail('bản đồ', 'không hỗ trợ bản đồ vô hạn (bỏ chọn Infinite)');
+  const cols = int(m.width, 'width');
+  const rows = int(m.height, 'height');
+  if (m.tilewidth !== tileSize || m.tileheight !== tileSize)
+    fail('bản đồ', `ô phải là ${tileSize} × ${tileSize} px`);
+  const kinds = tileKinds(m.tilesets);
+  if (!Array.isArray(m.layers)) fail('layers', 'cần một mảng');
+
+  const tiles = new Uint8Array(cols * rows);
+  const objects: TiledObject[] = [];
+  const walk = (layers: unknown[], prefix: string): void => {
+    layers.forEach((layer, i) => {
+      if (!isObject(layer)) fail(`${prefix}[${i}]`, 'cần một object');
+      const name = typeof layer.name === 'string' ? layer.name : `#${i}`;
+      const where = `lớp "${name}"`;
+      if (layer.type === 'group') {
+        walk(Array.isArray(layer.layers) ? layer.layers : [], `${where}.layers`);
+      } else if (layer.type === 'tilelayer') {
+        if (name !== TILE_LAYERS.ground && name !== TILE_LAYERS.hazards) return; // trang trí
+        if (layer.encoding !== undefined && layer.encoding !== 'csv')
+          fail(where, 'lưu lớp ô dạng CSV (Map → Map Properties → Tile Layer Format)');
+        if (layer.width !== cols || layer.height !== rows)
+          fail(where, `kích thước phải bằng bản đồ (${cols} × ${rows})`);
+        const data = layer.data;
+        if (!Array.isArray(data) || data.length !== cols * rows)
+          fail(where, `data cần ${cols * rows} ô`);
+        data.forEach((raw, idx) => {
+          const gid = int(raw, `${where}.data[${idx}]`) & GID_MASK;
+          if (gid === 0) return;
+          const kind = name === TILE_LAYERS.hazards ? Tile.Hazard : (kinds.get(gid) ?? Tile.Solid);
+          if (PRIORITY[kind] > PRIORITY[(tiles[idx] ?? 0) as Tile]) tiles[idx] = kind;
+        });
+      } else if (layer.type === 'objectgroup') {
+        const list = Array.isArray(layer.objects) ? layer.objects : [];
+        list.forEach((o, j) => {
+          const obj = readObject(o, `${where}, đối tượng ${j}`);
+          if (obj) objects.push(obj);
+        });
+      }
+    });
+  };
+  walk(m.layers, 'layers');
+
+  return buildLayout(TileMap.fromTiles(cols, rows, tileSize, tiles), objects);
+}
+
+function buildLayout(map: TileMap, objects: readonly TiledObject[]): StageLayout {
+  const t = map.tileSize;
+  const label = (o: TiledObject): string =>
+    `đối tượng ${o.cls}${o.name ? ` "${o.name}"` : ''} (id ${o.id})`;
+  /** Ô chứa đối tượng: điểm thì ô dưới điểm, hình chữ nhật thì ô ở tâm. */
+  const cellOf = (o: TiledObject): Cell => {
+    const x = o.point ? o.x : o.x + o.w / 2;
+    const y = o.point ? o.y : o.y + o.h / 2;
+    const cell = { col: Math.floor(x / t), row: Math.floor(y / t) };
+    if (cell.col < 0 || cell.col >= map.cols || cell.row < 0 || cell.row >= map.rows)
+      fail(label(o), 'nằm ngoài bản đồ');
+    return cell;
+  };
+  /** Vùng ô (gồm hai đầu) mà hình chữ nhật phủ. */
+  const span = (o: TiledObject): { first: number; last: number; top: number; bottom: number } => {
+    if (o.point || o.w <= 0 || o.h <= 0) fail(label(o), 'cần là hình chữ nhật');
+    const r = {
+      first: Math.floor(o.x / t + 1e-6),
+      last: Math.ceil((o.x + o.w) / t - 1e-6) - 1,
+      top: Math.floor(o.y / t + 1e-6),
+      bottom: Math.ceil((o.y + o.h) / t - 1e-6) - 1,
+    };
+    if (r.first < 0 || r.top < 0 || r.last >= map.cols || r.bottom >= map.rows)
+      fail(label(o), 'vượt ra ngoài bản đồ');
+    return r;
+  };
+  const of = (cls: ObjectClass): TiledObject[] => objects.filter((o) => o.cls === cls);
+
+  const spawns = of('spawn');
+  if (spawns.length !== 1) fail('bản đồ', `cần đúng 1 đối tượng spawn (đang có ${spawns.length})`);
+  const bosses = of('boss');
+  if (bosses.length > 1) fail('bản đồ', 'chỉ được 1 boss');
+  const gates = of('gate');
+  if (gates.length > 1) fail('bản đồ', 'chỉ được 1 cửa phòng boss (gate)');
+  if ((bosses.length === 1) !== (gates.length === 1))
+    fail('bản đồ', 'boss và cửa phòng boss (gate) phải đi cùng nhau');
+
+  const enemies: EnemySpawn[] = of('enemy').map((o) => ({
+    ...cellOf(o),
+    enemy: propStr(o.props, 'enemy', label(o)),
+    harmless: propBool(o.props, 'harmless', label(o)),
+  }));
+  const targets: TargetSpawn[] = of('target').map((o) => ({
+    ...cellOf(o),
+    shield: propBool(o.props, 'shield', label(o)),
+  }));
+  const vines: VineSpawn[] = of('vine').map((o) => {
+    const length = propNum(o.props, 'length', label(o));
+    const phase = propNum(o.props, 'phase', label(o)) ?? 0;
+    if (length !== undefined && length <= 0) fail(label(o), 'length phải > 0');
+    return { ...cellOf(o), ...(length !== undefined ? { lengthTiles: length } : {}), phase };
+  });
+  const rooms: RoomSpawn[] = of('room').map((o) => {
+    const s = span(o);
+    if (s.last - s.first < 2) fail(label(o), 'phòng khóa cần rộng ít nhất 3 ô');
+    const doors = edgeDoorCells(map, s.first, s.last, s.top, s.bottom);
+    if (doors.length === 0) fail(label(o), 'mép trái/phải không có ô trống để làm cửa');
+    return { ...s, doors };
+  });
+  const secrets: SecretSpawn[] = of('secret').map((o) => ({
+    ...cellOf(o),
+    item: propStr(o.props, 'item', label(o)),
+    label: o.name || propStr(o.props, 'item', label(o)),
+  }));
+  const barriers: BarrierSpawn[] = of('barrier').map((o) => ({
+    ...span(o),
+    requiresWeapon: propStr(o.props, 'requiresWeapon', label(o)),
+  }));
+  const sections: SectionSpawn[] = of('section')
+    .map((o, i) => ({
+      id: typeof o.props.id === 'string' && o.props.id ? o.props.id : `s${i + 1}`,
+      label: o.name || `Đoạn ${i + 1}`,
+      fromCol: Math.max(0, Math.floor(o.x / t)),
+    }))
+    .sort((a, b) => a.fromCol - b.fromCol);
+
+  let gate: StageLayout['gate'];
+  if (gates[0]) {
+    const s = span(gates[0]);
+    if (s.first !== s.last) fail(label(gates[0]), 'cửa phòng boss rộng đúng 1 ô');
+    gate = {
+      col: s.first,
+      rows: Array.from({ length: s.bottom - s.top + 1 }, (_, i) => s.top + i),
+    };
+  }
+
+  return {
+    map,
+    spawn: cellOf(spawns[0]!),
+    enemies,
+    targets,
+    ...(bosses[0] ? { boss: cellOf(bosses[0]) } : {}),
+    ...(gate ? { gate } : {}),
+    checkpoints: of('checkpoint')
+      .map(cellOf)
+      .sort((a, b) => a.col - b.col),
+    vines,
+    rooms,
+    secrets,
+    barriers,
+    sections,
+  };
+}

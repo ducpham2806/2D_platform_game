@@ -3,3 +3,5 @@ node_modules
 public/data
 coverage
 package-lock.json
+# Bản đồ do Tiled ghi ra (Tiled tự định dạng lại mỗi lần lưu)
+maps/*.json

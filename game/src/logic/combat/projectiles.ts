@@ -76,7 +76,8 @@ export class ProjectilePool {
     ).length;
   }
 
-  update(dt: number, map: TileMap): void {
+  /** `onWall` được gọi với viên vừa vỡ vì chạm khối đặc (để vật chắn biết ai bắn vào). */
+  update(dt: number, map: TileMap, onWall?: (p: Projectile) => void): void {
     for (const p of this.items) {
       if (!p.alive) continue;
       p.ttl -= dt;
@@ -91,7 +92,11 @@ export class ProjectilePool {
       p.x += dx;
       p.y += dy;
       p.traveled += Math.hypot(dx, dy);
-      if (p.traveled >= p.maxDistance || overlapsSolid(p, map)) p.alive = false;
+      if (p.traveled >= p.maxDistance) p.alive = false;
+      else if (overlapsSolid(p, map)) {
+        p.alive = false;
+        onWall?.(p);
+      }
       if (p.y > map.heightPx || p.x + p.w < 0 || p.x > map.widthPx) p.alive = false;
     }
     this.items = this.items.filter((p) => p.alive);

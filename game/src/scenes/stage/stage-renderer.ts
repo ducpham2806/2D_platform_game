@@ -17,11 +17,14 @@ const PROJECTILE_COLORS: Readonly<Record<Projectile['kind'], number>> = {
   bomb: 0xd99cff,
 };
 
-/** Vẽ phần tĩnh của bản đồ một lần (nền, lưới, khối đặc, bục một chiều). */
+/**
+ * Vẽ phần tĩnh của bản đồ một lần (nền, lưới, khối đặc, bục một chiều, gai). `skip`: ô vẽ động
+ * (vật chắn vỡ được) nên bỏ qua ở đây.
+ */
 export function drawStaticMap(
   g: Phaser.GameObjects.Graphics,
   map: TileMap,
-  skipCol?: number,
+  skip: (col: number, row: number) => boolean = () => false,
 ): void {
   const t = map.tileSize;
   g.fillStyle(0x0f1724, 1).fillRect(0, 0, map.widthPx, map.heightPx);
@@ -30,13 +33,18 @@ export function drawStaticMap(
   for (let r = 0; r <= map.rows; r += 1) g.lineBetween(0, r * t, map.widthPx, r * t);
   for (let r = 0; r < map.rows; r += 1) {
     for (let c = 0; c < map.cols; c += 1) {
-      if (c === skipCol && map.get(c, r) !== Tile.Solid) continue;
+      if (skip(c, r)) continue;
       const tile = map.get(c, r);
       if (tile === Tile.Solid) {
         g.fillStyle(0x4a5568, 1).fillRect(c * t, r * t, t, t);
         if (map.get(c, r - 1) !== Tile.Solid) g.fillStyle(0x8193ad, 1).fillRect(c * t, r * t, t, 2);
       } else if (tile === Tile.OneWay) {
         g.fillStyle(0x8fa3bf, 1).fillRect(c * t, r * t, t, 4);
+      } else if (tile === Tile.Hazard) {
+        // Hai mũi gai mỗi ô, đáy sát mép dưới ô.
+        g.fillStyle(0xff6b6b, 1);
+        for (const x of [c * t, c * t + t / 2])
+          g.fillTriangle(x, (r + 1) * t, x + t / 2, (r + 1) * t, x + t / 4, r * t + 6);
       }
     }
   }

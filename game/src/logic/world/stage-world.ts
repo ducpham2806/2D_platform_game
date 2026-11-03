@@ -2,6 +2,7 @@ import type { BossData } from '../../core/boss-config';
 import type { EnemiesData } from '../../core/enemy-config';
 import type { DifficultyData } from '../../core/game-config';
 import type { PlayerData } from '../../core/player-config';
+import type { StageMechanics } from '../../core/stage-mechanics-config';
 import type { WeaponsData } from '../../core/weapons-config';
 import { GrayBoss } from '../boss/gray-boss';
 import { WeaponLoadout } from '../combat/loadout';
@@ -12,13 +13,18 @@ import { evaluateFormula } from '../formula';
 import { playerParams } from '../player/player-params';
 import { PlayerPhysics } from '../player/player-physics';
 import { createRng, type Rng } from '../rng';
-import { Tile, TileMap } from '../tilemap';
-import { EnemyField, type EnemyMarkers } from './enemy-field';
+import { type EnemyMarkers, layoutFromRows, type StageLayout } from '../stage/layout';
+import { Tile, type TileMap } from '../tilemap';
+import { EnemyField } from './enemy-field';
 import { resolveEnemyHits, resolvePlayerHits } from './hits';
+import { Barrier, LockedRoom, makeSecret, type Secret, standPoint, Vine } from './stage-mechanics';
 import { noWorldEvents, type WorldEvents, type WorldInput, type WorldPhase } from './world-types';
 
 export interface WorldSetup {
-  rows: readonly string[];
+  /** Bố cục màn (bản đồ Tiled hoặc ASCII đã dựng). Không có thì dựng từ `rows`. */
+  layout?: StageLayout;
+  /** Bản đồ ASCII (màn xám, phòng thử, test). */
+  rows?: readonly string[];
   tileSize: number;
   stepSec: number;
   player: PlayerData;
@@ -29,15 +35,20 @@ export interface WorldSetup {
   /** Kẻ địch thường (M5): dữ liệu và ký hiệu đặt trên bản đồ. Không có thì màn không có kẻ địch. */
   enemies?: EnemiesData;
   enemyMarkers?: EnemyMarkers;
+  /** Cơ chế màn (M7): hồi sinh, hố, gai, dây leo (stages.json → mechanics). */
+  mechanics: StageMechanics;
+  /** Module Spike Guard: miễn nhiễm gai (M8 sẽ bật theo loadout). */
+  spikeGuard?: boolean;
+  /** Vào màn từ checkpoint đã lưu (số thứ tự từ 1; 0 hoặc không có = điểm xuất phát). */
+  startCheckpoint?: number;
 }
 
 /** Bia tập bắn: máu (phát Arc Cannon) và thời gian dựng lại. Chỉ dùng trong màn xám. */
 const TARGET_HP = 3;
 const TARGET_RESPAWN_SEC = 2;
 const TARGET_SIZE = { w: 12, h: 24 };
-/** Thời gian chờ trước khi hồi sinh sau khi chết / rơi hố. */
-const RESPAWN_AFTER_DEATH_SEC = 1;
-const RESPAWN_AFTER_FALL_SEC = 0.3;
+/** Hộp người chơi thu nhỏ mỗi phía khi xét chạm gai, để chạm sượt mép ô không tính. */
+const HAZARD_INSET_PX = 2;
 /** Cấp của Kai ở mốc Prototype (chưa có hệ thống cấp). */
 const PROTOTYPE_LEVEL = 1;
 
@@ -61,12 +72,28 @@ export class StageWorld {
   hitStop = 0;
   /** Kẻ địch thường, vật phẩm rơi, EXP và Core Bit của lượt chơi. */
   readonly field: EnemyField | undefined;
+  /** Cơ chế màn (M7). */
+  readonly layout: StageLayout;
+  readonly vines: Vine[];
+  readonly rooms: LockedRoom[];
+  readonly barriers: Barrier[];
+  readonly secrets: Secret[];
+  /** Vật phẩm bí mật đã nhặt trong lượt chơi (M11 sẽ lưu). */
+  readonly collected: string[] = [];
+  /** Checkpoint đã chạm xa nhất (0 = điểm xuất phát). */
+  checkpointIndex = 0;
+  /** Số lần rơi hố còn sống (không tính vào `deaths`). */
+  falls = 0;
 
   private readonly rng: Rng;
   private readonly attackMul: number;
   private readonly start: { x: number; y: number };
   private checkpoint: { x: number; y: number };
   private respawnTimer = 0;
+  /** Hồi sinh đang chờ là do rơi hố còn máu (giữ máu, không dựng lại kẻ địch). */
+  private pitReturn = false;
+  /** Chỗ đứng an toàn gần nhất (tâm, đáy) để đưa về khi chạm gai. */
+  private safe: { x: number; y: number };
   private everWon = false;
   /** Các dòng ô của cửa phòng boss (ô 'D'). */
   readonly gateRows: number[];
@@ -74,10 +101,15 @@ export class StageWorld {
 
   constructor(private setup: WorldSetup) {
     const t = setup.tileSize;
-    this.map = TileMap.fromRows(setup.rows, t);
+    if (!setup.layout && !setup.rows) throw new Error('StageWorld cần layout hoặc rows');
+    this.layout = setup.layout ?? layoutFromRows(setup.rows ?? [], t, setup.enemyMarkers);
+    this.map = this.layout.map;
     this.rng = createRng(setup.seed);
-    this.start = this.map.spawn ?? { x: t * 2, y: this.map.heightPx - t };
-    this.checkpoint = this.start;
+    this.start = standPoint(this.layout.spawn, t);
+    const cps = this.layout.checkpoints;
+    this.checkpointIndex = Math.max(0, Math.min(cps.length, setup.startCheckpoint ?? 0));
+    this.checkpoint = this.checkpointPoint();
+    this.safe = this.checkpoint;
     // Prototype chơi ở cấp 1; hệ thống cấp (M8) sẽ truyền cấp thật vào đây.
     const level = { L: PROTOTYPE_LEVEL };
     const maxHp = evaluateFormula(setup.player.level.hp, level);
@@ -88,43 +120,58 @@ export class StageWorld {
     this.player = new PlayerPhysics(
       playerParams(setup.player, t, setup.stepSec),
       this.map,
-      this.start.x,
-      this.start.y,
+      this.checkpoint.x,
+      this.checkpoint.y,
       maxHp,
     );
     this.loadout = new WeaponLoadout(setup.weapons, t);
 
     let nextId = 1;
-    const gates = this.map.markers.filter((m) => m.ch === 'D');
-    this.gateRows = gates.map((g) => g.row);
-    this.gateCol = gates[0]?.col;
+    const layout = this.layout;
+    this.gateRows = layout.gate?.rows ?? [];
+    this.gateCol = layout.gate?.col;
     this.arena =
       this.gateCol === undefined ? undefined : { first: this.gateCol + 1, last: this.map.cols - 2 };
-    for (const m of this.map.markers) {
-      if (m.ch === 'T' || m.ch === 'S') {
-        const box = {
-          x: (m.col + 0.5) * t - TARGET_SIZE.w / 2,
-          y: (m.row + 1) * t - TARGET_SIZE.h,
-          ...TARGET_SIZE,
-        };
-        this.targets.push(
-          new TrainingTarget(nextId++, box, TARGET_HP, m.ch === 'S' ? -1 : 0, TARGET_RESPAWN_SEC),
-        );
-      }
+    for (const m of layout.targets) {
+      const box = {
+        x: (m.col + 0.5) * t - TARGET_SIZE.w / 2,
+        y: (m.row + 1) * t - TARGET_SIZE.h,
+        ...TARGET_SIZE,
+      };
+      this.targets.push(
+        new TrainingTarget(nextId++, box, TARGET_HP, m.shield ? -1 : 0, TARGET_RESPAWN_SEC),
+      );
     }
     this.field = setup.enemies
       ? new EnemyField(
           setup.enemies,
           this.map,
-          setup.enemyMarkers ?? {},
+          layout.enemies,
           setup.difficulty.enemyHp,
           () => nextId++,
           setup.seed + 1,
         )
       : undefined;
-    const b = this.map.markers.find((m) => m.ch === 'B');
-    this.bossSpawn = b ? { x: (b.col + 0.5) * t, y: (b.row + 1) * t } : undefined;
+    this.bossSpawn = layout.boss ? standPoint(layout.boss, t) : undefined;
     this.boss = this.makeBoss();
+
+    this.vines = layout.vines.map((v) => new Vine(v, setup.mechanics.vine, t));
+    this.player.platforms = this.vines.map((v) => v.platform);
+    this.rooms = layout.rooms.map((r) => new LockedRoom(r, this.map));
+    if (this.field) for (const r of this.rooms) r.bind(this.field.enemies, layout.enemies);
+    this.barriers = layout.barriers.map((b) => new Barrier(b, this.map));
+    this.secrets = layout.secrets.map((s) => makeSecret(s, t));
+  }
+
+  /** Phòng khóa đang đóng cửa (camera khóa trong phòng, HUD đếm kẻ địch còn lại). */
+  get lockedRoom(): LockedRoom | undefined {
+    return this.rooms.find((r) => r.state === 'locked');
+  }
+
+  /** Điểm hồi sinh của checkpoint đã chạm xa nhất. */
+  private checkpointPoint(): { x: number; y: number } {
+    const cp = this.layout.checkpoints[this.checkpointIndex - 1];
+    return cp ? standPoint(cp, this.setup.tileSize) : this.start;
   }
 
   /** Dữ liệu đang dùng (bảng chỉnh cảm giác đọc để hiện giá trị hiện tại). */
@@ -164,6 +211,8 @@ export class StageWorld {
       if (this.respawnTimer <= 1e-9) this.respawn(ev);
       return ev;
     }
+
+    for (const v of this.vines) v.step(dt);
 
     if (input.swapPrev || input.swapNext) {
       const before = this.loadout.index;
@@ -217,7 +266,9 @@ export class StageWorld {
       if (be.defeated) this.onBossDefeated(ev);
     }
     this.field?.step(pl, this.pool, dt);
-    this.pool.update(dt, this.map);
+    this.pool.update(dt, this.map, (p) => {
+      for (const b of this.barriers) if (b.tryBreak(p)) ev.barrierBroken = true;
+    });
 
     const killed: Enemy[] = [];
     this.hitStop = resolvePlayerHits(
@@ -239,13 +290,106 @@ export class StageWorld {
     );
     this.field?.updatePickups(pl, dt, ev);
 
+    this.updateHazards(ev);
+    this.updateSecrets(ev);
+    this.updateRooms(ev);
+    this.updateCheckpoints(ev);
     this.updateArena(ev);
-    if (pe.died || pe.fellOut || pl.state === 'dead') {
+    const mech = this.setup.mechanics;
+    if (pl.state !== 'dead' && pe.fellOut) {
+      // Rơi hố: mất máu rồi về checkpoint; hết máu thì tính là chết (đặc tả Stage 1 mục 3).
+      pl.hp = Math.max(0, pl.hp - this.damageTaken(mech.pit.damage));
+      if (pl.hp > 0) {
+        ev.fellInPit = true;
+        this.falls += 1;
+        this.pitReturn = true;
+        this.respawnTimer = mech.pit.returnSec;
+        return ev;
+      }
+      pl.state = 'dead';
+    }
+    if (pe.died || pl.state === 'dead') {
       ev.playerDied = true;
       this.deaths += 1;
-      this.respawnTimer = pe.fellOut ? RESPAWN_AFTER_FALL_SEC : RESPAWN_AFTER_DEATH_SEC;
+      this.pitReturn = false;
+      this.respawnTimer = mech.respawnSec;
     }
     return ev;
+  }
+
+  /** Sát thương môi trường nhân hệ số độ khó, làm tròn, tối thiểu 1 (như đòn kẻ địch). */
+  private damageTaken(base: number): number {
+    if (base <= 0) return 0;
+    return Math.max(1, Math.round(base * this.setup.difficulty.damageTaken));
+  }
+
+  /** Gai: mất máu, về chỗ đứng an toàn. Ghi lại chỗ an toàn khi đứng vững trên nền thật. */
+  private updateHazards(ev: WorldEvents): void {
+    const pl = this.player;
+    if (pl.state === 'dead') return;
+    const b = pl.box;
+    const inset = {
+      x: b.x + HAZARD_INSET_PX,
+      y: b.y + HAZARD_INSET_PX,
+      w: b.w - 2 * HAZARD_INSET_PX,
+      h: b.h - 2 * HAZARD_INSET_PX,
+    };
+    if (!this.setup.spikeGuard && this.map.overlapsHazard(inset)) {
+      ev.spikeHit = true;
+      const dmg = this.damageTaken(this.setup.mechanics.spikes.damage);
+      if (pl.hitHazard(dmg, this.safe.x, this.safe.y)) ev.playerHurt = true;
+      return;
+    }
+    if (!pl.grounded || pl.onPlatform || pl.state === 'hurt' || this.map.overlapsHazard(b)) return;
+    const t = this.map.tileSize;
+    const row = Math.floor((pl.bottom + 0.5) / t);
+    const firm = (x: number): boolean => {
+      const tile = this.map.get(Math.floor(x / t), row);
+      return tile === Tile.Solid || tile === Tile.OneWay;
+    };
+    if (firm(b.x) && firm(b.x + b.w - 1e-6)) this.safe = { x: pl.centerX, y: pl.bottom };
+  }
+
+  private updateSecrets(ev: WorldEvents): void {
+    const pl = this.player;
+    if (pl.state === 'dead') return;
+    for (const s of this.secrets) {
+      if (s.taken) continue;
+      const b = s.box;
+      const p = pl.box;
+      if (p.x < b.x + b.w && p.x + p.w > b.x && p.y < b.y + b.h && p.y + p.h > b.y) {
+        s.taken = true;
+        this.collected.push(s.spawn.item);
+        ev.secretFound = s.spawn.item;
+      }
+    }
+  }
+
+  private updateRooms(ev: WorldEvents): void {
+    const alive = this.player.state !== 'dead';
+    for (const r of this.rooms) {
+      const change = r.update(this.player.box, alive);
+      if (change === 'locked') ev.roomLocked = true;
+      else if (change === 'cleared' && r.spawn.doors.length > 0) ev.roomCleared = true;
+    }
+  }
+
+  /** Đi qua checkpoint (theo cột) thì lưu làm điểm hồi sinh; chỉ tiến, không lùi. */
+  private updateCheckpoints(ev: WorldEvents): void {
+    const pl = this.player;
+    if (this.phase !== 'explore' || pl.state === 'dead') return;
+    const cps = this.layout.checkpoints;
+    const t = this.setup.tileSize;
+    for (let i = this.checkpointIndex; i < cps.length; i += 1) {
+      const cp = cps[i]!;
+      if (pl.centerX < (cp.col + 0.5) * t || !pl.grounded) break;
+      this.checkpointIndex = i + 1;
+      ev.checkpoint = i + 1;
+    }
+    if (ev.checkpoint !== undefined) {
+      this.checkpoint = this.checkpointPoint();
+      this.safe = this.checkpoint;
+    }
   }
 
   /** Roi bám theo tay Kai trong suốt thời gian quét. */
@@ -299,7 +443,7 @@ export class StageWorld {
     } else if (this.phase === 'won' && pl.box.x + pl.box.w < this.gateCol * t) {
       this.phase = 'explore';
       this.boss = this.makeBoss();
-      this.checkpoint = this.start;
+      this.checkpoint = this.checkpointPoint();
     }
   }
 
@@ -313,15 +457,25 @@ export class StageWorld {
       const reward = this.setup.boss.weakness;
       if (this.loadout.grant(reward)) ev.weaponGranted = reward;
     }
-    this.checkpoint = this.start;
+    this.checkpoint = this.checkpointPoint();
   }
 
   private respawn(ev: WorldEvents): void {
     const pl = this.player;
+    this.safe = this.checkpoint;
+    if (this.pitReturn) {
+      // Rơi hố còn máu: về checkpoint, giữ máu và mọi thứ khác.
+      this.pitReturn = false;
+      pl.respawn(this.checkpoint.x, this.checkpoint.y, pl.hp);
+      this.pool.clear('enemy');
+      ev.respawned = true;
+      return;
+    }
     pl.respawn(this.checkpoint.x, this.checkpoint.y);
     this.pool.clear();
     this.loadout.refill();
     this.field?.reset();
+    for (const r of this.rooms) r.reset();
     if (this.phase === 'boss') {
       // Chết trong phòng boss: hồi sinh trong phòng, boss đầy máu, trận bắt đầu lại.
       this.boss = this.makeBoss();

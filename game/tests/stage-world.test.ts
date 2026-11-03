@@ -20,6 +20,7 @@ function makeWorld(rows: readonly string[] = GRAY_BOX_ROWS): StageWorld {
     weapons: config.weapons,
     boss,
     difficulty: config.difficulties.find((d) => d.id === 'normal')!,
+    mechanics: config.stages.mechanics,
     seed: 7,
   });
 }
@@ -145,8 +146,21 @@ describe('phòng boss', () => {
   });
 });
 
+describe('hồi sinh', () => {
+  it('chết một lần chỉ tính một lần (không chết lặp sau khi hồi sinh)', () => {
+    const world = makeWorld();
+    world.step(IDLE_INPUT);
+    world.player.applyHit(9999, world.player.centerX + 5);
+    let died = 0;
+    for (let i = 0; i < 400; i += 1) if (world.step(IDLE_INPUT).playerDied) died += 1;
+    expect(died).toBe(1);
+    expect(world.deaths).toBe(1);
+    expect(world.player.state).not.toBe('dead');
+  });
+});
+
 describe('rơi hố', () => {
-  it('rơi xuống khe đầu tiên thì về điểm xuất phát', () => {
+  it('rơi xuống khe đầu tiên thì mất máu và về điểm xuất phát (M7: không tính là chết)', () => {
     const world = makeWorld();
     const startX = world.player.centerX;
     let respawned = false;
@@ -154,6 +168,8 @@ describe('rơi hố', () => {
       respawned = world.step(input({ moveX: 1 })).respawned;
     expect(respawned).toBe(true);
     expect(world.player.centerX).toBeCloseTo(startX);
-    expect(world.deaths).toBe(1);
+    expect(world.deaths).toBe(0);
+    expect(world.falls).toBe(1);
+    expect(world.player.hp).toBeLessThan(world.player.maxHp);
   });
 });

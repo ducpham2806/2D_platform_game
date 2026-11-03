@@ -59,6 +59,19 @@ export interface WorldEvents {
   bossLanded: boolean;
   bossDefeated: boolean;
   weaponGranted: string | undefined;
+  /** M7: số thứ tự (từ 1) của checkpoint vừa chạm. */
+  checkpoint: number | undefined;
+  /** Rơi hố nhưng còn máu: mất máu và về checkpoint (không tính là chết). */
+  fellInPit: boolean;
+  /** Chạm gai: mất máu (nếu không bất tử) và về chỗ an toàn. */
+  spikeHit: boolean;
+  /** Phòng khóa vừa đóng cửa / vừa mở vì hạ hết kẻ địch. */
+  roomLocked: boolean;
+  roomCleared: boolean;
+  /** Vật chắn (rễ khô) vừa vỡ. */
+  barrierBroken: boolean;
+  /** Vật phẩm bí mật vừa nhặt (id vật phẩm). */
+  secretFound: string | undefined;
 }
 
 export function noWorldEvents(): WorldEvents {
@@ -84,5 +97,12 @@ export function noWorldEvents(): WorldEvents {
     bossLanded: false,
     bossDefeated: false,
     weaponGranted: undefined,
+    checkpoint: undefined,
+    fellInPit: false,
+    spikeHit: false,
+    roomLocked: false,
+    roomCleared: false,
+    barrierBroken: false,
+    secretFound: undefined,
   };
 }

@@ -1,0 +1,47 @@
+# Nhật ký phiên làm việc
+
+Quy tắc bắt buộc (xem `CLAUDE.md`): cuối mỗi phiên thêm một mục mới lên **đầu** danh sách bên dưới. Mục cũ giữ nguyên.
+
+Mẫu:
+
+```
+## YYYY-MM-DD: <tiêu đề ngắn>
+- Nhánh / commit:
+- Mục tiêu:
+- Đã làm:
+- File chính:
+- Quyết định:
+- Lỗi tìm thấy / đã sửa:
+- Kiểm tra: test, lint, format, build, chạy thử
+- Còn dở / chưa làm:
+- Tiếp theo:
+```
+
+---
+
+## 2026-11-02: Sprint 6, khung M7 Màn chơi
+
+- **Nhánh:** `ccr-93d525c1-j97gfr` (từ `main` sau PR #5).
+- **Mục tiêu:** đọc kế hoạch để chọn việc tiếp theo, rồi code Sprint 6 (tiếp Vertical slice), bắt đầu bằng M7 Màn chơi. Người dùng đặt quy tắc bắt buộc: mọi phiên phải tóm tắt và ghi lại những gì đã làm (đã đưa vào `CLAUDE.md` và file này).
+- **Đọc kế hoạch:** Sprint 1–5 xong (M0–M5, boss xám, công cụ cổng Prototype, đo tự động đạt). Cổng Prototype **chưa** chơi thử với người thật (mục 7 của `05-Cong-Prototype.md` còn trống). Theo mục 6 của file đó, phần mã Vertical slice được làm song song; chỉ thiết kế màn Prologue/Stage 1 phải chờ qua cổng.
+- **Đã làm:**
+  - Bộ nạp bản đồ **Tiled JSON** (`src/logic/stage/tiled.ts`): lớp ô `ground`/`hazards`, thuộc tính ô `solid`/`oneway`/`hazard`, cờ lật trong gid, đối tượng theo Class (spawn, checkpoint, enemy, target, boss, gate, vine, room, secret, barrier, section), báo lỗi rõ ràng (tileset ngoài, base64, sai cỡ ô, thiếu spawn, Class lạ, thiếu thuộc tính).
+  - `StageLayout` chung (`src/logic/stage/layout.ts`) cho cả ASCII và Tiled; `StageWorld` nhận `layout`; `EnemyField` nhận danh sách kẻ địch thay vì ký hiệu chữ.
+  - Cơ chế màn (`src/logic/world/stage-mechanics.ts` + `stage-world.ts`): checkpoint (lưu khi đi qua, hồi sinh 1 s, giữ Core Bit/EXP, vào lại từ checkpoint đã lưu), **hố** (−20 máu, về checkpoint, hết máu mới tính chết), **gai** (−30 máu, về chỗ đứng an toàn, bất tử, Spike Guard miễn nhiễm), **dây leo đu** (con lắc 2,4 s, lệch 3 ô, bệ chở người, nhảy khỏi bệ +10%, Xuống + Nhảy rơi xuyên), **phòng khóa** (đóng cửa khi vào, đếm kẻ địch còn lại, mở khi hạ hết, chết thì mở lại), **vật chắn** chỉ vỡ bằng đúng vũ khí, **vật phẩm bí mật**.
+  - Vật lý Kai: hỗ trợ bệ di động (`Platform`) và `hitHazard`.
+  - Dữ liệu: `03-Data/stages.json` thêm `mechanics` (mọi con số M7), có kiểm tra: hồi sinh ≤ 1,5 s, gai/hố không giết ngay Kai cấp 1 ở độ khó nặng nhất, dây không ngắn hơn biên độ.
+  - Hiển thị: vẽ gai, cờ checkpoint, dây leo, cửa phòng khóa, vật chắn, bí mật; HUD "Còn N kẻ địch"; thông báo checkpoint/nhặt đồ; camera khóa trong phòng khóa.
+  - **Phòng thử màn chơi** (menu, phím M): bản đồ Tiled `game/maps/m7-test.json` sinh từ bản phác `maps/src/m7-test.map.json` bằng script mới `scripts/ascii-to-tiled.mjs` (tạo kèm tileset xám PNG).
+  - Tài liệu: `game/maps/README.md` (quy ước làm bản đồ Tiled), `game/README.md`, `game/CONTEXT.md`, bảng sprint trong `01-Ke-hoach-lam-viec.md`, lưu ý bản build trong `05-Cong-Prototype.md`, `CLAUDE.md` (quy tắc phiên).
+- **Quyết định:**
+  - Rơi hố không còn là chết (theo đặc tả Stage 1 mục 3): `world.falls` đếm riêng; nhật ký chơi thử vẫn tính rơi hố là một lần hỏng ở đoạn đó để so sánh được với số liệu cũ.
+  - Sát thương gai/hố nhân `damageTaken` của độ khó như đòn kẻ địch.
+  - Bất tử khi lướt không cứu khỏi gai; đang bất tử sau cú đánh thì chạm gai chỉ bị đưa về, không mất máu.
+  - Bản đồ Tiled phải nhúng tileset và lưu lớp ô dạng CSV (đơn giản, dễ đọc diff).
+  - Thắng boss rồi ra khỏi phòng thì về checkpoint cuối, không về điểm xuất phát.
+- **Lỗi tìm thấy / đã sửa:** **lỗi chết lặp có từ Sprint 3–5**: sau lần chết đầu tiên, sự kiện "chết" cũ còn trong `PlayerPhysics.events` nên Kai hồi sinh rồi chết lại mãi (đã tái hiện trên bản cũ: 7 lần chết trong 400 bước sau một cú đánh). Sửa: `respawn()` xóa sự kiện; thêm test. Bản build trên Pages trước bản này có lỗi đó, đã ghi chú trong `05-Cong-Prototype.md`.
+- **Kiểm tra:** `npm test` 192/192 (thêm 20 test ở `tests/stage-mechanics.test.ts` và 1 test hồi sinh), `npm run lint`, `npm run format:check`, `npm run build` đều đạt. Chạy bản build bằng Chromium: vào phòng thử màn chơi, xem dây leo, phòng khóa (khóa cửa, khóa camera, đếm 2 kẻ địch), vật chắn và bí mật; không có lỗi console.
+- **Còn dở / chưa làm của M7:** bản đồ thật Prologue và Stage 1 (chờ qua cổng Prototype), thang và dây leo đứng yên (cần leo trèo, thuộc M3), bệ dây di chuyển (đoạn B), lớp parallax, lưu checkpoint và vật phẩm bí mật (M11), Bramble Golem.
+- **Tiếp theo:**
+  1. Người dùng: bật GitHub Pages và chạy đợt chơi thử cổng Prototype với bản build mới (đã sửa lỗi chết lặp).
+  2. Code: M6 Thorna thật (khung 3 pha đã có từ boss xám) + Bramble Golem, rồi M11 lưu cục bộ (checkpoint, vật phẩm bí mật), M10 HUD cơ bản, TutorialManager.

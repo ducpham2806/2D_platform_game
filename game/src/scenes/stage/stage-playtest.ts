@@ -74,7 +74,9 @@ export class StagePlaytest {
     if (!this.recording) return;
     const world = this.world;
     const section = sectionAt(GRAY_BOX_SECTIONS, Math.floor(world.player.centerX / TILE_SIZE));
-    if (ev.playerDied) this.recorder.death(section);
+    // Rơi hố còn sống vẫn tính là một lần hỏng ở đoạn đó (trước M7 rơi hố là chết), để số liệu
+    // các đợt chơi thử so sánh được với nhau.
+    if (ev.playerDied || ev.fellInPit) this.recorder.death(section);
     this.recorder.step(this.input.device, section, dt);
     if (ev.gateClosed || (ev.respawned && world.phase === 'boss')) this.recorder.bossStart();
     if (ev.bossDefeated) {
