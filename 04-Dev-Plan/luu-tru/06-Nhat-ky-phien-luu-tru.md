@@ -4,6 +4,18 @@ Các mục cũ chuyển từ `04-Dev-Plan/06-Nhat-ky-phien.md`, mới nhất ở
 
 ---
 
+## 2026-11-13 (tiếp 3): Smoke check và bảng chuỗi đa ngôn ngữ
+
+- **Nhánh / commit:** `ccr-0afa36c6-vbizeu`.
+- **Mục tiêu:** người dùng giao tự làm tiếp → hai việc đã nêu ở mục trước: smoke check có ảnh chụp, bảng chuỗi.
+- **Đã làm:** `scripts/smoke-check.mjs` + `npm run smoke` (10 bước, ảnh ở `smoke-shots/`), job CI `smoke` (chưa chặn merge). `03-Data/strings.json` (46 khóa, `vi` + `en`), `core/strings-config.ts`, `logic/i18n.ts`; HUD, menu tạm dừng, hộp hội thoại, màn Kết quả lấy chữ từ bảng chuỗi; `?lang=en` để thử; thoại boss theo cùng ngôn ngữ.
+- **File chính:** các file trên, `game/src/scenes/stage-scene.ts`, `stage/stage-hud.ts`, `stage/pause-menu.ts`, `result-scene.ts`, `preload-scene.ts`, `debug/flags.ts`, `.github/workflows/ci.yml`, `game/tests/strings.test.ts`, `CLAUDE.md` (thêm hai nguyên tắc: chữ lấy từ bảng chuỗi, đổi hình thì chạy smoke).
+- **Quyết định:** khóa chuỗi khai trong mã (`STRING_KEYS`) để sai khóa là lỗi biên dịch; dữ liệu thiếu/thừa khóa hoặc lệch chỗ điền giữa hai ngôn ngữ thì game dừng ở màn tải. Ảnh smoke không commit (CI lưu thành artifact).
+- **Lỗi tìm thấy / đã sửa:** không có lỗi game. Ghi nhận hành vi: phím bấm cùng bước với cú Bỏ qua hội thoại bị hội thoại nhận (đúng thiết kế, kịch bản thử phải chờ).
+- **Kiểm tra:** `npm test` 301 test (thêm 5 ở `strings.test.ts`), lint, format:check, build đều đạt; `npm run smoke` 10/10 bước đạt (chạy 4 lần). Chromium `?lang=en`: thoại Thorna, menu tạm dừng, màn Kết quả hiện tiếng Anh, không tràn khung. Job CI `smoke` **chưa được chạy trên GitHub**.
+- **Còn dở:** chưa chuyển chuỗi của màn hình chính, Điều khiển, Dữ liệu lưu, công cụ chơi thử, tên màn, tên nút, lời hướng dẫn; chưa có chọn ngôn ngữ trong game.
+- **Tiếp theo:** xem `08-Viec-cho-nguoi-dung.md`. Việc Claude tự làm được tiếp: màn Cài đặt (âm thanh, ngôn ngữ, tùy chọn tiếp cận: giảm rung, giảm hiệu ứng), safe-area tai thỏ, chuyển nốt chuỗi còn lại, tiếng Anh cho lời hướng dẫn.
+
 ## 2026-11-13 (tiếp 2): Âm thanh tổng hợp và hiệu ứng tối thiểu
 
 - **Nhánh / commit:** `ccr-0afa36c6-vbizeu`.

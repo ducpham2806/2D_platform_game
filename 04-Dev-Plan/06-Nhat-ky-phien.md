@@ -25,6 +25,18 @@ Mẫu:
 
 ---
 
+## 2026-11-13 (tiếp 6): Sửa lỗi hướng dẫn S10 hiện ngay đầu màn
+
+- **Nhánh / commit:** `claude/peaceful-mccarthy-13m5ah` (dựng trên `ccr-0afa36c6-vbizeu`, vì `main` chưa có R01, S13 mới và `npm run smoke`).
+- **Mục tiêu:** thẻ việc của người dùng: bước có `trigger.after` (S10) hiện ngay đầu màn khi bước đứng trước (S09) đã xong từ bản lưu.
+- **Đã làm:** `TutorialManager` giữ thêm tập `doneThisRun` (bước xong trong lượt này, kể cả do `skipIfDone`/`cancelOn`); `trigger.after` xét theo tập này thay cho tập gồm cả bản lưu. Thêm 3 test, sửa 1 test cũ đang khẳng định hành vi lỗi.
+- **File chính:** `game/src/logic/tutorial/tutorial-manager.ts`, `game/tests/tutorial.test.ts`, `game/src/core/tutorial-config.ts` (chú thích), `game/CONTEXT.md`.
+- **Quyết định:** "lượt" = một lần tạo `TutorialManager` (một lần vào màn). Hệ quả chấp nhận: thoát giữa trận Thorna rồi đánh lại thì lượt đó không nhắc lại S09/S10 (S08 đã lưu nên chuỗi không khởi động lại). S13 (`on: weaponGranted`) và R01 (`on: start`) không có `after` nên không bị ảnh hưởng. Không đổi dữ liệu `tutorial.json`.
+- **Lỗi tìm thấy / đã sửa:** lỗi S10 nói trên (đã sửa). Không tìm thấy lỗi mới.
+- **Kiểm tra:** test mới thất bại trên mã cũ (S10 bắt đầu ngay bước đầu), đạt sau khi sửa. `npm test` 308 test, lint, format:check, build đều đạt; `npm run smoke` 10/10.
+- **Còn dở:** nếu muốn S09/S10 hiện lại khi đánh lại boss sau khi thoát giữa trận, cần đổi dữ liệu (ví dụ S10 `on: bossPhase`, hoặc không lưu S08–S10 cho tới khi hạ boss); chưa làm, chờ ý người dùng.
+- **Tiếp theo:** như mục trước: `08-Viec-cho-nguoi-dung.md` (duyệt đồ họa, merge, thử điện thoại thật, chơi thử 5 người); Claude tự làm được: đổi giao diện các màn còn lại, màn Cài đặt.
+
 ## 2026-11-13 (tiếp 5): Đồ họa đợt 3, đòn của boss và giao diện
 
 - **Nhánh / commit:** `ccr-0afa36c6-vbizeu`.
@@ -48,15 +60,3 @@ Mẫu:
 - **Kiểm tra:** `npm test` 305 test (thêm 4 ở `art.test.ts`), lint, format:check, build đều đạt; `npm run smoke` 10/10. Chromium: 4 phòng (kẻ địch, Thorna, Golem, màn xám) hiện đúng hình, không lỗi console. `gate-check` sau khi thêm hình: mọi hạng mục đạt (60 FPS ở CPU chậm 6×, tải đầu 1,55 MB). Chưa xem trên điện thoại thật.
 - **Còn dở:** vẫn là khối màu: đạn/đòn của boss, roi Vine Lash, dây leo đu, bí mật, bia tập bắn; giao diện (HUD, panel, nút cảm ứng, phông, logo, nền menu) chưa có hình; `manifest.csv` chưa cập nhật theo bộ hình mới.
 - **Tiếp theo:** đợt đồ họa 3: hình cho đòn của Thorna/Golem và Vine Lash, dây leo, bí mật; rồi giao diện (khung HUD, panel, nút, màn hình chính). Người dùng: xem và cho ý về hướng đồ họa (`08-Viec-cho-nguoi-dung.md` mục 6).
-
-## 2026-11-13 (tiếp 3): Smoke check và bảng chuỗi đa ngôn ngữ
-
-- **Nhánh / commit:** `ccr-0afa36c6-vbizeu`.
-- **Mục tiêu:** người dùng giao tự làm tiếp → hai việc đã nêu ở mục trước: smoke check có ảnh chụp, bảng chuỗi.
-- **Đã làm:** `scripts/smoke-check.mjs` + `npm run smoke` (10 bước, ảnh ở `smoke-shots/`), job CI `smoke` (chưa chặn merge). `03-Data/strings.json` (46 khóa, `vi` + `en`), `core/strings-config.ts`, `logic/i18n.ts`; HUD, menu tạm dừng, hộp hội thoại, màn Kết quả lấy chữ từ bảng chuỗi; `?lang=en` để thử; thoại boss theo cùng ngôn ngữ.
-- **File chính:** các file trên, `game/src/scenes/stage-scene.ts`, `stage/stage-hud.ts`, `stage/pause-menu.ts`, `result-scene.ts`, `preload-scene.ts`, `debug/flags.ts`, `.github/workflows/ci.yml`, `game/tests/strings.test.ts`, `CLAUDE.md` (thêm hai nguyên tắc: chữ lấy từ bảng chuỗi, đổi hình thì chạy smoke).
-- **Quyết định:** khóa chuỗi khai trong mã (`STRING_KEYS`) để sai khóa là lỗi biên dịch; dữ liệu thiếu/thừa khóa hoặc lệch chỗ điền giữa hai ngôn ngữ thì game dừng ở màn tải. Ảnh smoke không commit (CI lưu thành artifact).
-- **Lỗi tìm thấy / đã sửa:** không có lỗi game. Ghi nhận hành vi: phím bấm cùng bước với cú Bỏ qua hội thoại bị hội thoại nhận (đúng thiết kế, kịch bản thử phải chờ).
-- **Kiểm tra:** `npm test` 301 test (thêm 5 ở `strings.test.ts`), lint, format:check, build đều đạt; `npm run smoke` 10/10 bước đạt (chạy 4 lần). Chromium `?lang=en`: thoại Thorna, menu tạm dừng, màn Kết quả hiện tiếng Anh, không tràn khung. Job CI `smoke` **chưa được chạy trên GitHub**.
-- **Còn dở:** chưa chuyển chuỗi của màn hình chính, Điều khiển, Dữ liệu lưu, công cụ chơi thử, tên màn, tên nút, lời hướng dẫn; chưa có chọn ngôn ngữ trong game.
-- **Tiếp theo:** xem `08-Viec-cho-nguoi-dung.md`. Việc Claude tự làm được tiếp: màn Cài đặt (âm thanh, ngôn ngữ, tùy chọn tiếp cận: giảm rung, giảm hiệu ứng), safe-area tai thỏ, chuyển nốt chuỗi còn lại, tiếng Anh cho lời hướng dẫn.

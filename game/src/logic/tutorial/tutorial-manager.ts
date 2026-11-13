@@ -7,6 +7,9 @@
  * - bước không có yêu cầu chỉ hiện lời thoại `showSec` giây;
  * - gặp tín hiệu `cancelOn` (ví dụ đã hạ boss) thì bước đang chờ/đang hiện bị bỏ, tính là xong,
  *   và bước nối sau nó cũng bỏ trong cùng bước logic (không hiện lời trận đấu sau khi trận xong).
+ * Bước có `trigger.after` chỉ nối khi bước đứng trước xong **trong lượt này** (kể cả bị bỏ qua hay
+ * bị `cancelOn`); bước đứng trước đã xong từ bản lưu thì không tính, nếu không lời nối sẽ hiện
+ * ngay đầu màn ở lượt sau (ví dụ thoát giữa trận boss rồi vào một phòng không có boss).
  * Chết thì bước vẫn giữ nguyên (hồi sinh ngay tại bước). Không bao giờ khóa điều khiển.
  * Logic thuần.
  */
@@ -39,6 +42,8 @@ interface Active {
 
 export class TutorialManager {
   private readonly done: Set<string>;
+  /** Bước xong trong lượt này (không gồm bước lấy từ bản lưu); điều kiện của `trigger.after`. */
+  private readonly doneThisRun = new Set<string>();
   private readonly steps: TutorialStep[];
   private readonly queue: TutorialStep[] = [];
   private active: Active | undefined;
@@ -129,7 +134,7 @@ export class TutorialManager {
 
     for (const s of this.steps) {
       if (this.done.has(s.id) || this.active?.step === s || this.queue.includes(s)) continue;
-      if (s.trigger.after !== undefined && !this.done.has(s.trigger.after)) continue;
+      if (s.trigger.after !== undefined && !this.doneThisRun.has(s.trigger.after)) continue;
       const on = s.trigger.on;
       if (on !== undefined && !signals.has(on)) continue;
       if (s.trigger.not.some((n) => signals.has(n))) continue;
@@ -158,6 +163,7 @@ export class TutorialManager {
 
   private finish(step: TutorialStep, result: TutorialStepResult): void {
     this.done.add(step.id);
+    this.doneThisRun.add(step.id);
     result.completed.push(step.id);
   }
 }

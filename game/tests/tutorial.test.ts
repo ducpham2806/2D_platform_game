@@ -113,7 +113,7 @@ describe('TutorialManager', () => {
 
   it('bước đã xong (bản lưu) không chạy lại; tắt hướng dẫn thì không kích hoạt gì', () => {
     const m = new TutorialManager(tiny(steps), 'stage1', ['B']);
-    expect(m.step(sig('spike'), 0, DT).started).toBe('C');
+    expect(m.step(sig('spike'), 0, DT).started).toBeUndefined();
     const off = new TutorialManager(tiny(steps), 'stage1', [], false);
     expect(off.step(sig('wallSlide', 'spike'), 0, DT).started).toBeUndefined();
     off.setEnabled(true);
@@ -121,6 +121,15 @@ describe('TutorialManager', () => {
     off.setEnabled(false);
     expect(off.view).toBeUndefined();
     expect(off.completed.has('B')).toBe(false);
+  });
+
+  it('bước "after" không kích hoạt nếu bước đứng trước chỉ xong từ bản lưu (lượt trước)', () => {
+    const m = new TutorialManager(tiny(steps), 'stage1', ['B']);
+    for (let i = 0; i < 60; i += 1) {
+      expect(m.step(sig(), 0, DT)).toEqual({ started: undefined, completed: [] });
+    }
+    expect(m.view).toBeUndefined();
+    expect(m.completed.has('C')).toBe(false);
   });
 
   it('yêu cầu đi N ô chỉ tính quãng sang phải', () => {
@@ -203,6 +212,31 @@ describe('chuỗi bước trận boss (dữ liệu thật)', () => {
     run(sig('bossPhase'), 60);
     run(sig('bossDefeated', 'weaponGranted'), 60);
     expect(started).toEqual(['S08', 'S09', 'S10', 'S13']);
+  });
+
+  it('thoát giữa trận (bản lưu có S08, S09, chưa có S10): vào màn không có bước nào bắt đầu', () => {
+    const m = new TutorialManager(config.tutorial, 'stage1', ['S08', 'S09']);
+    for (let i = 0; i < 60 * 5; i += 1) {
+      const r = m.step(i === 0 ? sig('start') : sig(), 0, DT);
+      expect(r).toEqual({ started: undefined, completed: [] });
+    }
+    expect(m.view).toBeUndefined();
+    expect(m.completed.has('S10')).toBe(false);
+  });
+
+  it('đánh lại Thorna sau khi thoát giữa trận: đổi pha, hạ boss không hiện S10; vẫn hiện S13', () => {
+    const m = new TutorialManager(config.tutorial, 'stage1', ['S08', 'S09']);
+    const started: string[] = [];
+    const run = (s: Set<string>, n = 1) => {
+      for (let i = 0; i < n; i += 1) {
+        const r = m.step(i === 0 ? s : sig(), 0, DT);
+        if (r.started) started.push(r.started);
+      }
+    };
+    run(sig('bossGate'), 60 * 4);
+    run(sig('bossPhase'), 60);
+    run(sig('bossDefeated', 'weaponGranted'), 60);
+    expect(started).toEqual(['S13']);
   });
 });
 
