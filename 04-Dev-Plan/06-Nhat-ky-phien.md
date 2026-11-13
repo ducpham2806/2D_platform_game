@@ -25,6 +25,18 @@ Mẫu:
 
 ---
 
+## 2026-11-13 (tiếp 2): Âm thanh tổng hợp và hiệu ứng tối thiểu
+
+- **Nhánh / commit:** `ccr-0afa36c6-vbizeu`.
+- **Mục tiêu:** người dùng giao tự làm tiếp, việc cần người dùng thì ghi lại → chọn phương án A của quyết định 1 trong bản đánh giá (lượt cảm giác tối thiểu trước đợt chơi thử). Tạo `08-Viec-cho-nguoi-dung.md`.
+- **Đã làm:** `03-Data/feedback.json` (34 cue → âm tổng hợp, hạt, co giãn) + `core/feedback-config.ts`; `logic/feel/` (`CueCollector`, `ParticlePool`, `Squash`, cài đặt âm thanh); `audio/sfx-player.ts` (Web Audio); nối vào `StageScene`; mục Bật/Tắt âm thanh ở menu tạm dừng.
+- **File chính:** các file trên, `game/src/scenes/stage-scene.ts`, `stage/stage-renderer.ts`, `stage/pause-menu.ts`, `preload-scene.ts`, `core/game-config.ts`, `core/phaser-services.ts`, `game/tests/feedback.test.ts`.
+- **Quyết định:** âm thanh tổng hợp bằng mã, chưa dùng file (không phụ thuộc asset, 0 MB tải thêm); mọi thông số ở dữ liệu. Áp cho cả màn xám vì mục đích là để người thử chấm cảm giác có phản hồi. Chưa làm corner correction và apex hang (đổi vật lý Kai, nên chờ ý người dùng hoặc làm thành thông số mặc định tắt).
+- **Lỗi tìm thấy / đã sửa:** không có.
+- **Kiểm tra:** `npm test` 296 test (thêm 13 ở `feedback.test.ts`), lint, format:check, build đều đạt. `gate-check`: mọi hạng mục đạt (60 FPS ở CPU chậm 6×, tải đầu 1,48 MB). Chromium: nhảy, đáp, bắn, lướt đều tạo âm (đếm nút Web Audio) và hạt, hình Kai co giãn; tắt âm ở menu tạm dừng thì không còn âm mới và được lưu; không có lỗi console. **Chưa ai nghe bằng tai**: âm lượng và âm sắc cần người dùng nghe thử.
+- **Còn dở:** nhạc, âm menu/hội thoại, hạt tại chỗ kẻ địch bị trúng, tùy chọn giảm hiệu ứng.
+- **Tiếp theo:** xem `08-Viec-cho-nguoi-dung.md` (merge, thử điện thoại thật, chơi thử 5 người, 2 quyết định còn lại). Việc Claude tự làm được tiếp: smoke check Playwright có ảnh chụp trong CI; bảng chuỗi đa ngôn ngữ; corner correction/apex hang dạng thông số chỉnh được; phần còn lại của M10 (Cài đặt, safe-area).
+
 ## 2026-11-13 (tiếp): Màn Kết quả
 
 - **Nhánh / commit:** `ccr-0afa36c6-vbizeu`.
@@ -48,15 +60,3 @@ Mẫu:
 - **Kiểm tra:** `npm test` 271 test (thêm 16 ở `dialogue.test.ts`, 1 ở `scale.test.ts`), lint, format:check, build đều đạt. Chromium: thoại trước trận hiện khi vào phòng Thorna, máu boss và vị trí Kai đứng yên trong lúc thoại; hạ boss → Thorna → NOVA → "Nhận vũ khí" → S13; giả lập Pixel 7: chạm để hiện hết câu và sang câu, nút Bỏ qua, vào lại sau khi đã hạ thì không có thoại; không có lỗi console.
 - **Còn dở:** chưa thử trên điện thoại thật (nhất là hệ số phóng mới: cần xem hình có nét không). ChoicePanel, chân dung, hộp thoại tự tiến, thoại Prologue/Hub chưa làm. Ba quyết định trong bản đánh giá chưa được chọn.
 - **Tiếp theo:** màn Kết quả (việc code còn lại của Vertical slice không phụ thuộc bản đồ). Người dùng: mở bản Pages trên điện thoại kiểm tra kích thước hình, rồi chạy đợt chơi thử 5 người. Không bắt đầu M8 trước khi qua cổng Prototype.
-
-## 2026-11-03: Sprint 7, TutorialManager
-
-- **Nhánh / commit:** `claude/condense-plan-archive-logs-kqnyvb`.
-- **Mục tiêu:** người dùng giao làm TutorialManager (việc code cuối của Vertical slice).
-- **Đã làm:** `03-Data/tutorial.json` (13 bước Stage 1 S01–S13 theo kịch bản mục 4.2) + kiểm tra `core/tutorial-config.ts`. `logic/tutorial/` (thuần): `TutorialManager` (hàng đợi, `after`, `skipIfDone`, `cancelOn`, gợi ý theo giây/thất bại) và `TutorialSignals` (StageWorld → tín hiệu, thêm `LockedRoom.kinds`). Hộp lời thoại `TutorialBox`, nút cảm ứng nhấp nháy theo gợi ý, mục Bật/Tắt hướng dẫn ở menu tạm dừng, tiến độ lưu trong bản lưu (`tutorial.done/off`). Bật cho 4 phòng thử (`StageDef.tutorial: 'stage1'`).
-- **File chính:** `03-Data/tutorial.json`, `game/src/core/tutorial-config.ts`, `game-config.ts`, `game/src/logic/tutorial/*.ts`, `game/src/scenes/stage/tutorial-box.ts`, `pause-menu.ts`, `stage-scene.ts`, `game/src/logic/save/save-data.ts`, `game/tests/tutorial.test.ts`.
-- **Quyết định:** bước theo tín hiệu sự kiện, không theo tọa độ bản đồ (chưa được chốt màn trước cổng Prototype). Chưa làm Prologue P01–P13 và F01–F04 vì cần bản đồ Prologue. Màn xám không có hướng dẫn để giữ số liệu chơi thử. Lời thoại để thẳng tiếng Việt trong dữ liệu (khóa `tut.<ID>` và tiếng Anh làm khi có bản địa hóa).
-- **Lỗi tìm thấy / đã sửa:** chạy thử thấy hạ boss khi lời S08 còn hiện thì S09/S10 vẫn hiện sau trận; thêm `cancelOn` (S08, S09) và `skipIfDone` (S10), có test.
-- **Kiểm tra:** `npm test` 254 test (thêm 14 ở `tutorial.test.ts`), lint, format:check, build đều đạt. Chromium: chạm gai ở phòng thử màn chơi → S03, lưu `done: [S03]`; tắt hướng dẫn ở menu tạm dừng → lưu `off: true`; giả lập Pixel 7: hạ Thorna → S11, S12, S13 và nút VK > cùng nút vũ khí nhấp nháy; không có lỗi console.
-- **Còn dở:** gợi ý bậc 3–4, minh họa bóng mờ, mục Trợ giúp, sự kiện đo lường; trên cảm ứng tên nút dài nên một số lời thoại thành 3 dòng.
-- **Tiếp theo:** phần code Vertical slice đã đủ khung. Chờ người dùng báo kết quả chơi thử (Thorna/Golem, cổng Prototype 5 người). Trong lúc chờ, có thể làm: hộp hội thoại (thoại Thorna, cần cho S11), màn Kết quả, hoặc M8 RPG rút gọn của MVP (hỏi người dùng).

@@ -7,7 +7,13 @@ import {
   SceneKey,
   TILE_SIZE,
 } from '../core/constants';
-import { getBus, getConfig, getInput, getSave } from '../core/phaser-services';
+import type { CueId, FeedbackData } from '../core/feedback-config';
+import { getBus, getConfig, getInput, getSave, getSfx } from '../core/phaser-services';
+import type { SfxPlayer } from '../audio/sfx-player';
+import { CueCollector } from '../logic/feel/cue-collector';
+import { ParticlePool } from '../logic/feel/particle-pool';
+import { Squash } from '../logic/feel/squash';
+import { createRng, type Rng } from '../logic/rng';
 import type { InputService } from '../input/input-service';
 import { FixedStep } from '../logic/fixed-step';
 import type { InputSnapshot } from '../logic/input/actions';
@@ -34,7 +40,7 @@ import { StageHud } from './stage/stage-hud';
 import { TutorialBox } from './stage/tutorial-box';
 import { StagePlaytest, tunedData } from './stage/stage-playtest';
 import { barrierCells, drawMechanics } from './stage/mechanics-renderer';
-import { chargeGlowColor, drawDynamic, drawStaticMap } from './stage/stage-renderer';
+import { chargeGlowColor, drawDynamic, drawParticles, drawStaticMap } from './stage/stage-renderer';
 
 const STATE_COLORS: Readonly<Record<PlayerStateName, number>> = {
   idle: 0x4fd1ff,
@@ -55,6 +61,15 @@ const DOWN_AXIS_THRESHOLD = 0.5;
 const DEBUG_HIT_DAMAGE = 10;
 /** Hạt giống ngẫu nhiên của màn xám (khe né Mưa đạn). */
 const WORLD_SEED = 2187;
+/** Đầu nòng Arc Cannon nằm ở chừng này chiều cao hộp Kai tính từ trên xuống (tạm, tới khi có sprite). */
+const MUZZLE_HEIGHT = 0.4;
+/** Cue làm hình Kai co giãn, và kiểu co giãn tương ứng trong feedback.json. */
+const SQUASH_CUES: Partial<Record<CueId, 'jump' | 'land' | 'dash'>> = {
+  jump: 'jump',
+  wallJump: 'jump',
+  land: 'land',
+  dash: 'dash',
+};
 /** Ngôn ngữ thoại; chọn ngôn ngữ làm cùng màn Cài đặt (M10). */
 const DIALOGUE_LANG: DialogueLang = 'vi';
 /** Thông báo nhận vũ khí hiện sau chữ "HẠ BOSS!" bấy nhiêu ms (hoặc ngay sau thoại sau trận). */
@@ -92,6 +107,17 @@ export class StageScene extends Phaser.Scene {
   private weaponNotice: { name: string; atMs: number } | undefined;
   private noticeUntilMs = 0;
   /** Lượt chơi để đưa sang màn Kết quả (màn chơi thử của cổng Prototype không có). */
+  /** Phản hồi cảm giác chơi: âm thanh, hạt, co giãn hình Kai (theo feedback.json). */
+  private feel:
+    | {
+        data: FeedbackData;
+        sfx: SfxPlayer;
+        cues: CueCollector;
+        particles: ParticlePool;
+        squash: Squash;
+        rng: Rng;
+      }
+    | undefined;
   private run:
     | {
         gate: ResultGate;
@@ -204,6 +230,16 @@ export class StageScene extends Phaser.Scene {
       defeated.filter((b) => b !== bossId).length,
       DIALOGUE_LANG,
     );
+    const feedback = config.feedback;
+    this.feel = {
+      data: feedback,
+      sfx: getSfx(this),
+      cues: new CueCollector(),
+      particles: new ParticlePool(feedback.rules.maxParticles),
+      squash: new Squash(feedback.squash.recoverSec),
+      // Hạt chỉ để vẽ: hạt giống riêng, không đụng tới ngẫu nhiên của luật chơi.
+      rng: createRng(WORLD_SEED + 1),
+    };
     this.weaponNotice = undefined;
     this.noticeUntilMs = 0;
     this.run = save
@@ -229,6 +265,7 @@ export class StageScene extends Phaser.Scene {
       `${this.def.name} · Thường`,
       (c) => this.onPauseChoice(c),
       tut ? () => tut.manager.isEnabled : undefined,
+      () => !getSfx(this).muted,
     );
     if (DEBUG) {
       this.input.keyboard?.on('keydown-T', () =>
@@ -277,6 +314,7 @@ export class StageScene extends Phaser.Scene {
       this.prev = { x: world.player.box.x, y: world.player.box.y };
       const ev = world.step(this.toWorldInput(snap, input));
       this.react(ev, world);
+      this.playCues(ev, world);
       this.saver?.step(ev, world, FIXED_STEP_MS / 1000);
       this.stepTutorial(ev, world);
       this.playtest?.record(ev, FIXED_STEP_MS / 1000);
@@ -292,6 +330,12 @@ export class StageScene extends Phaser.Scene {
     if (this.dynamic) {
       drawDynamic(this.dynamic, world, time);
       drawMechanics(this.dynamic, world, time);
+    }
+    if (this.feel) {
+      const dt = Math.min(delta, FIXED_STEP_MS * MAX_STEPS_PER_FRAME) / 1000;
+      this.feel.particles.update(dt);
+      this.feel.squash.update(dt);
+      if (this.dynamic) drawParticles(this.dynamic, this.feel.particles);
     }
     this.syncSprites(this.stepper.alpha);
     const ctx = input.glyphContext();
@@ -331,6 +375,34 @@ export class StageScene extends Phaser.Scene {
       this.hud?.debug.setText(
         `${world.player.state} · chết ${world.deaths} · FPS ${Math.round(this.game.loop.actualFps)}`,
       );
+    }
+  }
+
+  /** Âm thanh, hạt và co giãn hình theo các cue của bước vừa chạy. */
+  private playCues(ev: WorldEvents, world: StageWorld): void {
+    const feel = this.feel;
+    if (!feel) return;
+    const pl = world.player;
+    for (const cue of feel.cues.collect(world, ev)) {
+      const def = feel.data.cues[cue];
+      if (def.sfx) feel.sfx.play(def.sfx);
+      const preset = def.particles ? feel.data.particles[def.particles] : undefined;
+      if (preset) {
+        let x = pl.centerX;
+        let y = pl.box.y + pl.box.h / 2;
+        if (def.at === 'feet') y = pl.box.y + pl.box.h;
+        else if (def.at === 'muzzle') {
+          x = pl.facing > 0 ? pl.box.x + pl.box.w : pl.box.x;
+          y = pl.box.y + pl.box.h * MUZZLE_HEIGHT;
+        } else if (def.at === 'boss' && world.boss) {
+          x = world.boss.box.x + world.boss.box.w / 2;
+          y = world.boss.box.y + world.boss.box.h / 2;
+        }
+        feel.particles.spawn(preset, x, y, pl.facing > 0 ? 1 : -1, feel.rng);
+      }
+      const squash = SQUASH_CUES[cue];
+      if (squash) feel.squash.set(feel.data.squash[squash]);
+      if (cue === 'respawn') feel.squash.reset();
     }
   }
 
@@ -410,6 +482,11 @@ export class StageScene extends Phaser.Scene {
       const on = !tut.manager.isEnabled;
       tut.manager.setEnabled(on);
       this.save?.update((s) => setTutorialOff(s, !on));
+      return;
+    }
+    if (choice === 'sound') {
+      const sfx = getSfx(this);
+      sfx.setMuted(!sfx.muted);
       return;
     }
     if (choice === 'quit') {
@@ -513,7 +590,16 @@ export class StageScene extends Phaser.Scene {
     const x = Math.round(this.prev.x + (pl.box.x - this.prev.x) * alpha);
     const y = Math.round(this.prev.y + (pl.box.y - this.prev.y) * alpha);
     const visible = !world.respawning && (!pl.blinking || Math.floor(this.time.now / 60) % 2 === 0);
-    this.kai.setPosition(x, y).setFillStyle(STATE_COLORS[pl.state]).setVisible(visible);
+    // Co giãn quanh điểm giữa chân: hộp va chạm không đổi, chỉ hình vẽ.
+    const sx = this.feel?.squash.x ?? 1;
+    const sy = this.feel?.squash.y ?? 1;
+    const w = pl.box.w * sx;
+    const h = pl.box.h * sy;
+    this.kai
+      .setPosition(Math.round(x + (pl.box.w - w) / 2), Math.round(y + pl.box.h - h))
+      .setDisplaySize(w, h)
+      .setFillStyle(STATE_COLORS[pl.state])
+      .setVisible(visible);
     this.eye.setPosition(x + (pl.facing > 0 ? pl.box.w - 5 : 2), y + 5).setVisible(visible);
     this.glow.clear();
     const color =

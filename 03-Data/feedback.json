@@ -1,0 +1,122 @@
+{
+  "_note": "Phản hồi cảm giác chơi (GDD 14; M12 phần tối thiểu): mỗi 'cue' là một việc xảy ra trong màn (danh sách ở game/src/core/feedback-config.ts), gắn với một âm thanh tổng hợp (sfx), một kiểu hạt (particles) và vị trí phát hạt (at: feet = chân Kai, muzzle = đầu nòng, body = thân Kai, boss = thân boss). Âm thanh tổng hợp bằng Web Audio, chưa có file âm thanh: mỗi sfx là một hay nhiều lớp {wave: square/sawtooth/triangle/sine/noise, freq: [đầu, cuối] Hz (với noise là tần số cắt), sec, gain 0..1, delaySec}. Hạt: count, speed [min,max] px/s, angleDeg [min,max] (0 = sang phải, 90 = lên; mirror: lật theo hướng mặt Kai), lifeSec, sizePx, color, gravity px/s². squash: co giãn hình Kai (x, y) rồi trở về 1 sau recoverSec. Mọi số là [PLACEHOLDER], chỉnh sau chơi thử.",
+  "rules": { "masterGain": 0.5, "maxVoices": 10, "minRepeatSec": 0.05, "maxParticles": 96 },
+  "squash": {
+    "recoverSec": 0.12,
+    "jump": { "x": 0.8, "y": 1.2 },
+    "land": { "x": 1.25, "y": 0.75 },
+    "dash": { "x": 1.3, "y": 0.8 }
+  },
+  "sfx": {
+    "jump": [{ "wave": "square", "freq": [320, 560], "sec": 0.09, "gain": 0.22 }],
+    "wallJump": [{ "wave": "square", "freq": [420, 700], "sec": 0.09, "gain": 0.22 }],
+    "land": [{ "wave": "noise", "freq": [900, 200], "sec": 0.07, "gain": 0.25 }],
+    "dash": [{ "wave": "noise", "freq": [3000, 600], "sec": 0.16, "gain": 0.28 }],
+    "shot": [{ "wave": "square", "freq": [880, 440], "sec": 0.06, "gain": 0.18 }],
+    "shotMid": [{ "wave": "sawtooth", "freq": [700, 300], "sec": 0.11, "gain": 0.24 }],
+    "shotCharged": [
+      { "wave": "sawtooth", "freq": [520, 130], "sec": 0.22, "gain": 0.3 },
+      { "wave": "noise", "freq": [4000, 500], "sec": 0.18, "gain": 0.2 }
+    ],
+    "sweep": [{ "wave": "noise", "freq": [1200, 4000], "sec": 0.14, "gain": 0.3 }],
+    "chargeMid": [{ "wave": "triangle", "freq": [440, 660], "sec": 0.08, "gain": 0.15 }],
+    "chargeFull": [{ "wave": "triangle", "freq": [660, 990], "sec": 0.12, "gain": 0.2 }],
+    "empty": [{ "wave": "square", "freq": [160, 120], "sec": 0.08, "gain": 0.18 }],
+    "swap": [{ "wave": "triangle", "freq": [600, 800], "sec": 0.05, "gain": 0.16 }],
+    "hit": [{ "wave": "square", "freq": [240, 160], "sec": 0.05, "gain": 0.2 }],
+    "weakHit": [
+      { "wave": "square", "freq": [520, 1040], "sec": 0.1, "gain": 0.26 },
+      { "wave": "noise", "freq": [5000, 1500], "sec": 0.08, "gain": 0.18 }
+    ],
+    "blocked": [{ "wave": "triangle", "freq": [1400, 1200], "sec": 0.05, "gain": 0.2 }],
+    "break": [{ "wave": "noise", "freq": [2500, 300], "sec": 0.2, "gain": 0.32 }],
+    "kill": [
+      { "wave": "noise", "freq": [1800, 200], "sec": 0.18, "gain": 0.3 },
+      { "wave": "square", "freq": [300, 80], "sec": 0.16, "gain": 0.18 }
+    ],
+    "hurt": [{ "wave": "sawtooth", "freq": [300, 90], "sec": 0.2, "gain": 0.32 }],
+    "died": [
+      { "wave": "sawtooth", "freq": [400, 50], "sec": 0.5, "gain": 0.34 },
+      { "wave": "noise", "freq": [2000, 100], "sec": 0.4, "gain": 0.22 }
+    ],
+    "respawn": [{ "wave": "sine", "freq": [300, 900], "sec": 0.25, "gain": 0.2 }],
+    "coin": [
+      { "wave": "square", "freq": [990, 990], "sec": 0.04, "gain": 0.16 },
+      { "wave": "square", "freq": [1320, 1320], "sec": 0.07, "gain": 0.16, "delaySec": 0.04 }
+    ],
+    "heal": [{ "wave": "sine", "freq": [520, 780], "sec": 0.16, "gain": 0.22 }],
+    "checkpoint": [
+      { "wave": "triangle", "freq": [523, 523], "sec": 0.08, "gain": 0.2 },
+      { "wave": "triangle", "freq": [784, 784], "sec": 0.14, "gain": 0.2, "delaySec": 0.08 }
+    ],
+    "secret": [
+      { "wave": "triangle", "freq": [659, 659], "sec": 0.07, "gain": 0.2 },
+      { "wave": "triangle", "freq": [880, 880], "sec": 0.07, "gain": 0.2, "delaySec": 0.07 },
+      { "wave": "triangle", "freq": [1319, 1319], "sec": 0.16, "gain": 0.2, "delaySec": 0.14 }
+    ],
+    "gate": [{ "wave": "noise", "freq": [400, 120], "sec": 0.35, "gain": 0.34 }],
+    "doorOpen": [{ "wave": "triangle", "freq": [330, 660], "sec": 0.2, "gain": 0.2 }],
+    "bossWarn": [
+      { "wave": "square", "freq": [740, 740], "sec": 0.07, "gain": 0.2 },
+      { "wave": "square", "freq": [740, 740], "sec": 0.07, "gain": 0.2, "delaySec": 0.11 }
+    ],
+    "bossPhase": [{ "wave": "sawtooth", "freq": [110, 330], "sec": 0.4, "gain": 0.3 }],
+    "thud": [{ "wave": "noise", "freq": [500, 80], "sec": 0.22, "gain": 0.36 }],
+    "bossDown": [
+      { "wave": "noise", "freq": [3000, 80], "sec": 0.7, "gain": 0.36 },
+      { "wave": "sawtooth", "freq": [220, 40], "sec": 0.7, "gain": 0.26 }
+    ],
+    "weaponGet": [
+      { "wave": "square", "freq": [523, 523], "sec": 0.09, "gain": 0.2 },
+      { "wave": "square", "freq": [659, 659], "sec": 0.09, "gain": 0.2, "delaySec": 0.09 },
+      { "wave": "square", "freq": [784, 784], "sec": 0.09, "gain": 0.2, "delaySec": 0.18 },
+      { "wave": "square", "freq": [1047, 1047], "sec": 0.24, "gain": 0.22, "delaySec": 0.27 }
+    ]
+  },
+  "particles": {
+    "dust": { "count": 4, "speed": [15, 45], "angleDeg": [15, 165], "lifeSec": 0.28, "sizePx": 2, "color": "#8fa3bf", "gravity": 120 },
+    "dashTrail": { "count": 5, "speed": [20, 70], "angleDeg": [150, 210], "mirror": true, "lifeSec": 0.22, "sizePx": 2, "color": "#ffd166", "gravity": 0 },
+    "muzzle": { "count": 3, "speed": [40, 90], "angleDeg": [-25, 25], "mirror": true, "lifeSec": 0.1, "sizePx": 2, "color": "#9be7ff", "gravity": 0 },
+    "muzzleBig": { "count": 8, "speed": [50, 130], "angleDeg": [-40, 40], "mirror": true, "lifeSec": 0.16, "sizePx": 2, "color": "#ffffff", "gravity": 0 },
+    "spark": { "count": 4, "speed": [40, 100], "angleDeg": [0, 360], "lifeSec": 0.16, "sizePx": 2, "color": "#ffe066", "gravity": 0 },
+    "sparkBig": { "count": 10, "speed": [60, 150], "angleDeg": [0, 360], "lifeSec": 0.24, "sizePx": 2, "color": "#ffffff", "gravity": 0 },
+    "pain": { "count": 6, "speed": [40, 100], "angleDeg": [30, 150], "lifeSec": 0.3, "sizePx": 2, "color": "#ff6b6b", "gravity": 260 },
+    "burst": { "count": 24, "speed": [40, 170], "angleDeg": [0, 360], "lifeSec": 0.6, "sizePx": 3, "color": "#b2f2bb", "gravity": 80 }
+  },
+  "cues": {
+    "jump": { "sfx": "jump", "particles": "dust", "at": "feet" },
+    "wallJump": { "sfx": "wallJump", "particles": "dust", "at": "feet" },
+    "land": { "sfx": "land", "particles": "dust", "at": "feet" },
+    "dash": { "sfx": "dash", "particles": "dashTrail", "at": "feet" },
+    "shot": { "sfx": "shot", "particles": "muzzle", "at": "muzzle" },
+    "shotMid": { "sfx": "shotMid", "particles": "muzzle", "at": "muzzle" },
+    "shotCharged": { "sfx": "shotCharged", "particles": "muzzleBig", "at": "muzzle" },
+    "sweep": { "sfx": "sweep", "particles": "muzzle", "at": "muzzle" },
+    "chargeMid": { "sfx": "chargeMid" },
+    "chargeFull": { "sfx": "chargeFull", "particles": "spark", "at": "body" },
+    "emptyWeapon": { "sfx": "empty" },
+    "swap": { "sfx": "swap" },
+    "hit": { "sfx": "hit" },
+    "hitBoss": { "sfx": "hit", "particles": "spark", "at": "boss" },
+    "weakHit": { "sfx": "weakHit", "particles": "sparkBig", "at": "boss" },
+    "blocked": { "sfx": "blocked" },
+    "shieldBroken": { "sfx": "break" },
+    "enemyKilled": { "sfx": "kill" },
+    "hurt": { "sfx": "hurt", "particles": "pain", "at": "body" },
+    "died": { "sfx": "died", "particles": "sparkBig", "at": "body" },
+    "respawn": { "sfx": "respawn" },
+    "coreBit": { "sfx": "coin" },
+    "heal": { "sfx": "heal" },
+    "checkpoint": { "sfx": "checkpoint" },
+    "secret": { "sfx": "secret" },
+    "roomLocked": { "sfx": "gate" },
+    "roomCleared": { "sfx": "doorOpen" },
+    "barrierBroken": { "sfx": "break" },
+    "bossGate": { "sfx": "gate" },
+    "bossTelegraph": { "sfx": "bossWarn" },
+    "bossPhase": { "sfx": "bossPhase" },
+    "bossLanded": { "sfx": "thud" },
+    "bossDefeated": { "sfx": "bossDown", "particles": "burst", "at": "boss" },
+    "weaponGranted": { "sfx": "weaponGet" }
+  }
+}

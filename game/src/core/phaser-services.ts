@@ -4,11 +4,13 @@ import type { GameConfig } from './game-config';
 import type { GameEventBus, GameEvents } from './game-events';
 import type { InputService } from '../input/input-service';
 import type { SaveManager } from '../logic/save/save-manager';
+import type { SfxPlayer } from '../audio/sfx-player';
 
 const BUS_KEY = 'cv.bus';
 const CONFIG_KEY = 'cv.config';
 const INPUT_KEY = 'cv.input';
 const SAVE_KEY = 'cv.save';
+const SFX_KEY = 'cv.sfx';
 
 /** Gắn event bus dùng chung vào registry của game (gọi một lần ở BootScene). */
 export function installBus(game: Phaser.Game): GameEventBus {
@@ -43,6 +45,16 @@ export function getInput(scene: Phaser.Scene): InputService {
   const input = scene.registry.get(INPUT_KEY) as InputService | undefined;
   if (!input) throw new Error('InputService chưa được tạo (PreloadScene phải chạy trước)');
   return input;
+}
+
+export function setSfx(scene: Phaser.Scene, sfx: SfxPlayer): void {
+  scene.registry.set(SFX_KEY, sfx);
+}
+
+export function getSfx(scene: Phaser.Scene): SfxPlayer {
+  const sfx = scene.registry.get(SFX_KEY) as SfxPlayer | undefined;
+  if (!sfx) throw new Error('SfxPlayer chưa được tạo (PreloadScene phải chạy trước)');
+  return sfx;
 }
 
 export function setSave(scene: Phaser.Scene, save: SaveManager): void {

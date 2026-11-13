@@ -1,6 +1,7 @@
 import type Phaser from 'phaser';
 import type { Boss } from '../../logic/boss/boss';
 import type { Projectile } from '../../logic/combat/projectiles';
+import type { ParticlePool } from '../../logic/feel/particle-pool';
 import { Tile, type TileMap } from '../../logic/tilemap';
 import type { StageWorld } from '../../logic/world/stage-world';
 import { drawEnemies, drawPickups } from './enemy-renderer';
@@ -50,6 +51,19 @@ export function drawStaticMap(
           g.fillTriangle(x, (r + 1) * t, x + t / 2, (r + 1) * t, x + t / 4, r * t + 6);
       }
     }
+  }
+}
+
+/** Vẽ hạt hiệu ứng (gọi sau drawDynamic, không clear): mờ dần theo thời gian sống còn lại. */
+export function drawParticles(g: Phaser.GameObjects.Graphics, pool: ParticlePool): void {
+  for (const p of pool.all) {
+    if (!p.alive) continue;
+    g.fillStyle(p.color, Math.min(1, (p.life / p.total) * 1.5)).fillRect(
+      Math.round(p.x - p.size / 2),
+      Math.round(p.y - p.size / 2),
+      p.size,
+      p.size,
+    );
   }
 }
 

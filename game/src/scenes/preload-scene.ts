@@ -7,7 +7,8 @@ import {
   SceneKey,
 } from '../core/constants';
 import { ConfigError, parseGameConfig } from '../core/game-config';
-import { getBus, setConfig, setInput, setSave } from '../core/phaser-services';
+import { SfxPlayer } from '../audio/sfx-player';
+import { getBus, setConfig, setInput, setSave, setSfx } from '../core/phaser-services';
 import { LocalStorageStore } from '../input/browser-store';
 import { InputService } from '../input/input-service';
 import { SaveManager } from '../logic/save/save-manager';
@@ -76,6 +77,7 @@ export class PreloadScene extends Phaser.Scene {
       const config = parseGameConfig(files);
       setConfig(this, config);
       setInput(this, new InputService(config.controls, new LocalStorageStore(), getBus(this)));
+      setSfx(this, new SfxPlayer(config.feedback, new LocalStorageStore()));
       getBus(this).emit('config:ready', { config });
       const save = await SaveManager.open(await openBrowserSaveStore());
       if (save.lastError) console.warn(save.lastError);

@@ -4,7 +4,7 @@ import { MenuCursor } from '../../logic/hud/menu-cursor';
 import type { InputSnapshot } from '../../logic/input/actions';
 import { MUTED_STYLE, TEXT_STYLE } from '../ui';
 
-export type PauseChoice = 'resume' | 'quit' | 'tutorial';
+export type PauseChoice = 'resume' | 'quit' | 'tutorial' | 'sound';
 
 interface Item {
   label: string;
@@ -38,10 +38,13 @@ export class PauseMenu {
     private readonly onChoice: (choice: PauseChoice) => void,
     /** Màn có hướng dẫn: trả về hướng dẫn đang bật hay tắt (thêm mục Bật/Tắt hướng dẫn). */
     private readonly tutorialOn?: () => boolean,
+    /** Âm thanh đang bật hay tắt (thêm mục Bật/Tắt âm thanh). */
+    private readonly soundOn?: () => boolean,
   ) {
     this.items = [
       { label: 'Tiếp tục', choice: 'resume' },
       ...(tutorialOn ? [{ label: '', choice: 'tutorial' as const }] : []),
+      ...(soundOn ? [{ label: '', choice: 'sound' as const }] : []),
       { label: 'Lắp module nhanh (chưa có)', choice: undefined },
       { label: 'Tùy chọn (chưa có)', choice: undefined },
       { label: 'Thoát về menu', choice: 'quit' },
@@ -139,7 +142,7 @@ export class PauseMenu {
       return;
     }
     if (choice) this.onChoice(choice);
-    if (choice === 'tutorial') this.refresh();
+    if (choice === 'tutorial' || choice === 'sound') this.refresh();
   }
 
   private refresh(): void {
@@ -153,6 +156,7 @@ export class PauseMenu {
       if (item.choice === 'quit') t.setText(this.armedQuit ? 'Bấm lần nữa để thoát' : item.label);
       if (item.choice === 'tutorial')
         t.setText(this.tutorialOn?.() ? 'Tắt hướng dẫn' : 'Bật hướng dẫn');
+      if (item.choice === 'sound') t.setText(this.soundOn?.() ? 'Tắt âm thanh' : 'Bật âm thanh');
     });
   }
 
