@@ -1,5 +1,5 @@
 {
-  "_note": "Các bước hướng dẫn (01-GDD/07-Kich-ban-huong-dan.md). Bước kích hoạt và hoàn thành theo 'tín hiệu' của màn chơi (danh sách ở game/src/core/tutorial-config.ts), không theo tọa độ bản đồ, để dùng lại khi có bản đồ thật. Lời thoại tối đa 2 dòng; {NHẢY}, {BẮN}... tự đổi theo thiết bị. Bậc gợi ý 3 (giảm độ khó khu vực) và 4 (đề nghị độ khó Cốt truyện) chưa làm. Prologue (P01–P13) thêm khi có bản đồ Prologue (sau cổng Prototype). Mọi số là [PLACEHOLDER].",
+  "_note": "Các bước hướng dẫn (01-GDD/07-Kich-ban-huong-dan.md). Bước kích hoạt và hoàn thành theo 'tín hiệu' của màn chơi (danh sách ở game/src/core/tutorial-config.ts), không theo tọa độ bản đồ, để dùng lại khi có bản đồ thật. Lời thoại tối đa 2 dòng; {NHẢY}, {BẮN}... tự đổi theo thiết bị. Bậc gợi ý 3 (giảm độ khó khu vực) và 4 (đề nghị độ khó Cốt truyện) chưa làm. S11 (thoại Thorna sau trận) và S12 (lời NOVA khi nhận vũ khí) do hộp hội thoại hiện (dialogue_wardens.json: boss.thorna.early.post, boss.thorna.nova_after), không nằm ở đây. Prologue (P01–P13) thêm khi có bản đồ Prologue (sau cổng Prototype). Mọi số là [PLACEHOLDER].",
   "rules": {
     "showSec": 5,
     "nearTiles": 8,
@@ -109,31 +109,23 @@
       "hints": [{ "afterFails": 3, "text": "Vết nứt vàng là chỗ rễ sắp mọc. Hoa Nở luôn chừa khe không có cột đỏ." }]
     },
     {
-      "id": "S11",
-      "stage": "stage1",
-      "speaker": "Thorna",
-      "trigger": { "on": "bossDefeated" },
-      "showSec": 4,
-      "text": "Ngươi... không phải đến để chữa cho ta. Hãy hỏi AEGIS... ai đã ra lệnh."
-    },
-    {
-      "id": "S12",
-      "stage": "stage1",
-      "speaker": "NOVA",
-      "trigger": { "on": "weaponGranted" },
-      "showSec": 4,
-      "text": "Vine Lash. Trong này còn mã của Thorna... lạ thật, tôi thấy nó quen."
-    },
-    {
       "id": "S13",
       "stage": "stage1",
       "speaker": "NOVA",
-      "trigger": { "after": "S12" },
+      "trigger": { "on": "weaponGranted" },
       "require": { "on": "fireWarden" },
       "text": "{ĐỔI_VK} để đổi vũ khí, rồi {BẮN} thử. Vũ khí Warden ăn năng lượng riêng, xem thanh dưới thanh máu.",
       "highlight": "swapNext",
       "hints": [{ "afterSec": 8, "text": "Bấm {ĐỔI_VK} để cầm Vine Lash, rồi {BẮN}.", "highlight": "swapNext" }],
       "skipIfDone": true
+    },
+    {
+      "id": "R01",
+      "stage": "afterStage1",
+      "speaker": "NOVA",
+      "trigger": { "on": "start" },
+      "showSec": 6,
+      "text": "EXP giúp lên cấp. Core Bit cứ giữ lại, sắp có chỗ tiêu."
     }
   ]
 }

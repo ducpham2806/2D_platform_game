@@ -20,6 +20,7 @@ export const SceneKey = {
   Controls: 'controls',
   Playtest: 'playtest',
   Save: 'save',
+  Result: 'result',
 } as const;
 export type SceneKey = (typeof SceneKey)[keyof typeof SceneKey];
 

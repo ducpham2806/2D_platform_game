@@ -41,7 +41,8 @@ export const TUTORIAL_SIGNALS = [
 ] as const;
 
 const FIRE_KINDS = ['shot', 'mid', 'charged', 'sweep'];
-export const TUTORIAL_STAGES = ['prologue', 'stage1'] as const;
+/** `afterStage1`: giai đoạn 4 của kịch bản (màn Kết quả Stage 1, R01…). */
+export const TUTORIAL_STAGES = ['prologue', 'stage1', 'afterStage1'] as const;
 export type TutorialStage = (typeof TUTORIAL_STAGES)[number];
 
 export interface TutorialHint {
@@ -57,7 +58,7 @@ export interface TutorialStep {
   id: string;
   stage: TutorialStage;
   speaker: string;
-  /** Kích hoạt khi có tín hiệu `on` (trừ khi cùng lúc có tín hiệu trong `not`), sau khi bước `after` xong. */
+  /** Kích hoạt khi có tín hiệu `on` (trừ khi cùng lúc có tín hiệu trong `not`), sau khi bước `after` xong trong lượt này (không tính bản lưu). */
   trigger: { on?: string; not: string[]; after?: string };
   /** Hoàn thành khi tín hiệu `on` xuất hiện `count` lần, hoặc đi được `moveTiles` ô sang phải. Không có: chỉ hiện lời thoại `showSec` giây. */
   require?: { on?: string; count: number; moveTiles?: number };

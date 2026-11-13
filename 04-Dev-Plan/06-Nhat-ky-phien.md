@@ -25,38 +25,38 @@ Mẫu:
 
 ---
 
-## 2026-11-03: Sprint 7, TutorialManager
+## 2026-11-13 (tiếp 6): Sửa lỗi hướng dẫn S10 hiện ngay đầu màn
 
-- **Nhánh / commit:** `claude/condense-plan-archive-logs-kqnyvb`.
-- **Mục tiêu:** người dùng giao làm TutorialManager (việc code cuối của Vertical slice).
-- **Đã làm:** `03-Data/tutorial.json` (13 bước Stage 1 S01–S13 theo kịch bản mục 4.2) + kiểm tra `core/tutorial-config.ts`. `logic/tutorial/` (thuần): `TutorialManager` (hàng đợi, `after`, `skipIfDone`, `cancelOn`, gợi ý theo giây/thất bại) và `TutorialSignals` (StageWorld → tín hiệu, thêm `LockedRoom.kinds`). Hộp lời thoại `TutorialBox`, nút cảm ứng nhấp nháy theo gợi ý, mục Bật/Tắt hướng dẫn ở menu tạm dừng, tiến độ lưu trong bản lưu (`tutorial.done/off`). Bật cho 4 phòng thử (`StageDef.tutorial: 'stage1'`).
-- **File chính:** `03-Data/tutorial.json`, `game/src/core/tutorial-config.ts`, `game-config.ts`, `game/src/logic/tutorial/*.ts`, `game/src/scenes/stage/tutorial-box.ts`, `pause-menu.ts`, `stage-scene.ts`, `game/src/logic/save/save-data.ts`, `game/tests/tutorial.test.ts`.
-- **Quyết định:** bước theo tín hiệu sự kiện, không theo tọa độ bản đồ (chưa được chốt màn trước cổng Prototype). Chưa làm Prologue P01–P13 và F01–F04 vì cần bản đồ Prologue. Màn xám không có hướng dẫn để giữ số liệu chơi thử. Lời thoại để thẳng tiếng Việt trong dữ liệu (khóa `tut.<ID>` và tiếng Anh làm khi có bản địa hóa).
-- **Lỗi tìm thấy / đã sửa:** chạy thử thấy hạ boss khi lời S08 còn hiện thì S09/S10 vẫn hiện sau trận; thêm `cancelOn` (S08, S09) và `skipIfDone` (S10), có test.
-- **Kiểm tra:** `npm test` 254 test (thêm 14 ở `tutorial.test.ts`), lint, format:check, build đều đạt. Chromium: chạm gai ở phòng thử màn chơi → S03, lưu `done: [S03]`; tắt hướng dẫn ở menu tạm dừng → lưu `off: true`; giả lập Pixel 7: hạ Thorna → S11, S12, S13 và nút VK > cùng nút vũ khí nhấp nháy; không có lỗi console.
-- **Còn dở:** gợi ý bậc 3–4, minh họa bóng mờ, mục Trợ giúp, sự kiện đo lường; trên cảm ứng tên nút dài nên một số lời thoại thành 3 dòng.
-- **Tiếp theo:** phần code Vertical slice đã đủ khung. Chờ người dùng báo kết quả chơi thử (Thorna/Golem, cổng Prototype 5 người). Trong lúc chờ, có thể làm: hộp hội thoại (thoại Thorna, cần cho S11), màn Kết quả, hoặc M8 RPG rút gọn của MVP (hỏi người dùng).
+- **Nhánh / commit:** `claude/peaceful-mccarthy-13m5ah` (dựng trên `ccr-0afa36c6-vbizeu`, vì `main` chưa có R01, S13 mới và `npm run smoke`).
+- **Mục tiêu:** thẻ việc của người dùng: bước có `trigger.after` (S10) hiện ngay đầu màn khi bước đứng trước (S09) đã xong từ bản lưu.
+- **Đã làm:** `TutorialManager` giữ thêm tập `doneThisRun` (bước xong trong lượt này, kể cả do `skipIfDone`/`cancelOn`); `trigger.after` xét theo tập này thay cho tập gồm cả bản lưu. Thêm 3 test, sửa 1 test cũ đang khẳng định hành vi lỗi.
+- **File chính:** `game/src/logic/tutorial/tutorial-manager.ts`, `game/tests/tutorial.test.ts`, `game/src/core/tutorial-config.ts` (chú thích), `game/CONTEXT.md`.
+- **Quyết định:** "lượt" = một lần tạo `TutorialManager` (một lần vào màn). Hệ quả chấp nhận: thoát giữa trận Thorna rồi đánh lại thì lượt đó không nhắc lại S09/S10 (S08 đã lưu nên chuỗi không khởi động lại). S13 (`on: weaponGranted`) và R01 (`on: start`) không có `after` nên không bị ảnh hưởng. Không đổi dữ liệu `tutorial.json`.
+- **Lỗi tìm thấy / đã sửa:** lỗi S10 nói trên (đã sửa). Không tìm thấy lỗi mới.
+- **Kiểm tra:** test mới thất bại trên mã cũ (S10 bắt đầu ngay bước đầu), đạt sau khi sửa. `npm test` 308 test, lint, format:check, build đều đạt; `npm run smoke` 10/10.
+- **Còn dở:** nếu muốn S09/S10 hiện lại khi đánh lại boss sau khi thoát giữa trận, cần đổi dữ liệu (ví dụ S10 `on: bossPhase`, hoặc không lưu S08–S10 cho tới khi hạ boss); chưa làm, chờ ý người dùng.
+- **Tiếp theo:** như mục trước: `08-Viec-cho-nguoi-dung.md` (duyệt đồ họa, merge, thử điện thoại thật, chơi thử 5 người); Claude tự làm được: đổi giao diện các màn còn lại, màn Cài đặt.
 
-## 2026-11-03: Sprint 7, M10 HUD cơ bản
+## 2026-11-13 (tiếp 5): Đồ họa đợt 3, đòn của boss và giao diện
 
-- **Nhánh / commit:** `claude/condense-plan-archive-logs-kqnyvb`.
-- **Mục tiêu:** người dùng giao làm phần tiếp theo (M10 HUD cơ bản); phần chơi thử người dùng sẽ báo sau.
-- **Đã làm:** `logic/hud/` (thuần): `buildHud` dựng mô hình HUD từ StageWorld, `MenuCursor`. HUD vẽ lại theo wireframe Main/HUDPC (máu kèm số, năng lượng, máu boss giữa trên, Core Bit gồm cả bản lưu, EXP, ô vũ khí PC, chừa chỗ nút II trên cảm ứng). Menu tạm dừng thay cho Esc về thẳng menu. Nút biểu tượng vũ khí cảm ứng (chạm = sau, vuốt trái = trước, nhãn là tên vũ khí): `controls.json` thêm nút `weapon` (`swipe: true`) và `swipeMinDp`, có kiểm tra.
-- **File chính:** `game/src/logic/hud/*.ts`, `game/src/scenes/stage/stage-hud.ts`, `pause-menu.ts`, `stage-scene.ts`, `game/src/input/touch-overlay.ts`, `input-service.ts`, `game/src/core/controls-config.ts`, `03-Data/controls.json`, `game/tests/hud.test.ts`.
-- **Quyết định:** HUD đọc mô hình thuần mỗi khung thay vì event bus (gợi ý trong P-UI-HUD), vì số liệu đổi mỗi bước. "Lắp module nhanh" và "Tùy chọn" hiện mờ tới khi có M8/Cài đặt. Thoát về menu (Hub mới là khung).
-- **Lỗi tìm thấy / đã sửa:** ô vũ khí đè dòng hướng dẫn phím ở cạnh dưới (đã đẩy lên). Dòng M8–M18 trong bảng module của `CONTEXT.md` chưa được cập nhật ở phiên M11 (khoảng trắng đệm làm lệnh thay không khớp), đã sửa.
-- **Kiểm tra:** `npm test` 240 test (thêm 9 ở `hud.test.ts`), lint, format:check, build đều đạt. Chromium: HUD trong trận Thorna, tạm dừng giữ trận đứng yên, thoát cần bấm hai lần, Esc tiếp tục; giả lập Pixel 7 ngang: chạm nút vũ khí đổi sang Vine Lash, nhãn đổi theo; không có lỗi console.
-- **Còn dở:** safe-area tai thỏ, hội thoại, màn Kết quả, Cài đặt, bản đồ nhỏ (phần còn lại của M10).
-- **Tiếp theo:** (1) người dùng chơi thử Thorna/Golem và cổng Prototype 5 người (sẽ báo); (2) code TutorialManager (`01-GDD/07-Kich-ban-huong-dan.md`).
+- **Nhánh / commit:** `ccr-0afa36c6-vbizeu`.
+- **Mục tiêu:** người dùng giao làm tiếp phần giao diện và hình cho đòn của boss.
+- **Đã làm:** thêm 11 spritesheet + 4 ảnh (tổng 55 + 12): sóng chấn động, đạn rơi, hạt Hoa Nở, hạt nổ, đốt Rễ Trồi, đốt Dây Quất, roi Vine Lash, bí mật, bia tập bắn; logo, nền màn hình chính, khung HUD, khung máu boss, khung 9 mảnh, biểu tượng. Trong game: mọi loại đạn/đòn vẽ bằng hình (dải dài ghép từ đốt 16 px theo hộp trong dữ liệu); `NinePanel` cho hộp thoại, hộp hướng dẫn, tạm dừng, Kết quả; HUD có khung, số máu nằm trong thanh; màn hình chính có nền + logo; nút cảm ứng tô theo bảng màu.
+- **File chính:** `05-Assets/tools/codeart/fx.py`, `ui.py`, `build.py`; `game/src/scenes/ui.ts` (`NinePanel`), `stage/stage-art.ts`, `stage/stage-renderer.ts`, `stage/mechanics-renderer.ts`, `stage/stage-hud.ts`, `stage/dialogue-box.ts`, `stage/tutorial-box.ts`, `stage/pause-menu.ts`, `result-scene.ts`, `menu-scene.ts`, `style.css`, `core/art-manifest.ts`, `tests/art.test.ts`.
+- **Quyết định:** khung 9 mảnh tự ghép từ 9 hình thay vì `NineSlice` của Phaser (chỉ chạy trên WebGL). Thanh máu boss lệch phải (tâm x = 176) để không đè khung máu người chơi. Chữ vẫn dùng phông hệ thống (phông bitmap đủ dấu tiếng Việt là việc lớn, để sau).
+- **Lỗi tìm thấy / đã sửa:** logo bị cắt hàng dưới (khung vẽ thấp hơn chữ); số máu và tên boss đè nhau; biểu tượng Core Bit đè số. **Tìm thấy, chưa sửa:** bước hướng dẫn có `after` (S10) hiện ngay đầu màn nếu bước trước đã xong ở lần chơi trước; đã tạo thẻ việc riêng cho người dùng.
+- **Kiểm tra:** `npm test` 305 test, lint, format:check, build đều đạt; `npm run smoke` 10/10; `gate-check` đạt (60 FPS ở CPU chậm 6×, tải đầu 1,56 MB). Chromium, chụp đúng lúc có đòn: Gai Quạt, Dây Quất, Rễ Trồi, Hoa Nở, roi Vine Lash, hộp thoại, tạm dừng, màn hình chính đều hiện đúng, không lỗi console. Chưa chụp: đòn của Golem và boss xám (dùng chung hình sóng, hạt nổ, đạn rơi), màn Kết quả với khung mới, giao diện trên giả lập điện thoại. Chưa xem trên điện thoại thật.
+- **Còn dở:** phông bitmap; hình riêng cho nút cảm ứng; các màn Điều khiển, Dữ liệu lưu, Hub, công cụ chơi thử chưa đổi giao diện; chỉ dẫn vị trí đòn boss và sợi dây leo vẫn vẽ bằng nét; `manifest.csv` chưa cập nhật.
+- **Tiếp theo:** xem `08-Viec-cho-nguoi-dung.md` (duyệt hướng đồ họa, merge, thử điện thoại thật, chơi thử 5 người). Claude tự làm được: đổi giao diện các màn còn lại, màn Cài đặt, sửa lỗi hướng dẫn S10.
 
-## 2026-11-03: Sprint 7, M11 lưu cục bộ
+## 2026-11-13 (tiếp 4): Đồ họa vẽ bằng mã
 
-- **Nhánh / commit:** `claude/condense-plan-archive-logs-kqnyvb`.
-- **Mục tiêu:** người dùng đồng ý làm M11 (lưu cục bộ của Vertical slice).
-- **Đã làm:** `logic/save/` (thuần): `SaveData` (boss đã hạ, checkpoint + bí mật theo màn, EXP, vũ khí boss, Core Bit, thời gian chơi, revision, savedAt; hỏng từng phần về mặc định), mã sao lưu `CV1.<base64url>.<FNV-1a>`, `SaveManager` (ghi theo thứ tự, không ghi đè bản của phiên bản mới hơn), `StageSave` (nối sự kiện StageWorld với bản lưu). Kho IndexedDB, dự phòng localStorage. `StageWorld` nhận `ownedWeapons`, `takenSecrets`, `bossDefeated`. Màn mới "Dữ liệu lưu" (menu S): tóm tắt, sao chép/nhập mã, xóa tiến trình; menu hiện tóm tắt bản lưu.
-- **File chính:** `game/src/logic/save/*.ts`, `game/src/save/*.ts`, `game/src/scenes/save-scene.ts`, `stage-scene.ts`, `menu-scene.ts`, `preload-scene.ts`, `game/src/logic/world/stage-world.ts`, `game/tests/save.test.ts`.
-- **Quyết định:** ghi ngay khi qua checkpoint/nhặt bí mật/nhận vũ khí/hạ boss; EXP và Core Bit cộng phần chênh lệch cả khi thoát màn (không mất, không trùng). Hạ boss thì lần sau vào lại từ đầu màn. Vũ khí boss dùng được ở mọi màn. Màn xám (cổng Prototype) không đọc, không ghi bản lưu. Cài đặt điều khiển tạm giữ ở `cv.controls`, gộp vào bản lưu khi làm cloud.
-- **Lỗi tìm thấy / đã sửa:** không có.
-- **Kiểm tra:** `npm test` 231 test (thêm 15 ở `save.test.ts`), lint, format:check, build đều đạt. Chromium: qua checkpoint ở phòng thử màn chơi → Esc → tải lại trang → vào lại đúng checkpoint 1; bảng Dữ liệu lưu vừa màn 740 × 360, mã sai báo lỗi, gõ phím trong ô không lọt xuống menu; không có lỗi console.
-- **Còn dở:** cloud save (Backend, xung đột hai thiết bị), các nhóm dữ liệu của module chưa làm (SP, kỹ năng, skin, nhiệm vụ, kỷ lục).
-- **Tiếp theo:** (1) người dùng chơi thử Thorna/Golem và cổng Prototype 5 người; (2) code M10 HUD cơ bản, rồi TutorialManager.
+- **Nhánh / commit:** `ccr-0afa36c6-vbizeu`.
+- **Mục tiêu:** người dùng giao làm phần đồ họa (UI, asset, animation, VFX), hiện chưa có gì.
+- **Đã làm:** công cụ vẽ pixel bằng Python (`05-Assets/tools/codeart/`: `pix.py`, `kai.py`, `actors.py`, `tiles.py`, `bg.py`, `fx.py`, `ui.py`, `build.py`) sinh 44 spritesheet + 8 ảnh: Kai 11 hoạt ảnh, 5 kẻ địch, Golem, boss xám, Thorna, 2 tileset tự ghép viền, 4 lớp nền, đạn và hiệu ứng, 4 chân dung. Trong game: nạp `assets.json`, lớp ô Tilemap, nền parallax, `KaiView`, `SpritePool`, `FxLayer`; thay gần hết khối chữ nhật bằng hình.
+- **File chính:** `05-Assets/tools/codeart/*`, `05-Assets/03-Do-hoa-ve-bang-ma.md`, `game/public/assets/**`, `game/src/core/art-manifest.ts`, `game/src/scenes/stage/stage-art.ts`, `stage-renderer.ts`, `mechanics-renderer.ts`, `dialogue-box.ts`, `stage-scene.ts`, `preload-scene.ts`, `game/src/stages/*` (thêm `theme`), `game/tests/art.test.ts`; xóa `enemy-renderer.ts`.
+- **Quyết định:** không có công cụ sinh ảnh nên vẽ bằng mã, ghi rõ nguồn; file đặt đúng chỗ để sau này đè hình khác. Kai cao 28 px (không phải 40) để vừa hộp va chạm. Màn xám dùng tileset xám `lab`, phòng thử Stage 1 dùng `verdant`. Kẻ địch không có dải `hit` (nháy trắng bằng mã).
+- **Lỗi tìm thấy / đã sửa:** không có lỗi game.
+- **Kiểm tra:** `npm test` 305 test (thêm 4 ở `art.test.ts`), lint, format:check, build đều đạt; `npm run smoke` 10/10. Chromium: 4 phòng (kẻ địch, Thorna, Golem, màn xám) hiện đúng hình, không lỗi console. `gate-check` sau khi thêm hình: mọi hạng mục đạt (60 FPS ở CPU chậm 6×, tải đầu 1,55 MB). Chưa xem trên điện thoại thật.
+- **Còn dở:** vẫn là khối màu: đạn/đòn của boss, roi Vine Lash, dây leo đu, bí mật, bia tập bắn; giao diện (HUD, panel, nút cảm ứng, phông, logo, nền menu) chưa có hình; `manifest.csv` chưa cập nhật theo bộ hình mới.
+- **Tiếp theo:** đợt đồ họa 3: hình cho đòn của Thorna/Golem và Vine Lash, dây leo, bí mật; rồi giao diện (khung HUD, panel, nút, màn hình chính). Người dùng: xem và cho ý về hướng đồ họa (`08-Viec-cho-nguoi-dung.md` mục 6).

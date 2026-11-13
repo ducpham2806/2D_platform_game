@@ -7,6 +7,7 @@ Dự án: Cyber Vanguard, action-platformer 2D (Phaser 3 + TypeScript + Vite). T
 - `game/CONTEXT.md`: kiến trúc, quyết định đã chốt, trạng thái module.
 - `04-Dev-Plan/01-Ke-hoach-lam-viec.md`: lộ trình sprint; `04-Dev-Plan/02-Module.md`: danh sách module.
 - `04-Dev-Plan/06-Nhat-ky-phien.md`: nhật ký các phiên gần nhất (đọc mục mới nhất để biết đang dừng ở đâu).
+- `04-Dev-Plan/08-Viec-cho-nguoi-dung.md`: việc chỉ người dùng làm/quyết định được; cập nhật mỗi phiên, không dừng lại chờ nếu còn việc khác làm được.
 - **Không** đọc `04-Dev-Plan/luu-tru/` đầu phiên (bản kế hoạch đầy đủ, nhật ký cũ); chỉ tra khi cần lịch sử.
 
 ## Quy tắc bắt buộc: tóm tắt và ghi lại mỗi phiên
@@ -26,8 +27,11 @@ Phiên chỉ hỏi đáp, không đổi code, vẫn ghi một mục ngắn.
 npm test && npm run lint && npm run format:check && npm run build
 ```
 
+Đổi thứ người chơi nhìn thấy thì chạy thêm `npm run smoke` (cần Chromium) và xem ảnh trong `game/smoke-shots/`.
+
 ## Nguyên tắc code
 
+- Chữ hiện cho người chơi lấy từ `03-Data/strings.json` qua `getStrings(scene).t(...)`, không viết cứng trong scene (xem `game/CONTEXT.md`, mục Bảng chuỗi).
 - Mọi chỉ số đọc từ `03-Data/*.json`, không viết cứng; dữ liệu mới phải có kiểm tra trong `game/src/core/*-config.ts`.
 - `src/logic/` và `src/core/` là logic thuần, không import Phaser; có test Vitest cho phần logic.
 - Không chốt thiết kế màn Prologue và Stage 1 trước khi qua cổng Prototype (`04-Dev-Plan/05-Cong-Prototype.md`).

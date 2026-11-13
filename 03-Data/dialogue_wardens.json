@@ -15,6 +15,15 @@
     ]
   },
   "fallback": "Nếu thiếu biến thể (Thorna), dùng early.",
+  "rules": {
+    "_note": "charsPerSec: tốc độ hiện chữ; minReadSec: thời gian đọc tối thiểu tính cho mỗi câu; maxLockSec: một đoạn thoại (gõ hết chữ + đọc) không được khóa điều khiển lâu hơn mức này (GDD 3.6); maxLineChars: độ dài tối đa một câu (3–4 dòng trong hộp); postDelaySec: chờ sau khi hạ boss rồi mới hiện thoại; groundWaitSec: chờ Kai chạm đất tối đa bấy nhiêu giây trước thoại đầu trận [PLACEHOLDER]",
+    "charsPerSec": 40,
+    "minReadSec": 1.5,
+    "maxLockSec": 10,
+    "maxLineChars": 140,
+    "postDelaySec": 0.8,
+    "groundWaitSec": 1
+  },
   "vi": {
     "boss.thorna.early.pre": "Vườn của ta đang khát. Ngươi đến để cho nó uống... hay để chặt nó?",
     "boss.thorna.early.post": "Ngươi... không phải đến để chữa cho ta. Hãy hỏi AEGIS... ai đã ra lệnh.",

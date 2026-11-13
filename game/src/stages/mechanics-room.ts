@@ -13,5 +13,6 @@ export const MECHANICS_ROOM: TiledStageDef = {
   name: 'Phòng thử màn chơi',
   map,
   playtest: false,
+  theme: 'verdant',
   tutorial: 'stage1',
 };

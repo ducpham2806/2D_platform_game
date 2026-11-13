@@ -2,9 +2,10 @@ import type Phaser from 'phaser';
 import { LOGIC_HEIGHT, LOGIC_WIDTH } from '../../core/constants';
 import { MenuCursor } from '../../logic/hud/menu-cursor';
 import type { InputSnapshot } from '../../logic/input/actions';
-import { MUTED_STYLE, TEXT_STYLE } from '../ui';
+import type { Strings } from '../../logic/i18n';
+import { MUTED_STYLE, NinePanel, TEXT_STYLE } from '../ui';
 
-export type PauseChoice = 'resume' | 'quit' | 'tutorial';
+export type PauseChoice = 'resume' | 'quit' | 'tutorial' | 'sound';
 
 interface Item {
   label: string;
@@ -35,16 +36,20 @@ export class PauseMenu {
   constructor(
     scene: Phaser.Scene,
     subtitle: string,
+    private readonly strings: Strings,
     private readonly onChoice: (choice: PauseChoice) => void,
     /** Màn có hướng dẫn: trả về hướng dẫn đang bật hay tắt (thêm mục Bật/Tắt hướng dẫn). */
     private readonly tutorialOn?: () => boolean,
+    /** Âm thanh đang bật hay tắt (thêm mục Bật/Tắt âm thanh). */
+    private readonly soundOn?: () => boolean,
   ) {
     this.items = [
-      { label: 'Tiếp tục', choice: 'resume' },
+      { label: strings.t('pause.resume'), choice: 'resume' },
       ...(tutorialOn ? [{ label: '', choice: 'tutorial' as const }] : []),
-      { label: 'Lắp module nhanh (chưa có)', choice: undefined },
-      { label: 'Tùy chọn (chưa có)', choice: undefined },
-      { label: 'Thoát về menu', choice: 'quit' },
+      ...(soundOn ? [{ label: '', choice: 'sound' as const }] : []),
+      { label: strings.t('pause.quickModule'), choice: undefined },
+      { label: strings.t('pause.options'), choice: undefined },
+      { label: strings.t('pause.quit'), choice: 'quit' },
     ];
     this.cursor = new MenuCursor(this.items.map((i) => i.choice !== undefined));
     const cx = LOGIC_WIDTH / 2;
@@ -53,12 +58,9 @@ export class PauseMenu {
     const dim = scene.add.rectangle(0, 0, LOGIC_WIDTH, LOGIC_HEIGHT, 0x05080d, 0.6).setOrigin(0);
     // Chặn chạm xuyên xuống các nút khác của scene.
     dim.setInteractive();
-    const panel = scene.add
-      .rectangle(cx, top, ITEM_W + 24, h, 0x121c2b, 0.95)
-      .setOrigin(0.5, 0)
-      .setStrokeStyle(1, 0x2f4766);
+    const panel = new NinePanel(scene, cx - (ITEM_W + 24) / 2, top, ITEM_W + 24, h).container;
     const title = scene.add
-      .text(cx, top + 6, 'TẠM DỪNG', { ...TEXT_STYLE, fontSize: '11px' })
+      .text(cx, top + 6, strings.t('pause.title'), { ...TEXT_STYLE, fontSize: '11px' })
       .setOrigin(0.5, 0);
     const sub = scene.add
       .text(cx, top + 20, subtitle, { ...MUTED_STYLE, fontSize: '8px' })
@@ -139,7 +141,7 @@ export class PauseMenu {
       return;
     }
     if (choice) this.onChoice(choice);
-    if (choice === 'tutorial') this.refresh();
+    if (choice === 'tutorial' || choice === 'sound') this.refresh();
   }
 
   private refresh(): void {
@@ -150,9 +152,12 @@ export class PauseMenu {
       t.setBackgroundColor(
         !enabled ? COLOR.off : i === this.cursor.index ? COLOR.picked : COLOR.idle,
       );
-      if (item.choice === 'quit') t.setText(this.armedQuit ? 'Bấm lần nữa để thoát' : item.label);
+      if (item.choice === 'quit')
+        t.setText(this.armedQuit ? this.strings.t('pause.quitConfirm') : item.label);
       if (item.choice === 'tutorial')
-        t.setText(this.tutorialOn?.() ? 'Tắt hướng dẫn' : 'Bật hướng dẫn');
+        t.setText(this.strings.t(this.tutorialOn?.() ? 'pause.tutorialOff' : 'pause.tutorialOn'));
+      if (item.choice === 'sound')
+        t.setText(this.strings.t(this.soundOn?.() ? 'pause.soundOff' : 'pause.soundOn'));
     });
   }
 

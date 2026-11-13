@@ -49,6 +49,20 @@ describe('computeLayout', () => {
     }
   });
 
+  it('màn mật độ cao: phóng nguyên theo điểm ảnh thật, không còn 1× trên điện thoại', () => {
+    // Pixel 7 cầm ngang trong trình duyệt: 863 × 360 px CSS, 2,625 điểm ảnh thật mỗi px CSS.
+    const css = computeLayout(863, 360, 320, 192);
+    expect(css.zoom).toBe(1);
+    const real = computeLayout(863, 360, 320, 192, 2.625);
+    expect(real.zoom * 2.625).toBeCloseTo(4, 10);
+    expect(real.height).toBeGreaterThan(280);
+    expect(real.height).toBeLessThanOrEqual(360);
+    expect(real.width).toBeLessThanOrEqual(863);
+    // Màn thường (tỷ lệ 1) không đổi; tỷ lệ sai thì coi như 1.
+    expect(computeLayout(1920, 1080, 320, 192, 1)).toEqual(computeLayout(1920, 1080, 320, 192));
+    expect(computeLayout(1920, 1080, 320, 192, 0).zoom).toBe(5);
+  });
+
   it('nhận ra màn hình cầm dọc', () => {
     expect(isPortrait(390, 844)).toBe(true);
     expect(isPortrait(844, 390)).toBe(false);

@@ -29,3 +29,29 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+
+  smoke:
+    name: Smoke check luồng chính (Chromium, có ảnh chụp)
+    runs-on: ubuntu-latest
+    # Chưa chặn merge: job mới, cần chạy ổn vài lần trên CI rồi mới bỏ dòng này.
+    continue-on-error: true
+    defaults:
+      run:
+        working-directory: game
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: game/package-lock.json
+      - run: npm ci
+      - run: npm i --no-save playwright
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build
+      - run: npm run smoke
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: smoke-shots
+          path: game/smoke-shots

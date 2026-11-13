@@ -14,6 +14,8 @@ export interface StageMechanics {
     jumpBonus: number;
   };
   minEnemySpawnTiles: number;
+  /** Màn Kết quả: chờ sau khi hạ boss; chờ tối đa khi còn bước hướng dẫn đang hiện. */
+  result: { delaySec: number; tutorialWaitSec: number };
 }
 
 export function parseStageMechanics(value: unknown): StageMechanics {
@@ -22,6 +24,7 @@ export function parseStageMechanics(value: unknown): StageMechanics {
   const pit = obj(m.pit, `${p}.pit`);
   const spikes = obj(m.spikes, `${p}.spikes`);
   const vine = obj(m.vine, `${p}.vine`);
+  const result = obj(m.result, `${p}.result`);
   const out: StageMechanics = {
     respawnSec: num(m.respawnSec, `${p}.respawnSec`, { min: 0 }),
     maxRespawnSec: num(m.maxRespawnSec, `${p}.maxRespawnSec`, { min: 0 }),
@@ -38,6 +41,10 @@ export function parseStageMechanics(value: unknown): StageMechanics {
       jumpBonus: num(vine.jumpBonus, `${p}.vine.jumpBonus`, { min: 0 }),
     },
     minEnemySpawnTiles: num(m.minEnemySpawnTiles, `${p}.minEnemySpawnTiles`, { min: 0 }),
+    result: {
+      delaySec: num(result.delaySec, `${p}.result.delaySec`, { min: 0 }),
+      tutorialWaitSec: num(result.tutorialWaitSec, `${p}.result.tutorialWaitSec`, { min: 0 }),
+    },
   };
   if (out.respawnSec > out.maxRespawnSec)
     throw new ConfigError(

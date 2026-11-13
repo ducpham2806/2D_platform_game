@@ -1,0 +1,34 @@
+# Việc chờ người dùng
+
+Những việc chỉ người dùng làm được hoặc phải quyết định. Claude cập nhật file này mỗi phiên; làm xong việc nào thì báo để gạch đi. Xếp theo mức chặn tiến độ.
+
+## Đang chặn tiến độ
+
+1. **Merge nhánh `ccr-0afa36c6-vbizeu` vào `main`** (hoặc bảo Claude mở PR). Bản web trên GitHub Pages chỉ cập nhật khi `main` đổi; hiện bản Pages chưa có hội thoại, màn Kết quả, âm thanh, và chưa có bản sửa lỗi phóng hình trên điện thoại.
+2. **Kiểm tra trên một điện thoại thật** (mở link Pages, cầm ngang, thêm `?debug=1` để xem FPS):
+   - Khung game có chiếm gần hết chiều cao màn hình và hình có nét không (lỗi phóng 1× đã sửa ngày 13/11, mới thử trên giả lập).
+   - Có nghe thấy âm thanh sau cú chạm đầu tiên không; âm lượng có chói không (iPhone ở chế độ im lặng sẽ không có tiếng).
+   - FPS có giữ 60 trong phòng boss không; bấm nút có cảm giác trễ không.
+3. **Chạy đợt chơi thử cổng Prototype với 5 người** theo `05-Cong-Prototype.md` mục 4 (ít nhất 3 người dùng điện thoại, 2 người dùng máy tính; chưa từng xem game). Gửi lại các đoạn JSON hoặc ghi kết quả vào mục 7 của file đó. Mọi việc về bản đồ thật Prologue/Stage 1 đang chờ kết quả này.
+
+## Cần quyết định
+
+4. **Ba quyết định trong `07-Danh-gia-ke-hoach.md` mục 4.** Tình trạng:
+   - Quyết định 1 (làm gì trước đợt chơi thử): Claude đã làm theo phương án A khuyến nghị (âm thanh và hiệu ứng tối thiểu) vì người dùng giao tự làm tiếp. Nếu muốn thử bản không có âm thanh/hiệu ứng: tắt âm ở menu tạm dừng; hiệu ứng hạt chưa có nút tắt.
+   - Quyết định 2 (phạm vi MVP: giữ 4 màn và ước lượng lại, hay cắt còn 3 màn): **chưa chọn**.
+   - Quyết định 3 (việc kéo sớm): Claude đã làm hai việc rẻ và không đổi thiết kế: bảng chuỗi đa ngôn ngữ và smoke check. **Chưa chọn:** đo lường tối thiểu trước cổng MVP (cần chọn nơi nhận số liệu, ví dụ Supabase hoặc Firebase như GDD), thử đóng gói Android (cần máy có Android Studio).
+5. **Duyệt các lựa chọn Claude tự quyết khi đặc tả không nói rõ** (đổi được dễ, đều nằm trong dữ liệu hoặc một file):
+   - Màn tự kết thúc 2,5 giây sau khi hạ boss, chờ người chơi thử vũ khí mới tối đa 20 giây (`03-Data/stages.json` → `mechanics.result`).
+   - Hộp hội thoại đặt phía trên thay vì phía dưới như wireframe (để không che nhân vật).
+   - Nút "Tiếp tục" ở màn Kết quả về màn hình chính, chưa về Hub.
+   - Toàn bộ âm thanh là âm tổng hợp tạm (`03-Data/feedback.json`), nghe kiểu chiptune thô; cần người nghe và chỉnh.
+
+## Không gấp
+
+10. **Thẻ việc "Sửa bước hướng dẫn nối tiếp hiện sai lúc"** (Claude gợi ý ngày 13/11): lời NOVA của trận boss hiện ngay đầu màn nếu bước trước đã xong ở lần chơi trước. Bấm chạy thẻ đó, hoặc bảo Claude sửa trong phiên sau.
+
+8. **Xem job CI `smoke` lần đầu chạy trên GitHub** (tab Actions, sau khi mở PR hoặc merge). Job đang để không chặn merge vì chưa chạy thử trên GitHub lần nào; nếu chạy ổn thì báo Claude bỏ dòng `continue-on-error`. Ảnh chụp từng bước nằm ở artifact `smoke-shots`.
+9. **Duyệt bản dịch tiếng Anh** của giao diện trong `03-Data/strings.json` (bản dịch đầu của Claude; xem thử bằng `?lang=en`).
+
+6. **Duyệt hướng đồ họa.** Claude đã vẽ bằng mã bộ hình đầu (Kai, kẻ địch, Thorna, Golem, tileset, nền, hiệu ứng; xem `05-Assets/03-Do-hoa-ve-bang-ma.md`). Cần người dùng xem trong game và cho ý: thiết kế Kai, bảng màu, độ sáng nền, cỡ nhân vật (Kai đang cao 28 px để vừa hộp va chạm, nhỏ hơn 40 px của hướng dẫn cũ). Nếu muốn nét đẹp hơn mức vẽ bằng mã, cần hình vẽ tay hoặc sinh bằng công cụ ảnh theo `01-Huong-dan-asset.md`, rồi đè file cùng tên.
+7. **Bật GitHub Pages** nếu chưa bật: Settings → Pages → Source chọn GitHub Actions (`05-Cong-Prototype.md` mục 3).

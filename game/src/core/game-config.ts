@@ -7,6 +7,9 @@ import { checkEnemyRules, type EnemiesData, parseEnemies } from './enemy-config'
 import { evaluateFormula } from '../logic/formula';
 import { parseStageMechanics, type StageMechanics } from './stage-mechanics-config';
 import { parseTutorial, type TutorialData } from './tutorial-config';
+import { type DialogueData, parseDialogue } from './dialogue-config';
+import { type FeedbackData, parseFeedback } from './feedback-config';
+import { parseStrings, type StringsData } from './strings-config';
 
 export { ConfigError } from './json-check';
 export { parsePlayer, type PlayerData } from './player-config';
@@ -73,6 +76,9 @@ export const REQUIRED_DATA_FILES = [
   'bosses',
   'enemies',
   'tutorial',
+  'dialogue_wardens',
+  'feedback',
+  'strings',
 ] as const;
 export type RequiredDataFile = (typeof REQUIRED_DATA_FILES)[number];
 
@@ -85,6 +91,12 @@ export interface GameConfig {
   bosses: Record<string, BossData>;
   enemies: EnemiesData;
   tutorial: TutorialData;
+  /** Thoại Warden trước/sau trận boss và luật hộp hội thoại. */
+  dialogue: DialogueData;
+  /** Âm thanh tổng hợp, hạt và co giãn hình theo từng cue của màn chơi. */
+  feedback: FeedbackData;
+  /** Bảng chuỗi giao diện theo ngôn ngữ. */
+  strings: StringsData;
   /** Các file chưa có module dùng (shop, economy, modules, endgame…), giữ nguyên dạng thô. */
   raw: Readonly<Record<string, unknown>>;
 }
@@ -278,15 +290,22 @@ export function parseGameConfig(files: Readonly<Record<string, unknown>>): GameC
     throw new ConfigError(`Thiếu file dữ liệu: ${missing.join(', ')}`);
   }
   const enemies = parseEnemies(files.enemies);
+  const stages = parseStages(files.stages);
   const config: GameConfig = {
     player: parsePlayer(files.player),
     weapons: parseWeapons(files.weapons),
-    stages: parseStages(files.stages),
+    stages,
     difficulties: parseDifficulties(files.difficulties),
     controls: parseControls(files.controls),
     bosses: parseBosses(files.bosses),
     enemies,
     tutorial: parseTutorial(files.tutorial, new Set(Object.keys(enemies.enemies))),
+    dialogue: parseDialogue(
+      files.dialogue_wardens,
+      stages.stages.map((st) => st.boss),
+    ),
+    feedback: parseFeedback(files.feedback),
+    strings: parseStrings(files.strings),
     raw: { ...files },
   };
   const errors = checkDesignInvariants(config);

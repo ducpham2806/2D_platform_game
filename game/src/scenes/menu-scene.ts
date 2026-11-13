@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { LOGIC_WIDTH, SceneKey } from '../core/constants';
 import { getBus, getSave } from '../core/phaser-services';
 import { summarize } from '../logic/save/save-data';
-import { MUTED_STYLE, TEXT_STYLE, textButton } from './ui';
+import { MUTED_STYLE, textButton } from './ui';
 
 /** Màn hình chính tạm thời (wireframe Main). Không đăng nhập, không quảng cáo. */
 export class MenuScene extends Phaser.Scene {
@@ -13,9 +13,8 @@ export class MenuScene extends Phaser.Scene {
   create(): void {
     getBus(this).emit('scene:changed', { key: SceneKey.Menu });
     const cx = LOGIC_WIDTH / 2;
-    this.add
-      .text(cx, 28, 'CYBER VANGUARD', { ...TEXT_STYLE, fontSize: '16px', color: '#4fd1ff' })
-      .setOrigin(0.5);
+    this.add.image(0, 0, 'ui_menu_bg').setOrigin(0);
+    this.add.image(cx, 2, 'ui_logo').setOrigin(0.5, 0).setScale(0.5);
     const saved = summarize(getSave(this).data);
     this.add
       .text(
