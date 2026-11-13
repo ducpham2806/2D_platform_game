@@ -25,6 +25,18 @@ Mẫu:
 
 ---
 
+## 2026-11-13: Đánh giá lại kế hoạch bằng Game Studio Agent
+
+- **Nhánh / commit:** `ccr-0afa36c6-vbizeu`.
+- **Mục tiêu:** người dùng yêu cầu đọc repo này và repo `Game_Studio_Agent`, dùng khung của repo đó đánh giá lại kế hoạch phát triển.
+- **Đã làm:** đọc kế hoạch, module, cổng Prototype, CONTEXT, GDD (trụ cột, mục 14–19), manifest asset; đọc directors, `rules/`, và các skill `game-production-scrum`, `prototype-fast`, `platformer`, `game-feel`, `level-design`, `game-qa-playtest`, `game-release-liveops`, `phaser-core`. Viết bản đánh giá `04-Dev-Plan/07-Danh-gia-ke-hoach.md`.
+- **File chính:** `04-Dev-Plan/07-Danh-gia-ke-hoach.md` (mới). Không đổi code, dữ liệu, GDD hay bảng lộ trình.
+- **Quyết định:** chưa có; bản đánh giá nêu 3 quyết định chờ người dùng (việc làm trước đợt chơi thử, phạm vi MVP, các việc kéo sớm).
+- **Phát hiện chính:** giai đoạn thật là Prototype chưa qua cổng; đường găng là chơi thử, asset, bản đồ, âm thanh chứ không phải code; âm thanh (M12) nằm sau cổng MVP; giả thuyết khắc chế vũ khí chưa có prototype; cổng MVP 50 người chưa có cách đo; ước lượng MVP lệch 2–3 lần so với con số 80–150 giờ/màn của GDD; chuỗi tiếng Việt viết thẳng trong scene; chưa lưu ảnh bằng chứng chạy thử.
+- **Kiểm tra:** không chạy test/lint/build vì chỉ thêm tài liệu ngoài `game/`.
+- **Còn dở:** chưa cập nhật `01-Ke-hoach-lam-viec.md` theo đề xuất (chờ quyết định).
+- **Tiếp theo:** người dùng chọn phương án ở mục 4 của bản đánh giá. Khuyến nghị: lượt cảm giác tối thiểu (SFX, juice, corner correction) → thử trên điện thoại thật → đợt chơi thử 5 người; song song làm mẫu chuẩn asset Kai. **Không** bắt đầu M8 trước khi qua cổng Prototype.
+
 ## 2026-11-03: Sprint 7, TutorialManager
 
 - **Nhánh / commit:** `claude/condense-plan-archive-logs-kqnyvb`.
@@ -48,15 +60,3 @@ Mẫu:
 - **Kiểm tra:** `npm test` 240 test (thêm 9 ở `hud.test.ts`), lint, format:check, build đều đạt. Chromium: HUD trong trận Thorna, tạm dừng giữ trận đứng yên, thoát cần bấm hai lần, Esc tiếp tục; giả lập Pixel 7 ngang: chạm nút vũ khí đổi sang Vine Lash, nhãn đổi theo; không có lỗi console.
 - **Còn dở:** safe-area tai thỏ, hội thoại, màn Kết quả, Cài đặt, bản đồ nhỏ (phần còn lại của M10).
 - **Tiếp theo:** (1) người dùng chơi thử Thorna/Golem và cổng Prototype 5 người (sẽ báo); (2) code TutorialManager (`01-GDD/07-Kich-ban-huong-dan.md`).
-
-## 2026-11-03: Sprint 7, M11 lưu cục bộ
-
-- **Nhánh / commit:** `claude/condense-plan-archive-logs-kqnyvb`.
-- **Mục tiêu:** người dùng đồng ý làm M11 (lưu cục bộ của Vertical slice).
-- **Đã làm:** `logic/save/` (thuần): `SaveData` (boss đã hạ, checkpoint + bí mật theo màn, EXP, vũ khí boss, Core Bit, thời gian chơi, revision, savedAt; hỏng từng phần về mặc định), mã sao lưu `CV1.<base64url>.<FNV-1a>`, `SaveManager` (ghi theo thứ tự, không ghi đè bản của phiên bản mới hơn), `StageSave` (nối sự kiện StageWorld với bản lưu). Kho IndexedDB, dự phòng localStorage. `StageWorld` nhận `ownedWeapons`, `takenSecrets`, `bossDefeated`. Màn mới "Dữ liệu lưu" (menu S): tóm tắt, sao chép/nhập mã, xóa tiến trình; menu hiện tóm tắt bản lưu.
-- **File chính:** `game/src/logic/save/*.ts`, `game/src/save/*.ts`, `game/src/scenes/save-scene.ts`, `stage-scene.ts`, `menu-scene.ts`, `preload-scene.ts`, `game/src/logic/world/stage-world.ts`, `game/tests/save.test.ts`.
-- **Quyết định:** ghi ngay khi qua checkpoint/nhặt bí mật/nhận vũ khí/hạ boss; EXP và Core Bit cộng phần chênh lệch cả khi thoát màn (không mất, không trùng). Hạ boss thì lần sau vào lại từ đầu màn. Vũ khí boss dùng được ở mọi màn. Màn xám (cổng Prototype) không đọc, không ghi bản lưu. Cài đặt điều khiển tạm giữ ở `cv.controls`, gộp vào bản lưu khi làm cloud.
-- **Lỗi tìm thấy / đã sửa:** không có.
-- **Kiểm tra:** `npm test` 231 test (thêm 15 ở `save.test.ts`), lint, format:check, build đều đạt. Chromium: qua checkpoint ở phòng thử màn chơi → Esc → tải lại trang → vào lại đúng checkpoint 1; bảng Dữ liệu lưu vừa màn 740 × 360, mã sai báo lỗi, gõ phím trong ô không lọt xuống menu; không có lỗi console.
-- **Còn dở:** cloud save (Backend, xung đột hai thiết bị), các nhóm dữ liệu của module chưa làm (SP, kỹ năng, skin, nhiệm vụ, kỷ lục).
-- **Tiếp theo:** (1) người dùng chơi thử Thorna/Golem và cổng Prototype 5 người; (2) code M10 HUD cơ bản, rồi TutorialManager.
