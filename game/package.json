@@ -20,7 +20,8 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "gate-check": "node scripts/gate-check.mjs"
+    "gate-check": "node scripts/gate-check.mjs",
+    "smoke": "node scripts/smoke-check.mjs"
   },
   "dependencies": {
     "phaser": "3.90.0"
