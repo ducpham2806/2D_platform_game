@@ -6,7 +6,9 @@ import {
   LOGIC_WIDTH,
   SceneKey,
 } from '../core/constants';
+import { type ArtManifest, parseArtManifest } from '../core/art-manifest';
 import { ConfigError, parseGameConfig } from '../core/game-config';
+import { createAnimations, queueArt } from './stage/stage-art';
 import { SfxPlayer } from '../audio/sfx-player';
 import { getBus, setConfig, setInput, setSave, setSfx, setStrings } from '../core/phaser-services';
 import { isLang } from '../core/strings-config';
@@ -19,6 +21,8 @@ import { openBrowserSaveStore } from '../save/browser-save-store';
 import { MUTED_STYLE, TEXT_STYLE } from './ui';
 
 const MANIFEST_KEY = 'data:manifest';
+const ART_MANIFEST_KEY = 'art:manifest';
+const ART_MANIFEST = 'assets/assets.json';
 
 interface DataManifest {
   files: string[];
@@ -39,6 +43,7 @@ function isManifest(value: unknown): value is DataManifest {
  */
 export class PreloadScene extends Phaser.Scene {
   private bar?: Phaser.GameObjects.Rectangle;
+  private art: ArtManifest | undefined;
 
   constructor() {
     super(SceneKey.Preload);
@@ -55,6 +60,7 @@ export class PreloadScene extends Phaser.Scene {
       this.bar?.setSize((barWidth - 2) * value, 4);
     });
     this.load.json(MANIFEST_KEY, DATA_MANIFEST);
+    this.load.json(ART_MANIFEST_KEY, ART_MANIFEST);
   }
 
   create(): void {
@@ -63,6 +69,15 @@ export class PreloadScene extends Phaser.Scene {
       this.fail('Không đọc được data/manifest.json (chạy "npm run sync-data")');
       return;
     }
+    let art: ArtManifest;
+    try {
+      art = parseArtManifest(this.cache.json.get(ART_MANIFEST_KEY));
+    } catch (error) {
+      this.fail(error instanceof ConfigError ? error.message : String(error));
+      return;
+    }
+    this.art = art;
+    queueArt(this, art);
     const names = manifest.files.map((file) => file.replace(/\.json$/, ''));
     for (const name of names) {
       this.load.json(`data:${name}`, `${DATA_BASE_PATH}/${name}.json`);
@@ -78,6 +93,7 @@ export class PreloadScene extends Phaser.Scene {
     }
     try {
       const config = parseGameConfig(files);
+      if (this.art) createAnimations(this, this.art);
       setConfig(this, config);
       setInput(this, new InputService(config.controls, new LocalStorageStore(), getBus(this)));
       setSfx(this, new SfxPlayer(config.feedback, new LocalStorageStore()));

@@ -1,3 +1,4 @@
+import type { StageTheme } from '../core/art-manifest';
 import type { TutorialStage } from '../core/tutorial-config';
 import { type EnemyMarkers, layoutFromRows, type StageLayout } from '../logic/stage/layout';
 import { layoutFromTiled } from '../logic/stage/tiled';
@@ -26,6 +27,8 @@ interface StageDefBase {
   boss?: string;
   /** Chạy các bước hướng dẫn của giai đoạn này (tutorial.json → stage). Không có: không hướng dẫn. */
   tutorial?: TutorialStage;
+  /** Bộ hình của màn (tileset + nền). Không có: `lab` (xám, màn Prototype). */
+  theme?: StageTheme;
 }
 
 /** Màn dựng bằng ASCII (màn xám, phòng thử kẻ địch). Ký hiệu: logic/tilemap.ts, logic/stage/layout.ts. */

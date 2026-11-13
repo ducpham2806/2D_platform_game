@@ -44,5 +44,6 @@ export const ENEMY_ROOM: AsciiStageDef = {
     K: { enemy: 'linh_ken' },
   },
   playtest: false,
+  theme: 'verdant',
   tutorial: 'stage1',
 };

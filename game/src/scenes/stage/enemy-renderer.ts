@@ -1,7 +1,6 @@
 import type Phaser from 'phaser';
 import { Golem, ShieldCharger } from '../../logic/enemy/behaviors';
 import type { Enemy } from '../../logic/enemy/enemy';
-import type { Pickup } from '../../logic/world/pickups';
 
 /** Màu giữ chỗ theo loại kẻ địch (chưa có sprite). */
 const BODY_COLORS = {
@@ -12,9 +11,6 @@ const BODY_COLORS = {
   shieldCharger: 0x9c7c4f,
   golem: 0x3f7f4f,
 } as const;
-
-/** Vật phẩm sắp biến mất thì nhấp nháy trong chừng này giây cuối. */
-const PICKUP_BLINK_SEC = 2;
 
 function bodyColor(e: Enemy): number {
   const d = e.data;
@@ -97,29 +93,6 @@ export function drawEnemies(
         3,
         b.h - 2,
       );
-    }
-  }
-}
-
-/** Core Bit: viên vàng; viên máu: ô trắng chữ thập xanh. Nhấp nháy khi sắp biến mất. */
-export function drawPickups(
-  g: Phaser.GameObjects.Graphics,
-  pickups: readonly Pickup[],
-  timeMs: number,
-): void {
-  for (const p of pickups) {
-    if (p.ttl < PICKUP_BLINK_SEC && Math.floor(timeMs / 100) % 2 === 0) continue;
-    if (p.kind === 'coreBit') {
-      const cx = p.x + p.w / 2;
-      const cy = p.y + p.h / 2;
-      g.fillStyle(0xffd166, 1)
-        .fillTriangle(cx, p.y, p.x + p.w, cy, cx, p.y + p.h)
-        .fillTriangle(cx, p.y, p.x, cy, cx, p.y + p.h);
-    } else {
-      g.fillStyle(0xffffff, 1).fillRect(p.x, p.y, p.w, p.h);
-      g.fillStyle(0x7bd389, 1)
-        .fillRect(p.x + p.w / 2 - 1, p.y + 1, 2, p.h - 2)
-        .fillRect(p.x + 1, p.y + p.h / 2 - 1, p.w - 2, 2);
     }
   }
 }

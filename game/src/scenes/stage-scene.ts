@@ -20,7 +20,6 @@ import { FixedStep } from '../logic/fixed-step';
 import type { InputSnapshot } from '../logic/input/actions';
 import { formatGlyphs } from '../logic/input/glyphs';
 import type { TuningData } from '../logic/playtest/tuning';
-import type { PlayerStateName } from '../logic/player/player-physics';
 import { BossDialogueDirector, bossDialogueScript } from '../logic/dialogue/boss-dialogue';
 import { buildHud } from '../logic/hud/hud-model';
 import { buildStageResult, ResultGate } from '../logic/result/stage-result';
@@ -40,20 +39,16 @@ import { StageHud } from './stage/stage-hud';
 import { TutorialBox } from './stage/tutorial-box';
 import { StagePlaytest, tunedData } from './stage/stage-playtest';
 import { barrierCells, drawMechanics } from './stage/mechanics-renderer';
-import { chargeGlowColor, drawDynamic, drawParticles, drawStaticMap } from './stage/stage-renderer';
-
-const STATE_COLORS: Readonly<Record<PlayerStateName, number>> = {
-  idle: 0x4fd1ff,
-  run: 0x4fd1ff,
-  land: 0x9be7ff,
-  jump_up: 0x7fe0ff,
-  jump_fall: 0x7fe0ff,
-  dash: 0xffd166,
-  wall_slide: 0xb48cff,
-  wall_jump: 0xd2b4ff,
-  hurt: 0xff6b6b,
-  dead: 0x5a6577,
-};
+import { drawDynamic, drawParticles } from './stage/stage-renderer';
+import {
+  ArtDepth,
+  Backdrop,
+  buildTileLayer,
+  drawWorldArt,
+  FxLayer,
+  KaiView,
+  SpritePool,
+} from './stage/stage-art';
 
 /** Kéo cần xuống quá mức này thì tính là giữ Xuống (để rơi xuyên bục trên cảm ứng). */
 const DOWN_AXIS_THRESHOLD = 0.5;
@@ -85,9 +80,12 @@ export class StageScene extends Phaser.Scene {
   private controls?: InputService;
   private world?: StageWorld;
   private dynamic?: Phaser.GameObjects.Graphics;
-  private kai?: Phaser.GameObjects.Rectangle;
-  private eye?: Phaser.GameObjects.Rectangle;
-  private glow?: Phaser.GameObjects.Graphics;
+  private kai?: KaiView;
+  private backdrop?: Backdrop;
+  private worldArt?: SpritePool;
+  private fx?: FxLayer;
+  /** Kẻ địch còn sống ở khung trước, để nổ tại chỗ khi vừa bị hạ. */
+  private readonly aliveEnemies = new Set<object>();
   private hud?: StageHud;
   private playtest?: StagePlaytest;
   /** Ghi tiến trình vào bản lưu (M11); màn chơi thử của cổng Prototype không lưu. */
@@ -185,12 +183,15 @@ export class StageScene extends Phaser.Scene {
       });
     }
 
-    drawStaticMap(this.add.graphics(), world.map, barrierCells(world));
+    const theme = this.def.theme ?? 'lab';
+    this.backdrop = new Backdrop(this, theme);
+    buildTileLayer(this, world.map, theme, barrierCells(world));
     this.dynamic = this.add.graphics();
-    this.glow = this.add.graphics();
+    this.worldArt = new SpritePool(this, ArtDepth.projectiles);
+    this.fx = new FxLayer(this);
+    this.aliveEnemies.clear();
     const pl = world.player;
-    this.kai = this.add.rectangle(0, 0, pl.box.w, pl.box.h, STATE_COLORS.idle).setOrigin(0, 0);
-    this.eye = this.add.rectangle(0, 0, 3, 3, 0x0f1724).setOrigin(0, 0);
+    this.kai = new KaiView(this);
     this.prev = { x: pl.box.x, y: pl.box.y };
     this.hud = new StageHud(this, strings);
     this.tweens.add({ targets: this.hud.hint, alpha: 0.25, delay: 8000, duration: 800 });
@@ -200,7 +201,7 @@ export class StageScene extends Phaser.Scene {
 
     const camera = this.cameras.main;
     camera.setBounds(0, 0, world.map.widthPx, world.map.heightPx);
-    camera.startFollow(this.kai, true, 0.2, 0.2);
+    camera.startFollow(this.kai.sprite, true, 0.2, 0.2);
     camera.setDeadzone(48, LOGIC_HEIGHT);
 
     const input = getInput(this);
@@ -333,6 +334,9 @@ export class StageScene extends Phaser.Scene {
       drawDynamic(this.dynamic, world, time);
       drawMechanics(this.dynamic, world, time);
     }
+    this.backdrop?.update(this.cameras.main);
+    if (this.worldArt) drawWorldArt(this.worldArt, world, this.def.theme ?? 'lab', time);
+    this.enemyExplosions(world);
     if (this.feel) {
       const dt = Math.min(delta, FIXED_STEP_MS * MAX_STEPS_PER_FRAME) / 1000;
       this.feel.particles.update(dt);
@@ -396,6 +400,23 @@ export class StageScene extends Phaser.Scene {
           y = world.boss.box.y + world.boss.box.h / 2;
         }
         feel.particles.spawn(preset, x, y, pl.facing > 0 ? 1 : -1, feel.rng);
+      }
+      if (cue === 'shot' || cue === 'shotMid' || cue === 'shotCharged') {
+        const mx = pl.facing > 0 ? pl.box.x + pl.box.w + 6 : pl.box.x - 6;
+        this.fx?.play('fx_muzzle', mx, pl.box.y + pl.box.h * MUZZLE_HEIGHT, pl.facing < 0);
+      } else if (cue === 'hitBoss' || cue === 'weakHit') {
+        if (world.boss) {
+          const b = world.boss.box;
+          this.fx?.play(
+            'fx_hit_spark',
+            pl.centerX < b.x ? b.x : b.x + b.w,
+            pl.box.y + pl.box.h * MUZZLE_HEIGHT,
+          );
+        }
+      } else if (cue === 'died') {
+        this.fx?.play('kai_death', pl.centerX, pl.box.y + pl.box.h - 24, pl.facing < 0);
+      } else if (cue === 'respawn') {
+        this.kai?.playRespawn();
       }
       const squash = SQUASH_CUES[cue];
       if (squash) feel.squash.set(feel.data.squash[squash]);
@@ -586,31 +607,32 @@ export class StageScene extends Phaser.Scene {
     }
   }
 
-  /** Vẽ Kai ở vị trí nội suy giữa bước trước và bước hiện tại, cùng quầng nạp đạn. */
+  /** Vẽ Kai ở vị trí nội suy giữa bước trước và bước hiện tại, cùng vòng nạp ở nòng pháo. */
   private syncSprites(alpha: number): void {
     const world = this.world;
-    if (!world || !this.kai || !this.eye || !this.glow) return;
+    if (!world || !this.kai) return;
     const pl = world.player;
     const x = Math.round(this.prev.x + (pl.box.x - this.prev.x) * alpha);
     const y = Math.round(this.prev.y + (pl.box.y - this.prev.y) * alpha);
     const visible = !world.respawning && (!pl.blinking || Math.floor(this.time.now / 60) % 2 === 0);
     // Co giãn quanh điểm giữa chân: hộp va chạm không đổi, chỉ hình vẽ.
-    const sx = this.feel?.squash.x ?? 1;
-    const sy = this.feel?.squash.y ?? 1;
-    const w = pl.box.w * sx;
-    const h = pl.box.h * sy;
-    this.kai
-      .setPosition(Math.round(x + (pl.box.w - w) / 2), Math.round(y + pl.box.h - h))
-      .setDisplaySize(w, h)
-      .setFillStyle(STATE_COLORS[pl.state])
-      .setVisible(visible);
-    this.eye.setPosition(x + (pl.facing > 0 ? pl.box.w - 5 : 2), y + 5).setVisible(visible);
-    this.glow.clear();
-    const color =
-      world.loadout.current.kind === 'buster'
-        ? chargeGlowColor(world.loadout.chargeLevel, this.time.now)
-        : undefined;
-    if (color !== undefined && visible)
-      this.glow.lineStyle(1, color, 1).strokeRect(x - 2, y - 2, pl.box.w + 4, pl.box.h + 4);
+    this.kai.update(
+      world,
+      x + pl.box.w / 2,
+      y + pl.box.h,
+      this.feel?.squash.x ?? 1,
+      this.feel?.squash.y ?? 1,
+      visible,
+      world.loadout.current.kind === 'buster' ? world.loadout.chargeLevel : 0,
+    );
+  }
+
+  /** Nổ tại chỗ kẻ địch vừa bị hạ (so danh sách còn sống với khung trước). */
+  private enemyExplosions(world: StageWorld): void {
+    for (const e of world.enemies) {
+      if (e.alive) this.aliveEnemies.add(e);
+      else if (this.aliveEnemies.delete(e))
+        this.fx?.play('fx_explosion_small', e.box.x + e.box.w / 2, e.box.y + e.box.h / 2);
+    }
   }
 }

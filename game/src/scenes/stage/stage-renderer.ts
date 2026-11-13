@@ -2,9 +2,10 @@ import type Phaser from 'phaser';
 import type { Boss } from '../../logic/boss/boss';
 import type { Projectile } from '../../logic/combat/projectiles';
 import type { ParticlePool } from '../../logic/feel/particle-pool';
-import { Tile, type TileMap } from '../../logic/tilemap';
+import type { TileMap } from '../../logic/tilemap';
 import type { StageWorld } from '../../logic/world/stage-world';
-import { drawEnemies, drawPickups } from './enemy-renderer';
+import { drawEnemies } from './enemy-renderer';
+import { projectileHasArt } from './stage-art';
 
 /** Màu khối giữ chỗ (chưa có sprite). Mỗi loại đạn một màu để dễ đọc khi chơi thử. */
 const PROJECTILE_COLORS: Readonly<Record<Projectile['kind'], number>> = {
@@ -20,39 +21,6 @@ const PROJECTILE_COLORS: Readonly<Record<Projectile['kind'], number>> = {
   root: 0x8b5e3c,
   seed: 0xb2f2bb,
 };
-
-/**
- * Vẽ phần tĩnh của bản đồ một lần (nền, lưới, khối đặc, bục một chiều, gai). `skip`: ô vẽ động
- * (vật chắn vỡ được) nên bỏ qua ở đây.
- */
-export function drawStaticMap(
-  g: Phaser.GameObjects.Graphics,
-  map: TileMap,
-  skip: (col: number, row: number) => boolean = () => false,
-): void {
-  const t = map.tileSize;
-  g.fillStyle(0x0f1724, 1).fillRect(0, 0, map.widthPx, map.heightPx);
-  g.lineStyle(1, 0x172234, 1);
-  for (let c = 0; c <= map.cols; c += 1) g.lineBetween(c * t, 0, c * t, map.heightPx);
-  for (let r = 0; r <= map.rows; r += 1) g.lineBetween(0, r * t, map.widthPx, r * t);
-  for (let r = 0; r < map.rows; r += 1) {
-    for (let c = 0; c < map.cols; c += 1) {
-      if (skip(c, r)) continue;
-      const tile = map.get(c, r);
-      if (tile === Tile.Solid) {
-        g.fillStyle(0x4a5568, 1).fillRect(c * t, r * t, t, t);
-        if (map.get(c, r - 1) !== Tile.Solid) g.fillStyle(0x8193ad, 1).fillRect(c * t, r * t, t, 2);
-      } else if (tile === Tile.OneWay) {
-        g.fillStyle(0x8fa3bf, 1).fillRect(c * t, r * t, t, 4);
-      } else if (tile === Tile.Hazard) {
-        // Hai mũi gai mỗi ô, đáy sát mép dưới ô.
-        g.fillStyle(0xff6b6b, 1);
-        for (const x of [c * t, c * t + t / 2])
-          g.fillTriangle(x, (r + 1) * t, x + t / 2, (r + 1) * t, x + t / 4, r * t + 6);
-      }
-    }
-  }
-}
 
 /** Vẽ hạt hiệu ứng (gọi sau drawDynamic, không clear): mờ dần theo thời gian sống còn lại. */
 export function drawParticles(g: Phaser.GameObjects.Graphics, pool: ParticlePool): void {
@@ -76,15 +44,8 @@ export function drawDynamic(
   world: StageWorld,
   timeMs: number,
 ): void {
-  const t = world.map.tileSize;
   g.clear();
-  if (world.gateCol !== undefined) {
-    for (const r of world.gateRows) {
-      if (!world.map.isSolid(world.gateCol, r)) continue;
-      g.fillStyle(0x6b7c93, 1).fillRect(world.gateCol * t, r * t, t, t);
-      g.fillStyle(0xffd166, 1).fillRect(world.gateCol * t + 6, r * t, 4, t);
-    }
-  }
+  const t = world.map.tileSize;
   for (const target of world.targets) {
     const b = target.box;
     if (!target.alive) {
@@ -97,8 +58,8 @@ export function drawDynamic(
   }
   if (world.boss) drawBoss(g, world.boss, t, world.map, timeMs);
   drawEnemies(g, world.enemies, timeMs);
-  if (world.field) drawPickups(g, world.field.pickups.all, timeMs);
   for (const p of world.pool.all) {
+    if (projectileHasArt(p.kind)) continue;
     g.fillStyle(PROJECTILE_COLORS[p.kind], p.kind === 'sweep' ? 0.6 : 1).fillRect(
       p.x,
       p.y,

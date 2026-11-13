@@ -1,0 +1,239 @@
+{
+  "_note": "Sinh bởi 05-Assets/tools/codeart/build.py; không sửa tay.",
+  "sheets": [
+    {
+      "key": "kai_idle",
+      "file": "sprites/kai/kai_idle.png",
+      "frameW": 48,
+      "frameH": 48,
+      "frames": 4,
+      "fps": 6,
+      "loop": true
+    },
+    {
+      "key": "kai_run",
+      "file": "sprites/kai/kai_run.png",
+      "frameW": 48,
+      "frameH": 48,
+      "frames": 8,
+      "fps": 12,
+      "loop": true
+    },
+    {
+      "key": "kai_jump_up",
+      "file": "sprites/kai/kai_jump_up.png",
+      "frameW": 48,
+      "frameH": 48,
+      "frames": 2,
+      "fps": 8,
+      "loop": false
+    },
+    {
+      "key": "kai_jump_fall",
+      "file": "sprites/kai/kai_jump_fall.png",
+      "frameW": 48,
+      "frameH": 48,
+      "frames": 2,
+      "fps": 8,
+      "loop": false
+    },
+    {
+      "key": "kai_land",
+      "file": "sprites/kai/kai_land.png",
+      "frameW": 48,
+      "frameH": 48,
+      "frames": 2,
+      "fps": 12,
+      "loop": false
+    },
+    {
+      "key": "kai_dash",
+      "file": "sprites/kai/kai_dash.png",
+      "frameW": 48,
+      "frameH": 48,
+      "frames": 3,
+      "fps": 12,
+      "loop": false
+    },
+    {
+      "key": "kai_wall_slide",
+      "file": "sprites/kai/kai_wall_slide.png",
+      "frameW": 48,
+      "frameH": 48,
+      "frames": 2,
+      "fps": 8,
+      "loop": true
+    },
+    {
+      "key": "kai_wall_jump",
+      "file": "sprites/kai/kai_wall_jump.png",
+      "frameW": 48,
+      "frameH": 48,
+      "frames": 2,
+      "fps": 12,
+      "loop": false
+    },
+    {
+      "key": "kai_hurt",
+      "file": "sprites/kai/kai_hurt.png",
+      "frameW": 48,
+      "frameH": 48,
+      "frames": 2,
+      "fps": 10,
+      "loop": false
+    },
+    {
+      "key": "kai_death",
+      "file": "sprites/kai/kai_death.png",
+      "frameW": 48,
+      "frameH": 48,
+      "frames": 6,
+      "fps": 10,
+      "loop": false
+    },
+    {
+      "key": "kai_respawn",
+      "file": "sprites/kai/kai_respawn.png",
+      "frameW": 48,
+      "frameH": 48,
+      "frames": 6,
+      "fps": 12,
+      "loop": false
+    },
+    {
+      "key": "fx_arc_shot",
+      "file": "sprites/fx/fx_arc_shot.png",
+      "frameW": 16,
+      "frameH": 16,
+      "frames": 3,
+      "fps": 12,
+      "loop": true
+    },
+    {
+      "key": "fx_arc_mid",
+      "file": "sprites/fx/fx_arc_mid.png",
+      "frameW": 16,
+      "frameH": 16,
+      "frames": 3,
+      "fps": 12,
+      "loop": true
+    },
+    {
+      "key": "fx_arc_charged",
+      "file": "sprites/fx/fx_arc_charged.png",
+      "frameW": 32,
+      "frameH": 32,
+      "frames": 4,
+      "fps": 12,
+      "loop": true
+    },
+    {
+      "key": "fx_enemy_shot",
+      "file": "sprites/fx/fx_enemy_shot.png",
+      "frameW": 16,
+      "frameH": 16,
+      "frames": 3,
+      "fps": 10,
+      "loop": true
+    },
+    {
+      "key": "fx_muzzle",
+      "file": "sprites/fx/fx_muzzle.png",
+      "frameW": 16,
+      "frameH": 16,
+      "frames": 3,
+      "fps": 24,
+      "loop": false
+    },
+    {
+      "key": "fx_hit_spark",
+      "file": "sprites/fx/fx_hit_spark.png",
+      "frameW": 16,
+      "frameH": 16,
+      "frames": 4,
+      "fps": 20,
+      "loop": false
+    },
+    {
+      "key": "fx_explosion_small",
+      "file": "sprites/fx/fx_explosion_small.png",
+      "frameW": 32,
+      "frameH": 32,
+      "frames": 6,
+      "fps": 14,
+      "loop": false
+    },
+    {
+      "key": "fx_charge_1",
+      "file": "sprites/fx/fx_charge_1.png",
+      "frameW": 32,
+      "frameH": 32,
+      "frames": 4,
+      "fps": 12,
+      "loop": true
+    },
+    {
+      "key": "fx_charge_full",
+      "file": "sprites/fx/fx_charge_full.png",
+      "frameW": 32,
+      "frameH": 32,
+      "frames": 4,
+      "fps": 14,
+      "loop": true
+    },
+    {
+      "key": "obj_core_bit",
+      "file": "sprites/objects/obj_core_bit.png",
+      "frameW": 16,
+      "frameH": 16,
+      "frames": 4,
+      "fps": 8,
+      "loop": true
+    },
+    {
+      "key": "obj_health",
+      "file": "sprites/objects/obj_health.png",
+      "frameW": 16,
+      "frameH": 16,
+      "frames": 2,
+      "fps": 4,
+      "loop": true
+    },
+    {
+      "key": "ts_lab",
+      "file": "tilesets/ts_lab.png",
+      "frameW": 16,
+      "frameH": 16,
+      "frames": 64,
+      "fps": 0,
+      "loop": false
+    },
+    {
+      "key": "ts_verdant",
+      "file": "tilesets/ts_verdant.png",
+      "frameW": 16,
+      "frameH": 16,
+      "frames": 64,
+      "fps": 0,
+      "loop": false
+    }
+  ],
+  "images": [
+    {
+      "key": "bg_lab_l1",
+      "file": "backgrounds/bg_lab_l1.png"
+    },
+    {
+      "key": "bg_lab_l2",
+      "file": "backgrounds/bg_lab_l2.png"
+    },
+    {
+      "key": "bg_verdant_l1",
+      "file": "backgrounds/bg_verdant_l1.png"
+    },
+    {
+      "key": "bg_verdant_l2",
+      "file": "backgrounds/bg_verdant_l2.png"
+    }
+  ]
+}
