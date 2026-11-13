@@ -33,9 +33,9 @@ Mẫu:
 - **File chính:** `05-Assets/tools/codeart/*`, `05-Assets/03-Do-hoa-ve-bang-ma.md`, `game/public/assets/**`, `game/src/core/art-manifest.ts`, `game/src/scenes/stage/stage-art.ts`, `stage-renderer.ts`, `mechanics-renderer.ts`, `dialogue-box.ts`, `stage-scene.ts`, `preload-scene.ts`, `game/src/stages/*` (thêm `theme`), `game/tests/art.test.ts`; xóa `enemy-renderer.ts`.
 - **Quyết định:** không có công cụ sinh ảnh nên vẽ bằng mã, ghi rõ nguồn; file đặt đúng chỗ để sau này đè hình khác. Kai cao 28 px (không phải 40) để vừa hộp va chạm. Màn xám dùng tileset xám `lab`, phòng thử Stage 1 dùng `verdant`. Kẻ địch không có dải `hit` (nháy trắng bằng mã).
 - **Lỗi tìm thấy / đã sửa:** không có lỗi game.
-- **Kiểm tra:** `npm test` 305 test (thêm 4 ở `art.test.ts`), lint, format:check, build đều đạt; `npm run smoke` 10/10. Chromium: 4 phòng (kẻ địch, Thorna, Golem, màn xám) hiện đúng hình, không lỗi console. Chưa đo lại `gate-check` sau khi thêm hình; chưa xem trên điện thoại thật.
+- **Kiểm tra:** `npm test` 305 test (thêm 4 ở `art.test.ts`), lint, format:check, build đều đạt; `npm run smoke` 10/10. Chromium: 4 phòng (kẻ địch, Thorna, Golem, màn xám) hiện đúng hình, không lỗi console. `gate-check` sau khi thêm hình: mọi hạng mục đạt (60 FPS ở CPU chậm 6×, tải đầu 1,55 MB). Chưa xem trên điện thoại thật.
 - **Còn dở:** vẫn là khối màu: đạn/đòn của boss, roi Vine Lash, dây leo đu, bí mật, bia tập bắn; giao diện (HUD, panel, nút cảm ứng, phông, logo, nền menu) chưa có hình; `manifest.csv` chưa cập nhật theo bộ hình mới.
-- **Tiếp theo:** đợt đồ họa 3: hình cho đòn của Thorna/Golem và Vine Lash, dây leo, bí mật; rồi giao diện (khung HUD, panel, nút, màn hình chính). Chạy lại `gate-check`. Người dùng: xem và cho ý về hướng đồ họa (`08-Viec-cho-nguoi-dung.md` mục 6).
+- **Tiếp theo:** đợt đồ họa 3: hình cho đòn của Thorna/Golem và Vine Lash, dây leo, bí mật; rồi giao diện (khung HUD, panel, nút, màn hình chính). Người dùng: xem và cho ý về hướng đồ họa (`08-Viec-cho-nguoi-dung.md` mục 6).
 
 ## 2026-11-13 (tiếp 3): Smoke check và bảng chuỗi đa ngôn ngữ
 
