@@ -7,7 +7,7 @@ cùng tên, cùng kích thước khung.
 """
 import json, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import bg, fx, kai, pix, tiles
+import actors, bg, fx, kai, pix, tiles, ui
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 OUT = os.path.join(ROOT, 'game', 'public', 'assets')
@@ -24,6 +24,14 @@ def main():
         folder = 'objects' if key.startswith('obj_') else 'fx'
         rel = f'sprites/{folder}/{key}.png'; pix.save(im, OUT, rel)
         sheets.append(dict(key=key, file=rel, frameW=fw, frameH=im.height, frames=im.width // fw, fps=fps, loop=loop))
+    for key, (fn, fw, fps, loop, folder) in actors.SHEETS.items():
+        im = pix.strip(fn()); pix.check_palette(im)
+        rel = f'sprites/{folder}/{key}.png'; pix.save(im, OUT, rel)
+        sheets.append(dict(key=key, file=rel, frameW=fw, frameH=im.height, frames=im.width // fw, fps=fps, loop=loop))
+    for key, fn in ui.PORTRAITS.items():
+        im = fn().image(); pix.check_palette(im)
+        rel = f'ui/{key}.png'; pix.save(im, OUT, rel)
+        images.append(dict(key=key, file=rel))
     for theme in ('lab', 'verdant'):
         im = tiles.tileset(theme); pix.check_palette(im)
         rel = f'tilesets/ts_{theme}.png'; pix.save(im, OUT, rel)

@@ -4,3 +4,4 @@ game/dist/
 game/public/data/
 game/coverage/
 game/smoke-shots/
+__pycache__/

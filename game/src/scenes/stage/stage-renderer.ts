@@ -4,7 +4,6 @@ import type { Projectile } from '../../logic/combat/projectiles';
 import type { ParticlePool } from '../../logic/feel/particle-pool';
 import type { TileMap } from '../../logic/tilemap';
 import type { StageWorld } from '../../logic/world/stage-world';
-import { drawEnemies } from './enemy-renderer';
 import { projectileHasArt } from './stage-art';
 
 /** Màu khối giữ chỗ (chưa có sprite). Mỗi loại đạn một màu để dễ đọc khi chơi thử. */
@@ -57,7 +56,6 @@ export function drawDynamic(
     if (target.shieldUp) g.fillStyle(0x7fd1ff, 1).fillRect(b.x - 4, b.y + 2, 3, b.h - 4);
   }
   if (world.boss) drawBoss(g, world.boss, t, world.map, timeMs);
-  drawEnemies(g, world.enemies, timeMs);
   for (const p of world.pool.all) {
     if (projectileHasArt(p.kind)) continue;
     g.fillStyle(PROJECTILE_COLORS[p.kind], p.kind === 'sweep' ? 0.6 : 1).fillRect(
@@ -79,13 +77,9 @@ function drawBoss(
   timeMs: number,
 ): void {
   const b = boss.box;
-  if (boss.state === 'dead') {
-    g.fillStyle(0x2a3344, 1).fillRect(b.x, b.y + b.h / 2, b.w, b.h / 2);
-    return;
-  }
+  if (boss.state === 'dead') return;
   // Telegraph: nhấp nháy cam nhanh dần khi sắp ra đòn, kèm chỉ dẫn vị trí đòn.
   if (boss.state === 'telegraph') {
-    const blink = Math.floor(timeMs / (140 - 90 * boss.telegraphProgress)) % 2 === 0;
     const a = 0.25 + 0.5 * boss.telegraphProgress;
     if (boss.attack === 'shot') {
       for (let x = 0; x < map.widthPx; x += 8)
@@ -115,24 +109,7 @@ function drawBoss(
       // Vết nứt trên sàn ở chỗ rễ sắp mọc.
       for (const x of boss.rootXs) g.fillStyle(0xffd166, a).fillRect(x - 6, b.y + b.h - 2, 12, 2);
     }
-    const tint = boss.data.id === 'gray' ? 0x8a94a6 : 0x3f8f5a;
-    g.fillStyle(blink ? 0xffa94d : tint, 1).fillRect(b.x, b.y, b.w, b.h);
-  } else {
-    const color =
-      boss.flash > 0
-        ? 0xffffff
-        : boss.stunned
-          ? 0x9be7ff
-          : boss.state === 'active'
-            ? 0xff6b6b
-            : boss.data.id === 'gray'
-              ? 0x8a94a6
-              : 0x3f8f5a;
-    g.fillStyle(color, 1).fillRect(b.x, b.y, b.w, b.h);
   }
-  // Mắt chỉ hướng.
-  const eyeX = boss.facing > 0 ? b.x + b.w - 8 : b.x + 4;
-  g.fillStyle(0x0f1724, 1).fillRect(eyeX, b.y + 7, 4, 4);
   if (boss.stunned && Math.floor(timeMs / 120) % 2 === 0) {
     g.fillStyle(0xffd166, 1)
       .fillRect(b.x + b.w / 2 - 6, b.y - 6, 3, 3)

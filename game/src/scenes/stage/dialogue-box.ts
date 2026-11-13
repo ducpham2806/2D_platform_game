@@ -13,6 +13,12 @@ const PORTRAIT = 30;
 const PAD = 6;
 const NOVA_COLOR = 0x4fd1ff;
 const WARDEN_COLOR = 0x7bd88f;
+/** Chân dung theo tên người nói; Warden chưa có hình riêng dùng chân dung chung. */
+const PORTRAIT_BY_SPEAKER: Readonly<Record<string, string>> = {
+  [NOVA_SPEAKER]: 'portrait_nova',
+  Thorna: 'portrait_thorna',
+  Kai: 'portrait_kai',
+};
 /** Chữ "Tiếp >" nhấp nháy khi câu đã hiện hết. */
 const BLINK_MS = 400;
 
@@ -22,8 +28,7 @@ export interface DialogueLabels {
 }
 
 /**
- * Hộp hội thoại (P-UI-DIALOG, wireframe Dialogue.html; đặt phía trên vì sàn đấu ở cạnh dưới): chân dung (tạm là ô màu có chữ cái đầu,
- * thay bằng sprite khi có asset), tên người nói, câu thoại hiện dần, nút Bỏ qua và Tiếp.
+ * Hộp hội thoại (P-UI-DIALOG, wireframe Dialogue.html; đặt phía trên vì sàn đấu ở cạnh dưới): chân dung 30x30, tên người nói, câu thoại hiện dần, nút Bỏ qua và Tiếp.
  * Chạm bất kỳ đâu trên màn hình (kể cả viền đen ngoài khung game) = Tiếp; chạm nút Bỏ qua =
  * bỏ qua. Trạng thái hội thoại nằm ở DialoguePlayer;
  * lớp này chỉ vẽ và ghi nhận cú chạm.
@@ -31,7 +36,7 @@ export interface DialogueLabels {
 export class DialogueBox {
   private readonly root: (Phaser.GameObjects.GameObject & Phaser.GameObjects.Components.Visible)[];
   private readonly portrait: Phaser.GameObjects.Rectangle;
-  private readonly initial: Phaser.GameObjects.Text;
+  private readonly face: Phaser.GameObjects.Image;
   private readonly name: Phaser.GameObjects.Text;
   private readonly body: Phaser.GameObjects.Text;
   private readonly next: Phaser.GameObjects.Text;
@@ -57,13 +62,7 @@ export class DialogueBox {
     this.portrait = scene.add
       .rectangle(MARGIN + PAD, top + PAD, PORTRAIT, PORTRAIT, NOVA_COLOR)
       .setOrigin(0);
-    this.initial = scene.add
-      .text(MARGIN + PAD + PORTRAIT / 2, top + PAD + PORTRAIT / 2, '', {
-        ...TEXT_STYLE,
-        fontSize: '16px',
-        color: '#0f1724',
-      })
-      .setOrigin(0.5);
+    this.face = scene.add.image(MARGIN + PAD, top + PAD, 'portrait_nova').setOrigin(0);
     this.name = scene.add.text(textX, top + 4, '', {
       ...TEXT_STYLE,
       fontSize: '9px',
@@ -88,7 +87,7 @@ export class DialogueBox {
     this.next = scene.add
       .text(MARGIN + width - 4, top + PANEL_H - 3, '', { ...TEXT_STYLE, fontSize: '8px' })
       .setOrigin(1, 1);
-    this.root = [panel, this.portrait, this.initial, this.name, this.body, this.skip, this.next];
+    this.root = [panel, this.portrait, this.face, this.name, this.body, this.skip, this.next];
     for (const o of this.root) {
       (o as unknown as Phaser.GameObjects.Components.ScrollFactor).setScrollFactor(0);
       (o as unknown as Phaser.GameObjects.Components.Depth).setDepth(DEPTH);
@@ -103,7 +102,7 @@ export class DialogueBox {
       this.wrapped = this.body.getWrappedText(line.text).join('\n');
       const nova = line.speaker === NOVA_SPEAKER;
       this.portrait.setFillStyle(nova ? NOVA_COLOR : WARDEN_COLOR);
-      this.initial.setText(line.speaker.charAt(0));
+      this.face.setTexture(PORTRAIT_BY_SPEAKER[line.speaker] ?? 'portrait_warden');
       this.name.setText(line.speaker);
     }
     this.body.setText(complete ? this.wrapped : this.wrapped.slice(0, visibleChars));

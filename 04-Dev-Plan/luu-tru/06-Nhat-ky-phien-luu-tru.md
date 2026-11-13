@@ -4,6 +4,18 @@ Các mục cũ chuyển từ `04-Dev-Plan/06-Nhat-ky-phien.md`, mới nhất ở
 
 ---
 
+## 2026-11-13 (tiếp): Màn Kết quả
+
+- **Nhánh / commit:** `ccr-0afa36c6-vbizeu`.
+- **Mục tiêu:** người dùng giao làm tiếp theo kế hoạch → màn Kết quả (việc "Tiếp theo" của mục trước).
+- **Đã làm:** `ResultScene` theo wireframe Result.html; `logic/result/stage-result.ts` (số liệu, định dạng thời gian, `ResultGate`); `logic/player/level.ts` (cấp theo EXP); `stages.json` thêm `mechanics.result`; `tutorial.json` thêm R01 (giai đoạn `afterStage1`). Màn có bản lưu giờ kết thúc khi hạ boss và chuyển sang Kết quả; trước đây hạ boss xong người chơi phải tự thoát.
+- **File chính:** `game/src/scenes/result-scene.ts`, `stage-scene.ts`, `game/src/logic/result/stage-result.ts`, `game/src/logic/player/level.ts`, `game/src/core/stage-mechanics-config.ts`, `tutorial-config.ts`, `03-Data/stages.json`, `03-Data/tutorial.json`, `game/tests/stage-result.test.ts`.
+- **Quyết định:** đặc tả không nói màn kết thúc thế nào; chọn tự chuyển sau khi hạ boss 2,5 s, chờ người chơi thử vũ khí mới (S13) tối đa 20 s. "Tiếp tục" về màn hình chính vì Hub còn là khung. Thời gian chỉ tính lúc màn chạy (không tính tạm dừng, thoại) và dừng khi hạ boss. Màn xám giữ nguyên luồng phiếu chấm.
+- **Lỗi tìm thấy / đã sửa:** không có.
+- **Kiểm tra:** `npm test` 283 test (thêm 12 ở `stage-result.test.ts`), lint, format:check, build đều đạt. Chromium: hạ Thorna lần đầu, đổi và bắn Vine Lash → Kết quả (EXP +120, cấp 1 → 2, Core Bit +80, vũ khí mới, lời R01); Chơi lại màn → hạ lại → Kết quả sau 2,5 s ("Không có gì mới"); Tiếp tục → màn hình chính; không có lỗi console. Chưa thử màn Kết quả bằng cảm ứng.
+- **Còn dở:** Data Chip, Memory Log, Két giáp, SP và nút Mở Xưởng (M8); Về Hub; màn Chuẩn bị.
+- **Tiếp theo:** phần code Vertical slice không phụ thuộc bản đồ đã hết. Việc còn lại đều cần cổng Prototype (bản đồ Prologue/Stage 1, bước Prologue) hoặc asset P1. Người dùng: merge nhánh vào `main` để có bản Pages, xem kích thước hình trên điện thoại thật, chạy đợt chơi thử 5 người; và chọn 3 quyết định trong `07-Danh-gia-ke-hoach.md`.
+
 ## 2026-11-13: Đánh giá kế hoạch bằng Game Studio Agent; hội thoại boss; sửa phóng hình trên điện thoại
 
 - **Nhánh / commit:** `ccr-0afa36c6-vbizeu`.

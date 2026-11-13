@@ -41,7 +41,8 @@ describe('hình của game (assets.json)', () => {
     }
     for (const i of art.images) {
       expect(existsSync(resolve(ASSETS, i.file)), i.file).toBe(true);
-      expect(pngSize(resolve(ASSETS, i.file)), i.key).toEqual({ w: 640, h: 192 });
+      const want = i.key.startsWith('bg_') ? { w: 640, h: 192 } : { w: 30, h: 30 };
+      expect(pngSize(resolve(ASSETS, i.file)), i.key).toEqual(want);
     }
   });
 
@@ -61,7 +62,7 @@ describe('tự ghép viền khối đặc', () => {
     expect(solidTileIndex(() => true, 3, 3)).toBe(TILE_INDEX.solidBase);
     expect(solidTileIndex(only(3, 3), 3, 3)).toBe(TILE_INDEX.solidBase + 15);
     // Chỉ trống phía trên (mặt đất).
-    expect(solidTileIndex((c, r) => r >= 3, 5, 3)).toBe(TILE_INDEX.solidBase + 1);
+    expect(solidTileIndex((_c, r) => r >= 3, 5, 3)).toBe(TILE_INDEX.solidBase + 1);
     // Mép phải của một bậc: trống trên và phải.
     expect(solidTileIndex((c, r) => r >= 3 && c <= 5, 5, 3)).toBe(TILE_INDEX.solidBase + 3);
   });

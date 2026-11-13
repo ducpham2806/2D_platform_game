@@ -1,11 +1,15 @@
 import Phaser from 'phaser';
 import {
+  type ActorBase,
   type ArtManifest,
   solidTileIndex,
   type StageTheme,
   TILE_INDEX,
 } from '../../core/art-manifest';
 import { LOGIC_HEIGHT, LOGIC_WIDTH } from '../../core/constants';
+import type { Boss } from '../../logic/boss/boss';
+import { Golem, ShieldCharger } from '../../logic/enemy/behaviors';
+import type { Enemy } from '../../logic/enemy/enemy';
 import type { PlayerStateName } from '../../logic/player/player-physics';
 import { Tile, type TileMap } from '../../logic/tilemap';
 import type { StageWorld } from '../../logic/world/stage-world';
@@ -17,6 +21,7 @@ export const ArtDepth = {
   tiles: -20,
   /** Graphics động (boss, kẻ địch dạng khối, hạt) ở depth 0. */
   props: -5,
+  actors: 0.5,
   projectiles: 1,
   kai: 2,
   fx: 3,
@@ -133,6 +138,7 @@ export class SpritePool {
       .setPosition(Math.round(x), Math.round(y))
       .setFlipX(flipX)
       .setAlpha(1)
+      .clearTint()
       .setVisible(true);
   }
 
@@ -305,4 +311,99 @@ export function drawWorldArt(
         pool.put(ts, TILE_INDEX.barrier, c * t + half, r * t + half);
   }
   pool.end();
+}
+
+const ACTOR_FPS = { idle: 8, attack: 12 } as const;
+const ACTOR_FRAMES = 4;
+const WHITE = 0xffffff;
+/** Golem pha 2: ánh đỏ. */
+const GOLEM_RAGE_TINT = 0xffb4b4;
+/** Lõi hạt của Thorna nằm cách chân chừng này (px), theo hình vẽ. */
+const THORNA_CORE_ABOVE_FEET = 28;
+
+function enemyBase(e: Enemy): ActorBase {
+  const d = e.data;
+  if (e instanceof Golem) return 'mb_golem';
+  if (d.behavior === 'turret') return d.attack.count > 1 ? 'en_spike_turret' : 'en_turret';
+  if (d.behavior === 'butterfly') return 'en_butterfly';
+  if (d.behavior === 'shieldCharger') return 'en_cocoon';
+  return 'en_drone';
+}
+
+/** Đặt hình một nhân vật: đáy hình trùng đáy hộp va chạm, tâm ngang trùng tâm hộp. Hình gốc nhìn sang trái. */
+function putActor(
+  pool: SpritePool,
+  scene: Phaser.Scene,
+  base: ActorBase | 'boss_thorna_stun',
+  attack: boolean,
+  box: { x: number; y: number; w: number; h: number },
+  facing: number,
+  timeMs: number,
+): Phaser.GameObjects.Image {
+  const key = base === 'boss_thorna_stun' ? base : `${base}_${attack ? 'attack' : 'idle'}`;
+  const frames = base === 'boss_thorna_stun' ? 2 : ACTOR_FRAMES;
+  const frame = loopFrame(timeMs, frames, attack ? ACTOR_FPS.attack : ACTOR_FPS.idle);
+  const h = scene.textures.getFrame(key, 0)?.height ?? 0;
+  return pool.put(key, frame, box.x + box.w / 2, box.y + box.h - h / 2, facing > 0);
+}
+
+/**
+ * Vẽ kẻ địch, mini-boss và boss bằng hình. Báo trước đòn dùng dải `attack`; trúng đòn nháy trắng;
+ * kẻ địch "vô hại" (Prologue) vẽ mờ. Chỉ dẫn vị trí đòn của boss vẫn vẽ ở stage-renderer.
+ */
+export function drawActors(
+  pool: SpritePool,
+  scene: Phaser.Scene,
+  world: StageWorld,
+  timeMs: number,
+): void {
+  pool.begin();
+  const blink = Math.floor(timeMs / 70) % 2 === 0;
+  for (const e of world.enemies) {
+    if (!e.alive) continue;
+    const dashing = (e instanceof ShieldCharger || e instanceof Golem) && e.state === 'dash';
+    const img = putActor(
+      pool,
+      scene,
+      enemyBase(e),
+      e.telegraphing || dashing,
+      e.box,
+      e.facing,
+      timeMs,
+    );
+    if (e.flash > 0) img.setTintFill(WHITE);
+    else if (e instanceof Golem && e.phase === 2) img.setTint(GOLEM_RAGE_TINT);
+    if (e.harmless) img.setAlpha(0.6);
+    if (e instanceof ShieldCharger && e.shieldUp) {
+      const b = e.box;
+      const x = e.facing > 0 ? b.x + b.w + 2 : b.x - 2;
+      const strength = e.shieldLeft / Math.max(1, e.data.shieldHits);
+      pool
+        .put('en_cocoon_shield', e.telegraphing && blink ? 1 : 0, x, b.y + b.h - 16, e.facing > 0)
+        .setAlpha(0.5 + 0.5 * strength);
+    }
+  }
+  const boss = world.boss;
+  if (boss && boss.state !== 'dead') drawBossArt(pool, scene, boss, timeMs);
+  pool.end();
+}
+
+function drawBossArt(pool: SpritePool, scene: Phaser.Scene, boss: Boss, timeMs: number): void {
+  const thorna = boss.data.id !== 'gray';
+  const base: ActorBase = thorna ? 'boss_thorna' : 'boss_gray';
+  const acting = boss.state === 'telegraph' || boss.state === 'active';
+  const img =
+    thorna && boss.stunned
+      ? putActor(pool, scene, 'boss_thorna_stun', false, boss.box, boss.facing, timeMs)
+      : putActor(pool, scene, base, acting, boss.box, boss.facing, timeMs);
+  if (boss.flash > 0) img.setTintFill(WHITE);
+  if (thorna) {
+    const b = boss.box;
+    pool.put(
+      'boss_thorna_core',
+      Math.min(2, boss.phase),
+      b.x + b.w / 2,
+      b.y + b.h - THORNA_CORE_ABOVE_FEET,
+    );
+  }
 }

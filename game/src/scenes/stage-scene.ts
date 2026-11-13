@@ -44,6 +44,7 @@ import {
   ArtDepth,
   Backdrop,
   buildTileLayer,
+  drawActors,
   drawWorldArt,
   FxLayer,
   KaiView,
@@ -83,6 +84,7 @@ export class StageScene extends Phaser.Scene {
   private kai?: KaiView;
   private backdrop?: Backdrop;
   private worldArt?: SpritePool;
+  private actorArt?: SpritePool;
   private fx?: FxLayer;
   /** Kẻ địch còn sống ở khung trước, để nổ tại chỗ khi vừa bị hạ. */
   private readonly aliveEnemies = new Set<object>();
@@ -187,6 +189,7 @@ export class StageScene extends Phaser.Scene {
     this.backdrop = new Backdrop(this, theme);
     buildTileLayer(this, world.map, theme, barrierCells(world));
     this.dynamic = this.add.graphics();
+    this.actorArt = new SpritePool(this, ArtDepth.actors);
     this.worldArt = new SpritePool(this, ArtDepth.projectiles);
     this.fx = new FxLayer(this);
     this.aliveEnemies.clear();
@@ -335,6 +338,7 @@ export class StageScene extends Phaser.Scene {
       drawMechanics(this.dynamic, world, time);
     }
     this.backdrop?.update(this.cameras.main);
+    if (this.actorArt) drawActors(this.actorArt, this, world, time);
     if (this.worldArt) drawWorldArt(this.worldArt, world, this.def.theme ?? 'lab', time);
     this.enemyExplosions(world);
     if (this.feel) {
@@ -413,6 +417,11 @@ export class StageScene extends Phaser.Scene {
             pl.box.y + pl.box.h * MUZZLE_HEIGHT,
           );
         }
+      } else if (cue === 'bossDefeated' && world.boss) {
+        const b = world.boss.box;
+        const cx = b.x + b.w / 2;
+        if (world.boss.data.id === 'gray') this.fx?.play('fx_explosion_small', cx, b.y + b.h / 2);
+        else this.fx?.play('boss_thorna_die', cx, b.y + b.h - 48, world.boss.facing > 0);
       } else if (cue === 'died') {
         this.fx?.play('kai_death', pl.centerX, pl.box.y + pl.box.h - 24, pl.facing < 0);
       } else if (cue === 'respawn') {

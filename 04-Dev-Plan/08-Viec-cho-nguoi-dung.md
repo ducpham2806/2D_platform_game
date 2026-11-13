@@ -28,5 +28,5 @@ Những việc chỉ người dùng làm được hoặc phải quyết định.
 8. **Xem job CI `smoke` lần đầu chạy trên GitHub** (tab Actions, sau khi mở PR hoặc merge). Job đang để không chặn merge vì chưa chạy thử trên GitHub lần nào; nếu chạy ổn thì báo Claude bỏ dòng `continue-on-error`. Ảnh chụp từng bước nằm ở artifact `smoke-shots`.
 9. **Duyệt bản dịch tiếng Anh** của giao diện trong `03-Data/strings.json` (bản dịch đầu của Claude; xem thử bằng `?lang=en`).
 
-6. **Asset:** làm tờ thiết kế Kai và một mẫu chuẩn trong game (Kai idle/run/jump/dash + 1 tileset Verdant + 1 kẻ địch) theo `05-Assets/01-Huong-dan-asset.md`, để biết sớm pipeline tạo hình có giữ được nhất quán không. Không phụ thuộc cổng Prototype.
+6. **Duyệt hướng đồ họa.** Claude đã vẽ bằng mã bộ hình đầu (Kai, kẻ địch, Thorna, Golem, tileset, nền, hiệu ứng; xem `05-Assets/03-Do-hoa-ve-bang-ma.md`). Cần người dùng xem trong game và cho ý: thiết kế Kai, bảng màu, độ sáng nền, cỡ nhân vật (Kai đang cao 28 px để vừa hộp va chạm, nhỏ hơn 40 px của hướng dẫn cũ). Nếu muốn nét đẹp hơn mức vẽ bằng mã, cần hình vẽ tay hoặc sinh bằng công cụ ảnh theo `01-Huong-dan-asset.md`, rồi đè file cùng tên.
 7. **Bật GitHub Pages** nếu chưa bật: Settings → Pages → Source chọn GitHub Actions (`05-Cong-Prototype.md` mục 3).

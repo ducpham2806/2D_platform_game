@@ -58,16 +58,45 @@ export const FX_SHEETS = [
   'obj_health',
 ] as const;
 
+/** Kẻ địch, mini-boss, boss: mỗi loại có `<gốc>_idle` và `<gốc>_attack` (báo trước đòn). */
+export const ACTOR_BASES = [
+  'en_drone',
+  'en_turret',
+  'en_butterfly',
+  'en_spike_turret',
+  'en_cocoon',
+  'mb_golem',
+  'boss_gray',
+  'boss_thorna',
+] as const;
+export type ActorBase = (typeof ACTOR_BASES)[number];
+
+const ACTOR_EXTRA = [
+  'en_cocoon_shield',
+  'boss_thorna_stun',
+  'boss_thorna_die',
+  'boss_thorna_core',
+] as const;
+
+export const PORTRAITS = [
+  'portrait_nova',
+  'portrait_thorna',
+  'portrait_kai',
+  'portrait_warden',
+] as const;
+
 /** Mọi spritesheet và ảnh mà mã nguồn dùng; thiếu cái nào thì game dừng ở màn tải. */
 export const REQUIRED_SHEETS: readonly string[] = [
   ...KAI_ANIMS,
   ...FX_SHEETS,
+  ...ACTOR_BASES.flatMap((b) => [`${b}_idle`, `${b}_attack`]),
+  ...ACTOR_EXTRA,
   ...STAGE_THEMES.map((t) => `ts_${t}`),
 ];
-export const REQUIRED_IMAGES: readonly string[] = STAGE_THEMES.flatMap((t) => [
-  `bg_${t}_l1`,
-  `bg_${t}_l2`,
-]);
+export const REQUIRED_IMAGES: readonly string[] = [
+  ...STAGE_THEMES.flatMap((t) => [`bg_${t}_l1`, `bg_${t}_l2`]),
+  ...PORTRAITS,
+];
 
 /** Chỉ số ô trong tileset (xem 05-Assets/tools/codeart/tiles.py). */
 export const TILE_INDEX = {

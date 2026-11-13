@@ -200,6 +200,186 @@
       "loop": true
     },
     {
+      "key": "en_drone_idle",
+      "file": "sprites/enemies/en_drone_idle.png",
+      "frameW": 32,
+      "frameH": 32,
+      "frames": 4,
+      "fps": 8,
+      "loop": true
+    },
+    {
+      "key": "en_drone_attack",
+      "file": "sprites/enemies/en_drone_attack.png",
+      "frameW": 32,
+      "frameH": 32,
+      "frames": 4,
+      "fps": 12,
+      "loop": true
+    },
+    {
+      "key": "en_turret_idle",
+      "file": "sprites/enemies/en_turret_idle.png",
+      "frameW": 32,
+      "frameH": 32,
+      "frames": 4,
+      "fps": 6,
+      "loop": true
+    },
+    {
+      "key": "en_turret_attack",
+      "file": "sprites/enemies/en_turret_attack.png",
+      "frameW": 32,
+      "frameH": 32,
+      "frames": 4,
+      "fps": 12,
+      "loop": true
+    },
+    {
+      "key": "en_butterfly_idle",
+      "file": "sprites/enemies/en_butterfly_idle.png",
+      "frameW": 32,
+      "frameH": 32,
+      "frames": 4,
+      "fps": 10,
+      "loop": true
+    },
+    {
+      "key": "en_butterfly_attack",
+      "file": "sprites/enemies/en_butterfly_attack.png",
+      "frameW": 32,
+      "frameH": 32,
+      "frames": 4,
+      "fps": 12,
+      "loop": true
+    },
+    {
+      "key": "en_spike_turret_idle",
+      "file": "sprites/enemies/en_spike_turret_idle.png",
+      "frameW": 32,
+      "frameH": 32,
+      "frames": 4,
+      "fps": 6,
+      "loop": true
+    },
+    {
+      "key": "en_spike_turret_attack",
+      "file": "sprites/enemies/en_spike_turret_attack.png",
+      "frameW": 32,
+      "frameH": 32,
+      "frames": 4,
+      "fps": 12,
+      "loop": true
+    },
+    {
+      "key": "en_cocoon_idle",
+      "file": "sprites/enemies/en_cocoon_idle.png",
+      "frameW": 32,
+      "frameH": 32,
+      "frames": 4,
+      "fps": 8,
+      "loop": true
+    },
+    {
+      "key": "en_cocoon_attack",
+      "file": "sprites/enemies/en_cocoon_attack.png",
+      "frameW": 32,
+      "frameH": 32,
+      "frames": 4,
+      "fps": 12,
+      "loop": true
+    },
+    {
+      "key": "en_cocoon_shield",
+      "file": "sprites/enemies/en_cocoon_shield.png",
+      "frameW": 16,
+      "frameH": 32,
+      "frames": 2,
+      "fps": 0,
+      "loop": false
+    },
+    {
+      "key": "mb_golem_idle",
+      "file": "sprites/bosses/mb_golem_idle.png",
+      "frameW": 64,
+      "frameH": 64,
+      "frames": 4,
+      "fps": 6,
+      "loop": true
+    },
+    {
+      "key": "mb_golem_attack",
+      "file": "sprites/bosses/mb_golem_attack.png",
+      "frameW": 64,
+      "frameH": 64,
+      "frames": 4,
+      "fps": 12,
+      "loop": true
+    },
+    {
+      "key": "boss_gray_idle",
+      "file": "sprites/bosses/boss_gray_idle.png",
+      "frameW": 96,
+      "frameH": 96,
+      "frames": 4,
+      "fps": 6,
+      "loop": true
+    },
+    {
+      "key": "boss_gray_attack",
+      "file": "sprites/bosses/boss_gray_attack.png",
+      "frameW": 96,
+      "frameH": 96,
+      "frames": 4,
+      "fps": 12,
+      "loop": true
+    },
+    {
+      "key": "boss_thorna_idle",
+      "file": "sprites/bosses/boss_thorna_idle.png",
+      "frameW": 96,
+      "frameH": 96,
+      "frames": 4,
+      "fps": 6,
+      "loop": true
+    },
+    {
+      "key": "boss_thorna_attack",
+      "file": "sprites/bosses/boss_thorna_attack.png",
+      "frameW": 96,
+      "frameH": 96,
+      "frames": 4,
+      "fps": 12,
+      "loop": true
+    },
+    {
+      "key": "boss_thorna_stun",
+      "file": "sprites/bosses/boss_thorna_stun.png",
+      "frameW": 96,
+      "frameH": 96,
+      "frames": 2,
+      "fps": 6,
+      "loop": true
+    },
+    {
+      "key": "boss_thorna_die",
+      "file": "sprites/bosses/boss_thorna_die.png",
+      "frameW": 96,
+      "frameH": 96,
+      "frames": 6,
+      "fps": 8,
+      "loop": false
+    },
+    {
+      "key": "boss_thorna_core",
+      "file": "sprites/bosses/boss_thorna_core.png",
+      "frameW": 16,
+      "frameH": 16,
+      "frames": 3,
+      "fps": 0,
+      "loop": false
+    },
+    {
       "key": "ts_lab",
       "file": "tilesets/ts_lab.png",
       "frameW": 16,
@@ -219,6 +399,22 @@
     }
   ],
   "images": [
+    {
+      "key": "portrait_nova",
+      "file": "ui/portrait_nova.png"
+    },
+    {
+      "key": "portrait_thorna",
+      "file": "ui/portrait_thorna.png"
+    },
+    {
+      "key": "portrait_kai",
+      "file": "ui/portrait_kai.png"
+    },
+    {
+      "key": "portrait_warden",
+      "file": "ui/portrait_warden.png"
+    },
     {
       "key": "bg_lab_l1",
       "file": "backgrounds/bg_lab_l1.png"
