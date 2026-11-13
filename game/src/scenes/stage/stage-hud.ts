@@ -1,4 +1,5 @@
 import type Phaser from 'phaser';
+import type { Strings } from '../../logic/i18n';
 import { LOGIC_HEIGHT, LOGIC_WIDTH } from '../../core/constants';
 import type { HudModel } from '../../logic/hud/hud-model';
 import { MUTED_STYLE, TEXT_STYLE } from '../ui';
@@ -35,7 +36,10 @@ export class StageHud {
   readonly hint: Phaser.GameObjects.Text;
   readonly debug: Phaser.GameObjects.Text;
 
-  constructor(private readonly scene: Phaser.Scene) {
+  constructor(
+    private readonly scene: Phaser.Scene,
+    private readonly strings: Strings,
+  ) {
     const fixed = <T extends Phaser.GameObjects.Components.ScrollFactor>(o: T): T =>
       o.setScrollFactor(0);
     this.bars = fixed(scene.add.graphics().setDepth(DEPTH));
@@ -154,7 +158,7 @@ export class StageHud {
       // Vạch ngưỡng đổi pha.
       for (const pct of b.phaseMarks)
         g.fillStyle(0xffffff, 0.8).fillRect(x + (BOSS_W * pct) / 100, 14, 1, 7);
-      this.bossName.setText(`${b.name} · pha ${b.phase}`);
+      this.bossName.setText(this.strings.t('hud.bossPhase', { name: b.name, n: b.phase }));
     } else {
       this.bossName.setText('');
     }
@@ -162,10 +166,14 @@ export class StageHud {
     const right = LOGIC_WIDTH - PAD - (touch ? TOUCH_PAUSE_RESERVE : 0);
     this.coreBits.setX(right).setText(`◆ ${hud.coreBits}`);
     const lines = [`EXP ${hud.exp}`];
-    if (hud.roomRemaining !== undefined) lines.push(`Còn ${hud.roomRemaining} kẻ địch`);
+    if (hud.roomRemaining !== undefined)
+      lines.push(this.strings.t('hud.roomRemaining', { n: hud.roomRemaining }));
     this.side.setX(right).setText(lines.join('\n'));
     // Ô vũ khí (PC/tay cầm).
-    const swap = hud.weapon.count > 1 ? `\nđổi: ${swapGlyph}` : '';
-    this.weapon.setVisible(!touch).setText(`Vũ khí: ${hud.weapon.name}${swap}`);
+    const swap =
+      hud.weapon.count > 1 ? `\n${this.strings.t('hud.weaponSwap', { keys: swapGlyph })}` : '';
+    this.weapon
+      .setVisible(!touch)
+      .setText(this.strings.t('hud.weapon', { name: hud.weapon.name }) + swap);
   }
 }

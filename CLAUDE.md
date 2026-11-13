@@ -27,8 +27,11 @@ Phiên chỉ hỏi đáp, không đổi code, vẫn ghi một mục ngắn.
 npm test && npm run lint && npm run format:check && npm run build
 ```
 
+Đổi thứ người chơi nhìn thấy thì chạy thêm `npm run smoke` (cần Chromium) và xem ảnh trong `game/smoke-shots/`.
+
 ## Nguyên tắc code
 
+- Chữ hiện cho người chơi lấy từ `03-Data/strings.json` qua `getStrings(scene).t(...)`, không viết cứng trong scene (xem `game/CONTEXT.md`, mục Bảng chuỗi).
 - Mọi chỉ số đọc từ `03-Data/*.json`, không viết cứng; dữ liệu mới phải có kiểm tra trong `game/src/core/*-config.ts`.
 - `src/logic/` và `src/core/` là logic thuần, không import Phaser; có test Vitest cho phần logic.
 - Không chốt thiết kế màn Prologue và Stage 1 trước khi qua cổng Prototype (`04-Dev-Plan/05-Cong-Prototype.md`).

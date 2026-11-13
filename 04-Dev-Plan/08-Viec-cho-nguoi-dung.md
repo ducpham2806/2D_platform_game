@@ -16,7 +16,7 @@ Những việc chỉ người dùng làm được hoặc phải quyết định.
 4. **Ba quyết định trong `07-Danh-gia-ke-hoach.md` mục 4.** Tình trạng:
    - Quyết định 1 (làm gì trước đợt chơi thử): Claude đã làm theo phương án A khuyến nghị (âm thanh và hiệu ứng tối thiểu) vì người dùng giao tự làm tiếp. Nếu muốn thử bản không có âm thanh/hiệu ứng: tắt âm ở menu tạm dừng; hiệu ứng hạt chưa có nút tắt.
    - Quyết định 2 (phạm vi MVP: giữ 4 màn và ước lượng lại, hay cắt còn 3 màn): **chưa chọn**.
-   - Quyết định 3 (việc kéo sớm: đo lường tối thiểu trước cổng MVP, thử đóng gói Android, bảng chuỗi đa ngôn ngữ, smoke check trong CI): **chưa chọn**.
+   - Quyết định 3 (việc kéo sớm): Claude đã làm hai việc rẻ và không đổi thiết kế: bảng chuỗi đa ngôn ngữ và smoke check. **Chưa chọn:** đo lường tối thiểu trước cổng MVP (cần chọn nơi nhận số liệu, ví dụ Supabase hoặc Firebase như GDD), thử đóng gói Android (cần máy có Android Studio).
 5. **Duyệt các lựa chọn Claude tự quyết khi đặc tả không nói rõ** (đổi được dễ, đều nằm trong dữ liệu hoặc một file):
    - Màn tự kết thúc 2,5 giây sau khi hạ boss, chờ người chơi thử vũ khí mới tối đa 20 giây (`03-Data/stages.json` → `mechanics.result`).
    - Hộp hội thoại đặt phía trên thay vì phía dưới như wireframe (để không che nhân vật).
@@ -24,6 +24,9 @@ Những việc chỉ người dùng làm được hoặc phải quyết định.
    - Toàn bộ âm thanh là âm tổng hợp tạm (`03-Data/feedback.json`), nghe kiểu chiptune thô; cần người nghe và chỉnh.
 
 ## Không gấp
+
+8. **Xem job CI `smoke` lần đầu chạy trên GitHub** (tab Actions, sau khi mở PR hoặc merge). Job đang để không chặn merge vì chưa chạy thử trên GitHub lần nào; nếu chạy ổn thì báo Claude bỏ dòng `continue-on-error`. Ảnh chụp từng bước nằm ở artifact `smoke-shots`.
+9. **Duyệt bản dịch tiếng Anh** của giao diện trong `03-Data/strings.json` (bản dịch đầu của Claude; xem thử bằng `?lang=en`).
 
 6. **Asset:** làm tờ thiết kế Kai và một mẫu chuẩn trong game (Kai idle/run/jump/dash + 1 tileset Verdant + 1 kẻ địch) theo `05-Assets/01-Huong-dan-asset.md`, để biết sớm pipeline tạo hình có giữ được nhất quán không. Không phụ thuộc cổng Prototype.
 7. **Bật GitHub Pages** nếu chưa bật: Settings → Pages → Source chọn GitHub Actions (`05-Cong-Prototype.md` mục 3).

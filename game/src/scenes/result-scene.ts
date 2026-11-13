@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { LOGIC_WIDTH, SceneKey } from '../core/constants';
-import { getBus, getConfig, getInput, getSave } from '../core/phaser-services';
+import { getBus, getConfig, getInput, getSave, getStrings } from '../core/phaser-services';
 import { MenuCursor } from '../logic/hud/menu-cursor';
 import { formatGlyphs } from '../logic/input/glyphs';
 import { formatRunTime, type StageResult } from '../logic/result/stage-result';
@@ -64,43 +64,49 @@ export class ResultScene extends Phaser.Scene {
       return;
     }
     const r = data.result;
+    const s = getStrings(this);
     const cx = LOGIC_WIDTH / 2;
     this.openedAt = this.time.now;
     this.started = false;
     this.stickHeld = true;
     getInput(this).setGameplayActive(false);
 
-    this.add.text(cx, 12, 'HOÀN THÀNH', { ...TEXT_STYLE, fontSize: '14px' }).setOrigin(0.5);
+    this.add.text(cx, 12, s.t('result.title'), { ...TEXT_STYLE, fontSize: '14px' }).setOrigin(0.5);
     this.add.text(cx, 27, r.stageName, MUTED_STYLE).setOrigin(0.5);
 
     const level =
       r.levelAfter > r.levelBefore
-        ? ` (cấp ${r.levelBefore} → ${r.levelAfter})`
-        : ` (cấp ${r.levelAfter})`;
+        ? ` (${s.t('result.levelUp', { from: r.levelBefore, to: r.levelAfter })})`
+        : ` (${s.t('result.level', { n: r.levelAfter })})`;
     const left: [string, string][] = [
-      ['Thời gian', formatRunTime(r.timeSec)],
-      ['Số lần chết', String(r.deaths)],
-      ['EXP', `+${r.expGained}${level}`],
-      ['Core Bit', `+${r.coreBitsGained}`],
+      [s.t('result.time'), formatRunTime(r.timeSec)],
+      [s.t('result.deaths'), String(r.deaths)],
+      [s.t('result.exp'), `+${r.expGained}${level}`],
+      [s.t('result.coreBit'), `+${r.coreBitsGained}`],
     ];
-    this.add.text(20, 40, 'Kết quả', { ...MUTED_STYLE, fontSize: '8px' });
+    this.add.text(20, 40, s.t('result.section'), { ...MUTED_STYLE, fontSize: '8px' });
     left.forEach(([label, value], i) => {
       const y = 52 + i * 13;
       this.add.text(20, y, label, MUTED_STYLE);
       this.add.text(150, y, value, TEXT_STYLE).setOrigin(1, 0);
     });
 
-    const right: string[] = [];
-    if (r.weapon) right.push(`Vũ khí mới: ${r.weapon}`);
-    if (r.secretsTotal > 0) right.push(`Bí mật ${r.secretsFound}/${r.secretsTotal}`);
-    if (r.levelAfter > r.levelBefore) right.push('Lên cấp!');
-    if (right.length === 0) right.push('Không có gì mới');
-    this.add.text(172, 40, 'Phần thưởng và thu thập', { ...MUTED_STYLE, fontSize: '8px' });
+    const right: { text: string; highlight: boolean }[] = [];
+    if (r.weapon)
+      right.push({ text: s.t('result.newWeapon', { name: r.weapon }), highlight: true });
+    if (r.secretsTotal > 0)
+      right.push({
+        text: s.t('result.secrets', { found: r.secretsFound, total: r.secretsTotal }),
+        highlight: false,
+      });
+    if (r.levelAfter > r.levelBefore)
+      right.push({ text: s.t('result.leveledUp'), highlight: true });
+    if (right.length === 0) right.push({ text: s.t('result.nothingNew'), highlight: false });
+    this.add.text(172, 40, s.t('result.rewards'), { ...MUTED_STYLE, fontSize: '8px' });
     right.forEach((line, i) => {
-      const highlight = line === 'Lên cấp!' || line.startsWith('Vũ khí mới');
-      this.add.text(172, 52 + i * 13, line, {
+      this.add.text(172, 52 + i * 13, line.text, {
         ...TEXT_STYLE,
-        color: highlight ? '#ffd166' : '#e8f1ff',
+        color: line.highlight ? '#ffd166' : '#e8f1ff',
       });
     });
 
@@ -120,22 +126,17 @@ export class ResultScene extends Phaser.Scene {
     if (tutorialOn && r.weapon && !done.includes(TRY_WEAPON_STEP)) {
       const ctx = getInput(this).glyphContext();
       this.add
-        .text(
-          cx,
-          124,
-          formatGlyphs(`Chưa thử ${r.weapon}? Trong màn, {ĐỔI_VK} để đổi vũ khí.`, ctx),
-          {
-            ...MUTED_STYLE,
-            fontSize: '8px',
-          },
-        )
+        .text(cx, 124, formatGlyphs(s.t('result.tryWeapon', { name: r.weapon }), ctx), {
+          ...MUTED_STYLE,
+          fontSize: '8px',
+        })
         .setOrigin(0.5, 0);
     }
 
     this.items = [
-      { label: 'Tiếp tục', choice: 'continue' },
-      { label: 'Chơi lại màn', choice: 'replay' },
-      { label: 'Mở Xưởng (chưa có)', choice: undefined },
+      { label: s.t('result.continue'), choice: 'continue' },
+      { label: s.t('result.replay'), choice: 'replay' },
+      { label: s.t('result.workshop'), choice: undefined },
     ];
     this.cursor = new MenuCursor(this.items.map((i) => i.choice !== undefined));
     this.items.forEach((item, i) => {

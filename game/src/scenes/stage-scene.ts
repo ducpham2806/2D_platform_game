@@ -8,7 +8,8 @@ import {
   TILE_SIZE,
 } from '../core/constants';
 import type { CueId, FeedbackData } from '../core/feedback-config';
-import { getBus, getConfig, getInput, getSave, getSfx } from '../core/phaser-services';
+import { getBus, getConfig, getInput, getSave, getSfx, getStrings } from '../core/phaser-services';
+import type { Strings } from '../logic/i18n';
 import type { SfxPlayer } from '../audio/sfx-player';
 import { CueCollector } from '../logic/feel/cue-collector';
 import { ParticlePool } from '../logic/feel/particle-pool';
@@ -20,7 +21,6 @@ import type { InputSnapshot } from '../logic/input/actions';
 import { formatGlyphs } from '../logic/input/glyphs';
 import type { TuningData } from '../logic/playtest/tuning';
 import type { PlayerStateName } from '../logic/player/player-physics';
-import type { DialogueLang } from '../core/dialogue-config';
 import { BossDialogueDirector, bossDialogueScript } from '../logic/dialogue/boss-dialogue';
 import { buildHud } from '../logic/hud/hud-model';
 import { buildStageResult, ResultGate } from '../logic/result/stage-result';
@@ -70,8 +70,6 @@ const SQUASH_CUES: Partial<Record<CueId, 'jump' | 'land' | 'dash'>> = {
   land: 'land',
   dash: 'dash',
 };
-/** Ngôn ngữ thoại; chọn ngôn ngữ làm cùng màn Cài đặt (M10). */
-const DIALOGUE_LANG: DialogueLang = 'vi';
 /** Thông báo nhận vũ khí hiện sau chữ "HẠ BOSS!" bấy nhiêu ms (hoặc ngay sau thoại sau trận). */
 const WEAPON_NOTICE_DELAY_MS = 1800;
 /** Thông báo nhận vũ khí hiện bấy nhiêu ms; lời hướng dẫn chờ nó tắt rồi mới hiện. */
@@ -101,6 +99,7 @@ export class StageScene extends Phaser.Scene {
   private tutorial:
     { manager: TutorialManager; signals: TutorialSignals; box: TutorialBox } | undefined;
   private save: SaveManager | undefined;
+  private strings!: Strings;
   /** Thoại trước/sau trận boss (chỉ khi boss có thoại và chưa bị hạ trong bản lưu). */
   private dialogue: { director: BossDialogueDirector; box: DialogueBox } | undefined;
   /** Vũ khí vừa nhận, chờ hiện thông báo (sau thoại sau trận). */
@@ -144,6 +143,8 @@ export class StageScene extends Phaser.Scene {
   create(): void {
     getBus(this).emit('scene:changed', { key: SceneKey.Stage });
     const config = getConfig(this);
+    const strings = getStrings(this);
+    this.strings = strings;
     const bossId = this.def.boss ?? 'gray';
     const boss = config.bosses[bossId];
     const difficulty = config.difficulties.find((d) => d.id === 'normal') ?? config.difficulties[0];
@@ -191,10 +192,10 @@ export class StageScene extends Phaser.Scene {
     this.kai = this.add.rectangle(0, 0, pl.box.w, pl.box.h, STATE_COLORS.idle).setOrigin(0, 0);
     this.eye = this.add.rectangle(0, 0, 3, 3, 0x0f1724).setOrigin(0, 0);
     this.prev = { x: pl.box.x, y: pl.box.y };
-    this.hud = new StageHud(this);
+    this.hud = new StageHud(this, strings);
     this.tweens.add({ targets: this.hud.hint, alpha: 0.25, delay: 8000, duration: 800 });
     if (world.checkpointIndex > 0)
-      this.hud.flash(`Tiếp tục từ checkpoint ${world.checkpointIndex}`);
+      this.hud.flash(strings.t('hud.resumeCheckpoint', { n: world.checkpointIndex }));
     this.syncSprites(0);
 
     const camera = this.cameras.main;
@@ -228,7 +229,7 @@ export class StageScene extends Phaser.Scene {
       bossId,
       boss.name,
       defeated.filter((b) => b !== bossId).length,
-      DIALOGUE_LANG,
+      strings.lang,
     );
     const feedback = config.feedback;
     this.feel = {
@@ -262,7 +263,8 @@ export class StageScene extends Phaser.Scene {
     const tut = this.tutorial;
     this.pause = new PauseMenu(
       this,
-      `${this.def.name} · Thường`,
+      `${this.def.name} · ${strings.t('difficulty.normal')}`,
+      strings,
       (c) => this.onPauseChoice(c),
       tut ? () => tut.manager.isEnabled : undefined,
       () => !getSfx(this).muted,
@@ -349,10 +351,10 @@ export class StageScene extends Phaser.Scene {
         talking.visibleChars,
         talking.lineComplete,
         input.device === 'touch'
-          ? { next: 'Tiếp >', skip: 'Bỏ qua' }
+          ? { next: this.strings.t('dialogue.next'), skip: this.strings.t('dialogue.skip') }
           : {
-              next: formatGlyphs('{NHẢY} Tiếp >', ctx),
-              skip: formatGlyphs('{TẠM_DỪNG} Bỏ qua', ctx),
+              next: formatGlyphs(`{NHẢY} ${this.strings.t('dialogue.next')}`, ctx),
+              skip: formatGlyphs(`{TẠM_DỪNG} ${this.strings.t('dialogue.skip')}`, ctx),
             },
       );
     else this.dialogue?.box.hide();
@@ -365,12 +367,7 @@ export class StageScene extends Phaser.Scene {
       this.tutorial?.box.show(view.speaker, formatGlyphs(view.text, ctx), view.hintLevel > 0);
     else this.tutorial?.box.hide();
     input.setTouchHighlight(view?.highlight);
-    this.hud?.hint.setText(
-      formatGlyphs(
-        '{DI_CHUYỂN} · nhảy {NHẢY} · bắn {BẮN} (giữ để nạp) · lướt {LƯỚT} · {TẠM_DỪNG}',
-        ctx,
-      ),
-    );
+    this.hud?.hint.setText(formatGlyphs(this.strings.t('hud.controlsHint'), ctx));
     if (DEBUG) {
       this.hud?.debug.setText(
         `${world.player.state} · chết ${world.deaths} · FPS ${Math.round(this.game.loop.actualFps)}`,
@@ -454,9 +451,12 @@ export class StageScene extends Phaser.Scene {
     const ctx = this.controls?.glyphContext();
     const swap =
       !this.tutorial?.manager.isEnabled && ctx
-        ? `\n${formatGlyphs('{ĐỔI_VK}', ctx)} để đổi vũ khí`
+        ? `\n${formatGlyphs(this.strings.t('hud.swapHint'), ctx)}`
         : '';
-    this.hud?.flash(`Nhận vũ khí: ${notice.name}${swap}`, WEAPON_NOTICE_HOLD_MS);
+    this.hud?.flash(
+      this.strings.t('hud.weaponGranted', { name: notice.name }) + swap,
+      WEAPON_NOTICE_HOLD_MS,
+    );
     this.noticeUntilMs = nowMs + WEAPON_NOTICE_HOLD_MS;
   }
 
@@ -527,22 +527,26 @@ export class StageScene extends Phaser.Scene {
     if (ev.bossLanded) camera.shake(160, 0.006);
     if (ev.weakHit) camera.shake(90, 0.004);
     if (ev.playerHurt) camera.shake(80, 0.003);
-    if (ev.bossDefeated) hud?.flash('HẠ BOSS!');
+    const s = this.strings;
+    if (ev.bossDefeated) hud?.flash(s.t('hud.bossDefeated'));
     if (ev.weaponGranted)
       this.weaponNotice = { name: ev.weaponGranted, atMs: this.time.now + WEAPON_NOTICE_DELAY_MS };
-    if (ev.emptyWeapon) hud?.flash('Hết năng lượng vũ khí', 600);
+    if (ev.emptyWeapon) hud?.flash(s.t('hud.weaponEmpty'), 600);
     if (ev.enemyKilled) camera.shake(60, 0.002);
-    if (ev.healed > 0) hud?.flash(`+${ev.healed} máu`, 500);
+    if (ev.healed > 0) hud?.flash(s.t('hud.healed', { n: ev.healed }), 500);
     if (ev.checkpoint !== undefined)
-      hud?.flash(`Checkpoint ${ev.checkpoint}${this.saver ? ' · đã lưu' : ''}`, 900);
+      hud?.flash(
+        s.t(this.saver ? 'hud.checkpointSaved' : 'hud.checkpoint', { n: ev.checkpoint }),
+        900,
+      );
     if (ev.fellInPit) camera.shake(80, 0.003);
     if (ev.spikeHit) camera.shake(90, 0.004);
-    if (ev.roomLocked) hud?.flash('Phòng khóa: hạ hết kẻ địch', 1200);
-    if (ev.roomCleared) hud?.flash('Cửa mở', 900);
+    if (ev.roomLocked) hud?.flash(s.t('hud.roomLocked'), 1200);
+    if (ev.roomCleared) hud?.flash(s.t('hud.roomCleared'), 900);
     if (ev.barrierBroken) camera.shake(100, 0.004);
     if (ev.secretFound) {
       const label = world.secrets.find((s) => s.spawn.item === ev.secretFound)?.spawn.label;
-      hud?.flash(`Nhặt được: ${label ?? ev.secretFound}`, 1400);
+      hud?.flash(s.t('hud.secretFound', { name: label ?? ev.secretFound }), 1400);
     }
   }
 

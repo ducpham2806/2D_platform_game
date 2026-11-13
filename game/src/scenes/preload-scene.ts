@@ -8,7 +8,10 @@ import {
 } from '../core/constants';
 import { ConfigError, parseGameConfig } from '../core/game-config';
 import { SfxPlayer } from '../audio/sfx-player';
-import { getBus, setConfig, setInput, setSave, setSfx } from '../core/phaser-services';
+import { getBus, setConfig, setInput, setSave, setSfx, setStrings } from '../core/phaser-services';
+import { isLang } from '../core/strings-config';
+import { urlParam } from '../debug/flags';
+import { Strings } from '../logic/i18n';
 import { LocalStorageStore } from '../input/browser-store';
 import { InputService } from '../input/input-service';
 import { SaveManager } from '../logic/save/save-manager';
@@ -78,6 +81,9 @@ export class PreloadScene extends Phaser.Scene {
       setConfig(this, config);
       setInput(this, new InputService(config.controls, new LocalStorageStore(), getBus(this)));
       setSfx(this, new SfxPlayer(config.feedback, new LocalStorageStore()));
+      const wanted = urlParam('lang');
+      const lang = wanted !== undefined && isLang(wanted) ? wanted : config.strings.defaultLang;
+      setStrings(this, new Strings(config.strings, lang));
       getBus(this).emit('config:ready', { config });
       const save = await SaveManager.open(await openBrowserSaveStore());
       if (save.lastError) console.warn(save.lastError);

@@ -25,6 +25,18 @@ Mẫu:
 
 ---
 
+## 2026-11-13 (tiếp 3): Smoke check và bảng chuỗi đa ngôn ngữ
+
+- **Nhánh / commit:** `ccr-0afa36c6-vbizeu`.
+- **Mục tiêu:** người dùng giao tự làm tiếp → hai việc đã nêu ở mục trước: smoke check có ảnh chụp, bảng chuỗi.
+- **Đã làm:** `scripts/smoke-check.mjs` + `npm run smoke` (10 bước, ảnh ở `smoke-shots/`), job CI `smoke` (chưa chặn merge). `03-Data/strings.json` (46 khóa, `vi` + `en`), `core/strings-config.ts`, `logic/i18n.ts`; HUD, menu tạm dừng, hộp hội thoại, màn Kết quả lấy chữ từ bảng chuỗi; `?lang=en` để thử; thoại boss theo cùng ngôn ngữ.
+- **File chính:** các file trên, `game/src/scenes/stage-scene.ts`, `stage/stage-hud.ts`, `stage/pause-menu.ts`, `result-scene.ts`, `preload-scene.ts`, `debug/flags.ts`, `.github/workflows/ci.yml`, `game/tests/strings.test.ts`, `CLAUDE.md` (thêm hai nguyên tắc: chữ lấy từ bảng chuỗi, đổi hình thì chạy smoke).
+- **Quyết định:** khóa chuỗi khai trong mã (`STRING_KEYS`) để sai khóa là lỗi biên dịch; dữ liệu thiếu/thừa khóa hoặc lệch chỗ điền giữa hai ngôn ngữ thì game dừng ở màn tải. Ảnh smoke không commit (CI lưu thành artifact).
+- **Lỗi tìm thấy / đã sửa:** không có lỗi game. Ghi nhận hành vi: phím bấm cùng bước với cú Bỏ qua hội thoại bị hội thoại nhận (đúng thiết kế, kịch bản thử phải chờ).
+- **Kiểm tra:** `npm test` 301 test (thêm 5 ở `strings.test.ts`), lint, format:check, build đều đạt; `npm run smoke` 10/10 bước đạt (chạy 4 lần). Chromium `?lang=en`: thoại Thorna, menu tạm dừng, màn Kết quả hiện tiếng Anh, không tràn khung. Job CI `smoke` **chưa được chạy trên GitHub**.
+- **Còn dở:** chưa chuyển chuỗi của màn hình chính, Điều khiển, Dữ liệu lưu, công cụ chơi thử, tên màn, tên nút, lời hướng dẫn; chưa có chọn ngôn ngữ trong game.
+- **Tiếp theo:** xem `08-Viec-cho-nguoi-dung.md`. Việc Claude tự làm được tiếp: màn Cài đặt (âm thanh, ngôn ngữ, tùy chọn tiếp cận: giảm rung, giảm hiệu ứng), safe-area tai thỏ, chuyển nốt chuỗi còn lại, tiếng Anh cho lời hướng dẫn.
+
 ## 2026-11-13 (tiếp 2): Âm thanh tổng hợp và hiệu ứng tối thiểu
 
 - **Nhánh / commit:** `ccr-0afa36c6-vbizeu`.
@@ -48,15 +60,3 @@ Mẫu:
 - **Kiểm tra:** `npm test` 283 test (thêm 12 ở `stage-result.test.ts`), lint, format:check, build đều đạt. Chromium: hạ Thorna lần đầu, đổi và bắn Vine Lash → Kết quả (EXP +120, cấp 1 → 2, Core Bit +80, vũ khí mới, lời R01); Chơi lại màn → hạ lại → Kết quả sau 2,5 s ("Không có gì mới"); Tiếp tục → màn hình chính; không có lỗi console. Chưa thử màn Kết quả bằng cảm ứng.
 - **Còn dở:** Data Chip, Memory Log, Két giáp, SP và nút Mở Xưởng (M8); Về Hub; màn Chuẩn bị.
 - **Tiếp theo:** phần code Vertical slice không phụ thuộc bản đồ đã hết. Việc còn lại đều cần cổng Prototype (bản đồ Prologue/Stage 1, bước Prologue) hoặc asset P1. Người dùng: merge nhánh vào `main` để có bản Pages, xem kích thước hình trên điện thoại thật, chạy đợt chơi thử 5 người; và chọn 3 quyết định trong `07-Danh-gia-ke-hoach.md`.
-
-## 2026-11-13: Đánh giá kế hoạch bằng Game Studio Agent; hội thoại boss; sửa phóng hình trên điện thoại
-
-- **Nhánh / commit:** `ccr-0afa36c6-vbizeu`.
-- **Mục tiêu:** (1) người dùng yêu cầu dùng repo `Game_Studio_Agent` đánh giá lại kế hoạch; (2) sau đó hỏi đổi sang đồ họa 3D rồi quyết định **giữ pixel art, không đổi gì**; (3) giao làm tiếp theo kế hoạch → làm hộp hội thoại (việc "Tiếp theo" của phiên trước).
-- **Đã làm:** bản đánh giá `04-Dev-Plan/07-Danh-gia-ke-hoach.md` (3 quyết định còn chờ người dùng). Hộp hội thoại P-UI-DIALOG: `core/dialogue-config.ts` kiểm tra `dialogue_wardens.json` (thêm khối `rules` qua script sinh), `logic/dialogue/` (`DialoguePlayer`, chọn biến thể theo số boss đã hạ, `BossDialogueDirector`), `scenes/stage/dialogue-box.ts`; thoại Thorna trước trận và Thorna + NOVA sau trận. Bỏ S11, S12 khỏi `tutorial.json` (trùng thoại sau trận), S13 kích hoạt bằng `weaponGranted`.
-- **File chính:** các file trên, `game/src/scenes/stage-scene.ts`, `game/src/core/game-config.ts`, `game/src/logic/scale.ts`, `game/src/core/phaser-scale.ts`, `03-Data/dialogue_wardens.json`, `03-Data/tutorial.json`, `game/tests/dialogue.test.ts`.
-- **Quyết định:** hộp thoại đặt phía trên (wireframe vẽ ở dưới, nhưng sẽ che Kai và boss); không tự chuyển câu, độ dài đoạn thoại bị chặn lúc nạp (≤ 10 s đọc bình thường); boss đã hạ thì không nghe lại; màn xám không có thoại nên số liệu chơi thử không đổi. Hệ số phóng nguyên tính theo điểm ảnh thật thay cho px CSS.
-- **Lỗi tìm thấy / đã sửa:** (a) **có từ Sprint 1:** trên điện thoại cầm ngang trong trình duyệt (cao dưới 384 px CSS) game chỉ phóng 1×, chiếm khoảng 1/4 màn hình; đã sửa, giả lập Pixel 7 giờ phóng 4× điểm ảnh thật (cao 292/360 px CSS). (b) Thông báo "Nhận vũ khí" đè lên lời S13; giờ hiện lần lượt. (c) Bản đánh giá ghi sai "giả thuyết khắc chế chưa có prototype" (boss xám đấu lại đã yếu trước Vine Lash); đã sửa mục 1, 3.1, 4.
-- **Kiểm tra:** `npm test` 271 test (thêm 16 ở `dialogue.test.ts`, 1 ở `scale.test.ts`), lint, format:check, build đều đạt. Chromium: thoại trước trận hiện khi vào phòng Thorna, máu boss và vị trí Kai đứng yên trong lúc thoại; hạ boss → Thorna → NOVA → "Nhận vũ khí" → S13; giả lập Pixel 7: chạm để hiện hết câu và sang câu, nút Bỏ qua, vào lại sau khi đã hạ thì không có thoại; không có lỗi console.
-- **Còn dở:** chưa thử trên điện thoại thật (nhất là hệ số phóng mới: cần xem hình có nét không). ChoicePanel, chân dung, hộp thoại tự tiến, thoại Prologue/Hub chưa làm. Ba quyết định trong bản đánh giá chưa được chọn.
-- **Tiếp theo:** màn Kết quả (việc code còn lại của Vertical slice không phụ thuộc bản đồ). Người dùng: mở bản Pages trên điện thoại kiểm tra kích thước hình, rồi chạy đợt chơi thử 5 người. Không bắt đầu M8 trước khi qua cổng Prototype.

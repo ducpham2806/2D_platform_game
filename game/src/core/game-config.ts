@@ -9,6 +9,7 @@ import { parseStageMechanics, type StageMechanics } from './stage-mechanics-conf
 import { parseTutorial, type TutorialData } from './tutorial-config';
 import { type DialogueData, parseDialogue } from './dialogue-config';
 import { type FeedbackData, parseFeedback } from './feedback-config';
+import { parseStrings, type StringsData } from './strings-config';
 
 export { ConfigError } from './json-check';
 export { parsePlayer, type PlayerData } from './player-config';
@@ -77,6 +78,7 @@ export const REQUIRED_DATA_FILES = [
   'tutorial',
   'dialogue_wardens',
   'feedback',
+  'strings',
 ] as const;
 export type RequiredDataFile = (typeof REQUIRED_DATA_FILES)[number];
 
@@ -93,6 +95,8 @@ export interface GameConfig {
   dialogue: DialogueData;
   /** Âm thanh tổng hợp, hạt và co giãn hình theo từng cue của màn chơi. */
   feedback: FeedbackData;
+  /** Bảng chuỗi giao diện theo ngôn ngữ. */
+  strings: StringsData;
   /** Các file chưa có module dùng (shop, economy, modules, endgame…), giữ nguyên dạng thô. */
   raw: Readonly<Record<string, unknown>>;
 }
@@ -301,6 +305,7 @@ export function parseGameConfig(files: Readonly<Record<string, unknown>>): GameC
       stages.stages.map((st) => st.boss),
     ),
     feedback: parseFeedback(files.feedback),
+    strings: parseStrings(files.strings),
     raw: { ...files },
   };
   const errors = checkDesignInvariants(config);
