@@ -238,9 +238,9 @@ const server = await preview({
 const browser = await playwright.chromium.launch(
   process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {},
 );
-let errors = [];
+const errors = [];
 try {
-  errors = [...(await desktopFlow(browser)), ...(await touchFlow(browser, playwright))];
+  errors.push(...(await desktopFlow(browser)), ...(await touchFlow(browser, playwright)));
 } finally {
   await browser.close();
   await new Promise((resolve) => server.httpServer.close(resolve));
