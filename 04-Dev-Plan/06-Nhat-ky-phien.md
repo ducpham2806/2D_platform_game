@@ -35,6 +35,7 @@ Mẫu:
 - **Phát hiện chính:** giai đoạn thật là Prototype chưa qua cổng; đường găng là chơi thử, asset, bản đồ, âm thanh chứ không phải code; âm thanh (M12) nằm sau cổng MVP; giả thuyết khắc chế vũ khí chưa có prototype; cổng MVP 50 người chưa có cách đo; ước lượng MVP lệch 2–3 lần so với con số 80–150 giờ/màn của GDD; chuỗi tiếng Việt viết thẳng trong scene; chưa lưu ảnh bằng chứng chạy thử.
 - **Kiểm tra:** không chạy test/lint/build vì chỉ thêm tài liệu ngoài `game/`.
 - **Còn dở:** chưa cập nhật `01-Ke-hoach-lam-viec.md` theo đề xuất (chờ quyết định).
+- **Yêu cầu mới cuối phiên:** người dùng muốn đồ họa dạng 3D kiểu 2.5D (model 3D, lối chơi 2D) thay cho pixel art của GDD mục 14. Chưa chốt cách làm: (A) model 3D render sẵn thành sprite, giữ Phaser; (B) vẽ 3D thời gian thực bằng three.js, giữ `src/logic`, viết lại lớp scene. Ảnh hưởng: toàn bộ gói `05-Assets` (manifest 350 spritesheet, prompt), quyết định 320×192 + `pixelArt`, ngân sách tải 30 MB. Không ảnh hưởng cổng Prototype (vẫn thử bằng hộp xám).
 - **Tiếp theo:** người dùng chọn phương án ở mục 4 của bản đánh giá. Khuyến nghị: lượt cảm giác tối thiểu (SFX, juice, corner correction) → thử trên điện thoại thật → đợt chơi thử 5 người; song song làm mẫu chuẩn asset Kai. **Không** bắt đầu M8 trước khi qua cổng Prototype.
 
 ## 2026-11-03: Sprint 7, TutorialManager
