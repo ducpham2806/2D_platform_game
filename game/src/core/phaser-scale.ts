@@ -13,11 +13,11 @@ function viewportSize(): { width: number; height: number } {
 
 export function currentLayout(): ViewportLayout {
   const { width, height } = viewportSize();
-  return computeLayout(width, height, LOGIC_WIDTH, LOGIC_HEIGHT);
+  return computeLayout(width, height, LOGIC_WIDTH, LOGIC_HEIGHT, window.devicePixelRatio);
 }
 
 /**
- * Giữ canvas ở hệ số phóng nguyên lớn nhất vừa màn hình mỗi khi đổi kích thước
+ * Giữ canvas ở hệ số phóng nguyên (theo điểm ảnh thật) lớn nhất vừa màn hình mỗi khi đổi kích thước
  * hoặc xoay máy. Phaser tự căn giữa (autoCenter); phần dư là nền đen của trang.
  * Trả về hàm hủy đăng ký.
  */

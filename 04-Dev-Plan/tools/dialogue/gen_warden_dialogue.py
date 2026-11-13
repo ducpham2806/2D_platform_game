@@ -113,6 +113,10 @@ for w in W:
 out = {"_note": "Thoại Warden, khóa chuỗi boss.<id>.<variant>.<pre|post>; variant chọn theo số boss đã hạ TRƯỚC trận: early 0-2, mid 3-5, late 6-7. Nguồn: 01-GDD/09-Thoai-Warden.md (sinh cùng script). Bản tiếng Anh (en): bản dịch đầu, cần người bản ngữ duyệt.",
        "variantByBossesDefeated": {"early":[0,2],"mid":[3,5],"late":[6,7]},
        "fallback": "Nếu thiếu biến thể (Thorna), dùng early.",
+       # Luật hộp hội thoại (game/src/core/dialogue-config.ts kiểm tra lúc nạp). Mọi số là [PLACEHOLDER].
+       "rules": {"_note": "charsPerSec: tốc độ hiện chữ; minReadSec: thời gian đọc tối thiểu tính cho mỗi câu; maxLockSec: một đoạn thoại (gõ hết chữ + đọc) không được khóa điều khiển lâu hơn mức này (GDD 3.6); maxLineChars: độ dài tối đa một câu (3–4 dòng trong hộp); postDelaySec: chờ sau khi hạ boss rồi mới hiện thoại; groundWaitSec: chờ Kai chạm đất tối đa bấy nhiêu giây trước thoại đầu trận [PLACEHOLDER]",
+                 "charsPerSec": 40, "minReadSec": 1.5, "maxLockSec": 10, "maxLineChars": 140,
+                 "postDelaySec": 0.8, "groundWaitSec": 1},
        "vi": {}, "en": {}}
 for w in W:
     for v,(pre,post) in w["lines"].items():

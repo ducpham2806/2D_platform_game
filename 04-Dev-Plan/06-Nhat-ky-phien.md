@@ -25,18 +25,17 @@ Mẫu:
 
 ---
 
-## 2026-11-13: Đánh giá lại kế hoạch bằng Game Studio Agent
+## 2026-11-13: Đánh giá kế hoạch bằng Game Studio Agent; hội thoại boss; sửa phóng hình trên điện thoại
 
 - **Nhánh / commit:** `ccr-0afa36c6-vbizeu`.
-- **Mục tiêu:** người dùng yêu cầu đọc repo này và repo `Game_Studio_Agent`, dùng khung của repo đó đánh giá lại kế hoạch phát triển.
-- **Đã làm:** đọc kế hoạch, module, cổng Prototype, CONTEXT, GDD (trụ cột, mục 14–19), manifest asset; đọc directors, `rules/`, và các skill `game-production-scrum`, `prototype-fast`, `platformer`, `game-feel`, `level-design`, `game-qa-playtest`, `game-release-liveops`, `phaser-core`. Viết bản đánh giá `04-Dev-Plan/07-Danh-gia-ke-hoach.md`.
-- **File chính:** `04-Dev-Plan/07-Danh-gia-ke-hoach.md` (mới). Không đổi code, dữ liệu, GDD hay bảng lộ trình.
-- **Quyết định:** chưa có; bản đánh giá nêu 3 quyết định chờ người dùng (việc làm trước đợt chơi thử, phạm vi MVP, các việc kéo sớm).
-- **Phát hiện chính:** giai đoạn thật là Prototype chưa qua cổng; đường găng là chơi thử, asset, bản đồ, âm thanh chứ không phải code; âm thanh (M12) nằm sau cổng MVP; giả thuyết khắc chế vũ khí chưa có prototype; cổng MVP 50 người chưa có cách đo; ước lượng MVP lệch 2–3 lần so với con số 80–150 giờ/màn của GDD; chuỗi tiếng Việt viết thẳng trong scene; chưa lưu ảnh bằng chứng chạy thử.
-- **Kiểm tra:** không chạy test/lint/build vì chỉ thêm tài liệu ngoài `game/`.
-- **Còn dở:** chưa cập nhật `01-Ke-hoach-lam-viec.md` theo đề xuất (chờ quyết định).
-- **Yêu cầu mới cuối phiên:** người dùng muốn đồ họa dạng 3D kiểu 2.5D (model 3D, lối chơi 2D) thay cho pixel art của GDD mục 14. Chưa chốt cách làm: (A) model 3D render sẵn thành sprite, giữ Phaser; (B) vẽ 3D thời gian thực bằng three.js, giữ `src/logic`, viết lại lớp scene. Ảnh hưởng: toàn bộ gói `05-Assets` (manifest 350 spritesheet, prompt), quyết định 320×192 + `pixelArt`, ngân sách tải 30 MB. Không ảnh hưởng cổng Prototype (vẫn thử bằng hộp xám).
-- **Tiếp theo:** người dùng chọn phương án ở mục 4 của bản đánh giá. Khuyến nghị: lượt cảm giác tối thiểu (SFX, juice, corner correction) → thử trên điện thoại thật → đợt chơi thử 5 người; song song làm mẫu chuẩn asset Kai. **Không** bắt đầu M8 trước khi qua cổng Prototype.
+- **Mục tiêu:** (1) người dùng yêu cầu dùng repo `Game_Studio_Agent` đánh giá lại kế hoạch; (2) sau đó hỏi đổi sang đồ họa 3D rồi quyết định **giữ pixel art, không đổi gì**; (3) giao làm tiếp theo kế hoạch → làm hộp hội thoại (việc "Tiếp theo" của phiên trước).
+- **Đã làm:** bản đánh giá `04-Dev-Plan/07-Danh-gia-ke-hoach.md` (3 quyết định còn chờ người dùng). Hộp hội thoại P-UI-DIALOG: `core/dialogue-config.ts` kiểm tra `dialogue_wardens.json` (thêm khối `rules` qua script sinh), `logic/dialogue/` (`DialoguePlayer`, chọn biến thể theo số boss đã hạ, `BossDialogueDirector`), `scenes/stage/dialogue-box.ts`; thoại Thorna trước trận và Thorna + NOVA sau trận. Bỏ S11, S12 khỏi `tutorial.json` (trùng thoại sau trận), S13 kích hoạt bằng `weaponGranted`.
+- **File chính:** các file trên, `game/src/scenes/stage-scene.ts`, `game/src/core/game-config.ts`, `game/src/logic/scale.ts`, `game/src/core/phaser-scale.ts`, `03-Data/dialogue_wardens.json`, `03-Data/tutorial.json`, `game/tests/dialogue.test.ts`.
+- **Quyết định:** hộp thoại đặt phía trên (wireframe vẽ ở dưới, nhưng sẽ che Kai và boss); không tự chuyển câu, độ dài đoạn thoại bị chặn lúc nạp (≤ 10 s đọc bình thường); boss đã hạ thì không nghe lại; màn xám không có thoại nên số liệu chơi thử không đổi. Hệ số phóng nguyên tính theo điểm ảnh thật thay cho px CSS.
+- **Lỗi tìm thấy / đã sửa:** (a) **có từ Sprint 1:** trên điện thoại cầm ngang trong trình duyệt (cao dưới 384 px CSS) game chỉ phóng 1×, chiếm khoảng 1/4 màn hình; đã sửa, giả lập Pixel 7 giờ phóng 4× điểm ảnh thật (cao 292/360 px CSS). (b) Thông báo "Nhận vũ khí" đè lên lời S13; giờ hiện lần lượt. (c) Bản đánh giá ghi sai "giả thuyết khắc chế chưa có prototype" (boss xám đấu lại đã yếu trước Vine Lash); đã sửa mục 1, 3.1, 4.
+- **Kiểm tra:** `npm test` 271 test (thêm 16 ở `dialogue.test.ts`, 1 ở `scale.test.ts`), lint, format:check, build đều đạt. Chromium: thoại trước trận hiện khi vào phòng Thorna, máu boss và vị trí Kai đứng yên trong lúc thoại; hạ boss → Thorna → NOVA → "Nhận vũ khí" → S13; giả lập Pixel 7: chạm để hiện hết câu và sang câu, nút Bỏ qua, vào lại sau khi đã hạ thì không có thoại; không có lỗi console.
+- **Còn dở:** chưa thử trên điện thoại thật (nhất là hệ số phóng mới: cần xem hình có nét không). ChoicePanel, chân dung, hộp thoại tự tiến, thoại Prologue/Hub chưa làm. Ba quyết định trong bản đánh giá chưa được chọn.
+- **Tiếp theo:** màn Kết quả (việc code còn lại của Vertical slice không phụ thuộc bản đồ). Người dùng: mở bản Pages trên điện thoại kiểm tra kích thước hình, rồi chạy đợt chơi thử 5 người. Không bắt đầu M8 trước khi qua cổng Prototype.
 
 ## 2026-11-03: Sprint 7, TutorialManager
 

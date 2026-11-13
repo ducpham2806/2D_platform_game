@@ -9,7 +9,7 @@
 - **Phần kỹ thuật tốt hơn mức studio yêu cầu.** Vấn đề của kế hoạch không nằm ở code.
 - **Kế hoạch đang xếp theo module code, trong khi đường găng là những việc không phải code:** chơi thử với người thật, asset, bản đồ thật, âm thanh. Code Sprint 1–7 làm xong trong 4 ngày (01–04/11), còn cổng Prototype vẫn chưa có đợt thử nào và chưa có sprite nào.
 - **Giai đoạn thật của dự án (theo 7 giai đoạn của studio): Prototype, chưa qua cổng.** Bảng lộ trình ghi Sprint 5–9 "Code xong" dễ làm tưởng đã ở Vertical slice.
-- **Ba lỗ hổng lớn nhất:** (1) âm thanh nằm tận Beta, tức cổng MVP 50 người sẽ thử một game câm; (2) giả thuyết vui thứ hai (đổi vũ khí khắc chế tạo khoảnh khắc "à, thì ra thế") không có prototype nào và phải tới cuối MVP mới được thử; (3) cổng MVP cần đo 50 người và tỷ lệ quay lại ngày hôm sau nhưng không có cách thu số liệu.
+- **Ba lỗ hổng lớn nhất:** (1) âm thanh nằm tận Beta, tức cổng MVP 50 người sẽ thử một game câm; (2) giả thuyết vui thứ hai (đổi vũ khí khắc chế tạo khoảnh khắc "à, thì ra thế") có prototype (boss xám đấu lại yếu trước Vine Lash) nhưng cổng Prototype không đo nó; (3) cổng MVP cần đo 50 người và tỷ lệ quay lại ngày hôm sau nhưng không có cách thu số liệu.
 
 ## 2. Kiểm tra cổng (`/gate-check`, vai Producer)
 
@@ -31,7 +31,7 @@ Hai điểm lệch so với chuẩn của studio:
 
 1. **Âm thanh (M12) xếp ở Beta, sau cổng MVP.** `game-feel`: một cú trúng "đã" là 5–8 phản hồi nhỏ xếp chồng trong khoảng 100 ms, âm thanh là lớp đầu tiên. GDD mục 14 còn dùng âm thanh làm cảnh báo đòn boss. Cổng MVP đo "muốn chơi tiếp" và quay lại ngày hôm sau; đo trên bản không có tiếng sẽ cho số thấp sai lệch.
 2. **Cổng Prototype đang chấm điểm "sướng" trên hình hộp, không tiếng, gần như không có juice.** Hiện chỉ có hit-stop, rung camera và nháy trắng kẻ địch. Chưa có bụi tiếp đất, co giãn (squash/stretch), chớp nòng, hạt khi trúng. `prototype-fast` cảnh báo đừng đánh bóng để che một cơ chế nhạt; nhưng tiêu chí ở đây là người lạ chấm ≥ 4/5, nên một lượt tối thiểu là hợp lý (xem phương án ở mục 4).
-3. **Giả thuyết vui số 2 chưa có prototype.** Thorna yếu trước Ember Burst, vũ khí của màn 8, nên Vertical slice không thử được khoảnh khắc khắc chế. Lần thử đầu tiên là boss màn 2 (Lumen, yếu trước Vine Lash), tức giữa MVP. Theo `prototype-fast` (một câu hỏi, một prototype), nên có một phòng thử rẻ: một boss xám yếu trước Vine Lash, đánh ngay sau Thorna.
+3. **Giả thuyết vui số 2 có prototype nhưng chưa được đo.** *(Sửa 13/11: bản đầu ghi "chưa có prototype" là sai.)* Boss xám đấu lại đã yếu trước Vine Lash (`bosses.json`), nên màn xám thử được khoảnh khắc khắc chế. Nhưng tiêu chí cổng Prototype và phiếu chấm chỉ hỏi Nhảy/Lướt/Bắn, và nhật ký chơi thử không ghi người thử có đấu lại bằng Vine Lash hay không. Thorna yếu trước Ember Burst (vũ khí màn 8), nên ở màn thật phải tới boss màn 2 mới gặp lại tình huống này. Đề xuất rẻ: thêm một dòng vào nhật ký chơi thử (vũ khí dùng lúc hạ boss ở lần đấu lại) và một câu hỏi sau buổi thử.
 4. **Bộ điều khiển thiếu hai trợ giúp trong bảng của skill `platformer`:** corner correction (đẩy nhẹ khi sượt mép 1–2 px) và apex hang (giảm trọng lực ở đỉnh nhảy). Cả hai phục vụ thẳng trụ cột 1 "tha thứ đúng chỗ" và giúp nhiều nhất trên cảm ứng. Camera có deadzone nhưng chưa có look-ahead. Nên thêm làm thông số trong bảng chỉnh (`?tune=1`), mặc định tắt, để thử A/B trong đợt chơi thử.
 
 ### 3.2 Producer: phạm vi và ước lượng (`/scope-check`)
@@ -94,7 +94,7 @@ Phaser: giữ 3.90. Skill `phaser-core` nhắm Phaser 4.2 cho dự án mới nh�
 ### Quyết định 3: việc kéo sớm (có thể chọn nhiều)
 
 1. Âm thanh tối thiểu (SFX + 1–2 bản nhạc) vào Vertical slice, phần còn lại của M12 giữ ở Beta.
-2. Phòng thử khắc chế (boss xám yếu trước Vine Lash) vào Vertical slice.
+2. Đo khoảnh khắc khắc chế trong đợt chơi thử (vũ khí dùng khi đấu lại boss xám).
 3. Đo lường tối thiểu (một phần M16) vào trước cổng MVP.
 4. Thử đóng gói Android nửa ngày (một phần M17) vào Vertical slice.
 5. Bảng chuỗi đa ngôn ngữ trước phần còn lại của M10.
@@ -104,7 +104,7 @@ Phaser: giữ 3.90. Skill `phaser-core` nhắm Phaser 4.2 cho dự án mới nh�
 
 1. Lượt cảm giác tối thiểu → kiểm tra trên một điện thoại thật → **đợt chơi thử 5 người** (việc duy nhất chỉ người dùng làm được, và đang chặn mọi thứ).
 2. Song song, không cần chờ cổng: mẫu chuẩn asset Kai trong game; smoke check; bảng chuỗi.
-3. Qua cổng: chốt thông số → bảng số đo màn → beat chart → Stage 1 khối xám → chơi thử → phủ hình; Prologue; phòng thử khắc chế; hội thoại, màn Kết quả.
+3. Qua cổng: chốt thông số → bảng số đo màn → beat chart → Stage 1 khối xám → chơi thử → phủ hình; Prologue; màn Kết quả.
 4. Cổng Vertical slice (Prologue ≥ 90%, Stage 1 ≥ 70%) → ước lượng lại MVP theo số giờ thật của Stage 1.
 
 ## 5. Phần nào của Game Studio Agent nên áp dụng cho dự án này
