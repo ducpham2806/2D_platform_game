@@ -7,7 +7,7 @@ import { formatRunTime, type StageResult } from '../logic/result/stage-result';
 import { recordTutorialDone } from '../logic/save/save-data';
 import { TutorialManager } from '../logic/tutorial/tutorial-manager';
 import type { StageDefId } from '../stages';
-import { MUTED_STYLE, TEXT_STYLE } from './ui';
+import { MUTED_STYLE, NinePanel, TEXT_STYLE } from './ui';
 
 export interface ResultSceneData {
   result: StageResult;
@@ -71,6 +71,8 @@ export class ResultScene extends Phaser.Scene {
     this.stickHeld = true;
     getInput(this).setGameplayActive(false);
 
+    this.add.image(0, 0, 'ui_menu_bg').setOrigin(0).setAlpha(0.35);
+    new NinePanel(this, 10, 34, 300, 100);
     this.add.text(cx, 12, s.t('result.title'), { ...TEXT_STYLE, fontSize: '14px' }).setOrigin(0.5);
     this.add.text(cx, 27, r.stageName, MUTED_STYLE).setOrigin(0.5);
 

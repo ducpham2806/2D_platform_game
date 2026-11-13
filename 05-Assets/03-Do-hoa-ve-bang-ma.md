@@ -22,7 +22,7 @@ Cần Python 3 + Pillow. `assets.json` là danh sách hình game nạp lúc tả
 | Điểm neo | Kai: giữa hai chân, đáy khung 48×48. Kẻ địch/boss: đáy hình trùng đáy hộp va chạm, tâm ngang giữa khung, hình gốc nhìn sang **trái** |
 | Hoạt ảnh | Kai dựng bằng khung xương tham số (`kai.py`) nên mọi khung cùng tỷ lệ. Kẻ địch: `idle` 4 khung + `attack` 4 khung (tư thế báo trước đòn) |
 
-## Đã có (44 spritesheet, 8 ảnh)
+## Đã có (55 spritesheet, 12 ảnh)
 
 | Nhóm | Nội dung |
 | --- | --- |
@@ -32,7 +32,8 @@ Cần Python 3 + Pillow. `assets.json` là danh sách hình game nạp lúc tả
 | Nền | lab và verdant, mỗi chủ đề 2 lớp |
 | Kẻ địch | Drone Lính, Tháp Pháo Tập Sự, Bướm Sắt, Tháp Gai, Lính Kén (+ khiên) |
 | Boss | Bramble Golem (64×64), boss xám, Thorna (idle, attack, stun, die, lõi 3 màu theo pha) |
-| Giao diện | chân dung NOVA, Thorna, Kai, Warden chung (30×30) |
+| Đòn và vật thể | sóng chấn động, đạn rơi, hạt Hoa Nở, hạt nổ, cột Rễ Trồi và Dây Quất (ghép từ đốt 16 px theo kích thước trong dữ liệu), roi Vine Lash, vật phẩm bí mật, bia tập bắn |
+| Giao diện | chân dung NOVA, Thorna, Kai, Warden chung (30×30); logo; nền màn hình chính; khung thanh máu/năng lượng; khung máu boss; khung 9 mảnh cho hộp thoại, tạm dừng, hướng dẫn, Kết quả; biểu tượng vũ khí và tạm dừng (chưa dùng) |
 
 ## Khác với manifest.csv và hướng dẫn cũ
 
@@ -44,4 +45,4 @@ Cần Python 3 + Pillow. `assets.json` là danh sách hình game nạp lúc tả
 
 ## Chưa có
 
-Hình cho đòn của boss (gai, rễ, hạt, sóng, roi Vine Lash), dây leo đu, vật phẩm bí mật, bia tập bắn; giao diện (khung HUD, panel, nút cảm ứng, phông bitmap, logo, nền menu); Prologue; mọi thứ của Stage 2 trở đi. Những thứ này trong game vẫn là khối màu hoặc chữ hệ thống.
+Phông bitmap (chữ vẫn là phông hệ thống vì cần đủ dấu tiếng Việt); hình riêng cho nút cảm ứng (đang là nút HTML tô theo bảng màu); gai bắn ra dùng chung hình đạn kẻ địch; sợi dây của dây leo đu và chỉ dẫn vị trí đòn boss vẫn vẽ bằng nét; các màn Điều khiển, Dữ liệu lưu, Hub và công cụ chơi thử chưa đổi giao diện; Prologue; mọi thứ của Stage 2 trở đi.

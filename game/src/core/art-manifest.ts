@@ -56,7 +56,20 @@ export const FX_SHEETS = [
   'fx_charge_full',
   'obj_core_bit',
   'obj_health',
+  'fx_shockwave',
+  'fx_drop',
+  'fx_seed',
+  'fx_bomb',
+  'fx_root',
+  'fx_lash',
+  'fx_sweep',
+  'obj_secret',
+  'obj_target',
 ] as const;
+
+/** Giao diện: khung 9 mảnh (3 × 3 ô 8 × 8), biểu tượng 16 × 16. */
+export const UI_SHEETS = ['ui_panel', 'ui_icons'] as const;
+export const UI_IMAGES = ['ui_logo', 'ui_menu_bg', 'ui_hud_frame', 'ui_boss_frame'] as const;
 
 /** Kẻ địch, mini-boss, boss: mỗi loại có `<gốc>_idle` và `<gốc>_attack` (báo trước đòn). */
 export const ACTOR_BASES = [
@@ -91,11 +104,13 @@ export const REQUIRED_SHEETS: readonly string[] = [
   ...FX_SHEETS,
   ...ACTOR_BASES.flatMap((b) => [`${b}_idle`, `${b}_attack`]),
   ...ACTOR_EXTRA,
+  ...UI_SHEETS,
   ...STAGE_THEMES.map((t) => `ts_${t}`),
 ];
 export const REQUIRED_IMAGES: readonly string[] = [
   ...STAGE_THEMES.flatMap((t) => [`bg_${t}_l1`, `bg_${t}_l2`]),
   ...PORTRAITS,
+  ...UI_IMAGES,
 ];
 
 /** Chỉ số ô trong tileset (xem 05-Assets/tools/codeart/tiles.py). */

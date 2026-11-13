@@ -240,16 +240,45 @@ function loopFrame(timeMs: number, frames: number, fps: number): number {
   return Math.floor((timeMs / 1000) * fps) % frames;
 }
 
-const PROJECTILE_ART: Readonly<Record<string, { key: string; frames: number }>> = {
-  shot: { key: 'fx_arc_shot', frames: 3 },
-  mid: { key: 'fx_arc_mid', frames: 3 },
-  charged: { key: 'fx_arc_charged', frames: 4 },
-  enemyShot: { key: 'fx_enemy_shot', frames: 3 },
+const PROJECTILE_ART: Readonly<Record<string, { key: string; frames: number; fps: number }>> = {
+  shot: { key: 'fx_arc_shot', frames: 3, fps: 12 },
+  mid: { key: 'fx_arc_mid', frames: 3, fps: 12 },
+  charged: { key: 'fx_arc_charged', frames: 4, fps: 12 },
+  enemyShot: { key: 'fx_enemy_shot', frames: 3, fps: 10 },
+  shockwave: { key: 'fx_shockwave', frames: 3, fps: 12 },
+  drop: { key: 'fx_drop', frames: 2, fps: 12 },
+  seed: { key: 'fx_seed', frames: 3, fps: 10 },
+  bomb: { key: 'fx_bomb', frames: 2, fps: 8 },
 };
+/** Đòn dạng dải dài (kích thước theo dữ liệu): ghép từ đốt 16 px, khung 0 = thân, 1 = ngọn. */
+const SEGMENT = 16;
 
-/** Loại đạn đã có hình (phần còn lại vẫn vẽ bằng khối trong stage-renderer). */
-export function projectileHasArt(kind: string): boolean {
-  return PROJECTILE_ART[kind] !== undefined;
+interface BoxLike {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+/** Dải ngang (Dây Quất, roi Vine Lash): ngọn ở đầu xa người ra đòn (`dir` 1 = sang phải). */
+function putWhip(pool: SpritePool, key: string, box: BoxLike, dir: number): void {
+  const n = Math.max(1, Math.ceil(box.w / SEGMENT));
+  const cy = box.y + box.h / 2;
+  for (let i = 0; i < n; i += 1) {
+    const last = i === n - 1;
+    // Đốt cuối canh theo mép xa để dải không dài quá hộp gây sát thương.
+    const off = last ? box.w - SEGMENT / 2 : i * SEGMENT + SEGMENT / 2;
+    const x = dir > 0 ? box.x + off : box.x + box.w - off;
+    pool.put(key, last ? 1 : 0, x, cy, dir < 0);
+  }
+}
+
+/** Cột rễ trồi: ngọn ở trên cùng, thân lặp xuống tới đáy hộp. */
+function putRoot(pool: SpritePool, box: BoxLike): void {
+  const cx = box.x + box.w / 2;
+  const n = Math.max(1, Math.ceil(box.h / SEGMENT));
+  for (let i = 0; i < n; i += 1)
+    pool.put('fx_root', i === 0 ? 0 : 1, cx, box.y + i * SEGMENT + SEGMENT / 2);
 }
 
 /** Sắp biến mất thì nhấp nháy (giống bản vẽ khối trước đây). */
@@ -267,9 +296,37 @@ export function drawWorldArt(
   const half = t / 2;
   pool.begin();
   for (const p of world.pool.all) {
-    const art = PROJECTILE_ART[p.kind];
-    if (!art) continue;
-    pool.put(art.key, loopFrame(timeMs, art.frames, 12), p.x + p.w / 2, p.y + p.h / 2, p.vx < 0);
+    if (p.kind === 'root') putRoot(pool, p);
+    else if (p.kind === 'lash') putWhip(pool, 'fx_lash', p, world.boss?.facing ?? 1);
+    else if (p.kind === 'sweep') putWhip(pool, 'fx_sweep', p, world.player.facing);
+    else {
+      const art = PROJECTILE_ART[p.kind];
+      if (!art) continue;
+      const frame = loopFrame(timeMs, art.frames, art.fps);
+      pool.put(art.key, frame, p.x + p.w / 2, p.y + p.h / 2, p.vx < 0);
+    }
+  }
+  // Bia tập bắn (màn xám): khung 0 đứng, 1 vừa trúng, 2 đã hạ; bia có khiên dùng hình khiên.
+  for (const target of world.targets) {
+    const b = target.box;
+    const frame = !target.alive ? 2 : target.flash > 0 ? 1 : 0;
+    pool.put('obj_target', frame, b.x + b.w / 2, b.y + b.h - 16);
+    if (target.alive && target.shieldUp) pool.put('en_cocoon_shield', 0, b.x - 3, b.y + b.h - 16);
+  }
+  for (const s of world.secrets) {
+    if (s.taken) continue;
+    const bob = Math.round(Math.sin(timeMs / 300) * 2);
+    pool.put(
+      'obj_secret',
+      loopFrame(timeMs, 4, 8),
+      s.box.x + s.box.w / 2,
+      s.box.y + s.box.h / 2 + bob,
+    );
+  }
+  // Bệ ở đầu dây leo đu: lát bằng ô bục một chiều của chủ đề.
+  for (const v of world.vines) {
+    const p = v.platform;
+    for (let x = p.x; x < p.x + p.w; x += t) pool.put(ts, TILE_INDEX.oneWay, x + half, p.y + half);
   }
   if (world.field) {
     for (const p of world.field.pickups.all) {

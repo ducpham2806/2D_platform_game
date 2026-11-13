@@ -3,7 +3,7 @@ import { LOGIC_HEIGHT, LOGIC_WIDTH } from '../../core/constants';
 import { MenuCursor } from '../../logic/hud/menu-cursor';
 import type { InputSnapshot } from '../../logic/input/actions';
 import type { Strings } from '../../logic/i18n';
-import { MUTED_STYLE, TEXT_STYLE } from '../ui';
+import { MUTED_STYLE, NinePanel, TEXT_STYLE } from '../ui';
 
 export type PauseChoice = 'resume' | 'quit' | 'tutorial' | 'sound';
 
@@ -58,10 +58,7 @@ export class PauseMenu {
     const dim = scene.add.rectangle(0, 0, LOGIC_WIDTH, LOGIC_HEIGHT, 0x05080d, 0.6).setOrigin(0);
     // Chặn chạm xuyên xuống các nút khác của scene.
     dim.setInteractive();
-    const panel = scene.add
-      .rectangle(cx, top, ITEM_W + 24, h, 0x121c2b, 0.95)
-      .setOrigin(0.5, 0)
-      .setStrokeStyle(1, 0x2f4766);
+    const panel = new NinePanel(scene, cx - (ITEM_W + 24) / 2, top, ITEM_W + 24, h).container;
     const title = scene.add
       .text(cx, top + 6, strings.t('pause.title'), { ...TEXT_STYLE, fontSize: '11px' })
       .setOrigin(0.5, 0);

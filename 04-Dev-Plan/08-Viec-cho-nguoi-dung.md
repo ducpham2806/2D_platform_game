@@ -25,6 +25,8 @@ Những việc chỉ người dùng làm được hoặc phải quyết định.
 
 ## Không gấp
 
+10. **Thẻ việc "Sửa bước hướng dẫn nối tiếp hiện sai lúc"** (Claude gợi ý ngày 13/11): lời NOVA của trận boss hiện ngay đầu màn nếu bước trước đã xong ở lần chơi trước. Bấm chạy thẻ đó, hoặc bảo Claude sửa trong phiên sau.
+
 8. **Xem job CI `smoke` lần đầu chạy trên GitHub** (tab Actions, sau khi mở PR hoặc merge). Job đang để không chặn merge vì chưa chạy thử trên GitHub lần nào; nếu chạy ổn thì báo Claude bỏ dòng `continue-on-error`. Ảnh chụp từng bước nằm ở artifact `smoke-shots`.
 9. **Duyệt bản dịch tiếng Anh** của giao diện trong `03-Data/strings.json` (bản dịch đầu của Claude; xem thử bằng `?lang=en`).
 

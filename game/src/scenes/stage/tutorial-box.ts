@@ -1,6 +1,6 @@
 import type Phaser from 'phaser';
 import { LOGIC_WIDTH } from '../../core/constants';
-import { TEXT_STYLE } from '../ui';
+import { NinePanel, TEXT_STYLE } from '../ui';
 
 const WIDTH = 196;
 const TOP = 26;
@@ -12,18 +12,22 @@ const DEPTH = 12;
  * Không khóa điều khiển.
  */
 export class TutorialBox {
-  private readonly bg: Phaser.GameObjects.Rectangle;
+  private readonly bg: NinePanel;
+  /** Vạch vàng trên mép hộp khi đang ở bậc gợi ý. */
+  private readonly hintMark: Phaser.GameObjects.Rectangle;
   private readonly text: Phaser.GameObjects.Text;
   private shown = '';
 
   constructor(scene: Phaser.Scene) {
-    this.bg = scene.add
-      .rectangle(LOGIC_WIDTH / 2, TOP, WIDTH + 8, 10, 0x0f1724, 0.88)
+    this.bg = new NinePanel(scene, LOGIC_WIDTH / 2 - (WIDTH + 12) / 2, TOP, WIDTH + 12, 16);
+    this.bg.container.setScrollFactor(0).setDepth(DEPTH);
+    this.hintMark = scene.add
+      .rectangle(LOGIC_WIDTH / 2, TOP, WIDTH + 12, 1, 0xffc857)
       .setOrigin(0.5, 0)
       .setScrollFactor(0)
       .setDepth(DEPTH);
     this.text = scene.add
-      .text(LOGIC_WIDTH / 2, TOP + 3, '', {
+      .text(LOGIC_WIDTH / 2, TOP + 4, '', {
         ...TEXT_STYLE,
         fontSize: '9px',
         align: 'center',
@@ -42,16 +46,17 @@ export class TutorialBox {
     if (full !== this.shown) {
       this.shown = full;
       this.text.setText(full);
-      this.bg.setSize(WIDTH + 8, this.text.height + 6);
+      this.bg.resize(WIDTH + 12, this.text.height + 8);
     }
-    this.bg.setStrokeStyle(1, hint ? 0xffd166 : 0x4fd1ff, 0.9);
-    this.bg.setVisible(true);
+    this.hintMark.setVisible(hint);
+    this.bg.container.setVisible(true);
     this.text.setVisible(true);
   }
 
   hide(): void {
     this.shown = '';
-    this.bg.setVisible(false);
+    this.bg.container.setVisible(false);
+    this.hintMark.setVisible(false);
     this.text.setVisible(false);
   }
 }

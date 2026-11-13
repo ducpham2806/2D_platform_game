@@ -27,22 +27,22 @@ describe('hình của game (assets.json)', () => {
     for (const k of [...REQUIRED_SHEETS, ...REQUIRED_IMAGES]) expect(keys.has(k), k).toBe(true);
   });
 
-  it('mỗi file tồn tại và đúng cỡ: rộng = cỡ khung × số khung (tileset: lưới 8 × 8)', () => {
+  it('mỗi file tồn tại và đúng cỡ: lưới khung phủ kín ảnh, đủ số khung', () => {
     for (const s of art.sheets) {
       const path = resolve(ASSETS, s.file);
       expect(existsSync(path), s.file).toBe(true);
       const { w, h } = pngSize(path);
-      if (s.key.startsWith('ts_')) {
-        expect([w, h], s.key).toEqual([128, 128]);
-        expect(s.frames).toBe(64);
-      } else {
-        expect([w, h], s.key).toEqual([s.frameW * s.frames, s.frameH]);
-      }
+      // Lưới khung phủ kín ảnh: dải ngang (nhân vật, hiệu ứng) hoặc lưới (tileset 8 × 8, khung 3 × 3).
+      expect([w % s.frameW, h % s.frameH], s.key).toEqual([0, 0]);
+      expect((w / s.frameW) * (h / s.frameH), s.key).toBe(s.frames);
+      if (s.key.startsWith('ts_')) expect([w, h], s.key).toEqual([128, 128]);
     }
     for (const i of art.images) {
       expect(existsSync(resolve(ASSETS, i.file)), i.file).toBe(true);
-      const want = i.key.startsWith('bg_') ? { w: 640, h: 192 } : { w: 30, h: 30 };
-      expect(pngSize(resolve(ASSETS, i.file)), i.key).toEqual(want);
+      const size = pngSize(resolve(ASSETS, i.file));
+      if (i.key.startsWith('bg_')) expect(size, i.key).toEqual({ w: 640, h: 192 });
+      if (i.key.startsWith('portrait_')) expect(size, i.key).toEqual({ w: 30, h: 30 });
+      if (i.key === 'ui_menu_bg') expect(size, i.key).toEqual({ w: 320, h: 192 });
     }
   });
 

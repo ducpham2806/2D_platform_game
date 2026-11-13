@@ -335,7 +335,7 @@ export class StageScene extends Phaser.Scene {
     this.updateCamera(world);
     if (this.dynamic) {
       drawDynamic(this.dynamic, world, time);
-      drawMechanics(this.dynamic, world, time);
+      drawMechanics(this.dynamic, world);
     }
     this.backdrop?.update(this.cameras.main);
     if (this.actorArt) drawActors(this.actorArt, this, world, time);

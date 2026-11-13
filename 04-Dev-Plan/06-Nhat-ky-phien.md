@@ -25,6 +25,18 @@ Mẫu:
 
 ---
 
+## 2026-11-13 (tiếp 5): Đồ họa đợt 3, đòn của boss và giao diện
+
+- **Nhánh / commit:** `ccr-0afa36c6-vbizeu`.
+- **Mục tiêu:** người dùng giao làm tiếp phần giao diện và hình cho đòn của boss.
+- **Đã làm:** thêm 11 spritesheet + 4 ảnh (tổng 55 + 12): sóng chấn động, đạn rơi, hạt Hoa Nở, hạt nổ, đốt Rễ Trồi, đốt Dây Quất, roi Vine Lash, bí mật, bia tập bắn; logo, nền màn hình chính, khung HUD, khung máu boss, khung 9 mảnh, biểu tượng. Trong game: mọi loại đạn/đòn vẽ bằng hình (dải dài ghép từ đốt 16 px theo hộp trong dữ liệu); `NinePanel` cho hộp thoại, hộp hướng dẫn, tạm dừng, Kết quả; HUD có khung, số máu nằm trong thanh; màn hình chính có nền + logo; nút cảm ứng tô theo bảng màu.
+- **File chính:** `05-Assets/tools/codeart/fx.py`, `ui.py`, `build.py`; `game/src/scenes/ui.ts` (`NinePanel`), `stage/stage-art.ts`, `stage/stage-renderer.ts`, `stage/mechanics-renderer.ts`, `stage/stage-hud.ts`, `stage/dialogue-box.ts`, `stage/tutorial-box.ts`, `stage/pause-menu.ts`, `result-scene.ts`, `menu-scene.ts`, `style.css`, `core/art-manifest.ts`, `tests/art.test.ts`.
+- **Quyết định:** khung 9 mảnh tự ghép từ 9 hình thay vì `NineSlice` của Phaser (chỉ chạy trên WebGL). Thanh máu boss lệch phải (tâm x = 176) để không đè khung máu người chơi. Chữ vẫn dùng phông hệ thống (phông bitmap đủ dấu tiếng Việt là việc lớn, để sau).
+- **Lỗi tìm thấy / đã sửa:** logo bị cắt hàng dưới (khung vẽ thấp hơn chữ); số máu và tên boss đè nhau; biểu tượng Core Bit đè số. **Tìm thấy, chưa sửa:** bước hướng dẫn có `after` (S10) hiện ngay đầu màn nếu bước trước đã xong ở lần chơi trước; đã tạo thẻ việc riêng cho người dùng.
+- **Kiểm tra:** `npm test` 305 test, lint, format:check, build đều đạt; `npm run smoke` 10/10; `gate-check` đạt (60 FPS ở CPU chậm 6×, tải đầu 1,56 MB). Chromium, chụp đúng lúc có đòn: Gai Quạt, Dây Quất, Rễ Trồi, Hoa Nở, roi Vine Lash, hộp thoại, tạm dừng, màn hình chính đều hiện đúng, không lỗi console. Chưa chụp: đòn của Golem và boss xám (dùng chung hình sóng, hạt nổ, đạn rơi), màn Kết quả với khung mới, giao diện trên giả lập điện thoại. Chưa xem trên điện thoại thật.
+- **Còn dở:** phông bitmap; hình riêng cho nút cảm ứng; các màn Điều khiển, Dữ liệu lưu, Hub, công cụ chơi thử chưa đổi giao diện; chỉ dẫn vị trí đòn boss và sợi dây leo vẫn vẽ bằng nét; `manifest.csv` chưa cập nhật.
+- **Tiếp theo:** xem `08-Viec-cho-nguoi-dung.md` (duyệt hướng đồ họa, merge, thử điện thoại thật, chơi thử 5 người). Claude tự làm được: đổi giao diện các màn còn lại, màn Cài đặt, sửa lỗi hướng dẫn S10.
+
 ## 2026-11-13 (tiếp 4): Đồ họa vẽ bằng mã
 
 - **Nhánh / commit:** `ccr-0afa36c6-vbizeu`.
@@ -48,15 +60,3 @@ Mẫu:
 - **Kiểm tra:** `npm test` 301 test (thêm 5 ở `strings.test.ts`), lint, format:check, build đều đạt; `npm run smoke` 10/10 bước đạt (chạy 4 lần). Chromium `?lang=en`: thoại Thorna, menu tạm dừng, màn Kết quả hiện tiếng Anh, không tràn khung. Job CI `smoke` **chưa được chạy trên GitHub**.
 - **Còn dở:** chưa chuyển chuỗi của màn hình chính, Điều khiển, Dữ liệu lưu, công cụ chơi thử, tên màn, tên nút, lời hướng dẫn; chưa có chọn ngôn ngữ trong game.
 - **Tiếp theo:** xem `08-Viec-cho-nguoi-dung.md`. Việc Claude tự làm được tiếp: màn Cài đặt (âm thanh, ngôn ngữ, tùy chọn tiếp cận: giảm rung, giảm hiệu ứng), safe-area tai thỏ, chuyển nốt chuỗi còn lại, tiếng Anh cho lời hướng dẫn.
-
-## 2026-11-13 (tiếp 2): Âm thanh tổng hợp và hiệu ứng tối thiểu
-
-- **Nhánh / commit:** `ccr-0afa36c6-vbizeu`.
-- **Mục tiêu:** người dùng giao tự làm tiếp, việc cần người dùng thì ghi lại → chọn phương án A của quyết định 1 trong bản đánh giá (lượt cảm giác tối thiểu trước đợt chơi thử). Tạo `08-Viec-cho-nguoi-dung.md`.
-- **Đã làm:** `03-Data/feedback.json` (34 cue → âm tổng hợp, hạt, co giãn) + `core/feedback-config.ts`; `logic/feel/` (`CueCollector`, `ParticlePool`, `Squash`, cài đặt âm thanh); `audio/sfx-player.ts` (Web Audio); nối vào `StageScene`; mục Bật/Tắt âm thanh ở menu tạm dừng.
-- **File chính:** các file trên, `game/src/scenes/stage-scene.ts`, `stage/stage-renderer.ts`, `stage/pause-menu.ts`, `preload-scene.ts`, `core/game-config.ts`, `core/phaser-services.ts`, `game/tests/feedback.test.ts`.
-- **Quyết định:** âm thanh tổng hợp bằng mã, chưa dùng file (không phụ thuộc asset, 0 MB tải thêm); mọi thông số ở dữ liệu. Áp cho cả màn xám vì mục đích là để người thử chấm cảm giác có phản hồi. Chưa làm corner correction và apex hang (đổi vật lý Kai, nên chờ ý người dùng hoặc làm thành thông số mặc định tắt).
-- **Lỗi tìm thấy / đã sửa:** không có.
-- **Kiểm tra:** `npm test` 296 test (thêm 13 ở `feedback.test.ts`), lint, format:check, build đều đạt. `gate-check`: mọi hạng mục đạt (60 FPS ở CPU chậm 6×, tải đầu 1,48 MB). Chromium: nhảy, đáp, bắn, lướt đều tạo âm (đếm nút Web Audio) và hạt, hình Kai co giãn; tắt âm ở menu tạm dừng thì không còn âm mới và được lưu; không có lỗi console. **Chưa ai nghe bằng tai**: âm lượng và âm sắc cần người dùng nghe thử.
-- **Còn dở:** nhạc, âm menu/hội thoại, hạt tại chỗ kẻ địch bị trúng, tùy chọn giảm hiệu ứng.
-- **Tiếp theo:** xem `08-Viec-cho-nguoi-dung.md` (merge, thử điện thoại thật, chơi thử 5 người, 2 quyết định còn lại). Việc Claude tự làm được tiếp: smoke check Playwright có ảnh chụp trong CI; bảng chuỗi đa ngôn ngữ; corner correction/apex hang dạng thông số chỉnh được; phần còn lại của M10 (Cài đặt, safe-area).

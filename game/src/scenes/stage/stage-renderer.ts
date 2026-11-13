@@ -1,25 +1,8 @@
 import type Phaser from 'phaser';
 import type { Boss } from '../../logic/boss/boss';
-import type { Projectile } from '../../logic/combat/projectiles';
 import type { ParticlePool } from '../../logic/feel/particle-pool';
 import type { TileMap } from '../../logic/tilemap';
 import type { StageWorld } from '../../logic/world/stage-world';
-import { projectileHasArt } from './stage-art';
-
-/** Màu khối giữ chỗ (chưa có sprite). Mỗi loại đạn một màu để dễ đọc khi chơi thử. */
-const PROJECTILE_COLORS: Readonly<Record<Projectile['kind'], number>> = {
-  shot: 0x9be7ff,
-  mid: 0x4fd1ff,
-  charged: 0xffffff,
-  sweep: 0x7bd389,
-  enemyShot: 0xff8787,
-  shockwave: 0xffa94d,
-  drop: 0xff6b6b,
-  bomb: 0xd99cff,
-  lash: 0x7bd389,
-  root: 0x8b5e3c,
-  seed: 0xb2f2bb,
-};
 
 /** Vẽ hạt hiệu ứng (gọi sau drawDynamic, không clear): mờ dần theo thời gian sống còn lại. */
 export function drawParticles(g: Phaser.GameObjects.Graphics, pool: ParticlePool): void {
@@ -45,28 +28,7 @@ export function drawDynamic(
 ): void {
   g.clear();
   const t = world.map.tileSize;
-  for (const target of world.targets) {
-    const b = target.box;
-    if (!target.alive) {
-      g.lineStyle(1, 0x5a6577, 1).strokeRect(b.x, b.y, b.w, b.h);
-      continue;
-    }
-    g.fillStyle(target.flash > 0 ? 0xffffff : 0xc9a227, 1).fillRect(b.x, b.y, b.w, b.h);
-    g.fillStyle(0x0f1724, 1).fillRect(b.x + 3, b.y + 4, b.w - 6, 2);
-    if (target.shieldUp) g.fillStyle(0x7fd1ff, 1).fillRect(b.x - 4, b.y + 2, 3, b.h - 4);
-  }
   if (world.boss) drawBoss(g, world.boss, t, world.map, timeMs);
-  for (const p of world.pool.all) {
-    if (projectileHasArt(p.kind)) continue;
-    g.fillStyle(PROJECTILE_COLORS[p.kind], p.kind === 'sweep' ? 0.6 : 1).fillRect(
-      p.x,
-      p.y,
-      p.w,
-      p.h,
-    );
-    if (p.kind === 'charged')
-      g.lineStyle(1, 0x4fd1ff, 1).strokeRect(p.x - 1, p.y - 1, p.w + 2, p.h + 2);
-  }
 }
 
 function drawBoss(

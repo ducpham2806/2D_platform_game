@@ -32,6 +32,14 @@ def main():
         im = fn().image(); pix.check_palette(im)
         rel = f'ui/{key}.png'; pix.save(im, OUT, rel)
         images.append(dict(key=key, file=rel))
+    for key, fn in ui.IMAGES.items():
+        im = fn().image(); pix.check_palette(im)
+        rel = f'ui/{key}.png'; pix.save(im, OUT, rel)
+        images.append(dict(key=key, file=rel))
+    for key, (fn, fw, fh) in ui.UI_SHEETS.items():
+        im = pix.strip(fn()); pix.check_palette(im)
+        rel = f'ui/{key}.png'; pix.save(im, OUT, rel)
+        sheets.append(dict(key=key, file=rel, frameW=fw, frameH=fh, frames=(im.width // fw) * (im.height // fh), fps=0, loop=False))
     for theme in ('lab', 'verdant'):
         im = tiles.tileset(theme); pix.check_palette(im)
         rel = f'tilesets/ts_{theme}.png'; pix.save(im, OUT, rel)

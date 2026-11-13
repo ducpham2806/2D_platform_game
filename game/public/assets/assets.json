@@ -200,6 +200,87 @@
       "loop": true
     },
     {
+      "key": "fx_shockwave",
+      "file": "sprites/fx/fx_shockwave.png",
+      "frameW": 16,
+      "frameH": 16,
+      "frames": 3,
+      "fps": 12,
+      "loop": true
+    },
+    {
+      "key": "fx_drop",
+      "file": "sprites/fx/fx_drop.png",
+      "frameW": 16,
+      "frameH": 16,
+      "frames": 2,
+      "fps": 12,
+      "loop": true
+    },
+    {
+      "key": "fx_seed",
+      "file": "sprites/fx/fx_seed.png",
+      "frameW": 16,
+      "frameH": 16,
+      "frames": 3,
+      "fps": 10,
+      "loop": true
+    },
+    {
+      "key": "fx_bomb",
+      "file": "sprites/fx/fx_bomb.png",
+      "frameW": 16,
+      "frameH": 16,
+      "frames": 2,
+      "fps": 8,
+      "loop": true
+    },
+    {
+      "key": "fx_root",
+      "file": "sprites/fx/fx_root.png",
+      "frameW": 16,
+      "frameH": 16,
+      "frames": 2,
+      "fps": 0,
+      "loop": false
+    },
+    {
+      "key": "fx_lash",
+      "file": "sprites/fx/fx_lash.png",
+      "frameW": 16,
+      "frameH": 16,
+      "frames": 2,
+      "fps": 0,
+      "loop": false
+    },
+    {
+      "key": "fx_sweep",
+      "file": "sprites/fx/fx_sweep.png",
+      "frameW": 16,
+      "frameH": 16,
+      "frames": 2,
+      "fps": 0,
+      "loop": false
+    },
+    {
+      "key": "obj_secret",
+      "file": "sprites/objects/obj_secret.png",
+      "frameW": 16,
+      "frameH": 16,
+      "frames": 4,
+      "fps": 8,
+      "loop": true
+    },
+    {
+      "key": "obj_target",
+      "file": "sprites/objects/obj_target.png",
+      "frameW": 16,
+      "frameH": 32,
+      "frames": 3,
+      "fps": 0,
+      "loop": false
+    },
+    {
       "key": "en_drone_idle",
       "file": "sprites/enemies/en_drone_idle.png",
       "frameW": 32,
@@ -380,6 +461,24 @@
       "loop": false
     },
     {
+      "key": "ui_panel",
+      "file": "ui/ui_panel.png",
+      "frameW": 8,
+      "frameH": 8,
+      "frames": 9,
+      "fps": 0,
+      "loop": false
+    },
+    {
+      "key": "ui_icons",
+      "file": "ui/ui_icons.png",
+      "frameW": 16,
+      "frameH": 16,
+      "frames": 3,
+      "fps": 0,
+      "loop": false
+    },
+    {
       "key": "ts_lab",
       "file": "tilesets/ts_lab.png",
       "frameW": 16,
@@ -414,6 +513,22 @@
     {
       "key": "portrait_warden",
       "file": "ui/portrait_warden.png"
+    },
+    {
+      "key": "ui_logo",
+      "file": "ui/ui_logo.png"
+    },
+    {
+      "key": "ui_menu_bg",
+      "file": "ui/ui_menu_bg.png"
+    },
+    {
+      "key": "ui_hud_frame",
+      "file": "ui/ui_hud_frame.png"
+    },
+    {
+      "key": "ui_boss_frame",
+      "file": "ui/ui_boss_frame.png"
     },
     {
       "key": "bg_lab_l1",

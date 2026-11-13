@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { LOGIC_WIDTH } from '../../core/constants';
 import { NOVA_SPEAKER } from '../../logic/dialogue/boss-dialogue';
 import type { DialogueLine } from '../../logic/dialogue/dialogue-player';
-import { MUTED_STYLE, TEXT_STYLE } from '../ui';
+import { MUTED_STYLE, NinePanel, TEXT_STYLE } from '../ui';
 
 const DEPTH = 20;
 const MARGIN = 6;
@@ -55,10 +55,7 @@ export class DialogueBox {
     const width = LOGIC_WIDTH - MARGIN * 2;
     const textX = MARGIN + PAD + PORTRAIT + PAD;
     scene.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.listen(false));
-    const panel = scene.add
-      .rectangle(MARGIN, top, width, PANEL_H, 0x0f1724, 0.94)
-      .setOrigin(0)
-      .setStrokeStyle(1, NOVA_COLOR, 0.9);
+    const panel = new NinePanel(scene, MARGIN, top, width, PANEL_H).container;
     this.portrait = scene.add
       .rectangle(MARGIN + PAD, top + PAD, PORTRAIT, PORTRAIT, NOVA_COLOR)
       .setOrigin(0);
