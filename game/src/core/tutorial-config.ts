@@ -41,7 +41,8 @@ export const TUTORIAL_SIGNALS = [
 ] as const;
 
 const FIRE_KINDS = ['shot', 'mid', 'charged', 'sweep'];
-export const TUTORIAL_STAGES = ['prologue', 'stage1'] as const;
+/** `afterStage1`: giai đoạn 4 của kịch bản (màn Kết quả Stage 1, R01…). */
+export const TUTORIAL_STAGES = ['prologue', 'stage1', 'afterStage1'] as const;
 export type TutorialStage = (typeof TUTORIAL_STAGES)[number];
 
 export interface TutorialHint {

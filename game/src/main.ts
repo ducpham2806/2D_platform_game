@@ -8,6 +8,7 @@ import { HubScene } from './scenes/hub-scene';
 import { MenuScene } from './scenes/menu-scene';
 import { PlaytestScene } from './scenes/playtest-scene';
 import { PreloadScene } from './scenes/preload-scene';
+import { ResultScene } from './scenes/result-scene';
 import { SaveScene } from './scenes/save-scene';
 import { StageScene } from './scenes/stage-scene';
 import './style.css';
@@ -37,6 +38,7 @@ const game = new Phaser.Game({
     ControlsScene,
     PlaytestScene,
     SaveScene,
+    ResultScene,
   ],
 });
 

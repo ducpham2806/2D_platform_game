@@ -17,6 +17,7 @@ import type { PlayerStateName } from '../logic/player/player-physics';
 import type { DialogueLang } from '../core/dialogue-config';
 import { BossDialogueDirector, bossDialogueScript } from '../logic/dialogue/boss-dialogue';
 import { buildHud } from '../logic/hud/hud-model';
+import { buildStageResult, ResultGate } from '../logic/result/stage-result';
 import { recordTutorialDone, setTutorialOff } from '../logic/save/save-data';
 import type { SaveManager } from '../logic/save/save-manager';
 import { TutorialManager } from '../logic/tutorial/tutorial-manager';
@@ -28,6 +29,7 @@ import { buildStageLayout, STAGE_DEFS, type StageDefId } from '../stages';
 import type { StageDef } from '../stages/stage-def';
 import { DialogueBox } from './stage/dialogue-box';
 import { PauseMenu, type PauseChoice } from './stage/pause-menu';
+import type { ResultSceneData } from './result-scene';
 import { StageHud } from './stage/stage-hud';
 import { TutorialBox } from './stage/tutorial-box';
 import { StagePlaytest, tunedData } from './stage/stage-playtest';
@@ -89,6 +91,16 @@ export class StageScene extends Phaser.Scene {
   /** Vũ khí vừa nhận, chờ hiện thông báo (sau thoại sau trận). */
   private weaponNotice: { name: string; atMs: number } | undefined;
   private noticeUntilMs = 0;
+  /** Lượt chơi để đưa sang màn Kết quả (màn chơi thử của cổng Prototype không có). */
+  private run:
+    | {
+        gate: ResultGate;
+        sec: number;
+        won: boolean;
+        weapon: string | undefined;
+        expAtStart: number;
+      }
+    | undefined;
   private prev = { x: 0, y: 0 };
   /** Khung camera đang khóa: 'boss', số thứ tự phòng khóa, hoặc undefined (theo người chơi). */
   private cameraLock: string | undefined;
@@ -194,6 +206,15 @@ export class StageScene extends Phaser.Scene {
     );
     this.weaponNotice = undefined;
     this.noticeUntilMs = 0;
+    this.run = save
+      ? {
+          gate: new ResultGate(config.stages.mechanics.result),
+          sec: 0,
+          won: false,
+          weapon: undefined,
+          expAtStart: save.data.character.exp,
+        }
+      : undefined;
     this.dialogue =
       script.pre.length + script.post.length > 0 && !defeated.includes(bossId)
         ? {
@@ -264,6 +285,7 @@ export class StageScene extends Phaser.Scene {
         input.setGameplayActive(false);
         dlg.box.takeInput();
       }
+      if (this.stepRun(ev, world, time)) return;
     }
     this.showWeaponNotice(time);
     this.updateCamera(world);
@@ -310,6 +332,44 @@ export class StageScene extends Phaser.Scene {
         `${world.player.state} · chết ${world.deaths} · FPS ${Math.round(this.game.loop.actualFps)}`,
       );
     }
+  }
+
+  /** Đếm giờ lượt chơi; hạ boss xong thì chuyển sang màn Kết quả. Trả về true nếu đã chuyển. */
+  private stepRun(ev: WorldEvents, world: StageWorld, nowMs: number): boolean {
+    const run = this.run;
+    if (!run) return false;
+    const dt = FIXED_STEP_MS / 1000;
+    if (!run.won) run.sec += dt;
+    if (ev.bossDefeated) run.won = true;
+    if (ev.weaponGranted) run.weapon = ev.weaponGranted;
+    const ready = run.gate.step(dt, {
+      won: run.won,
+      busy:
+        (this.dialogue?.director.busy ?? false) ||
+        this.weaponNotice !== undefined ||
+        nowMs < this.noticeUntilMs,
+      tutorialPending: this.tutorial?.manager.view !== undefined,
+    });
+    if (!ready) return false;
+    const data: ResultSceneData = {
+      stage: this.def.id as StageDefId,
+      result: buildStageResult(
+        {
+          stageName: this.def.name,
+          timeSec: run.sec,
+          deaths: world.deaths,
+          expAtStart: run.expAtStart,
+          expGained: world.exp,
+          coreBitsGained: world.coreBits,
+          weapon: run.weapon,
+          secretsFound: world.secrets.filter((s) => s.taken).length,
+          secretsTotal: world.secrets.length,
+        },
+        getConfig(this).player.level,
+      ),
+    };
+    this.scene.start(SceneKey.Result, data);
+    return true;
   }
 
   /** Thông báo nhận vũ khí: sau chữ "HẠ BOSS!", và không chen vào thoại sau trận. */

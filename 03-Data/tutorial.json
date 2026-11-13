@@ -118,6 +118,14 @@
       "highlight": "swapNext",
       "hints": [{ "afterSec": 8, "text": "Bấm {ĐỔI_VK} để cầm Vine Lash, rồi {BẮN}.", "highlight": "swapNext" }],
       "skipIfDone": true
+    },
+    {
+      "id": "R01",
+      "stage": "afterStage1",
+      "speaker": "NOVA",
+      "trigger": { "on": "start" },
+      "showSec": 6,
+      "text": "EXP giúp lên cấp. Core Bit cứ giữ lại, sắp có chỗ tiêu."
     }
   ]
 }
