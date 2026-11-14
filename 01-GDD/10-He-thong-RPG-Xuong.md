@@ -3,7 +3,7 @@
 - **Mã hệ thống:** `SYS-08` (module M8 trong `04-Dev-Plan/02-Module.md`)
 - **Phân loại:** Progression
 - **Độ ưu tiên:** MVP (P0). Vertical slice chỉ cần tab Kỹ năng.
-- **Trạng thái:** **In Review**, bản 2 (14/11/2026): đã qua duyệt của Creative Director và Technical Director + Producer (cả hai: "duyệt kèm sửa"), đã sửa theo góp ý; chờ người dùng duyệt các quyết định ở mục 10. Phần Module và Két giáp (mục 2.2, 2.3) là **Draft, bị chặn** tới khi có nội dung Stage 2–4. Mọi số là `[PLACEHOLDER]`, chỉnh sau chơi thử.
+- **Trạng thái:** **Approved**, bản 2 (14/11/2026): qua duyệt của Creative Director và Technical Director + Producer (duyệt kèm sửa, đã sửa); người dùng duyệt 5 quyết định ở mục 10 ngày 14/11/2026; thay đổi ở mục 9 đã lan sang các tài liệu. Phần Module và Két giáp (mục 2.2, 2.3) là **Draft, bị chặn** tới khi có nội dung Stage 2–4. Mọi số là `[PLACEHOLDER]`, chỉnh sau chơi thử.
 - **Phụ thuộc (upstream):** M3 Nhân vật, M4 Chiến đấu, M8 cấp và SP (đã code: `game/src/logic/rpg/progression.ts`), M11 Lưu, M9 Upgrade và Booster (`shop.json`).
 - **Bị ảnh hưởng (downstream):** M10 Xưởng, HUD, menu tạm dừng; M9 Power Score ở màn Chuẩn bị; nhiệm vụ phụ (nguồn module); M7 Két giáp và quy tắc duyệt màn; M12 âm thanh; M16 đo lường.
 - **Nguồn:** GDD chính 6.1–6.4, 9, 10.1, 11; `03-Dac-ta-Hub-Shop.md` mục 5, 7, 8; `07-Kich-ban-huong-dan.md` mục 2, R02–R03, D02, D04; wireframe `Workshop.html`, `Module.html`, `Armor.html`; `player.json`, `modules.json`, `shop.json`, `weapons.json`, `bosses.json`.
@@ -249,7 +249,7 @@ Nghiệm thu: test logic cho `applyBuild`, `BuildRuntime`, cộng dồn, sàn, t
 
 ## 9. Thay đổi cần lan sang tài liệu khác (`/propagate-design-change`)
 
-Áp dụng sau khi người dùng duyệt các quyết định ở mục 10:
+Đã áp dụng ngày 14/11/2026 (riêng dữ liệu `player.json`, `shop.json` áp trong Story ST-08-01; `moduleSlots` trong ST-08-09):
 
 | Tài liệu | Thay đổi |
 | --- | --- |

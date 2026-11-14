@@ -96,11 +96,13 @@ Tổng 30 skin: 12 Thường, 6 Hiếm, 6 Sử thi, 6 Thành tựu.
 
 ## 5. Xưởng Lắp Ráp
 
-Mở sau Stage 1; các tab mở dần theo lịch hướng dẫn (`07-Kich-ban-huong-dan.md`, mục 2): Kỹ năng sau boss 1, Module sau boss 3, Giáp khi nhận Két giáp đầu tiên, Tủ skin và Loadout sau boss 4. Năm tab:
+Mở sau Stage 1; các tab mở dần theo lịch hướng dẫn (`07-Kich-ban-huong-dan.md`, mục 2): Kỹ năng sau boss 1, Module sau boss 3, Giáp khi nhận Két giáp đầu tiên, Tủ skin và Loadout sau boss 4. Số liệu kỹ năng, module, giáp: `10-He-thong-RPG-Xuong.md`.
+
+**Bản MVP (duyệt 14/11/2026):** tab Kỹ năng làm trước; tab Module và Giáp làm khi có nội dung Stage 2–4 (nhiệm vụ phụ, Két giáp); **Tủ skin và Loadout dời sang Alpha** (mở sau boss 4, đúng lúc hết MVP; Shop MVP không bán skin). Xưởng dựng bằng bảng HTML (ADR-001). Năm tab của bản đầy đủ:
 
 | Tab | Chức năng | Quy tắc |
 | --- | --- | --- |
-| Kỹ năng | 3 nhánh Vanguard, Phantom, Core; chạm nút để xem mô tả và học (1 SP) | **Đặt lại miễn phí** mọi lúc, hoàn toàn bộ SP, có bước xác nhận |
+| Kỹ năng | 3 nhánh Vanguard, Phantom, Core; mỗi nút có 1–3 bậc (chấm bậc trên nút); chạm nút để xem mô tả, nút "Học (1 SP)" riêng để học một bậc | **Đặt lại miễn phí** mọi lúc (theo nhánh hoặc tất cả), hoàn toàn bộ SP, có bước xác nhận; cũng mở được từ menu tạm dừng, áp dụng ở lần hồi sinh kế tiếp |
 | Module | 3 ô (4 ở cấp 10, 5 ở cấp 20); chạm để lắp/gỡ | Hiện tổng tải và cảnh báo khi vượt tải, không cho lưu cấu hình vượt tải |
 | Giáp | 4 bộ phận, bản Mk I và Mk II, bật/tắt từng bộ phận | Hiện hiệu ứng chỉ số khi bật |
 | Tủ skin | Chọn skin riêng cho 6 bộ phận, xem trước Kai khi đứng, chạy, lướt | Lưu được 3 bộ phối sẵn; skin phủ lên giáp |

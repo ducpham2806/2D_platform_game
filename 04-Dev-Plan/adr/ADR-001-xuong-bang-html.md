@@ -1,7 +1,7 @@
 # ADR-001: Xưởng (và các bảng nhiều chữ) dựng bằng bảng HTML
 
 - **Ngày tạo:** 2026-11-14
-- **Trạng thái:** Proposed (Technical Director đồng ý khi duyệt `01-GDD/10-He-thong-RPG-Xuong.md`; chờ người dùng duyệt cùng tài liệu đó)
+- **Trạng thái:** Accepted (14/11/2026, cùng `01-GDD/10-He-thong-RPG-Xuong.md`)
 - **Người đề xuất:** Design Lead, Technical Director
 - **Phân hệ ảnh hưởng:** UI (M10), Progression (M8)
 

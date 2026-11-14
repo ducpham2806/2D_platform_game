@@ -12,7 +12,7 @@ Mỗi module có giao diện công khai nhỏ để dán vào ChatGPT. Tài li�
 | M5 | Kẻ địch | AI theo cấu hình, telegraph, rơi vật phẩm | M4 | GDD 9, 9.1, tab Prologue & Stage 1 | Telegraph ≥ 0,4 s |
 | M6 | Boss | Máy trạng thái 3 pha, Thorna trước, điểm yếu, choáng | M4, M5 | tab Prologue & Stage 1 (mục 5) | Thorna đúng bảng pha và thời gian |
 | M7 | Màn chơi | Nạp bản đồ Tiled, checkpoint, phòng khóa, bí mật, gai, dây leo, camera | M3, M5 | tab Prologue & Stage 1, `stages.json` | 4 checkpoint; hồi sinh ≤ 1,5 s |
-| M8 | Hệ thống RPG | EXP và cấp, cây kỹ năng, module, Két giáp, loadout, tính chỉ số | M4 | GDD 6, `player.json`, `modules.json` | Công thức EXP; respec miễn phí |
+| M8 | Hệ thống RPG | EXP và cấp, cây kỹ năng, module, Két giáp, loadout, tính chỉ số | M4 | GDD 6, `10-He-thong-RPG-Xuong.md`, `player.json`, `skills.json`, `modules.json`; Story `stories/EP-08-xuong-rpg.md` | Công thức EXP; respec miễn phí; trần sức mạnh kiểm tra lúc nạp |
 | M9 | Kinh tế và Shop | Tiền tệ, upgrade, booster, skin, giao dịch nguyên tử, hoàn upgrade 100% | M8 | GDD 10, tab Hub & Shop, `shop.json`, `economy.json` | Không mua trùng; mất mạng không mất tiền |
 | M10 | Giao diện | HUD, menu, hội thoại, chuẩn bị, kết quả, Hub, Xưởng, cài đặt | M1–M9 | wireframe, tab Hub & Shop | Khớp wireframe |
 | M11 | Lưu và cloud | IndexedDB, mã xuất/nhập, cloud save, xung đột (hiện màn chọn) | M1 | tab Hub & Shop mục 8 | Không nhân đôi tiền khi đồng bộ |

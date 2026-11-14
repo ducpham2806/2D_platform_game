@@ -1,7 +1,7 @@
 # ST-08-01: Dữ liệu kỹ năng, số hóa Upgrade/Booster, trần sức mạnh mới
 
-- **Thuộc Epic:** EP-08 · **Ưu tiên:** P1 (Vertical slice) · **Trạng thái:** TODO (chờ duyệt GDD mục 10)
-- **Phụ thuộc:** người dùng duyệt quyết định 1 và 2 của `01-GDD/10-He-thong-RPG-Xuong.md`
+- **Thuộc Epic:** EP-08 · **Ưu tiên:** P1 (Vertical slice) · **Trạng thái:** READY
+- **Phụ thuộc:** không (GDD đã duyệt 14/11/2026)
 - **Bằng chứng:** [x] Logic [x] Config [ ] Visual
 
 ## 1. User story

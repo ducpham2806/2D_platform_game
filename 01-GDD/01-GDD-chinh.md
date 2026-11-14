@@ -1,6 +1,6 @@
 # Cyber Vanguard – Game Design Document
 
-*Phiên bản 0.6 · 01/11/2026 · Thể loại: Action-Platformer nhập vai · Nền tảng: Android/iOS (app) + Web PC · Mô hình: free-to-play (IAP, quảng cáo, subscription) + endgame farm*
+*Phiên bản 0.7 · 14/11/2026 · Thể loại: Action-Platformer nhập vai · Nền tảng: Android/iOS (app) + Web PC · Mô hình: free-to-play (IAP, quảng cáo, subscription) + endgame farm*
 
 **Chiến lược đã chốt từ bản 0.4:** free-to-play (quảng cáo, IAP, subscription Cyber+) cộng endgame farm sau cốt truyện. Chi tiết và lý do: file `05-Ke-hoach-kiem-tien.md`
 
@@ -244,8 +244,8 @@ Nhận kinh nghiệm (EXP) từ kẻ địch, boss, nhiệm vụ phụ. Cấp t�
 
 - EXP cần để lên cấp: `40 × L^1,4` `[PLACEHOLDER]`
 - Máu tối đa: `100 + 4 × (L − 1)` → cấp 30 = 216 (×2,16) `[PLACEHOLDER]`
-- Công: `10 + 0,25 × (L − 1)` → cấp 30 ≈ 17,3 (×1,73) `[PLACEHOLDER]`
-- **Trần sức mạnh cốt truyện:** cấp, upgrade và module cộng lại không vượt khoảng ×2,2 sát thương và ×2,5 máu so với cấp 1. Phần thưởng chính khi lên cấp là **SP và ô module** (lựa chọn), không phải chỉ số; đây là game hành động nên kỹ năng phải quyết định thắng thua, đúng trụ cột 1.
+- Công: `10 + 0,2 × (L − 1)` → cấp 30 = 15,8 (×1,58) `[PLACEHOLDER]` (bản 0.7 hạ từ 0,25 để giữ trần sức mạnh, xem `10-He-thong-RPG-Xuong.md` mục 3.3)
+- **Trần sức mạnh cốt truyện:** cấp, upgrade và module cộng lại không vượt khoảng ×2,2 sát thương và ×2,5 máu so với cấp 1, đo ở cấp tối đa với các hệ số thường trực; hiệu ứng có điều kiện (Last Stand) ≤ ×2,6 và máu hiệu dụng (tính giảm sát thương) ≤ ×3,75 (`player.json` → `storyPowerCap`, game kiểm tra lúc nạp). Kỹ năng tăng tốc nạp chỉ áp nạp đầy nên không nâng sát thương mỗi giây tối đa. Phần thưởng chính khi lên cấp là **SP và ô module** (lựa chọn), không phải chỉ số; đây là game hành động nên kỹ năng phải quyết định thắng thua, đúng trụ cột 1.
 - **Đồng bộ cấp (level sync):** trong Stage 1–8, cấp hiệu dụng khi tính máu và công bị kẹp trong khoảng `[cấp khuyến nghị thấp − 2, cấp khuyến nghị cao + 2]` của màn. Người cấp cao không làm boss chết quá nhanh; người đi màn khó sớm không bị đánh mãi không chết. Citadel và màn cuối không đồng bộ cấp. EXP, SP và Core Bit vẫn tính theo cấp thật. Cấu hình: `levelSync` trong `03-Data/stages.json` `[PLACEHOLDER]`.
 
 | Cấp | EXP lên cấp tiếp (ước tính) |
@@ -260,12 +260,14 @@ Cấp khuyến nghị cho từng màn: xem mục 8. **Không có level-lock**: n
 
 ### 6.2 Cây kỹ năng (3 nhánh)
 
-Điểm kỹ năng (SP): 1 SP/cấp từ cấp 2 (29 SP) + 1 SP/boss (8) + 2 SP từ 2 sự kiện truyện = **39 SP**, trong khi tổng cây cần \~50 SP, buộc phải chọn `[PLACEHOLDER]`. **Đổi (respec) miễn phí tại Hub bất cứ lúc nào.**
+Điểm kỹ năng (SP): 1 SP/cấp từ cấp 2 (29 SP) + 1 SP/boss (8) + 2 SP từ 2 sự kiện truyện = **39 SP**, trong khi tổng cây cần \~50 SP, buộc phải chọn `[PLACEHOLDER]`. **Đổi (respec) miễn phí bất cứ lúc nào** tại Hub, hoặc trong menu tạm dừng (áp dụng ở lần hồi sinh kế tiếp).
+
+Bản MVP: 3 nhánh × 3 nút có bậc (tầng 1 một bậc, tầng 2 hai bậc, tầng 3 ba bậc), mỗi lần học 1 SP, tổng 18 SP; Alpha thêm tầng 4–5. Danh sách và số liệu: `10-He-thong-RPG-Xuong.md`.
 
 | Nhánh | Hướng chơi | Kỹ năng tiêu biểu |
 | --- | --- | --- |
-| **Vanguard** | Sát thương | Nạp nhanh hơn, đạn nạp nổ lan, chí mạng, bắn 2 tia |
-| **Phantom** | Cơ động | Lướt trên không, nhảy tường kéo dài, lướt xuyên đạn, trượt nhanh |
+| **Vanguard** | Sát thương (chuyên nạp đầy) | Nạp đầy nhanh hơn, đạn nạp nổ lan, Đòn Trừng Phạt (đạn nạp đầy mạnh hơn khi boss đang hở; có quy luật, không ngẫu nhiên), bắn 2 tia |
+| **Phantom** | Cơ động | Lướt trên không (1 lần mỗi cú nhảy), bám tường bền và ân hạn nhảy tường, lướt xuyên đạn (chỉ với đạn), trượt nhanh |
 | **Core** | Sống sót/tiện ích | Tăng máu, hồi năng lượng vũ khí, khiên hấp thụ 1 đòn, Nano Cell |
 
 Nguyên tắc: kỹ năng nền tảng cần cho việc đi hết game (lướt, bám tường) có sẵn qua cốt truyện. **Cây kỹ năng chỉ mở rộng, không chặn tiến trình** (tránh gating bằng cày).
@@ -276,9 +278,9 @@ Nguyên tắc: kỹ năng nền tảng cần cho việc đi hết game (lướt,
 
 | Bộ phận | Bản Mk I | Bản Mk II |
 | --- | --- | --- |
-| Đầu | Quét kho bí mật trên bản đồ nhỏ | Phát hiện lối giấu trong tầm gần |
+| Đầu | Quét kho bí mật: mũi tên ở mép màn hình chỉ vật phẩm chưa lấy trong 12 ô (bản đồ nhỏ khi có) | Phát hiện lối giấu trong tầm gần |
 | Thân | Giảm 15% sát thương | Giảm 25% và phản đòn nhỏ |
-| Tay | Bắn nạp nhanh hơn | Đạn nạp xuyên thêm 1 kẻ địch |
+| Tay | Đạn nạp vừa phá khiên (bản 0.7; trước là "bắn nạp nhanh hơn", trùng kỹ năng Vanguard) | Đạn nạp xuyên thêm 1 kẻ địch |
 | Chân | Lướt xa hơn | Lướt hai lần liên tiếp |
 
 **Giáp và skin là hai thứ khác nhau.** Giáp (từ Két giáp) quyết định chỉ số; skin chỉ đổi hình ảnh và được mua ở Shop (mục 10.1). Người chơi có thể mặc giáp mạnh nhưng hiển thị skin bất kỳ, nên không phải chọn giữa sức mạnh và vẻ ngoài.
@@ -299,14 +301,14 @@ Nguyên tắc: kỹ năng nền tảng cần cho việc đi hết game (lướt,
 ### 6.4 Module (chip)
 
 - Ô module: 3 ô ban đầu, mở thêm ô 4 ở cấp 10 và ô 5 ở cấp 20.
-- Mỗi module có mức tải (cost) 1–3; tổng tải ≤ số ô × 2 `[PLACEHOLDER]`.
+- Mỗi module có mức tải (cost) 1–3; tổng tải ≤ số ô × 2 `[PLACEHOLDER]`. Tải và số liệu MVP: `10-He-thong-RPG-Xuong.md` mục 2.2 (Last Stand, Phase Step tải 3).
 
 | Module | Hiệu ứng |
 | --- | --- |
 | Magnet Core | Hút Core Bit trong 3 tile |
 | Last Stand | Dưới 20% máu: +30% sát thương |
 | Phase Step | Lướt tạo ảo ảnh gây choáng nhẹ |
-| Energy Siphon | Giết kẻ địch hồi 2% năng lượng vũ khí |
+| Energy Siphon | Giết kẻ địch hồi 2 đơn vị năng lượng vũ khí (≈ 7% của 28) |
 | Spike Guard | Miễn nhiễm gai (không miễn hố sâu) |
 | Second Wind | Hồi 20% máu một lần mỗi màn khi chết (tính vào giới hạn hồi sinh, mục 10) |
 | Scholar | +15% EXP |
@@ -390,6 +392,7 @@ Mô hình cân bằng kinh tế toàn game (nguồn thu, giá Shop, Data Chip, n
 - Đoạn dạy cơ chế an toàn → đoạn kết hợp → đoạn thử thách → mini-boss → boss.
 - Checkpoint cách nhau 60–90 giây chơi `[PLACEHOLDER]`.
 - Mỗi màn có: 1 Két giáp (cần vũ khí mới), 1 Memory Log, 3 phòng bí mật, 1 nhiệm vụ phụ.
+- **Luật duyệt màn (bản 0.7):** mọi vật phẩm được lưu (Két giáp, Memory Log, bí mật, Data Chip, mục tiêu nhiệm vụ phụ) và đường chính đều tới được bằng **bộ động tác gốc** (lướt đất, lướt-nhảy, bám và nhảy tường). Lối chỉ lướt trên không (kỹ năng Phantom) mới tới là đường tắt, thưởng tối đa là Core Bit; cây kỹ năng không bao giờ chặn tiến trình.
 
 ### 8.4 Vùng Eclipse (endgame)
 
@@ -727,6 +730,7 @@ Không qua cổng thì sửa cảm giác chơi và thiết kế màn, **không**
 
 | Phiên bản | Ngày | Thay đổi |
 | --- | --- | --- |
+| 0.7 | 14/11/2026 | Duyệt đặc tả hệ thống RPG và Xưởng (`10-He-thong-RPG-Xuong.md`): cây kỹ năng MVP 3 × 3 nút có bậc (18 SP); công theo cấp `10 + 0,2 × (L − 1)`; cách đo trần sức mạnh (thường trực, có điều kiện, máu hiệu dụng); Vanguard thành nhánh nạp đầy (Đòn Trừng Phạt thay chí mạng ngẫu nhiên); Tay Mk I phá khiên bằng đạn nạp vừa; Energy Siphon 2 đơn vị; đổi kỹ năng trong menu tạm dừng; Tủ skin và Loadout dời sang Alpha |
 | 0.6 | 01/11/2026 | Thu gọn độ khó cốt truyện từ 6 xuống 3 (Cốt truyện, Thường, Thử thách); Thử thách mở theo từng màn và có mẫu đòn mới; Mức Eclipse dùng biến thể (Tinh nhuệ, mẫu đòn mới, bố cục remix, boss pha 4) với chỉ số +15% mỗi mức thay vì +25%; hạ giá upgrade (hệ số 1,25) để upgrade đủ sau lượt Thử thách; Data Chip và skin Thành tựu chuyển sang mốc Mức Eclipse; thêm thoại 3 biến thể cho 7 Warden và câu NOVA sau trận (`09-Thoai-Warden.md`, `03-Data/dialogue_wardens.json`) |
 | 0.5 | 01/11/2026 | Rà soát thiết kế: đánh số lại Stage 2–8 theo vòng khắc chế (vũ khí màn k là điểm yếu của boss màn k+1) và gán lại Két giáp; nén đường chỉ số RPG, thêm đồng bộ cấp và giới hạn 1 lần hồi sinh tại chỗ mỗi màn; lộ trình hai giai đoạn với MVP 4 màn và cổng chặn; mở dần hệ thống sau từng boss, chơi được trong 15 giây; viết lại cốt truyện (câu hỏi chủ đề, phe Hội đồng và Hale, nhịp truyện theo số boss do NPC ở Hub đảm nhận, 3 lớp lật mở với NOVA, hệ quả cho điểm chọn #1, Memory Log là lý lẽ cho kết thúc C, endgame theo từng kết thúc); đổi tên Unit-X, Buster, Sub-Tank, Capsule; thêm tài liệu giọng nhân vật; viết lại trụ cột 3 và 5, bỏ booster khỏi Starter Pack |
 | 0.4 | 16/10/2026 | Chuyển sang free-to-play: IAP (Gem), quảng cáo, subscription Cyber+; thêm endgame Vùng Eclipse (Farm Run, Boss Hunt, Rift), Chip Lõi, Weapon Mastery, live-ops; chốt các quyết định mô hình A, 13+, Android + web trước; cập nhật nền tảng, máy chủ, lộ trình, KPI, rủi ro; hiệu chỉnh kinh tế endgame và Gem bằng mô phỏng (Cyber+ +10 Gem/ngày, thời gian endgame) |

@@ -128,7 +128,7 @@ Biểu tượng nút (`{NHẢY}`, `{BẮN}`, `{LƯỚT}`, `{DI_CHUYỂN}`, `{Đ�
 | --- | --- | --- | --- | --- | --- |
 | R01 | Màn Kết quả Stage 1 | Xem thưởng | NOVA: "EXP giúp lên cấp. Core Bit cứ giữ lại, sắp có chỗ tiêu." (Data Chip giới thiệu khi nhận lần đầu) | Bấm Tiếp | Không cần xử lý |
 | R02 | Lên cấp | Vào Xưởng | Mira: "Cậu về với cái chân cháy xém. Vào Xưởng, tôi xem nào." Xưởng mở | Vào Xưởng | Nút Xưởng nhấp nháy |
-| R03 | Xưởng, tab Kỹ năng | Học 1 kỹ năng | NOVA: "Mỗi kỹ năng tốn 1 điểm. Đặt lại lúc nào cũng được, miễn phí. Cứ thử đi." | Học 1 kỹ năng | Làm nổi một nút rẻ |
+| R03 | Xưởng, tab Kỹ năng | Học 1 kỹ năng | NOVA: "Mỗi lần học tốn 1 điểm. Đặt lại lúc nào cũng được, miễn phí. Cứ thử đi." | Học 1 bậc kỹ năng | Làm nổi một nút rẻ |
 | R04 | **Sau boss 2**, Quầy Mira mở | Mua upgrade đầu tiên | Mira: "Quầy mở rồi. Cậu đủ tiền cho một nâng cấp đấy." Làm nổi một upgrade cấp 1 | Mua 1 món (có xác nhận) | Thiếu tiền: tặng 150 Core Bit một lần |
 | R05 | **Sau boss 3**, Bảng Nhiệm Vụ mở | Nhận nhiệm vụ | Mira: "Giúp tôi tìm 5 hạt giống ở Verdant nhé. Tiện thể lấy luôn cái Két giáp cậu bỏ lại." (Két giáp Verdant cần Prism Beam từ boss 2) | Nhận nhiệm vụ | Không ép làm |
 | R06 | **Sau boss 4**, màn Chuẩn bị của màn kế | Gán booster | NOVA: "Booster dùng một lần trong màn." Làm nổi ô booster; tặng sẵn 2 booster | Gán 1 booster | Bỏ qua được |
@@ -140,7 +140,7 @@ Mỗi bước R chỉ chạy ở lần đầu về Hub sau mốc tương ứng; 
 | ID | Kích hoạt | Người chơi làm | Hiển thị và lời thoại | Hoàn thành khi | Nếu vướng |
 | --- | --- | --- | --- | --- | --- |
 | D01 | Hạ boss thứ nhất | Hiểu thứ tự màn tự do | NOVA: "Từ giờ bạn chọn thứ tự màn. Mỗi boss yếu trước vũ khí của một boss khác." | Xem | Không cần xử lý |
-| D02 | Lần đầu thấy Két giáp khóa | Ghi nhớ quay lại | NOVA: "Két giáp này cần vũ khí bạn chưa có. Quay lại sau." | Xem | Biểu tượng khóa trên bản đồ nhỏ |
+| D02 | Lần đầu thấy Két giáp khóa | Ghi nhớ quay lại | NOVA: "Két giáp này cần vũ khí bạn chưa có. Quay lại sau." | Xem | Biểu tượng khóa ngay trên két (MVP chưa có bản đồ nhỏ); có Đầu Mk I thì radar hiện mũi tên "cần [vũ khí X]" |
 | D03 | Vào phòng boss lần đầu khi đang có vũ khí khắc chế | Thử điểm yếu | NOVA: "Lớp vỏ của nó phản ứng lạ với dữ liệu trong Vine Lash. Thử xem." (tên vũ khí đổi theo boss) | Xem | Không cần xử lý |
 | D04 | Nhận module đầu tiên (sau boss 3) | Lắp module | Mira: "Module cho khả năng phụ. Lắp được 3 ô." | Lắp 1 module | Bỏ qua được |
 | D05 | Sau boss 4 | Mở Tủ skin | Mira: "Muốn đổi diện mạo? Vào Tủ skin." | Xem | Tùy chọn |
