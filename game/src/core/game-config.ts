@@ -189,12 +189,14 @@ export function checkStoryPowerCap(config: GameConfig): string[] {
   const maxRanks = Object.fromEntries(
     Object.values(config.skills.nodes).map((n) => [n.id, n.ranks.length]),
   );
-  const build = computeBuild(config.skills, maxRanks);
+  const maxUpgrades = Object.fromEntries(
+    Object.values(config.shop.upgrades).map((u) => [u.id, u.maxLevel]),
+  );
+  const build = computeBuild(config.skills, maxRanks, { shop: config.shop, levels: maxUpgrades });
   const top = statsFor(lv.max, lv, build);
   const base = statsFor(1, lv);
-  const arcCore = config.shop.upgrades.arc_core;
-  const plating = config.shop.upgrades.armor_plating;
-  const damage = top.attackMul * (1 + (arcCore?.damagePerLevel ?? 0) * (arcCore?.maxLevel ?? 0));
+  // Công đã gồm Upgrade Arc Core (statsFor nhân build.damageMul).
+  const damage = top.attackMul;
   const hp = top.maxHp / base.maxHp;
   const fmt = (x: number): string => x.toFixed(3);
   if (damage > cap.damageMul + 1e-9)
@@ -208,11 +210,8 @@ export function checkStoryPowerCap(config: GameConfig): string[] {
     errors.push(
       `trần có điều kiện: ${fmt(conditional)} lần cấp 1, trần ${cap.conditionalDamageMul}`,
     );
-  // Giáp (armor.json) cộng vào khi làm Két giáp (ST-08-09).
-  const reduction = Math.max(
-    config.skills.rules.minBuildDamageTakenMul,
-    1 - (plating?.damageTakenPerLevel ?? 0) * (plating?.maxLevel ?? 0),
-  );
+  // Giáp (armor.json) cộng vào khi làm Két giáp (ST-08-09); build đã kẹp ở sàn.
+  const reduction = build.damageTakenMul;
   const ehp = hp / reduction;
   if (ehp > cap.effectiveHpMul + 1e-9)
     errors.push(`trần máu hiệu dụng: ${fmt(ehp)} lần cấp 1, trần ${cap.effectiveHpMul}`);

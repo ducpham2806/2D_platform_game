@@ -1,13 +1,15 @@
 /**
  * Build của nhân vật (01-GDD/10-He-thong-RPG-Xuong.md mục 3.1, 4): gom hiệu ứng các bậc kỹ năng đã
- * học thành hệ số, rồi biến đổi dữ liệu gốc (player.json, weapons.json) thành dữ liệu dùng trong
- * trận. Phần cơ chế đọc `effects` (lượt lướt, nổ lan) hoặc `shield` (khiên C3, chạy trong BuildRuntime).
- * Logic thuần.
+ * học và cấp Upgrade đã mua (M9) thành hệ số, rồi biến đổi dữ liệu gốc (player.json, weapons.json)
+ * thành dữ liệu dùng trong trận. Phần cơ chế đọc `effects` (lượt lướt, nổ lan) hoặc `shield` (khiên
+ * C3, chạy trong BuildRuntime). Logic thuần.
  */
 import type { PlayerData } from '../../core/player-config';
+import type { ShopData } from '../../core/shop-config';
 import type { SkillEffects, SkillsData } from '../../core/skills-config';
 import type { WeaponsData } from '../../core/weapons-config';
 import { NO_PLAYER_MODS, type PlayerMods } from '../player/player-params';
+import { levelOf, type UpgradeLevels } from '../shop/upgrades';
 import { levelStats, type LevelStats } from './progression';
 import { rankOf, type SkillRanks } from './skill-tree';
 
@@ -37,6 +39,23 @@ export interface BuildStats {
   bulletKinds: ReadonlySet<string>;
   /** Khiên C3; chưa học thì không có. */
   shield: ShieldStats | undefined;
+  /** Upgrade Arc Core: sát thương gây ra nhân (1 + damagePerLevel × cấp). */
+  damageMul: number;
+  /**
+   * Hệ số sát thương nhận của build (Armor Plating; sau này cả giáp Thân Mk I), đã kẹp ở sàn
+   * `minBuildDamageTakenMul`. Chỉ áp đòn kẻ địch và boss, không áp gai, hố.
+   */
+  damageTakenMul: number;
+  /** Upgrade Energy Cell: năng lượng tối đa vũ khí boss nhân hệ số này (làm tròn). */
+  energyMaxMul: number;
+  /** Upgrade Magnet Range: tầm hút Core Bit, ô (0 = không hút). */
+  magnetTiles: number;
+}
+
+/** Cấp Upgrade đã mua cùng dữ liệu Shop, để `computeBuild` đổi ra hệ số. */
+export interface UpgradeInput {
+  shop: ShopData;
+  levels: UpgradeLevels;
 }
 
 /** Build trống: không đổi gì (màn chơi thử, bản lưu chưa học kỹ năng). */
@@ -50,6 +69,10 @@ export const EMPTY_BUILD: BuildStats = {
   regenDelayMul: 1,
   bulletKinds: new Set(),
   shield: undefined,
+  damageMul: 1,
+  damageTakenMul: 1,
+  energyMaxMul: 1,
+  magnetTiles: 0,
 };
 
 function combine(effects: SkillEffects, key: keyof SkillEffects, value: number): void {
@@ -60,8 +83,15 @@ function combine(effects: SkillEffects, key: keyof SkillEffects, value: number):
   else effects[key] = cur + value;
 }
 
-/** Gom hiệu ứng từ bậc đã học (bậc vượt tối đa bị kẹp; nút lạ bị bỏ). */
-export function computeBuild(data: SkillsData, skills: SkillRanks): BuildStats {
+/**
+ * Gom hiệu ứng từ bậc đã học (bậc vượt tối đa bị kẹp; nút lạ bị bỏ) và từ cấp Upgrade (cấp vượt
+ * tối đa bị kẹp; id lạ bị bỏ).
+ */
+export function computeBuild(
+  data: SkillsData,
+  skills: SkillRanks,
+  upgrades?: UpgradeInput,
+): BuildStats {
   const effects: SkillEffects = {};
   for (const node of Object.values(data.nodes)) {
     const rank = Math.min(rankOf(skills, node.id), node.ranks.length);
@@ -70,6 +100,14 @@ export function computeBuild(data: SkillsData, skills: SkillRanks): BuildStats {
     for (const [key, v] of Object.entries(r.effects) as [keyof SkillEffects, number][])
       combine(effects, key, v);
   }
+  const up = (
+    id: string,
+    field: 'damagePerLevel' | 'damageTakenPerLevel' | 'energyMaxPerLevel' | 'magnetTilesPerLevel',
+  ): number => {
+    const u = upgrades?.shop.upgrades[id];
+    if (!u || !upgrades) return 0;
+    return (u[field] ?? 0) * Math.min(levelOf(upgrades.levels, id), u.maxLevel);
+  };
   return {
     effects,
     fullChargeTimeMul: effects.fullChargeTimeMul ?? 1,
@@ -88,6 +126,13 @@ export function computeBuild(data: SkillsData, skills: SkillRanks): BuildStats {
             hitStopSteps: data.rules.shieldBreakHitStopSteps,
             pierceKinds: data.rules.shieldPierceKinds,
           },
+    damageMul: 1 + up('arc_core', 'damagePerLevel'),
+    damageTakenMul: Math.max(
+      data.rules.minBuildDamageTakenMul,
+      1 - up('armor_plating', 'damageTakenPerLevel'),
+    ),
+    energyMaxMul: 1 + up('energy_cell', 'energyMaxPerLevel'),
+    magnetTiles: up('magnet_range', 'magnetTilesPerLevel'),
   };
 }
 
@@ -114,6 +159,7 @@ export function applyBuild(
         : { ...player, wallSlideTilesPerSec: player.wallSlideTilesPerSec * build.wallSlideMul },
     weapons: {
       ...weapons,
+      energyMax: Math.round(weapons.energyMax * build.energyMaxMul),
       arcCannon: {
         ...weapons.arcCannon,
         charge: { ...weapons.arcCannon.charge, timeSec: chargeTime },
@@ -151,13 +197,20 @@ export function vanguardOf(
   };
 }
 
-/** Máu tối đa và hệ số công ở cấp hiệu dụng `level` với build (dùng chung cho trận và kiểm tra dữ liệu). */
+/**
+ * Máu tối đa và hệ số công ở cấp hiệu dụng `level` với build (kỹ năng C1, Upgrade Arc Core); dùng
+ * chung cho trận và kiểm tra trần sức mạnh.
+ */
 export function statsFor(
   level: number,
   data: PlayerData['level'],
   build: BuildStats = EMPTY_BUILD,
 ): LevelStats {
   const base = levelStats(level, data);
-  if (build.maxHpMul === 1) return base;
-  return { ...base, maxHp: Math.round(base.maxHp * build.maxHpMul) };
+  if (build.maxHpMul === 1 && build.damageMul === 1) return base;
+  return {
+    ...base,
+    maxHp: Math.round(base.maxHp * build.maxHpMul),
+    attackMul: base.attackMul * build.damageMul,
+  };
 }

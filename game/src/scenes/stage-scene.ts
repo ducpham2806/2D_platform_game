@@ -192,7 +192,12 @@ export class StageScene extends Phaser.Scene {
         ? syncLevel(this.levels.info.level, this.levelRange, config.stages.levelSync)
         : 1,
       // Màn chơi thử (không bản lưu) dùng build trống để số liệu các phiên so sánh được.
-      build: save ? computeBuild(config.skills, save.data.character.skills) : EMPTY_BUILD,
+      build: save
+        ? computeBuild(config.skills, save.data.character.skills, {
+            shop: config.shop,
+            levels: save.data.inventory.upgrades,
+          })
+        : EMPTY_BUILD,
     });
     this.world = world;
     this.saver = save ? new StageSave(save, this.def.id, bossId) : undefined;
@@ -410,7 +415,12 @@ export class StageScene extends Phaser.Scene {
     this.input.enabled = false;
     this.workshop = new WorkshopPanel(save, config, {
       note: 'Thay đổi áp dụng ở lần hồi sinh kế tiếp hoặc lần vào màn sau.',
-      onChange: (skills) => (this.pendingBuild = computeBuild(config.skills, skills)),
+      // Upgrade không đổi trong màn (chỉ mua ở Quầy Mira), nhưng build mới phải giữ chúng.
+      onChange: (skills) =>
+        (this.pendingBuild = computeBuild(config.skills, skills, {
+          shop: config.shop,
+          levels: save.data.inventory.upgrades,
+        })),
       onClose: () => {
         this.workshop?.destroy();
         this.workshop = undefined;

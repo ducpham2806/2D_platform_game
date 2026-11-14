@@ -18,6 +18,8 @@ export interface Pickup {
   vy: number;
   /** Giây còn lại trước khi biến mất. */
   ttl: number;
+  /** Đang bị nam châm hút: bay thẳng tới Kai, không theo trọng lực, không biến mất. */
+  pulled: boolean;
 }
 
 /** Tốc độ bung ra khi rơi, ô/s. */
@@ -79,7 +81,41 @@ export class PickupPool {
       vx,
       vy: -POP_UP * this.tileSize,
       ttl,
+      pulled: false,
     });
+  }
+
+  /**
+   * Nam châm (Upgrade Magnet Range, M9): Core Bit có tâm cách thân Kai (`target`) không quá
+   * `radiusPx` thì bắt đầu bay thẳng tới tâm Kai (`magnetSpeedTilesPerSec`), xuyên địa hình; đã
+   * bị hút thì bay tiếp cho tới khi nhặt. Viên máu không bị hút.
+   */
+  attract(target: Box, radiusPx: number, dt: number): void {
+    const cx = target.x + target.w / 2;
+    const cy = target.y + target.h / 2;
+    const speed = this.rules.magnetSpeedTilesPerSec * this.tileSize;
+    for (const p of this.items) {
+      if (p.kind !== 'coreBit') continue;
+      const px = p.x + p.w / 2;
+      const py = p.y + p.h / 2;
+      if (!p.pulled) {
+        if (radiusPx <= 0) continue;
+        // Khoảng cách từ tâm viên tới điểm gần nhất của thân Kai.
+        const gx = px - Math.max(target.x, Math.min(px, target.x + target.w));
+        const gy = py - Math.max(target.y, Math.min(py, target.y + target.h));
+        if (Math.hypot(gx, gy) > radiusPx) continue;
+        p.pulled = true;
+        p.vx = 0;
+        p.vy = 0;
+      }
+      const dx = cx - px;
+      const dy = cy - py;
+      const d = Math.hypot(dx, dy);
+      if (d <= 1e-9) continue;
+      const move = Math.min(d, speed * dt);
+      p.x += (dx / d) * move;
+      p.y += (dy / d) * move;
+    }
   }
 
   /** Rơi theo trọng lực, dừng trên sàn đặc hoặc bục một chiều, không xuyên tường. */
@@ -87,6 +123,7 @@ export class PickupPool {
     const t = this.tileSize;
     const g = this.rules.gravityTilesPerSec2 * t;
     for (const p of this.items) {
+      if (p.pulled) continue;
       p.ttl -= dt;
       p.vy += g * dt;
       const nextX = p.x + p.vx * dt;
@@ -109,7 +146,7 @@ export class PickupPool {
         p.y = nextBottom - p.h;
       }
     }
-    this.items = this.items.filter((p) => p.ttl > 1e-9 && p.y < map.heightPx);
+    this.items = this.items.filter((p) => p.pulled || (p.ttl > 1e-9 && p.y < map.heightPx));
   }
 
   /** Nhặt mọi vật phẩm chạm hộp người chơi; trả về tổng Core Bit và máu hồi. */

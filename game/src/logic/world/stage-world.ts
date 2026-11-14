@@ -389,13 +389,14 @@ export class StageWorld {
       this.field?.active(pl) ?? [],
       this.phase === 'boss' ? this.boss : undefined,
       pl,
-      this.setup.difficulty.damageTaken,
+      // Đòn kẻ địch và boss: độ khó × build (Armor Plating, đã kẹp sàn). Gai, hố chỉ theo độ khó.
+      this.setup.difficulty.damageTaken * this.build.damageTakenMul,
       ev,
       this.defense,
     );
     if (ev.kaiShieldAbsorbed)
       this.hitStop = Math.max(this.hitStop, this.build.shield?.hitStopSteps ?? 0);
-    this.field?.updatePickups(pl, dt, ev);
+    this.field?.updatePickups(pl, dt, ev, this.build.magnetTiles * this.setup.tileSize);
 
     this.updateHazards(ev);
     this.updateSecrets(ev);

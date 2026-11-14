@@ -76,7 +76,9 @@ export class EnemyField {
   }
 
   /** Vật phẩm rơi, người chơi nhặt: Core Bit vào túi, viên máu hồi máu (không quá tối đa). */
-  updatePickups(player: PlayerPhysics, dt: number, ev: WorldEvents): void {
+  /** `magnetPx`: tầm hút Core Bit tính từ thân Kai (Upgrade Magnet Range); 0 = không hút. */
+  updatePickups(player: PlayerPhysics, dt: number, ev: WorldEvents, magnetPx = 0): void {
+    if (player.state !== 'dead') this.pickups.attract(player.box, magnetPx, dt);
     this.pickups.update(dt, this.map);
     if (player.state === 'dead') return;
     const got = this.pickups.collect(player.box);
