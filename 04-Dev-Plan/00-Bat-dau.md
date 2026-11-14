@@ -10,7 +10,7 @@
 
 ## Chờ người dùng (đường găng)
 
-1. Merge nhánh vào `main` rồi tag `gate-r1` (bản người thử G1). Sau đó code mới ở nhánh mới, không lẫn vào bản thử.
+1. Merge **PR #10** (nhánh này) vào `main` rồi tag `gate-r1` (bản người thử G1). Sau đó code mới ở nhánh mới, không lẫn vào bản thử. **Không merge PR #9** (nhánh `claude/peaceful-mccarthy-13m5ah` của phiên 13/11, tách từ `main` song song với nhánh này, xung đột 31 file); phần đáng giữ của nó xem mục Asset.
 2. Chơi thử cổng Prototype với 5 người, ≥ 3 người cảm ứng: `05-Cong-Prototype.md` mục 3; ghi kết quả vào mục 7.
 3. Chọn kênh gửi dữ liệu đo lường (`adr/ADR-002-do-luong-mvp.md`).
 4. Asset nhóm P0 (10 sheet): `05-Assets/01-Huong-dan-asset.md`.
@@ -28,7 +28,7 @@ Mỗi việc: viết Story trước (`/story-readiness`, mẫu Story của Game 
 
 ## Asset
 
-`game/public/` mới có `data/`; chưa có asset nào. Game chạy bằng hình khối. Danh sách và mốc: `05-Assets/manifest.csv` (P0 Prototype, P1 Vertical slice, P2a Stage 2–4 thuộc MVP, P2b Hub/NPC thuộc Alpha).
+`game/public/` mới có `data/`; chưa có asset nào. Game chạy bằng hình khối. **PR #9 chưa merge** có sẵn: 68 file hình vẽ bằng mã (Kai 11 hoạt ảnh, kẻ địch, boss, tileset, nền, hiệu ứng, khung giao diện) và công cụ `05-Assets/tools/codeart/`, âm thanh tổng hợp, `npm run smoke`, sửa lỗi hướng dẫn S10 hiện ngay đầu màn khi chơi lại. Đề xuất: sau tag `gate-r1`, chuyển từng phần sang thành Story riêng (chờ người dùng duyệt hướng đồ họa), rồi đóng PR #9. Danh sách và mốc: `05-Assets/manifest.csv` (P0 Prototype, P1 Vertical slice, P2a Stage 2–4 thuộc MVP, P2b Hub/NPC thuộc Alpha).
 
 ## Đọc gì theo loại việc
 
