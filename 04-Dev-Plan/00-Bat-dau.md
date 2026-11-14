@@ -13,9 +13,9 @@
 1. ~~Merge PR #10~~ xong (14/11, `main` = `eeb8ca1`). Repo công khai, Pages đã bật; bản `eeb8ca1` đã đăng ở `https://ducpham2806.github.io/2D_platform_game/?gate=1` (14/11). Tag `gate-r1` → `eeb8ca1` (người dùng tạo trên GitHub, 14/11; môi trường của Claude không đẩy được tag). Còn: người dùng mở thử trên điện thoại rồi phát link. Code mới tiếp tục trên nhánh này, chỉ merge vào `main` sau đợt thử. **Không merge PR #9** (nhánh của phiên 13/11, tách từ `main` song song, xung đột 31 file); người dùng chọn cách A (14/11): chuyển từng phần sau tag (`stories/EP-21-chuyen-PR9.md`), rồi đóng PR #9.
 2. Chơi thử cổng Prototype với 5 người, ≥ 3 người cảm ứng: `05-Cong-Prototype.md` mục 3; ghi kết quả vào mục 7.
 3. Chọn kênh gửi dữ liệu đo lường (`adr/ADR-002-do-luong-mvp.md`).
-4. Asset nhóm P0 (10 sheet): `05-Assets/01-Huong-dan-asset.md`, sau khi chọn hướng đồ họa (mục 6).
+4. Asset: tạm dừng (hướng dẫn asset hiện theo pixel art); làm lại theo model 3D sau khi duyệt ADR-003 (EP-22 ST-22-03, 05).
 5. Xem lại quyết định đã chốt theo ủy quyền: `09-Quyet-dinh-cho-duyet.md`.
-6. Chọn hướng đồ họa: pixel art (bộ hình PR #9) hay 2.5D (`09-…` mục 3; ảnh `qa/ST-21-05/`).
+6. ~~Chọn hướng đồ họa~~: đã chọn **2.5D thời gian thực three.js** (14/11). Demo `game/demo-25d.html`, video `qa/DEMO-25D/`; ADR-003 (Proposed), EP-22. Còn: thử demo trên điện thoại (sau đợt thử G1, khi demo lên Pages).
 
 ## Việc code tiếp theo (theo duyệt Technical Director + Producer)
 
@@ -26,7 +26,8 @@ Mỗi việc: viết Story trước (`/story-readiness`, mẫu Story của Game 
 3. Test khóa các luật đã code nhưng chưa test, gắn mã QB vào tên test; sửa QB-72 (dừng đồng hồ khi tạm dừng), QB-70 (gợi ý bị che thì hiện lại).
 4. EP-15: ST-15-14 (QB-14, QB-31), rồi ST-15-01a (dữ liệu Stage 2), ST-15-02.
 5. EP-12 AudioService (âm tạm lấy từ PR #9, ST-21-03); rồi phần EP-14 không đụng lớp nút cảm ứng (QB-90, QB-100, hộp chữ, chuỗi vi/en ST-21-06).
-6. EP-21: ST-21-02 smoke check (sau tag); ST-21-05 đồ họa khi người dùng chọn hướng. ST-21-01 (QB-88) đã xong.
+6. EP-21: ST-21-02 smoke check (sau tag). ST-21-01 (QB-88) đã xong; ST-21-05 (hình vẽ bằng mã) bỏ.
+7. EP-22 đồ họa 2.5D (`stories/EP-22-do-hoa-25d.md`): ~~ST-22-01 demo~~ xong (14/11); tiếp ST-22-02 đo trên máy thật, ST-22-03 duyệt ADR-003.
 
 ## Asset
 

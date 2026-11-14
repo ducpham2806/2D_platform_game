@@ -59,6 +59,8 @@ src/
                           màn xám Prototype, phòng thử kẻ địch, phòng boss Thorna, phòng Golem (ASCII),
                           phòng thử màn chơi M7 (Tiled)
   scenes/                 Boot → Preload → Menu, Hub, Stage, Controls, Playtest (kết quả chơi thử)
+  demo25d/                demo 2.5D three.js (EP-22, ADR-003): trang riêng demo-25d.html dựng phòng Thorna từ StageWorld
+                          thật (coords thuần có test, input, stage3d, actors, main: camera, bloom, tự chơi, quay từng khung)
   scenes/telemetry/       lớp nối đo lường (EP-13): telemetry-service (bật bằng ?debug=1&telemetry=1, session_start,
                           boot_timing, lỗi trang), stage-telemetry (StageTracker, FrameStats, hướng dẫn, gợi ý NOVA)
   scenes/stage/           vẽ màn chơi (renderer, kẻ địch, vật phẩm), HUD vẽ theo HudModel, menu tạm dừng,
@@ -154,6 +156,7 @@ npm run format:check  # Prettier (kiểm); npm run format để sửa
 npm run build         # typecheck + bản build trong dist/ (tự chạy sync-data)
 npm run gate-check    # đo cổng Prototype trên bản build (Playwright + Chromium)
 npm run gate-flow     # chạy thử trọn luồng người thử ?gate=1 (máy tính + Pixel 7)
+node scripts/demo25d-video.mjs <thư mục> 24 30   # quay video demo 2.5D từng khung (cần npm run build; mở demo: /demo-25d.html)
 npm run docs-check    # kiểm nhật ký ≤ 3 mục, ngân sách file đầu phiên, đường dẫn trong file chỉ mục (CI)
 ```
 

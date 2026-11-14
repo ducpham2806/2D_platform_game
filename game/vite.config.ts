@@ -11,6 +11,13 @@ export default defineConfig({
   },
   build: {
     target: 'es2022',
+    rollupOptions: {
+      // Trang demo 2.5D (three.js) tách riêng: game Phaser không nạp three.js.
+      input: {
+        main: fileURLToPath(new URL('./index.html', import.meta.url)),
+        demo25d: fileURLToPath(new URL('./demo-25d.html', import.meta.url)),
+      },
+    },
     // Phaser nặng khoảng 1,2 MB đã nén nhỏ; cảnh báo kích thước chunk ở mức đó là bình thường.
     chunkSizeWarningLimit: 1600,
   },
