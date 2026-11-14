@@ -24,6 +24,8 @@ export interface StageResultInfo {
   reminders: readonly string[];
   /** Cấp lúc vào màn và lúc xong, SP nhận thêm (lên cấp + boss) (M8). */
   level?: { from: number; to: number; spGained: number } | undefined;
+  /** Độ khó của lượt và các độ khó vừa mở cho màn này (GDD 11 mục 6). */
+  difficulty?: { name: string; unlocked: readonly string[] } | undefined;
 }
 
 export interface ResultRow {
@@ -58,12 +60,14 @@ export function buildStageResult(world: ResultSource, info: StageResultInfo): St
   if (info.newWeapon) rewards.push(`Vũ khí mới: ${info.newWeapon}`);
   if (lv && lv.spGained > 0)
     rewards.push(leveled ? `Lên cấp ${lv.to}! +${lv.spGained} SP` : `+${lv.spGained} SP`);
+  for (const name of info.difficulty?.unlocked ?? []) rewards.push(`Đã mở ${name} cho màn này`);
   if (world.secrets.length > 0) rewards.push(`Bí mật ${found}/${world.secrets.length}`);
   if (rewards.length === 0) rewards.push('Không có phần thưởng mới');
   return {
     title: `HOÀN THÀNH: ${info.stageName}`,
     coreBitsTotal: info.savedCoreBits + world.coreBits,
     stats: [
+      ...(info.difficulty ? [{ label: 'Độ khó', value: info.difficulty.name }] : []),
       { label: 'Thời gian', value: formatDuration(world.elapsedSec) },
       { label: 'Số lần chết', value: String(world.deaths) },
       {

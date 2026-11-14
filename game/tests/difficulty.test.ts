@@ -11,11 +11,14 @@ import {
   scaleReward,
   startCheckpointFor,
 } from '@/logic/difficulty/difficulty';
+import { normalizeDifficulty } from '@/logic/difficulty/normalize-difficulty';
 import { buildPrep, difficultyStats, type PrepDifficulty } from '@/logic/difficulty/prep-model';
+import { buildStageResult } from '@/logic/result/stage-result';
 import { decodeSaveCode, encodeSaveCode } from '@/logic/save/save-code';
 import {
   defaultSave,
   parseSave,
+  recordBossDefeated,
   recordDifficultyChosen,
   recordDifficultyCleared,
   stageDifficulty,
@@ -24,6 +27,7 @@ import { MemorySaveStore, SaveManager } from '@/logic/save/save-manager';
 import { StageSave } from '@/logic/save/stage-save';
 import { StageWorld } from '@/logic/world/stage-world';
 import { IDLE_INPUT, noWorldEvents, type WorldEvents } from '@/logic/world/world-types';
+import { buildStageLayout, STAGE_DEFS } from '@/stages';
 import { THORNA_ROOM_ROWS } from '@/stages/thorna-room';
 import { loadData } from './helpers';
 
@@ -225,5 +229,107 @@ describe('áp độ khó vào trận và bản lưu 4 (ST-10-01)', () => {
     expect(stageDifficulty(m.data, 'verdant_gardens').cleared).toEqual(['normal']);
     new StageSave(m, 'golem', 'gray').step(ev, run, 0.016);
     expect(Object.keys(m.data.progress.difficulty)).toEqual(['verdant_gardens']);
+  });
+});
+
+describe('ST-10-02: thưởng boss theo độ khó, nâng bản lưu, mini-boss, màn Kết quả', () => {
+  const config = parseGameConfig(loadData());
+  const t = TILE_SIZE;
+  const DT = FIXED_STEP_MS / 1000;
+  const diff = (id: string) => config.difficulties.find((d) => d.id === id)!;
+
+  it('mini-boss Golem nhân enemyHp: 48 / 60 / 75 (hồi quy)', () => {
+    const hp = ['story', 'normal', 'challenge'].map((id) => {
+      const w = new StageWorld({
+        layout: buildStageLayout(STAGE_DEFS.golem, t),
+        tileSize: t,
+        stepSec: DT,
+        player: config.player,
+        weapons: config.weapons,
+        boss: config.bosses.gray!,
+        difficulty: diff(id),
+        seed: 1,
+        enemies: config.enemies,
+        mechanics: config.stages.mechanics,
+      });
+      return w.enemies.find((e) => e.data.id === 'bramble_golem')!.maxHp;
+    });
+    expect(hp).toEqual([48, 60, 75]);
+  });
+
+  it('boss đã hạ (vũ khí đã có) nhưng chưa nhận thưởng ở độ khó này: nhận EXP, Core Bit, không nhận lại vũ khí', () => {
+    const world = new StageWorld({
+      rows: THORNA_ROOM_ROWS,
+      tileSize: t,
+      stepSec: DT,
+      player: config.player,
+      weapons: config.weapons,
+      boss: config.bosses.thorna!,
+      difficulty: diff('normal'),
+      mechanics: config.stages.mechanics,
+      seed: 7,
+      ownedWeapons: ['Vine Lash'],
+      bossDefeated: true,
+      bossRewardClaimed: false,
+    });
+    world.player.respawn((world.arena!.first + 3) * t, 11 * t);
+    world.step(IDLE_INPUT);
+    world.boss!.hp = 1;
+    let out: WorldEvents | undefined;
+    for (let i = 0; i < 600 && !out?.bossDefeated; i += 1) {
+      world.player.hp = world.player.maxHp;
+      const dir = world.boss!.centerX > world.player.centerX ? 1 : -1;
+      out = world.step({
+        ...IDLE_INPUT,
+        moveX: i % 30 === 0 ? dir : 0,
+        shootPressed: i % 8 === 0,
+        shootHeld: i % 8 === 0,
+        shootReleased: i % 8 === 1,
+      });
+    }
+    expect(out?.bossDefeated).toBe(true);
+    expect(out?.weaponGranted).toBeUndefined();
+    expect([world.exp, world.coreBits]).toEqual([120, 80]);
+  });
+
+  it('nâng bản lưu 3: boss chiến dịch đã hạ thì cleared ["normal"]; id lạ bị bỏ; chạy lại không đổi', () => {
+    const v3 = parseSave({ version: 3, progress: { bossesDefeated: ['thorna', 'gray'] } });
+    const r = normalizeDifficulty(v3, config);
+    expect(r.save.progress.difficulty).toEqual({
+      verdant_gardens: { last: null, cleared: ['normal'] },
+    });
+    expect(normalizeDifficulty(r.save, config).save).toBe(r.save);
+    const odd = parseSave({
+      version: 4,
+      progress: {
+        bossesDefeated: [],
+        difficulty: { verdant_gardens: { last: 'hard', cleared: ['story', 'hard'] } },
+      },
+    });
+    expect(normalizeDifficulty(odd, config).save.progress.difficulty).toEqual({
+      verdant_gardens: { last: null, cleared: ['story'] },
+    });
+    // Đã hạ ở Cốt truyện thì không ghi thêm Thường.
+    const story = recordDifficultyCleared(
+      recordBossDefeated(defaultSave(), 'thorna'),
+      'verdant_gardens',
+      'story',
+    );
+    expect(normalizeDifficulty(story, config).save).toBe(story);
+  });
+
+  it('màn Kết quả: dòng độ khó và độ khó vừa mở', () => {
+    const view = buildStageResult(
+      { elapsedSec: 61, deaths: 0, exp: 120, coreBits: 80, secrets: [] },
+      {
+        stageName: 'Phòng boss Thorna',
+        savedCoreBits: 0,
+        newWeapon: undefined,
+        reminders: [],
+        difficulty: { name: 'Thường', unlocked: ['Thử thách'] },
+      },
+    );
+    expect(view.stats[0]).toEqual({ label: 'Độ khó', value: 'Thường' });
+    expect(view.rewards).toContain('Đã mở Thử thách cho màn này');
   });
 });

@@ -12,8 +12,8 @@ export interface DifficultyRule {
 
 /** Tiến trình độ khó của một màn chiến dịch trong bản lưu. */
 export interface StageDifficultyProgress {
-  /** Độ khó chọn lần trước ở màn Chuẩn bị. */
-  last: string | undefined;
+  /** Độ khó chọn lần trước ở màn Chuẩn bị (bản lưu ghi null khi chưa chọn). */
+  last: string | null | undefined;
   /** Các độ khó đã hạ boss của màn. */
   cleared: readonly string[];
 }
@@ -40,7 +40,7 @@ export function defaultDifficulty(
   progress: StageDifficultyProgress,
 ): string {
   const open = rules.filter((r) => difficultyUnlocked(r, progress));
-  const pick = (id: string | undefined) => open.find((r) => r.id === id)?.id;
+  const pick = (id: string | null | undefined) => open.find((r) => r.id === id)?.id;
   return pick(progress.last) ?? pick(DEFAULT_DIFFICULTY) ?? open[0]?.id ?? DEFAULT_DIFFICULTY;
 }
 

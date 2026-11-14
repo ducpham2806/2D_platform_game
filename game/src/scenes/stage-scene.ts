@@ -24,12 +24,12 @@ import {
 import { DialogueRunner } from '../logic/dialogue/dialogue-runner';
 import { buildHud } from '../logic/hud/hud-model';
 import { buildStageResult } from '../logic/result/stage-result';
-import { DEFAULT_DIFFICULTY } from '../logic/difficulty/difficulty';
+import { DEFAULT_DIFFICULTY, difficultyUnlocked } from '../logic/difficulty/difficulty';
 import { type BuildStats, computeBuild, EMPTY_BUILD } from '../logic/rpg/build';
 import { spentPoints } from '../logic/rpg/skill-tree';
 import { totalSkillPoints, WorkshopPanel, workshopUnlocked } from '../workshop/workshop-panel';
 import { LevelTracker, skillPoints, syncLevel } from '../logic/rpg/progression';
-import { recordTutorialDone, setTutorialOff } from '../logic/save/save-data';
+import { recordTutorialDone, setTutorialOff, stageDifficulty } from '../logic/save/save-data';
 import type { SaveManager } from '../logic/save/save-manager';
 import { TutorialManager } from '../logic/tutorial/tutorial-manager';
 import { TutorialSignals } from '../logic/tutorial/tutorial-signals';
@@ -104,6 +104,11 @@ export class StageScene extends Phaser.Scene {
   private stageKey: StageDefId = 'gray';
   /** Độ khó của lượt (chọn ở màn Chuẩn bị; GDD 11). Màn chơi thử luôn Thường. */
   private difficultyId = DEFAULT_DIFFICULTY;
+  /** Tên độ khó của lượt; các độ khó còn khóa của màn chiến dịch lúc vào màn (màn Kết quả). */
+  private difficultyName = '';
+  private lockedAtStart: string[] = [];
+  /** id màn chiến dịch khi boss của phòng này là boss chiến dịch của màn (ghi `cleared`). */
+  private campaignBoss: string | undefined;
   /** Hội thoại đang mở: trận đứng yên tới khi đóng (người chơi bỏ qua được bất cứ lúc nào). */
   private dialogue: { runner: DialogueRunner; moment: BossDialogueMoment } | undefined;
   private dialogueBox?: DialogueBox;
@@ -182,6 +187,12 @@ export class StageScene extends Phaser.Scene {
     this.storyBossPending = storyBosses.has(bossId) && !defeated.includes(bossId);
     const campaign = config.stages.stages.find((s) => s.id === this.def.campaign);
     this.levelRange = campaign ? parseLevelRange(campaign.recommendedLevel) : undefined;
+    // Chỉ boss chiến dịch của màn mới ghi `cleared` và tính thưởng theo độ khó (GDD 11 mục 2.3).
+    this.campaignBoss = save && campaign?.boss === bossId ? campaign.id : undefined;
+    const rewardClaimed =
+      save && this.campaignBoss
+        ? stageDifficulty(save.data, this.campaignBoss).cleared.includes(difficulty.id)
+        : undefined;
     // Màn chơi thử của cổng Prototype luôn ở cấp 1 để số liệu các phiên so sánh được.
     this.levels = save ? new LevelTracker(config.player.level, save.data.character.exp) : undefined;
     this.talk = {
@@ -199,6 +210,7 @@ export class StageScene extends Phaser.Scene {
       enemies: config.enemies,
       mechanics: config.stages.mechanics,
       ...fromSave,
+      ...(rewardClaimed === undefined ? {} : { bossRewardClaimed: rewardClaimed }),
       level: this.levels
         ? syncLevel(this.levels.info.level, this.levelRange, config.stages.levelSync)
         : 1,
@@ -211,7 +223,9 @@ export class StageScene extends Phaser.Scene {
         : EMPTY_BUILD,
     });
     this.world = world;
-    const campaignId = this.def.campaign;
+    const campaignId = this.campaignBoss;
+    this.difficultyName = difficulty.name;
+    this.lockedAtStart = save && campaignId ? this.lockedDifficulties(save, campaignId) : [];
     this.saver = save
       ? new StageSave(
           save,
@@ -547,8 +561,27 @@ export class StageScene extends Phaser.Scene {
         newWeapon: this.newWeapon,
         reminders,
         level: this.levelResult(),
+        difficulty: this.def.playtest
+          ? undefined
+          : {
+              name: this.difficultyName,
+              unlocked: this.lockedAtStart
+                .filter((id) => {
+                  const campaign = this.def.campaign;
+                  return save && campaign && !this.lockedDifficulties(save, campaign).includes(id);
+                })
+                .map((id) => config.difficulties.find((d) => d.id === id)?.name ?? id),
+            },
       }),
     );
+  }
+
+  /** Id các độ khó còn khóa ở màn chiến dịch `campaign` theo bản lưu. */
+  private lockedDifficulties(save: SaveManager, campaign: string): string[] {
+    const progress = stageDifficulty(save.data, campaign);
+    return getConfig(this)
+      .difficulties.filter((d) => !difficultyUnlocked(d, progress))
+      .map((d) => d.id);
   }
 
   /** Cấp lúc vào màn và lúc xong, SP nhận thêm (lên cấp + boss hạ lần đầu). */

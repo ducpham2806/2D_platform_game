@@ -22,6 +22,7 @@ export const SceneKey = {
   Save: 'save',
   Workshop: 'workshop',
   Shop: 'shop',
+  Prep: 'prep',
 } as const;
 export type SceneKey = (typeof SceneKey)[keyof typeof SceneKey];
 

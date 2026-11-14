@@ -51,17 +51,18 @@ export class MenuScene extends Phaser.Scene {
       manager.notice = undefined;
     }
 
+    // Màn chiến dịch (có `campaign`) đi qua màn Chuẩn bị để chọn độ khó (GDD 11 mục 2.1).
     const enemies = (): void => {
-      this.scene.start(SceneKey.Stage, { stage: 'enemies' });
+      this.scene.start(SceneKey.Prep, { stage: 'enemies' });
     };
     const mechanics = (): void => {
-      this.scene.start(SceneKey.Stage, { stage: 'mechanics' });
+      this.scene.start(SceneKey.Prep, { stage: 'mechanics' });
     };
     const thorna = (): void => {
-      this.scene.start(SceneKey.Stage, { stage: 'thorna' });
+      this.scene.start(SceneKey.Prep, { stage: 'thorna' });
     };
     const golem = (): void => {
-      this.scene.start(SceneKey.Stage, { stage: 'golem' });
+      this.scene.start(SceneKey.Prep, { stage: 'golem' });
     };
     textButton(this, cx, 58, 'Vào màn thử', () => this.scene.start(SceneKey.Stage));
     textButton(this, cx, 73, 'Phòng thử kẻ địch', enemies);

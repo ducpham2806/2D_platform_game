@@ -56,6 +56,11 @@ export interface WorldSetup {
   takenSecrets?: readonly string[];
   /** Từ bản lưu (M11): boss của màn đã hạ, thắng lại không nhận thưởng lần đầu nữa. */
   bossDefeated?: boolean;
+  /**
+   * Thưởng lần đầu hạ boss (EXP, Core Bit) đã nhận ở độ khó này (GDD 11 mục 2.3: một lần mỗi cặp
+   * boss, độ khó). Không có thì theo `bossDefeated`. Vũ khí vẫn chỉ một lần mỗi boss.
+   */
+  bossRewardClaimed?: boolean;
   /** Cấp hiệu dụng (M8, đã đồng bộ cấp theo màn) quyết định máu và công; không có thì cấp 1. */
   level?: number;
   /** Build kỹ năng (M8); không có thì build trống. `player`/`weapons` ở trên là dữ liệu gốc. */
@@ -126,6 +131,7 @@ export class StageWorld {
   /** Chỗ đứng an toàn gần nhất (tâm, đáy) để đưa về khi chạm gai. */
   private safe: { x: number; y: number };
   private everWon = false;
+  private rewardClaimed = false;
   /** EXP và Core Bit thưởng khi thắng boss lần đầu (cộng thêm vào của kẻ địch thường). */
   private bossExp = 0;
   private bossCoreBits = 0;
@@ -163,6 +169,7 @@ export class StageWorld {
     this.vanguard = vanguardOf(this.build, t);
     for (const w of setup.ownedWeapons ?? []) this.loadout.grant(w);
     this.everWon = setup.bossDefeated ?? false;
+    this.rewardClaimed = setup.bossRewardClaimed ?? this.everWon;
 
     let nextId = 1;
     const layout = this.layout;
@@ -579,6 +586,9 @@ export class StageWorld {
       this.everWon = true;
       const reward = this.setup.boss.reward;
       if (this.loadout.grant(reward)) ev.weaponGranted = reward;
+    }
+    if (!this.rewardClaimed) {
+      this.rewardClaimed = true;
       // Thưởng lần đầu nhân hệ số độ khó (GDD 11 mục 3.1); vũ khí và SP không đổi.
       const mul = this.setup.difficulty.rewardMul;
       this.bossExp += scaleReward(this.setup.boss.rewardExp, mul);
