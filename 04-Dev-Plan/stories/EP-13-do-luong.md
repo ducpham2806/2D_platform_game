@@ -8,8 +8,8 @@
 | --- | --- | --- | --- | --- |
 | ST-13-01 | Lõi `logic/telemetry/`: lược đồ, phong bì, kiểm lược đồ, bộ đệm theo ưu tiên, lô, xuất JSON; `telemetry.json` + `core/telemetry-config.ts` | — | 1 phiên | DONE (14/11/2026) |
 | ST-13-02a | `StageWorld`: nguồn đòn (`hurtBy`, `deathCause`), sát thương lên boss theo vũ khí, cú trúng điểm yếu; `StageTracker` (sự kiện của một lượt màn), `FrameStats`, `buildSignature`; test chuỗi sự kiện bằng StageWorld | 01 | 1 phiên | DONE (14/11/2026) |
-| ST-13-02b | Nối vào scene: dịch vụ đo lường (tạm bật bằng cờ `?debug=1&telemetry=1`, chỉ bộ nhớ), StageScene gọi `StageTracker`; sự kiện meta (session_start, boot_timing, Quầy, Xưởng, hướng dẫn, lỗi trang, mã lỗi lưu); chạy thử | 01, 02a | 1 phiên | Đang làm |
-| ST-13-03 | Cờ `?mvp=`, `staff`, `install`; thông báo không chặn; Cài đặt → Dữ liệu | 01; khung Cài đặt EP-14; ADR-002 | 1 phiên | Chờ ADR-002 |
+| ST-13-02b | Nối vào scene: dịch vụ đo lường (tạm bật bằng cờ `?debug=1&telemetry=1`, chỉ bộ nhớ), StageScene gọi `StageTracker`; sự kiện meta (session_start, boot_timing, Quầy, Xưởng, hướng dẫn, gợi ý NOVA, lỗi trang); chạy thử | 01, 02a | 1 phiên | DONE (14/11/2026) |
+| ST-13-03 | Cờ `?mvp=`, `install`, kho `cv.telemetry*` (gộp hàng đợi mồ côi), `run` qua phiên; thông báo không chặn; Cài đặt → Dữ liệu; chuyển từ 02: mã lỗi `SaveManager` (`save_error`), phiên mới sau 30 phút ẩn (QB-154), `msToControl`; nối `dataFingerprint` vào build | 01, 02; khung Cài đặt EP-14; ADR-002 | 1,5 phiên | Chờ ADR-002 |
 | ST-13-04 | Điểm nhận và Uploader | 01, 03; ADR-002 | 1,5 phiên | Chờ ADR-002 |
 | ST-13-05 | Báo cáo `logic/telemetry/report.ts` + `npm run mvp-report`, bộ dữ liệu mẫu có đáp án | 01 | 1,5 phiên | Chưa |
 | ST-13-06 | Phiếu trong game, `npm run mvp-flow` | 02–05 | 1 phiên | Chưa |
@@ -63,3 +63,11 @@
   - `logic/telemetry/stage-tracker.ts`: `stage_start`, `section_enter` (lần đầu mỗi đoạn; phase boss → đoạn `boss`), `checkpoint`, `death` (kind death/pit, cause, streak), `boss_start` (cửa đóng hoặc hồi sinh trong phòng boss, `attempt`), `boss_end` (win/death/exit; `dmg` theo id vũ khí, `weakHits`, `swaps`, `bossHpPct`), `difficulty_hint`, `stage_progress` (theo `stageProgressSec`, gọi `flushErrorCounts`), `stage_end` (clear/quit; trận dở thì `boss_end` exit trước).
   - `frame-stats.ts` (biểu đồ cấp phát sẵn 0,5 ms; bỏ khung > `ignoreMs`), `buildSignature` (tổng bậc theo nhánh, `V2P1C0`).
 - **Tiêu chí:** [x] chuỗi `stage_start → section_enter → death → checkpoint → boss_start → death → boss_end → boss_start → boss_end → stage_end` trên StageWorld thật, chế độ `strict` (mọi sự kiện qua kiểm lược đồ); [x] thoát giữa trận: `boss_end exit` rồi `stage_end quit`, `end` gọi hai lần không ghi đôi; [x] rơi hố còn máu: `death` kind `pit`, không tính `deaths`; [x] `FrameStats`, `buildSignature`.
+
+## ST-13-02b: Nối đo lường vào game
+
+- **Trạng thái:** DONE (14/11/2026) · **Phụ thuộc:** ST-13-01, 02a · **Bằng chứng:** [x] Logic (`tests/telemetry-stage.test.ts`: thiết bị, `session_start`) [x] Integration (chạy thử Chromium, `qa/ST-13-02/`) [x] Bản thử G1 không đổi (`gate-flow` đạt)
+- **Bối cảnh:** GDD 13 mục 3 (sự kiện meta), mục 4 (không userAgent đầy đủ), ADR-002 mục 4 (đo lường không làm hỏng game; không cấp phát mỗi khung). Cờ `?mvp=` và kho thuộc ST-13-03, nên tạm bật bằng `?debug=1&telemetry=1`, chỉ trong bộ nhớ.
+- **Đã làm:** `src/scenes/telemetry/telemetry-service.ts` (dịch vụ, `session_start`, `boot_timing`, lỗi trang), `stage-telemetry.ts` (một lượt màn, `FrameStats`, hướng dẫn, gợi ý NOVA, `stage_progress` khi trang ẩn, `stage_end` khi scene tắt); `logic/telemetry/device.ts` (nhóm thô nền tảng, trình duyệt; ngày; làm tròn); Quầy, Xưởng báo giao dịch qua `onTelemetry`; cờ `TELEMETRY_DEBUG`, `STAFF`.
+- **Tiêu chí:** [x] không bật cờ: không có bộ ghi, 0 request ra ngoài; [x] bật cờ: lượt Thorna sinh `session_start`, `boot_timing`, `stage_start`, `section_enter`, `boss_start`, `death`, `boss_end` (death, win), hướng dẫn, `stage_end` (clear); 0 sự kiện sai lược đồ, 0 lỗi console; [x] `session_start` không chứa userAgent (test); [x] `gate-flow` đạt.
+- **Chuyển sang ST-13-03:** mã lỗi `SaveManager` (`save_error`), phiên mới sau 30 phút ẩn (QB-154), `msToControl`, `run` lưu qua phiên. `settings_change` chờ màn Cài đặt (EP-14). `death.cause` của boss theo loại đạn; tách theo tên đòn nếu ST-13-05 cần.

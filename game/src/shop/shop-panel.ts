@@ -15,9 +15,12 @@ import type { SaveManager } from '../logic/save/save-manager';
 import { buildShop, type ShopCardView, type ShopModel } from '../logic/shop/shop-model';
 import { buyUpgrade, refundUpgrade, storyBossCount } from '../logic/shop/upgrades';
 import { createPanel } from '../playtest/panel';
+import type { Props } from '../logic/telemetry/schema';
 
 export interface ShopOptions {
   onClose: () => void;
+  /** Đo lường (EP-13): giao dịch đã ghi xong vào bản lưu. */
+  onTelemetry?: (name: 'shop_buy' | 'shop_refund', props: Props) => void;
 }
 
 type Action =
@@ -199,6 +202,16 @@ export class ShopPanel {
       .transact((s) => setInventory(s, result.levels, result.coreBits, result.paid))
       .then((r) => {
         this.busy = false;
+        if (r.ok)
+          this.options.onTelemetry?.(a.kind === 'buy' ? 'shop_buy' : 'shop_refund', {
+            item: card.id,
+            level: result.level,
+            price: result.amount,
+            before: inv.coreBits,
+            after: result.coreBits,
+            bosses: model.bosses,
+            playSec: this.save.data.playTimeSec,
+          });
         if (r.ok)
           this.message =
             a.kind === 'buy'

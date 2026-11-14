@@ -16,6 +16,7 @@ import { difficultyNormalizer } from '../logic/difficulty/normalize-difficulty';
 import { chainNormalizers, SaveManager } from '../logic/save/save-manager';
 import { openBrowserSaveStore } from '../save/browser-save-store';
 import { MUTED_STYLE, TEXT_STYLE } from './ui';
+import { installTelemetry } from './telemetry/telemetry-service';
 
 const MANIFEST_KEY = 'data:manifest';
 
@@ -78,6 +79,7 @@ export class PreloadScene extends Phaser.Scene {
     try {
       const config = parseGameConfig(files);
       setConfig(this, config);
+      installTelemetry(this.game, config);
       setInput(this, new InputService(config.controls, new LocalStorageStore(), getBus(this)));
       getBus(this).emit('config:ready', { config });
       const save = await SaveManager.open(

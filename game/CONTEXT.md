@@ -59,6 +59,8 @@ src/
                           màn xám Prototype, phòng thử kẻ địch, phòng boss Thorna, phòng Golem (ASCII),
                           phòng thử màn chơi M7 (Tiled)
   scenes/                 Boot → Preload → Menu, Hub, Stage, Controls, Playtest (kết quả chơi thử)
+  scenes/telemetry/       lớp nối đo lường (EP-13): telemetry-service (bật bằng ?debug=1&telemetry=1, session_start,
+                          boot_timing, lỗi trang), stage-telemetry (StageTracker, FrameStats, hướng dẫn, gợi ý NOVA)
   scenes/stage/           vẽ màn chơi (renderer, kẻ địch, vật phẩm), HUD vẽ theo HudModel, menu tạm dừng,
                           hộp hội thoại, màn Kết quả, gắn công cụ chơi thử vào màn (stage-playtest.ts)
   logic/hud/              M10: mô hình HUD từ StageWorld (máu, năng lượng, vũ khí, máu boss, Core Bit, EXP,
@@ -90,7 +92,7 @@ src/
                           hoàn tác khi lỗi), StageSave nối màn với bản lưu (thuần)
   save/                   kho IndexedDB (dự phòng localStorage), bảng HTML "Dữ liệu lưu"
   playtest/               bảng HTML: phiếu chấm 1–5, bảng chỉnh cảm giác, kết quả, xuất JSON
-  debug/flags.ts          cờ DEBUG (?debug=1) và TUNE (?tune=1), bản dev luôn bật; GATE (?gate=1), SHOP (?shop=1)
+  debug/flags.ts          cờ DEBUG (?debug=1) và TUNE (?tune=1), bản dev luôn bật; GATE (?gate=1), SHOP (?shop=1), TELEMETRY_DEBUG (?telemetry=1), STAFF
 maps/                     bản đồ Tiled JSON + tileset xám; maps/src/ là bản phác ASCII; README quy ước
 tests/                    Vitest cho phần thuần, đọc thẳng 03-Data
 scripts/sync-data.mjs     chép dữ liệu 03-Data → public/data
@@ -133,7 +135,7 @@ Mỗi module một dòng; chi tiết ở file quyết định và Epic.
 - **ĐK Ba độ khó:** Xong cho Stage 1 (EP-10). Còn: checkpoint theo độ khó trên bản đồ thật, chốt số mẫu đòn (sau cổng), Stage 2–4.
 - **M11 Lưu:** Xong lưu cục bộ, bản lưu 4, mã sao lưu. Còn: cloud (Beta).
 - **M12 Âm thanh:** Chưa làm; tài liệu Draft (`01-GDD/12-Am-thanh.md`); EP-12 làm được ngay.
-- **M16 Đo lường MVP:** Lõi xong (ST-13-01, 14/11): `logic/telemetry/`, `telemetry.json`; chưa nối vào game (ST-13-02), chưa có cờ `?mvp=`, kho, gửi (ST-13-03, 04 chờ ADR-002), báo cáo (ST-13-05). Bản thường không ghi gì.
+- **M16 Đo lường MVP:** Lõi xong (ST-13-01); nối vào game xong (ST-13-02a/b, 14/11): StageWorld có nguồn đòn và sát thương boss theo vũ khí, `StageTracker` ghi một lượt màn, sự kiện meta (phiên, khởi động, Quầy, Xưởng, hướng dẫn, gợi ý NOVA, lỗi trang). Tạm bật bằng `?debug=1&telemetry=1`, chỉ trong bộ nhớ. Còn: cờ `?mvp=`, kho, mã lỗi lưu, phiên mới sau 30 phút ẩn (ST-13-03), gửi (ST-13-04, chờ ADR-002), báo cáo (ST-13-05). Bản thường không ghi gì.
 - **M13–M15, M17, M18:** Chưa làm (sau cổng MVP).
 - **Cổng Prototype:** Công cụ xong (`?gate=1`, `gate-check`, `gate-flow`). Còn: chơi thử 5 người thật.
 
@@ -157,4 +159,4 @@ npm run docs-check    # kiểm nhật ký ≤ 3 mục, ngân sách file đầu p
 
 Kiểm tra trước commit: `npm test && npm run lint && npm run format:check && npm run build`.
 
-Cờ địa chỉ (bản build cần `?debug=1` cho các cờ chạy thử): `?debug=1` (gắn `window.__cvGame`, `__cvWorld`), `?tune=1` (bảng chỉnh cảm giác), `?gate=1` (bản người thử), `?shop=1` (mở Quầy khi chưa đủ boss), `?unlock=1` (mở mọi độ khó).
+Cờ địa chỉ (bản build cần `?debug=1` cho các cờ chạy thử): `?debug=1` (gắn `window.__cvGame`, `__cvWorld`), `?tune=1` (bảng chỉnh cảm giác), `?gate=1` (bản người thử), `?shop=1` (mở Quầy khi chưa đủ boss), `?unlock=1` (mở mọi độ khó), `?telemetry=1` (đo lường trong bộ nhớ, đọc `window.__cvTelemetry`), `?staff=1` (đánh dấu người làm game).

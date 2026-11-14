@@ -37,7 +37,9 @@ export interface StageTrackerOptions {
 export interface RunExtras {
   /** Giây thật (không cộng lúc tab ẩn). */
   realSec: number;
+  /** EXP và Core Bit kiếm được trong lượt (kể cả thưởng boss; `StageWorld.exp`, `coreBits`). */
   expEarned: number;
+  coreBitsEarned: number;
   /** Core Bit trong ví sau lượt. */
   balance: number;
   fpsMedian?: number;
@@ -64,7 +66,6 @@ export class StageTracker {
   private last = '';
   private deaths = 0;
   private pits = 0;
-  private coreBits = 0;
   private secrets = 0;
   private gameSpeedMin: number;
   private fight: BossFight | undefined;
@@ -96,7 +97,6 @@ export class StageTracker {
     this.runSec += dt;
     this.sinceProgress += dt;
     this.deviceSec[device] = (this.deviceSec[device] ?? 0) + dt;
-    this.coreBits += ev.coreBitGained;
     if (ev.secretFound) this.secrets += 1;
     if (ev.swapped && this.fight) this.fight.swaps += 1;
     const section = this.section();
@@ -245,7 +245,7 @@ export class StageTracker {
       pits: this.pits,
       furthest: this.order[this.furthest] ?? this.last,
       last: this.last,
-      coreBitsEarned: Math.round(this.coreBits),
+      coreBitsEarned: Math.round(extra.coreBitsEarned),
       expEarned: Math.round(extra.expEarned),
       balance: Math.round(extra.balance),
       secrets: this.secrets,

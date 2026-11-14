@@ -51,6 +51,8 @@ import { TutorialBox } from './stage/tutorial-box';
 import { StagePlaytest, tunedData } from './stage/stage-playtest';
 import { barrierCells, drawMechanics } from './stage/mechanics-renderer';
 import { chargeGlowColor, drawDynamic, drawStaticMap } from './stage/stage-renderer';
+import { StageTelemetry } from './telemetry/stage-telemetry';
+import { getTelemetry } from './telemetry/telemetry-service';
 
 const STATE_COLORS: Readonly<Record<PlayerStateName, number>> = {
   idle: 0x4fd1ff,
@@ -136,6 +138,8 @@ export class StageScene extends Phaser.Scene {
   };
   /** Hội thoại đang mở: trận đứng yên tới khi đóng (người chơi bỏ qua được bất cứ lúc nào). */
   private dialogue: { runner: DialogueRunner; moment: BossDialogueMoment } | undefined;
+  /** Đo lượt này (EP-13); undefined khi đo lường tắt hoặc màn không thuộc chiến dịch. */
+  private telemetry: StageTelemetry | undefined;
   private dialogueBox?: DialogueBox;
   /** Thoại boss của lượt: số Warden đã hạ trước trận, đã nói câu trước trận, boss đã hạ. */
   private talk = { defeatedBefore: 0, preShown: false, won: false };
@@ -340,6 +344,18 @@ export class StageScene extends Phaser.Scene {
       pending: undefined,
       until: 0,
     };
+    this.telemetry = StageTelemetry.start(this, world, {
+      def: this.def,
+      difficultyId: difficulty.id,
+      difficultyDefault: DEFAULT_DIFFICULTY,
+      challengeOpen: save !== undefined && !this.lockedAtStart.includes('challenge'),
+      clearedBefore: save && campaignId ? stageDifficulty(save.data, campaignId).cleared : [],
+      save,
+      level: this.levels?.info.level ?? 1,
+      savedCoreBits: this.savedCoreBits,
+      device: input.device,
+      stepSec: FIXED_STEP_MS / 1000,
+    });
     if (DEBUG) {
       this.input.keyboard?.on('keydown-T', () =>
         world.player.applyHit(DEBUG_HIT_DAMAGE, world.player.centerX + world.player.facing * 8),
@@ -352,6 +368,7 @@ export class StageScene extends Phaser.Scene {
     const input = this.controls;
     const world = this.world;
     if (!input || !world) return;
+    this.telemetry?.frame(delta);
     if (this.playtest?.paused) {
       // Bảng chơi thử đang mở: trận đứng yên, không bù bước khi đóng bảng.
       this.stepper.reset();
@@ -383,6 +400,7 @@ export class StageScene extends Phaser.Scene {
       }
       this.prev = { x: world.player.box.x, y: world.player.box.y };
       const ev = world.step(this.toWorldInput(snap, input));
+      this.telemetry?.step(ev, input.device);
       if (ev.respawned && this.pendingBuild) {
         world.setBuild(this.pendingBuild);
         this.pendingBuild = undefined;
@@ -449,6 +467,7 @@ export class StageScene extends Phaser.Scene {
     if (!tut) return;
     const frame = tut.signals.collect(world, ev);
     const result = tut.manager.step(frame.signals, frame.moveTiles, FIXED_STEP_MS / 1000);
+    this.telemetry?.tutorial(result, tut.manager.view, this.def.tutorial);
     if (result.completed.length > 0)
       this.save?.update((s) => recordTutorialDone(s, result.completed));
   }
@@ -463,6 +482,7 @@ export class StageScene extends Phaser.Scene {
       if (!tut) return;
       const on = !tut.manager.isEnabled;
       tut.manager.setEnabled(on);
+      this.telemetry?.tutorialToggle(on);
       this.save?.update((s) => setTutorialOff(s, !on));
       return;
     }
@@ -486,6 +506,7 @@ export class StageScene extends Phaser.Scene {
     this.input.enabled = false;
     this.workshop = new WorkshopPanel(save, config, {
       note: 'Thay đổi áp dụng ở lần hồi sinh kế tiếp hoặc lần vào màn sau.',
+      onTelemetry: (name, props) => getTelemetry(this)?.log(name, props),
       // Upgrade không đổi trong màn (chỉ mua ở Quầy Mira), nhưng build mới phải giữ chúng.
       onChange: (skills) =>
         (this.pendingBuild = computeBuild(config.skills, skills, {
@@ -636,6 +657,7 @@ export class StageScene extends Phaser.Scene {
         : undefined;
     const early = !this.save || !workshopUnlocked(this.save, config);
     hint.pending = difficultyHintText(data, this.difficultyId, counter, early);
+    this.telemetry?.hint();
   }
 
   /**

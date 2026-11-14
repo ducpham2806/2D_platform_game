@@ -65,7 +65,7 @@ StageScene, PrepScene, Quầy, Xưởng, TutorialManager ──sự kiện──
 Người tổng hợp: tải bảng (JSON) và/hoặc JSON xuất tay ──▶ npm run mvp-report ──▶ 04-Dev-Plan/playtest/mvp-dot-<n>.md
 ```
 
-- Chỉ bản mở bằng `?mvp=<mã đợt>` (ví dụ `?mvp=d1`) mới ghi và gửi. Link thường không ghi gì.
+- Chỉ bản mở bằng `?mvp=<mã đợt>` (ví dụ `?mvp=d1`) mới ghi và gửi. Link thường không ghi gì. Chạy thử khi phát triển: `?debug=1&telemetry=1` ghi trong bộ nhớ (đọc `window.__cvTelemetry`), không lưu, không gửi.
 - `?mvp=d1&staff=1` gắn cờ `staff`; báo cáo loại người làm game.
 
 ## 3. Danh sách sự kiện

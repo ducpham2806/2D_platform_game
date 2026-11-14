@@ -4,10 +4,17 @@ import { parseGameConfig } from '@/core/game-config';
 import { telemetryCatalogs, weaponId } from '@/core/telemetry-catalogs';
 import type { TelemetryConfig } from '@/core/telemetry-config';
 import { layoutFromRows } from '@/logic/stage/layout';
+import {
+  detectBrowser,
+  detectPlatform,
+  langCode,
+  sessionStartProps,
+} from '@/logic/telemetry/device';
 import { FrameStats } from '@/logic/telemetry/frame-stats';
 import { Telemetry } from '@/logic/telemetry/logger';
 import type { TelemetryEvent } from '@/logic/telemetry/schema';
 import { buildSignature, StageTracker } from '@/logic/telemetry/stage-tracker';
+import { validateEvent } from '@/logic/telemetry/validate';
 import { StageWorld } from '@/logic/world/stage-world';
 import { IDLE_INPUT, noWorldEvents, type WorldEvents } from '@/logic/world/world-types';
 import { loadData } from './helpers';
@@ -95,7 +102,14 @@ const START = {
   skills: 'V0P0C0',
   coreBits: 0,
 };
-const EXTRA = { realSec: 95.04, expEarned: 120, balance: 80, fpsMedian: 59.6, slowFramePct: 1.234 };
+const EXTRA = {
+  realSec: 95.04,
+  expEarned: 120,
+  coreBitsEarned: 80,
+  balance: 80,
+  fpsMedian: 59.6,
+  slowFramePct: 1.234,
+};
 
 describe('đo lường một lượt màn (ST-13-02, GDD 13 mục 10 ý 1)', () => {
   it('chuỗi stage_start → section_enter → death → checkpoint → boss_start → boss_end → stage_end, đủ thuộc tính', () => {
@@ -190,6 +204,7 @@ describe('đo lường một lượt màn (ST-13-02, GDD 13 mục 10 ý 1)', () 
       furthest: 'boss',
       last: 'boss',
       expEarned: 120,
+      coreBitsEarned: 80,
       balance: 80,
       realSec: 95,
       fpsMedian: 60,
@@ -261,5 +276,64 @@ describe('chữ ký build, thống kê khung (ST-13-02)', () => {
     expect(Math.round(f.fpsMedian)).toBe(60);
     expect(f.slowFramePct).toBeCloseTo(10, 5);
     expect(f.realMs).toBeCloseTo(90 * 16.7 + 10 * 33.4, 3);
+  });
+});
+
+describe('thiết bị cho session_start (ST-13-02b)', () => {
+  const UA = {
+    android:
+      'Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Mobile Safari/537.36',
+    samsung:
+      'Mozilla/5.0 (Linux; Android 13; SM-S911B) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/23.0 Chrome/115.0 Mobile Safari/537.36',
+    iphone:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
+    ipad: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15',
+    edge: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36 Edg/120.0',
+    firefox: 'Mozilla/5.0 (X11; Linux x86_64; rv:121.0) Gecko/20100101 Firefox/121.0',
+  };
+
+  it('nhóm thô nền tảng, trình duyệt; iPad tự nhận Mac thì nhận ra nhờ cảm ứng', () => {
+    expect([detectPlatform(UA.android), detectBrowser(UA.android)]).toEqual(['android', 'chrome']);
+    expect(detectBrowser(UA.samsung)).toBe('samsung');
+    expect([detectPlatform(UA.iphone), detectBrowser(UA.iphone)]).toEqual(['ios', 'safari']);
+    expect(detectPlatform(UA.ipad, 5)).toBe('ios');
+    expect(detectPlatform(UA.ipad, 0)).toBe('mac');
+    expect([detectPlatform(UA.edge), detectBrowser(UA.edge)]).toEqual(['windows', 'edge']);
+    expect([detectPlatform(UA.firefox), detectBrowser(UA.firefox)]).toEqual(['linux', 'firefox']);
+    expect([langCode('vi-VN'), langCode('EN'), langCode(''), langCode('x')]).toEqual([
+      'vi',
+      'en',
+      'other',
+      'other',
+    ]);
+  });
+
+  it('thuộc tính session_start làm tròn màn hình, dpr; qua kiểm lược đồ; không có userAgent', () => {
+    const p = sessionStartProps(
+      {
+        userAgent: UA.android,
+        maxTouchPoints: 5,
+        language: 'vi-VN',
+        width: 863,
+        height: 361,
+        devicePixelRatio: 2.625,
+        zoom: 2,
+        standalone: false,
+        now: new Date(2026, 10, 20, 9, 30),
+        staff: false,
+      },
+      config.round.screenPx,
+      config.round.dpr,
+    );
+    expect(p).toMatchObject({
+      day: '2026-11-20',
+      screen: '850x350',
+      dpr: 2.75,
+      platform: 'android',
+      lang: 'vi',
+    });
+    expect(JSON.stringify(p)).not.toMatch(/Mozilla|Pixel/);
+    const ev = { e: 'session_start', t: 1, sid: 'k9x2ab0c', n: 0, p };
+    expect(validateEvent(ev, { textMaxChars: config.errorMsgMaxChars, catalogs })).toEqual([]);
   });
 });

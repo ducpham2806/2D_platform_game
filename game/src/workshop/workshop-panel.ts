@@ -20,6 +20,7 @@ import {
 import { setSkills } from '../logic/save/save-data';
 import type { SaveManager } from '../logic/save/save-manager';
 import { createPanel } from '../playtest/panel';
+import type { Props } from '../logic/telemetry/schema';
 
 export interface WorkshopOptions {
   /** Dòng ghi chú cố định (mở từ menu tạm dừng: thay đổi áp dụng khi hồi sinh). */
@@ -27,6 +28,8 @@ export interface WorkshopOptions {
   onClose: () => void;
   /** Gọi sau mỗi lần bậc kỹ năng đổi. */
   onChange?: (skills: SkillRanks) => void;
+  /** Đo lường (EP-13): học hoặc đặt lại kỹ năng. */
+  onTelemetry?: (name: 'skill_change', props: Props) => void;
 }
 
 type Action =
@@ -185,6 +188,12 @@ export class WorkshopPanel {
       const learned = next;
       this.save.update((s) => setSkills(s, learned));
       this.options.onChange?.(learned);
+      this.options.onTelemetry?.(
+        'skill_change',
+        a.kind === 'learn'
+          ? { node: this.selected, rank: learned[this.selected] ?? 0, action: 'learn' }
+          : { action: 'reset' },
+      );
     }
     this.render();
   }

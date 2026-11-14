@@ -8,6 +8,7 @@ import { shopModel } from '../shop/shop-panel';
 import { workshopUnlocked } from '../workshop/workshop-panel';
 import { summarize } from '../logic/save/save-data';
 import { MUTED_STYLE, TEXT_STYLE, textButton } from './ui';
+import { telemetryMenuReady } from './telemetry/telemetry-service';
 
 /** Màn hình chính tạm thời (wireframe Main). Không đăng nhập, không quảng cáo. */
 export class MenuScene extends Phaser.Scene {
@@ -17,6 +18,7 @@ export class MenuScene extends Phaser.Scene {
 
   create(): void {
     getBus(this).emit('scene:changed', { key: SceneKey.Menu });
+    telemetryMenuReady(this);
     const cx = LOGIC_WIDTH / 2;
     this.add
       .text(cx, 28, 'CYBER VANGUARD', { ...TEXT_STYLE, fontSize: '16px', color: '#4fd1ff' })
