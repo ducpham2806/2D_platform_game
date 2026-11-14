@@ -85,7 +85,7 @@ Thống nhất với kịch bản hướng dẫn D06 và S09: **3 lần chết l
 | --- | --- | --- | --- |
 | Drone Lính | 1 viên nhắm, hồi 1,5 s | **Bắn đôi:** 2 viên cách 0,25 s, viên 2 nhắm lại | Lướt hoặc nhảy hết loạt, không chỉ né một viên |
 | Bướm Sắt | Thả 1 hạt nổ | **Thả kép:** 2 hạt cách 0,4 s khi đang trôi | Hai điểm rơi, phải đứng ngoài cả hai |
-| Tháp Gai | 3 viên xòe 30° (−15°, 0°, +15°) | **Hai loạt so le:** loạt 2 sau 0,35 s, lệch 7,5° (−7,5°, +7,5°, +22,5°) | Đứng yên không còn khe; phải nhảy qua đúng lúc (test: có đường né bằng nhảy) |
+| Tháp Gai | 3 viên xòe 30° (−15°, 0°, +15°) | **Hai loạt so le:** loạt 2 sau 0,35 s, lệch 7,5° (−7,5°, +7,5°, +22,5°) | Đứng yên không còn khe. Ở xa (khoảng 10 ô): nhảy thấp qua loạt 1 rồi đứng yên cho loạt 2 bay qua đầu (test kiểm có đường né). Áp sát (khoảng 6 ô) thì gần như không né được: giữ khoảng cách và phá tháp từ xa |
 | Lính Kén | Lao 3 ô rồi hồi 1 s | **Lao nối:** sau lần lao đầu quay lại, báo 0,4 s, lao lần nữa | Vượt qua lưng là chưa an toàn ngay |
 | Bramble Golem | Giậm, bom, lao | **Lao rồi giậm:** dừng lao là giậm đất tại chỗ (báo trước 0,7 s), sóng đất lan hai bên | Né cú lao xong còn phải nhảy sóng |
 | Thorna | 4 đòn | **Thêm đòn Rễ Đuổi** ở pha 2 và 3 (mục 3.3) | Phải di chuyển liên tục; đứng trên bục cũng không an toàn |

@@ -8,6 +8,7 @@ import {
   TILE_SIZE,
 } from '../core/constants';
 import { wardenIds } from '../core/dialogue-config';
+import { enemiesFor } from '../core/enemy-config';
 import { parseLevelRange } from '../core/game-config';
 import { getBus, getConfig, getInput, getSave } from '../core/phaser-services';
 import type { InputService } from '../input/input-service';
@@ -225,7 +226,8 @@ export class StageScene extends Phaser.Scene {
       ...tuned,
       difficulty,
       seed: WORLD_SEED,
-      enemies: config.enemies,
+      // Thử thách: kẻ địch dùng bản Thử thách khi có (GDD 11 mục 2.6).
+      enemies: enemiesFor(config.enemies, difficulty.newAttackPatterns),
       mechanics: config.stages.mechanics,
       ...fromSave,
       ...(rewardClaimed === undefined ? {} : { bossRewardClaimed: rewardClaimed }),

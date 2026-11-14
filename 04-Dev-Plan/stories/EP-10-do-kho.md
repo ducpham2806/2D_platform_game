@@ -13,7 +13,7 @@ Producer đề xuất 11 Story nhỏ. Gộp còn 6, vì một số phần (dữ 
 | ST-10-01 | Lõi: dữ liệu độ khó, máu boss × enemyHp, thưởng × rewardMul, bản lưu 4 | | 1,5 ngày | DONE |
 | ST-10-02 | Màn Chuẩn bị (HTML), nối StageScene, Kết quả, menu tạm dừng; thưởng boss theo độ khó; nâng bản lưu 3 → 4; cờ `unlock` | 01 | 2 ngày | DONE |
 | ST-10-03 | Checkpoint theo độ khó (Tiled `difficulties`, tiến độ theo độ khó); gợi ý NOVA sau 3 lần chết | 02 | 1,5 ngày | DONE |
-| ST-10-04 | Khung bản Thử thách (`challenge`, `dataFor`, kiểm tra); 4 kẻ địch Stage 1 và Golem; chấm báo nhịp; kiểm không chết một đòn | 01 | 2,5 ngày | |
+| ST-10-04 | Khung bản Thử thách (`challenge`, `dataFor`, kiểm tra); 4 kẻ địch Stage 1 và Golem; chấm báo nhịp; kiểm không chết một đòn | 01 | 2,5 ngày | DONE |
 | ST-10-05 | Thorna: đòn Rễ Đuổi (logic, kiểm tra telegraph, vẽ) | 04 | 1,5 ngày | |
 | ST-10-06 | QA: bot không né ở 3 độ khó, `gate-flow`, chạy thử Chromium | tất cả | 0,5 ngày | |
 
@@ -62,15 +62,19 @@ Thứ tự: 01 → 02 → 03 → 04 → 05 → 06. Tổng khoảng 9,5 ngày.
   - Chạy thử Chromium phòng Thorna: chết 3 lần thì hiện đúng câu Thường hoặc Thử thách, tắt sau 6 s, không lỗi console. Ảnh ở `04-Dev-Plan/qa/ST-10-03/`.
   - Chưa đặt checkpoint theo độ khó lên bản đồ thật (chờ cổng Prototype).
 
-## ST-10-04: Bản Thử thách của kẻ địch Stage 1 và Golem
+## ST-10-04: Bản Thử thách của kẻ địch Stage 1 và Golem (DONE)
 
 - **Bối cảnh:** GDD 11 mục 2.6, 3.1, 3.2.
 - **File:** `core/deep-merge.ts`, `core/enemy-config.ts`, `core/boss-config.ts`, `core/game-config.ts` (`dataFor`, kiểm tra không chết một đòn), `logic/enemy/behaviors.ts`, `scenes/stage/enemy-renderer.ts` (chấm nhịp), `03-Data/enemies.json`.
 - **Tiêu chí:**
-  - [ ] AC-1: Khối `challenge` hỏng (ghi đè `behavior`, telegraph < 0,4 s, nhịp sai) bị từ chối khi nạp, đường dẫn lỗi ghi `enemies.<id>.challenge`.
-  - [ ] AC-2: Drone Lính bắn 2 viên cách 0,25 s, viên 2 nhắm lại; Bướm Sắt thả 2 hạt cách 0,4 s; Tháp Gai 2 loạt lệch 7,5° và Kai nhảy đúng lúc thì không trúng; Lính Kén lao nối; Golem lao xong giậm ra sóng.
-  - [ ] AC-3: Thường dùng bản gốc (test cũ giữ nguyên).
-  - [ ] AC-4: Kiểm tra lúc nạp: đòn mạnh nhất × `damageTaken` lớn nhất < máu cấp 1.
+  - [x] AC-1: Khối `challenge` hỏng (ghi đè `behavior`, telegraph < 0,4 s, nhịp sai) bị từ chối khi nạp, đường dẫn lỗi ghi `enemies.<id>.challenge`.
+  - [x] AC-2: Drone Lính bắn 2 viên cách 0,25 s, viên 2 nhắm lại; Bướm Sắt thả 2 hạt cách 0,4 s; Tháp Gai 2 loạt lệch 7,5° và Kai nhảy đúng lúc thì không trúng; Lính Kén lao nối; Golem lao xong giậm ra sóng.
+  - [x] AC-3: Thường dùng bản gốc (test cũ giữ nguyên).
+  - [x] AC-4: Kiểm tra lúc nạp: đòn mạnh nhất × `damageTaken` lớn nhất < máu cấp 1.
+- **Kết quả:**
+  - `enemiesFor(data, newAttackPatterns)` thay cho `dataFor` phần kẻ địch; boss làm ở ST-10-05.
+  - 8 test trong `tests/challenge.test.ts`. Tháp Gai: ở 10 ô có đường né (nhảy thấp đúng lúc); ở 6 ô gần như không né được, đã ghi vào GDD 11.
+  - Chạy thử Chromium ở Thử thách (`?unlock=1`): Drone, Tháp Gai, Bướm hiện 2 chấm, Golem pha 2 hiện 3 chấm; không lỗi console. Ảnh ở `04-Dev-Plan/qa/ST-10-04/`.
 
 ## ST-10-05: Thorna, đòn Rễ Đuổi
 

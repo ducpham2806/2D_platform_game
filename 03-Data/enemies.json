@@ -73,6 +73,15 @@
             "h": 4
           }
         }
+      },
+      "challenge": {
+        "note": "Thử thách (01-GDD/11-Do-kho.md mục 2.6, [PLACEHOLDER], chốt sau cổng Prototype): bắn đôi, viên 2 nhắm lại.",
+        "attack": {
+          "burst": {
+            "count": 2,
+            "gapSec": 0.25
+          }
+        }
       }
     },
     "thap_phao_tap_su": {
@@ -132,6 +141,13 @@
           }
         },
         "gravityTilesPerSec2": 30
+      },
+      "challenge": {
+        "note": "Thử thách: thả kép, hai hạt cách 0,4 s khi đang trôi. [PLACEHOLDER]",
+        "attack": {
+          "drops": 2,
+          "dropGapSec": 0.4
+        }
       }
     },
     "thap_gai": {
@@ -159,6 +175,14 @@
             "h": 6
           }
         }
+      },
+      "challenge": {
+        "note": "Thử thách: hai loạt so le, loạt 2 sau 0,35 s lệch 7,5° (spreadDeg là tổng góc nên gai ở -15°, 0°, +15°). [PLACEHOLDER]",
+        "attack": {
+          "volleys": 2,
+          "volleyGapSec": 0.35,
+          "volleyOffsetDeg": 7.5
+        }
       }
     },
     "linh_ken": {
@@ -184,6 +208,13 @@
         "recoverSec": 1,
         "cooldownSec": 1.5,
         "turnDelaySec": 0.8
+      },
+      "challenge": {
+        "note": "Thử thách: lao nối, sau lần lao đầu quay lại, báo 0,4 s, lao lần nữa. [PLACEHOLDER]",
+        "attack": {
+          "chainDashes": 1,
+          "chainTelegraphSec": 0.4
+        }
       }
     },
     "bramble_golem": {
@@ -235,6 +266,14 @@
           "dashTiles": 4,
           "dashSpeedTilesPerSec": 9,
           "recoverSec": 1.2
+        }
+      },
+      "challenge": {
+        "note": "Thử thách: dừng lao là giậm đất tại chỗ (báo trước như giậm, 0,7 s). [PLACEHOLDER]",
+        "attack": {
+          "dash": {
+            "endSlam": true
+          }
         }
       }
     }

@@ -359,8 +359,10 @@ export function checkDesignInvariants(config: GameConfig): string[] {
     }
   }
 
-  // Kẻ địch: telegraph ≥ 0,4 s, không chết ngay một đòn; các màn đã làm có đủ dữ liệu kẻ địch.
-  errors.push(...checkEnemyRules(config.enemies, baseHp));
+  // Kẻ địch (cả bản Thử thách): telegraph ≥ 0,4 s, không chết ngay một đòn ở độ khó khó nhất
+  // (GDD 11 mục 3.1); các màn đã làm có đủ dữ liệu kẻ địch.
+  const hardestTaken = Math.max(...config.difficulties.map((d) => d.damageTaken));
+  errors.push(...checkEnemyRules(config.enemies, baseHp, hardestTaken));
   for (const stage of stages.filter((s) => s.index <= STAGES_WITH_ENEMY_DATA)) {
     if (!config.enemies.enemies[stage.miniBoss]) {
       errors.push(`stages.${stage.id}.miniBoss: "${stage.miniBoss}" chưa có trong enemies.json`);

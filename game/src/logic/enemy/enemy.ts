@@ -35,6 +35,11 @@ export abstract class Enemy {
   flash = 0;
   /** Đang báo trước đòn (telegraph): scene vẽ nhấp nháy/phình/co theo loại. */
   telegraphing = false;
+  /**
+   * Số nhịp của đòn đang báo trước (viên, loạt, hạt, cú lao); > 1 thì scene vẽ một chấm mỗi nhịp
+   * (bản Thử thách, GDD 11 mục 2.6).
+   */
+  beats = 1;
   /** Vị trí góc trên trái lúc xuất hiện. */
   protected readonly home: { x: number; y: number };
 
@@ -79,6 +84,7 @@ export abstract class Enemy {
     this.hp = this.maxHp;
     this.flash = 0;
     this.telegraphing = false;
+    this.beats = 1;
     this.facing = -1;
     this.resetBehavior();
   }
