@@ -4,7 +4,7 @@
 
 ## Đang ở đâu
 
-- **Mốc:** Giai đoạn 1. Code Prototype và phần MVP không phụ thuộc cảm giác đã xong (EP-08, 09, 10). **Đang chờ cổng Prototype (G1).**
+- **Mốc:** Giai đoạn 1. Code Prototype và phần MVP không phụ thuộc cảm giác đã xong (EP-08, 09, 10). Bản thử G1 đã đăng (tag `gate-r1`). **Đang chờ người dùng chơi thử cổng Prototype (G1).**
 - **Nhánh làm việc:** `ccr-9de01342-2046rb`. PR #10 đã merge vào `main` (`eeb8ca1`, 14/11); nhánh tiếp tục từ đó, chỉ merge lại sau đợt thử G1. Chưa có tag nào.
 - **Kế hoạch:** `01-Ke-hoach-lam-viec.md` (sprint S9–S21, epic EP-11…EP-20, ba cổng G1, G2, G3).
 
@@ -21,7 +21,7 @@
 
 Mỗi việc: viết Story trước (`/story-readiness`, mẫu Story của Game Studio Agent, nhúng mã `QB-xx`), rồi code.
 
-1. ~~Safe-area (QB-92)~~ xong (ST-11-01, 14/11). Còn: người dùng merge và tag `gate-r1` (đóng băng bản thử), rồi phát link.
+1. ~~Safe-area (QB-92)~~ xong (ST-11-01); bản thử đã khóa ở tag `gate-r1` và đăng Pages (14/11).
 2. EP-13 lõi đo lường (logger thuần, bộ đệm, xuất JSON): không chờ ADR-002, dùng được cho G2.
 3. Test khóa các luật đã code nhưng chưa test, gắn mã QB vào tên test; sửa QB-72 (dừng đồng hồ khi tạm dừng), QB-70 (gợi ý bị che thì hiện lại).
 4. EP-15: ST-15-14 (QB-14, QB-31), rồi ST-15-01a (dữ liệu Stage 2), ST-15-02.
