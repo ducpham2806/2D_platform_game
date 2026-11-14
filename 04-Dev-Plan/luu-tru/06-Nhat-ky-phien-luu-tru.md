@@ -4,6 +4,24 @@ Các mục cũ chuyển từ `04-Dev-Plan/06-Nhat-ky-phien.md`, mới nhất ở
 
 ---
 
+## 2026-11-14: Sprint 8, EP-08 ST-08-06…08 (Phantom, Vanguard, khiên Core)
+
+- **Nhánh / commit:** `ccr-9de01342-2046rb`; `e1001c0` (ST-08-06), `fcd59bc` (ST-08-07), `0af2359` (ST-08-08), commit tài liệu.
+- **Mục tiêu:** người dùng giao "làm tiếp ST-08-06 đến 08": cơ chế tầng 2–3 của cây kỹ năng.
+- **Đã làm:**
+  - **ST-08-06 Phantom:** lượt lướt trên không (P1), ân hạn nhảy tường (P2 bậc 2), lướt xuyên đạn và sượt đạn (P3); đèn chân, bóng mờ.
+  - **ST-08-07 Vanguard:** nổ lan (V2), Đòn Trừng Phạt khi mục tiêu hở (V3), lõi sáng boss; ba bậc phản hồi trong `ui.json`.
+  - **ST-08-08 Core:** `BuildRuntime` trong StageWorld, `absorbHit`, khiên chặn một đòn rồi hồi; vòng hồi trên HUD, viền quanh Kai, mảnh kính khi vỡ.
+- **File chính:** `game/src/logic/{player,world,rpg}/*`, `game/src/logic/enemy/{enemy,behaviors}.ts`, `boss.ts`, `stage-scene.ts`, `stage-hud.ts`, `stage-renderer.ts`, `03-Data/{skills,ui}.json`; test `phantom`, `vanguard`, `shield`.
+- **Quyết định:**
+  - Chu kỳ lướt đo được là 50 bước (không phải 51).
+  - Hạt Hoa Nở xuyên khiên (`rules.shieldPierceKinds`): 12 hạt rơi cùng lúc, nên tiêu chí cũ "trúng sau khi khiên vỡ" không thể đạt.
+  - Khiên không chặn đòn 0 máu. Màu đèn chân P1 đổi sang cam.
+- **Lỗi tìm thấy / đã sửa:** rơi hố còn máu thì bước sau hồi sinh lần hai theo nhánh chết (hồi đầy máu, dựng lại boss). Nguyên nhân là đồng hồ còn dư sai số; có test hồi quy.
+- **Kiểm tra:** 348 test (thêm 27), lint, format, build đạt. Chromium cả 3 Story, không lỗi console; ảnh ở `04-Dev-Plan/qa/ST-08-06`, `07`, `08`.
+- **Còn dở:** âm thanh kỹ năng (M12); R02/R03; Booster `shield_cell` chưa chạy trong trận; tay cầm chưa thử máy thật; Thorna quá dễ (chờ cổng Prototype).
+- **Tiếp theo:** 1. Chơi thử cổng Prototype, gồm cân bằng Thorna. 2. Tài liệu âm thanh và đo lường MVP. 3. Shop chỉ Upgrade (M9).
+
 ## 2026-11-14: Sprint 8, EP-08 ST-08-01…05 (cây kỹ năng, Xưởng tab Kỹ năng)
 
 - **Nhánh / commit:** `ccr-9de01342-2046rb`, 6 commit:

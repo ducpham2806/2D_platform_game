@@ -25,10 +25,10 @@ Quy ước "Tài liệu":
 | M9 | Shop chỉ Upgrade | Economy | P0 | M8 | GDD 10.1, đặc tả Hub mục 4, `shop.json`, `04-Can-bang-kinh-te.md`, Epic `stories/EP-09-quay-upgrade.md` | Đủ (khoảng trống lấp trong EP-09) | **Xong** (14/11, Quầy Mira từ menu; Hub ở Alpha) |
 | M9 | Booster | Economy | P1 (mở sau boss 4) | M9 | như trên | Đủ | Chưa |
 | M10 | HUD, hội thoại, Kết quả | UI | P0 | | wireframe | Đủ | Xong |
-| M10 | Hub dạng menu, màn Chuẩn bị (độ khó, booster) | UI | P0 | M8, M9 | Đặc tả Hub mục 2–3, `Prep.html` | Đủ (cần ghi rõ bản cắt MVP: Hub là menu) | Khung Hub |
+| M10 | Hub dạng menu, màn Chuẩn bị (độ khó, booster) | UI | P0 | M8, M9 | Đặc tả Hub mục 2–3, `Prep.html`, GDD 11 mục 2.1 | Đủ (bản cắt MVP đã ghi) | Khung Hub; **màn Chuẩn bị bản MVP xong** (độ khó; booster, loadout ở Alpha) |
 | M10 | Cài đặt, tiếp cận (mù màu, giảm rung, phụ đề lớn, tự tiến thoại) | UI | P1 | | GDD 11, wireframe `Settings*`, `Access.html` | Thiếu số liệu (giá trị từng tùy chọn) | Chưa |
 | — | Nhiệm vụ phụ Stage 1–4 (nguồn module) | Gameplay, Meta | P0 | M7 | Đặc tả Hub mục 7 (tên và mục tiêu) | Thiếu số liệu (vị trí, cách đếm, lưu) | Chưa |
-| — | 3 độ khó, mẫu đòn Thử thách | Gameplay | P0 | M5, M6 | GDD 11, `difficulties.json` | Thiếu số liệu ("mỗi boss thêm 1 đòn" chưa có đòn cụ thể) | Hệ số có, mẫu đòn chưa |
+| — | 3 độ khó, mẫu đòn Thử thách | Gameplay | P0 | M5, M6 | `01-GDD/11-Do-kho.md` (Approved 14/11), `difficulties.json`, Epic EP-10 | **Đủ** cho Stage 1 (Stage 2–4 theo đặc tả các màn) | **Xong** (EP-10): chọn độ khó, mở khóa, checkpoint theo độ khó, gợi ý NOVA, mẫu đòn Stage 1 (PLACEHOLDER, chốt sau cổng) |
 | TUT | Hướng dẫn Prologue, Stage 1, Hub (R, D) | UI, Narrative | P0 | M7, M10 | `07-Kich-ban-huong-dan.md` | Đủ | Khung xong |
 | M11 | Lưu cục bộ, mã sao lưu | Persistence | P0 | | Đặc tả Hub mục 8 | Đủ | Xong |
 | M12 | Âm thanh (SFX, nhạc, cảnh báo đòn boss) | Audio | P1 (nên có trước đợt thử MVP 50 người) | M1 | GDD 14 (10 dòng) | **Chưa có** (danh sách âm, bus, quy tắc cảnh báo) | Chưa |

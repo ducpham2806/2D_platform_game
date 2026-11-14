@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { FIXED_STEP_MS, TILE_SIZE } from '@/core/constants';
-import { checkStoryPowerCap, parseGameConfig } from '@/core/game-config';
+import { bossFor, checkStoryPowerCap, parseGameConfig } from '@/core/game-config';
 import type { WeaponsData } from '@/core/weapons-config';
 import { WeaponLoadout } from '@/logic/combat/loadout';
 import { ProjectilePool } from '@/logic/combat/projectiles';
@@ -152,15 +152,18 @@ function noDodgeFight(
   keepTiles: number,
   level = 4,
   bossHp = config.bosses.thorna!.hp,
+  difficultyId = 'normal',
 ) {
+  const difficulty = config.difficulties.find((d) => d.id === difficultyId)!;
+  const thorna = bossFor(config, 'thorna', difficulty.newAttackPatterns)!;
   const world = new StageWorld({
     layout: buildStageLayout(STAGE_DEFS.thorna, T),
     tileSize: T,
     stepSec: DT,
     player: config.player,
     weapons: config.weapons,
-    boss: { ...config.bosses.thorna!, hp: bossHp },
-    difficulty: config.difficulties.find((d) => d.id === 'normal')!,
+    boss: { ...thorna, hp: bossHp },
+    difficulty,
     seed: 3,
     mechanics: config.stages.mechanics,
     level,
@@ -230,5 +233,19 @@ describe('phòng thủ không thay được né (GDD 10 mục 8)', () => {
     const now = noDodgeFight(computeBuild(config.skills, {}), 8);
     expect(now.won).toBe(false);
     expect(now.sec).toBeGreaterThan(20);
+  });
+
+  it('ba độ khó (GDD 11 mục 1): bot không né thua ở Thường và Thử thách; Cốt truyện thắng được (chủ đích)', () => {
+    const plain = computeBuild(config.skills, {});
+    const hp = config.bosses.thorna!.hp;
+    const story = noDodgeFight(plain, 8, 4, hp, 'story');
+    const normal = noDodgeFight(plain, 8, 4, hp, 'normal');
+    const hard = noDodgeFight(plain, 8, 4, hp, 'challenge');
+    // Chế độ xem truyện: đứng bắn vẫn qua được Thorna ở cấp khuyến nghị.
+    expect(story.won).toBe(true);
+    expect(normal.won).toBe(false);
+    expect(hard.won).toBe(false);
+    // Thử thách thua nhanh hơn Thường (sát thương ×1,5, máu boss ×1,25, Rễ Đuổi).
+    expect(hard.sec).toBeLessThan(normal.sec);
   });
 });

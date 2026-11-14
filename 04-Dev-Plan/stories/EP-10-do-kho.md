@@ -15,7 +15,7 @@ Producer đề xuất 11 Story nhỏ. Gộp còn 6, vì một số phần (dữ 
 | ST-10-03 | Checkpoint theo độ khó (Tiled `difficulties`, tiến độ theo độ khó); gợi ý NOVA sau 3 lần chết | 02 | 1,5 ngày | DONE |
 | ST-10-04 | Khung bản Thử thách (`challenge`, `dataFor`, kiểm tra); 4 kẻ địch Stage 1 và Golem; chấm báo nhịp; kiểm không chết một đòn | 01 | 2,5 ngày | DONE |
 | ST-10-05 | Thorna: đòn Rễ Đuổi (logic, kiểm tra telegraph, vẽ) | 04 | 1,5 ngày | DONE |
-| ST-10-06 | QA: bot không né ở 3 độ khó, `gate-flow`, chạy thử Chromium | tất cả | 0,5 ngày | |
+| ST-10-06 | QA: bot không né ở 3 độ khó, `gate-flow`, chạy thử Chromium | tất cả | 0,5 ngày | DONE |
 
 Thứ tự: 01 → 02 → 03 → 04 → 05 → 06. Tổng khoảng 9,5 ngày.
 
@@ -91,7 +91,13 @@ Thứ tự: 01 → 02 → 03 → 04 → 05 → 06. Tổng khoảng 9,5 ngày.
   - 5 test trong `tests/challenge.test.ts`.
   - Chạy thử Chromium: tư thế giơ hai tay sáng tím, vệt tím kèm cột mờ đậm dần; không lỗi console. Ảnh ở `04-Dev-Plan/qa/ST-10-05/`.
 
-## ST-10-06: QA độ khó
+## ST-10-06: QA độ khó (DONE)
 
-- [ ] Bot không né (cấp 4) thua Thorna ở Thường và Thử thách; Cốt truyện ghi lại kết quả (chủ đích có thể thắng).
-- [ ] `gate-flow`, `gate-check` đạt; chạy thử Chromium 3 độ khó.
+- [x] Bot không né (cấp 4) thua Thorna ở Thường và Thử thách; Cốt truyện ghi lại kết quả (chủ đích có thể thắng).
+- [x] `gate-flow`, `gate-check` đạt; chạy thử Chromium 3 độ khó.
+- **Kết quả:**
+  - Bot không né ở cấp 4: Cốt truyện thắng (chủ đích); Thường và Thử thách thua, Thử thách thua nhanh hơn (`power-cap.test.ts`).
+  - `gate-flow` đạt.
+  - `gate-check` đạt mọi ngưỡng: tải 1,54 MB; vào game 2,59 s ở CPU 4×; 60 FPS ở CPU 6×; trễ phím p95 14 ms, chạm p95 13,5 ms.
+
+**EP-10 đã xong (14/11/2026).** Còn sau cổng Prototype: đặt checkpoint theo độ khó lên bản đồ thật; chốt số mẫu đòn Stage 1. Mẫu đòn Stage 2–4 theo đặc tả các màn đó.

@@ -567,7 +567,7 @@ Cấu hình: `eclipseLevels` trong `03-Data/endgame.json` `[PLACEHOLDER]`.
 
 Tùy chọn tiếp cận: chế độ mù màu, giảm rung màn hình, giảm hiệu ứng nhấp nháy, phụ đề cỡ lớn, đổi phím, tự bắn, giảm tốc độ game 10–30%, hộp thoại tự tiến tùy chọn.
 
-Phản hồi khi chết nhiều lần: sau 5 lần chết liên tiếp ở một đoạn, NOVA gợi ý (không ép) bật Story Mode hoặc dùng vũ khí khắc chế.
+Phản hồi khi chết nhiều lần: sau 3 lần chết liên tiếp ở một đoạn (sửa 14/11/2026 cho khớp kịch bản hướng dẫn D06, S09), NOVA gợi ý (không ép) hạ độ khó hoặc dùng vũ khí khắc chế. Chi tiết độ khó, màn Chuẩn bị, mẫu đòn Thử thách: `01-GDD/11-Do-kho.md`.
 
 ## 12. Onboarding (Prologue)
 
