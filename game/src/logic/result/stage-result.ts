@@ -1,7 +1,7 @@
 /**
  * Màn Kết quả (M10, P-UI-PREP-RESULT, wireframe Result.html): mô hình hiển thị dựng từ lượt chơi
- * màn. Bản Vertical slice có thời gian, số lần chết, EXP, Core Bit, vũ khí mới, bí mật; cấp/SP
- * (M8), Data Chip và Memory Log/Két giáp (chưa có dữ liệu) thêm khi làm module tương ứng.
+ * màn: thời gian, số lần chết, EXP (kèm lên cấp), Core Bit, vũ khí mới, SP, bí mật. Data Chip và
+ * Memory Log/Két giáp (chưa có dữ liệu) thêm khi làm module tương ứng.
  * Logic thuần.
  */
 
@@ -22,6 +22,8 @@ export interface StageResultInfo {
   newWeapon: string | undefined;
   /** Lời hướng dẫn còn dở cần nhắc lại (đã thay biểu tượng nút). */
   reminders: readonly string[];
+  /** Cấp lúc vào màn và lúc xong, SP nhận thêm (lên cấp + boss) (M8). */
+  level?: { from: number; to: number; spGained: number } | undefined;
 }
 
 export interface ResultRow {
@@ -51,7 +53,11 @@ export function formatDuration(sec: number): string {
 export function buildStageResult(world: ResultSource, info: StageResultInfo): StageResultView {
   const found = world.secrets.filter((s) => s.taken).length;
   const rewards: string[] = [];
+  const lv = info.level;
+  const leveled = lv !== undefined && lv.to > lv.from;
   if (info.newWeapon) rewards.push(`Vũ khí mới: ${info.newWeapon}`);
+  if (lv && lv.spGained > 0)
+    rewards.push(leveled ? `Lên cấp ${lv.to}! +${lv.spGained} SP` : `+${lv.spGained} SP`);
   if (world.secrets.length > 0) rewards.push(`Bí mật ${found}/${world.secrets.length}`);
   if (rewards.length === 0) rewards.push('Không có phần thưởng mới');
   return {
@@ -60,7 +66,10 @@ export function buildStageResult(world: ResultSource, info: StageResultInfo): St
     stats: [
       { label: 'Thời gian', value: formatDuration(world.elapsedSec) },
       { label: 'Số lần chết', value: String(world.deaths) },
-      { label: 'EXP', value: `+${world.exp}` },
+      {
+        label: 'EXP',
+        value: leveled ? `+${world.exp} (cấp ${lv.from} → ${lv.to})` : `+${world.exp}`,
+      },
       { label: 'Core Bit', value: `+${world.coreBits}` },
     ],
     rewards,

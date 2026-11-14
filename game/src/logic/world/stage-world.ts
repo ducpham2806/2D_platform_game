@@ -9,7 +9,7 @@ import { WeaponLoadout } from '../combat/loadout';
 import { ProjectilePool } from '../combat/projectiles';
 import { TrainingTarget } from '../combat/targets';
 import type { Enemy } from '../enemy/enemy';
-import { evaluateFormula } from '../formula';
+import { levelStats } from '../rpg/progression';
 import { playerParams } from '../player/player-params';
 import { PlayerPhysics } from '../player/player-physics';
 import { createRng, type Rng } from '../rng';
@@ -47,6 +47,8 @@ export interface WorldSetup {
   takenSecrets?: readonly string[];
   /** Từ bản lưu (M11): boss của màn đã hạ, thắng lại không nhận thưởng lần đầu nữa. */
   bossDefeated?: boolean;
+  /** Cấp hiệu dụng (M8, đã đồng bộ cấp theo màn) quyết định máu và công; không có thì cấp 1. */
+  level?: number;
 }
 
 /** Bia tập bắn: máu (phát Arc Cannon) và thời gian dựng lại. Chỉ dùng trong màn xám. */
@@ -55,8 +57,6 @@ const TARGET_RESPAWN_SEC = 2;
 const TARGET_SIZE = { w: 12, h: 24 };
 /** Hộp người chơi thu nhỏ mỗi phía khi xét chạm gai, để chạm sượt mép ô không tính. */
 const HAZARD_INSET_PX = 2;
-/** Cấp của Kai ở mốc Prototype (chưa có hệ thống cấp). */
-const PROTOTYPE_LEVEL = 1;
 
 /**
  * Thế giới màn chơi (logic thuần): Kai, vũ khí, đạn, bia tập bắn, boss, cửa phòng boss,
@@ -94,7 +94,9 @@ export class StageWorld {
   elapsedSec = 0;
 
   private readonly rng: Rng;
-  private readonly attackMul: number;
+  private attackMul: number;
+  /** Cấp hiệu dụng đang dùng để tính máu và công. */
+  level: number;
   private readonly start: { x: number; y: number };
   private checkpoint: { x: number; y: number };
   private respawnTimer = 0;
@@ -121,13 +123,10 @@ export class StageWorld {
     this.checkpointIndex = Math.max(0, Math.min(cps.length, setup.startCheckpoint ?? 0));
     this.checkpoint = this.checkpointPoint();
     this.safe = this.checkpoint;
-    // Prototype chơi ở cấp 1; hệ thống cấp (M8) sẽ truyền cấp thật vào đây.
-    const level = { L: PROTOTYPE_LEVEL };
-    const maxHp = evaluateFormula(setup.player.level.hp, level);
     // Sát thương gốc tính ở cấp 1, nên hệ số công = công hiện tại / công cấp 1.
-    this.attackMul =
-      evaluateFormula(setup.player.level.atk, level) /
-      evaluateFormula(setup.player.level.atk, { L: 1 });
+    this.level = setup.level ?? 1;
+    const { maxHp, attackMul } = levelStats(this.level, setup.player.level);
+    this.attackMul = attackMul;
     this.player = new PlayerPhysics(
       playerParams(setup.player, t, setup.stepSec),
       this.map,
@@ -207,6 +206,15 @@ export class StageWorld {
       this.player.setParams(playerParams(patch.player, this.setup.tileSize, this.setup.stepSec));
     }
     if (patch.weapons) this.loadout.setData(patch.weapons);
+  }
+
+  /** Lên cấp giữa màn (M8): máu tối đa và công theo cấp hiệu dụng mới, máu cộng phần chênh. */
+  setLevel(level: number): void {
+    if (level === this.level) return;
+    const stats = levelStats(level, this.setup.player.level);
+    this.level = level;
+    this.attackMul = stats.attackMul;
+    this.player.setMaxHp(stats.maxHp);
   }
 
   get enemies(): readonly Enemy[] {

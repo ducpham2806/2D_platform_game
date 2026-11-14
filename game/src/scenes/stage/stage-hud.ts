@@ -164,7 +164,7 @@ export class StageHud {
     // Core Bit, EXP, phòng khóa.
     const right = LOGIC_WIDTH - PAD - (touch ? TOUCH_PAUSE_RESERVE : 0);
     this.coreBits.setX(right).setText(`◆ ${hud.coreBits}`);
-    const lines = [`EXP ${hud.exp}`];
+    const lines = [`Cấp ${hud.level} · EXP ${hud.exp}`];
     if (hud.roomRemaining !== undefined) lines.push(`Còn ${hud.roomRemaining} kẻ địch`);
     this.side.setX(right).setText(lines.join('\n'));
     // Ô vũ khí (PC/tay cầm).

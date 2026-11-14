@@ -32,6 +32,7 @@ export const THORNA_ROOM: AsciiStageDef = {
   enemyMarkers: {},
   playtest: false,
   tutorial: 'stage1',
+  campaign: 'verdant_gardens',
   boss: 'thorna',
   result: true,
 };

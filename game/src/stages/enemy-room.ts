@@ -45,4 +45,5 @@ export const ENEMY_ROOM: AsciiStageDef = {
   },
   playtest: false,
   tutorial: 'stage1',
+  campaign: 'verdant_gardens',
 };

@@ -71,16 +71,27 @@ export class PlayerPhysics {
   /** Các bệ di động của màn; thế giới cập nhật vị trí trước mỗi bước. */
   platforms: readonly Platform[] = [];
 
+  /** Máu tối đa theo cấp hiệu dụng (M8 đổi khi lên cấp giữa màn). */
+  maxHp: number;
+
   constructor(
     private params: PlayerParams,
     private readonly map: TileMap,
     spawnX: number,
     spawnBottom: number,
-    readonly maxHp: number,
+    maxHp: number,
   ) {
+    this.maxHp = maxHp;
     this.box = { x: 0, y: 0, w: params.width, h: params.height };
     this.hp = maxHp;
     this.respawn(spawnX, spawnBottom);
+  }
+
+  /** Đổi máu tối đa (lên cấp): máu hiện tại tăng/giảm cùng phần chênh, không dưới 1 khi còn sống. */
+  setMaxHp(maxHp: number): void {
+    const delta = maxHp - this.maxHp;
+    this.maxHp = maxHp;
+    if (this.hp > 0) this.hp = Math.max(1, Math.min(maxHp, this.hp + delta));
   }
 
   /** Đặt Kai đứng tại (giữa, đáy) và xóa mọi trạng thái tạm. */

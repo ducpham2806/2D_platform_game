@@ -5,6 +5,7 @@ import { parseWeapons, type WeaponsData } from './weapons-config';
 import { type BossData, checkBossRules, parseBosses } from './boss-config';
 import { checkEnemyRules, type EnemiesData, parseEnemies } from './enemy-config';
 import { evaluateFormula } from '../logic/formula';
+import { levelStats } from '../logic/rpg/progression';
 import { parseStageMechanics, type StageMechanics } from './stage-mechanics-config';
 import { parseTutorial, type TutorialData } from './tutorial-config';
 import { parseUi, type UiData } from './ui-config';
@@ -275,6 +276,24 @@ export function checkDesignInvariants(config: GameConfig): string[] {
     if (Math.round(damage * worstTaken) >= baseHp)
       errors.push(`stages.mechanics.${name}.damage: ${damage} giết ngay Kai cấp 1 (${baseHp} máu)`);
   }
+
+  // Cấp (GDD 6.1): EXP lên cấp dương ở mọi cấp; riêng cấp đã không vượt trần sức mạnh cốt
+  // truyện (upgrade và module cộng thêm sau, khi làm M8 đủ và M9 thì kiểm tra cả tổng).
+  const lv = config.player.level;
+  for (let L = 1; L < lv.max; L += 1) {
+    const need = evaluateFormula(lv.expFormula, { L });
+    if (!(need >= 1)) errors.push(`player.level.expFormula: cấp ${L} cần ${need} EXP (phải ≥ 1)`);
+  }
+  const top = levelStats(lv.max, lv);
+  const base = levelStats(1, lv);
+  if (top.maxHp / base.maxHp > lv.storyPowerCap.hpMul)
+    errors.push(
+      `player.level.hp: cấp ${lv.max} gấp ${top.maxHp / base.maxHp} lần cấp 1, trần ${lv.storyPowerCap.hpMul}`,
+    );
+  if (top.attackMul > lv.storyPowerCap.damageMul)
+    errors.push(
+      `player.level.atk: cấp ${lv.max} gấp ${top.attackMul} lần cấp 1, trần ${lv.storyPowerCap.damageMul}`,
+    );
 
   // Thoại Warden: biến thể phủ hết số boss có thể đã hạ trước trận (0 đến số màn − 1);
   // boss của màn đã có dữ liệu trận đánh thì phải có thoại (GDD 3.6: boss có thoại trước/sau trận).

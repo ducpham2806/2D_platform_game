@@ -8,6 +8,7 @@ import {
   TILE_SIZE,
 } from '../core/constants';
 import { wardenIds } from '../core/dialogue-config';
+import { parseLevelRange } from '../core/game-config';
 import { getBus, getConfig, getInput, getSave } from '../core/phaser-services';
 import type { InputService } from '../input/input-service';
 import { FixedStep } from '../logic/fixed-step';
@@ -23,6 +24,7 @@ import {
 import { DialogueRunner } from '../logic/dialogue/dialogue-runner';
 import { buildHud } from '../logic/hud/hud-model';
 import { buildStageResult } from '../logic/result/stage-result';
+import { LevelTracker, skillPoints, syncLevel } from '../logic/rpg/progression';
 import { recordTutorialDone, setTutorialOff } from '../logic/save/save-data';
 import type { SaveManager } from '../logic/save/save-manager';
 import { TutorialManager } from '../logic/tutorial/tutorial-manager';
@@ -62,6 +64,8 @@ const DEBUG_HIT_DAMAGE = 10;
 const WORLD_SEED = 2187;
 /** Báo nhận vũ khí sau khi chữ "HẠ BOSS!" tắt (khi boss không có thoại sau trận). */
 const WEAPON_FLASH_DELAY_MS = 1800;
+/** Thời gian giữ chữ "Lên cấp". */
+const LEVEL_FLASH_MS = 1800;
 
 /**
  * Màn xám Prototype: chạy, nhảy, lướt, bám tường, bắn (Arc Cannon 3 mức nạp, Vine Lash),
@@ -104,6 +108,15 @@ export class StageScene extends Phaser.Scene {
   /** Giây còn lại tới khi mở màn Kết quả; undefined: chưa hạ boss hoặc màn không có Kết quả. */
   private resultIn: number | undefined;
   private result?: ResultPanel;
+  /** M8: cấp thật trong lượt (EXP bản lưu + EXP của lượt); màn không lưu thì không có (cấp 1). */
+  private levels: LevelTracker | undefined;
+  /** Cấp khuyến nghị của màn chiến dịch (đồng bộ cấp); undefined: không đồng bộ. */
+  private levelRange: [number, number] | undefined;
+  /** Boss của màn chiến dịch đã hạ lúc vào màn, và boss của màn hạ lần đầu trong lượt (SP). */
+  private storyBossesAtStart = 0;
+  private storyBossWon = false;
+  /** Boss của màn này là boss chiến dịch và chưa hạ lúc vào màn (hạ thì +SP mỗi boss). */
+  private storyBossPending = false;
 
   constructor() {
     super(SceneKey.Stage);
@@ -137,6 +150,14 @@ export class StageScene extends Phaser.Scene {
     const fromSave = save ? stageSaveSetup(save.data, this.def.id, bossId) : {};
     this.savedCoreBits = save?.data.inventory.coreBits ?? 0;
     const defeated = save?.data.progress.bossesDefeated ?? [];
+    const storyBosses = new Set(config.stages.stages.map((s) => s.boss));
+    this.storyBossesAtStart = defeated.filter((id) => storyBosses.has(id)).length;
+    this.storyBossWon = false;
+    this.storyBossPending = storyBosses.has(bossId) && !defeated.includes(bossId);
+    const campaign = config.stages.stages.find((s) => s.id === this.def.campaign);
+    this.levelRange = campaign ? parseLevelRange(campaign.recommendedLevel) : undefined;
+    // Màn chơi thử của cổng Prototype luôn ở cấp 1 để số liệu các phiên so sánh được.
+    this.levels = save ? new LevelTracker(config.player.level, save.data.character.exp) : undefined;
     this.talk = {
       defeatedBefore: wardensDefeatedBefore(defeated, wardenIds(config.wardenDialogue), bossId),
       preShown: false,
@@ -152,6 +173,9 @@ export class StageScene extends Phaser.Scene {
       enemies: config.enemies,
       mechanics: config.stages.mechanics,
       ...fromSave,
+      level: this.levels
+        ? syncLevel(this.levels.info.level, this.levelRange, config.stages.levelSync)
+        : 1,
     });
     this.world = world;
     this.saver = save ? new StageSave(save, this.def.id, bossId) : undefined;
@@ -257,6 +281,7 @@ export class StageScene extends Phaser.Scene {
       const ev = world.step(this.toWorldInput(snap, input));
       this.startDialogue(ev, world);
       this.react(ev, world);
+      this.checkLevelUp(ev, world);
       this.saver?.step(ev, world, FIXED_STEP_MS / 1000);
       this.stepTutorial(ev, world);
       this.playtest?.record(ev, FIXED_STEP_MS / 1000);
@@ -269,7 +294,7 @@ export class StageScene extends Phaser.Scene {
     }
     this.syncSprites(this.stepper.alpha);
     const ctx = input.glyphContext();
-    const hud = buildHud(world, this.savedCoreBits);
+    const hud = buildHud(world, this.savedCoreBits, this.levels?.info.level);
     input.setWeaponLabel(hud.weapon.name);
     this.hud?.update(hud, input.device === 'touch', formatGlyphs('{ĐỔI_VK}', ctx));
     const talk = this.dialogue?.runner.view;
@@ -328,6 +353,22 @@ export class StageScene extends Phaser.Scene {
     // Đang có hộp hội thoại thì lớp nút cảm ứng vẫn ẩn để chạm được vào hộp.
     this.controls?.setGameplayActive(!this.dialogue);
     this.stepper.reset();
+  }
+
+  /** M8: EXP vượt mốc thì lên cấp ngay (máu và công theo cấp hiệu dụng mới), báo kèm SP. */
+  private checkLevelUp(ev: WorldEvents, world: StageWorld): void {
+    if (ev.bossDefeated && this.storyBossPending) {
+      this.storyBossPending = false;
+      this.storyBossWon = true;
+    }
+    const up = this.levels?.update(world.exp);
+    if (!up) return;
+    const config = getConfig(this);
+    const data = config.player.level;
+    world.setLevel(syncLevel(up.to, this.levelRange, config.stages.levelSync));
+    const sp = skillPoints(up.to, 0, data) - skillPoints(up.from, 0, data);
+    const text = `Lên cấp ${up.to}! +${sp} SP`;
+    this.hud?.flash(ev.bossDefeated ? `HẠ BOSS!\n${text}` : text, LEVEL_FLASH_MS);
   }
 
   /** Mở thoại trước trận (vào đấu trường lần đầu) hoặc sau trận (hạ boss lần đầu) nếu boss có thoại. */
@@ -402,8 +443,24 @@ export class StageScene extends Phaser.Scene {
         savedCoreBits: this.savedCoreBits,
         newWeapon: this.newWeapon,
         reminders,
+        level: this.levelResult(),
       }),
     );
+  }
+
+  /** Cấp lúc vào màn và lúc xong, SP nhận thêm (lên cấp + boss hạ lần đầu). */
+  private levelResult(): { from: number; to: number; spGained: number } | undefined {
+    const lv = this.levels;
+    if (!lv) return undefined;
+    const data = getConfig(this).player.level;
+    const bosses = this.storyBossesAtStart + (this.storyBossWon ? 1 : 0);
+    return {
+      from: lv.startLevel,
+      to: lv.info.level,
+      spGained:
+        skillPoints(lv.info.level, bosses, data) -
+        skillPoints(lv.startLevel, this.storyBossesAtStart, data),
+    };
   }
 
   private onResultChoice(choice: ResultChoice): void {

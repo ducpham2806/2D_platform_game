@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { LOGIC_WIDTH, SceneKey } from '../core/constants';
-import { getBus, getSave } from '../core/phaser-services';
+import { getBus, getConfig, getSave } from '../core/phaser-services';
+import { characterProgress } from '../logic/rpg/progression';
 import { summarize } from '../logic/save/save-data';
 import { MUTED_STYLE, TEXT_STYLE, textButton } from './ui';
 
@@ -16,12 +17,20 @@ export class MenuScene extends Phaser.Scene {
     this.add
       .text(cx, 28, 'CYBER VANGUARD', { ...TEXT_STYLE, fontSize: '16px', color: '#4fd1ff' })
       .setOrigin(0.5);
-    const saved = summarize(getSave(this).data);
+    const save = getSave(this).data;
+    const saved = summarize(save);
+    const config = getConfig(this);
+    const progress = characterProgress(
+      save.character.exp,
+      save.progress.bossesDefeated,
+      new Set(config.stages.stages.map((st) => st.boss)),
+      config.player.level,
+    );
     this.add
       .text(
         cx,
         44,
-        `bản Prototype · boss đã hạ ${saved.bosses} · Core Bit ${saved.coreBits} · EXP ${saved.exp}`,
+        `bản Prototype · cấp ${progress.level} · SP ${progress.skillPoints} · boss đã hạ ${saved.bosses} · Core Bit ${saved.coreBits}`,
         MUTED_STYLE,
       )
       .setOrigin(0.5);

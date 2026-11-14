@@ -26,6 +26,8 @@ interface StageDefBase {
   boss?: string;
   /** Chạy các bước hướng dẫn của giai đoạn này (tutorial.json → stage). Không có: không hướng dẫn. */
   tutorial?: TutorialStage;
+  /** id màn chiến dịch trong stages.json (đồng bộ cấp theo cấp khuyến nghị); không có: cấp thật. */
+  campaign?: string;
   /** Hạ boss là xong màn: hiện màn Kết quả (ui.json → result.delaySec giây sau khi thoại đóng). */
   result?: boolean;
 }

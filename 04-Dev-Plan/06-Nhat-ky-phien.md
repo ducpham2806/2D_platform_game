@@ -25,6 +25,18 @@ Mẫu:
 
 ---
 
+## 2026-11-14: Sprint 8, phóng hình theo px thiết bị và M8 cấp/SP
+
+- **Nhánh / commit:** `ccr-9de01342-2046rb` (2 commit: phóng hình; M8).
+- **Mục tiêu:** người dùng đồng ý sửa hệ số phóng theo đề xuất rồi làm tiếp: chọn M8 RPG rút gọn (đọc GDD 6, P-M8, `player.json` bằng graphify).
+- **Đã làm:** (1) `computeLayout` nhận `devicePixelRatio`, phóng nguyên theo px thật, tự căn giữa đúng biên px thật; chữ thông báo giữa màn hình neo dưới hộp hướng dẫn. (2) M8: `logic/rpg/progression.ts` (cấp từ EXP, SP, đồng bộ cấp, chỉ số theo cấp, LevelTracker); StageWorld nhận `level` và `setLevel()` thay cấp 1 cố định của Prototype; `StageDef.campaign`; lên cấp giữa màn; cấp ở HUD, màn Kết quả, menu, Dữ liệu lưu; kiểm tra trần sức mạnh cốt truyện lúc nạp.
+- **File chính:** `game/src/logic/scale.ts`, `core/phaser-scale.ts`, `main.ts`, `style.css`, `scenes/stage/stage-hud.ts`; `game/src/logic/rpg/progression.ts`, `core/player-config.ts`, `core/game-config.ts`, `logic/world/stage-world.ts`, `logic/player/player-physics.ts`, `scenes/stage-scene.ts`, `logic/result/stage-result.ts`, `scenes/{menu,save}-scene.ts`, `save/save-panel.ts`, `game/tests/{scale,rpg}.test.ts`.
+- **Quyết định:** cấp và SP suy ra từ EXP và boss đã hạ (không lưu riêng); lên cấp áp ngay giữa màn; màn xám luôn cấp 1; phòng thử Stage 1 đồng bộ cấp 1–6. Cây kỹ năng chưa làm vì chưa có danh sách kỹ năng (cần người dùng chốt).
+- **Lỗi tìm thấy / đã sửa:** điện thoại ngang chỉ phóng ×1 theo px CSS (nay Pixel 7 ×4 px thật, iPhone 13 ×5). Chữ "Nhận vũ khí" bị hộp S13 che. Khi viết M8: boss hạ lần đầu suýt không được cộng SP vì cờ thoại đã đổi trước (sửa bằng cờ riêng). GDD ghi EXP 29→30 "~4.460", tính đúng là 4461.
+- **Kiểm tra:** `npm test` 287 test (thêm 14: scale 2, rpg 12), lint, format:check, build đạt. Chromium: canvas Pixel 7 1280 × 768 px thật, iPhone 13 ×5, desktop ×3 không đổi, Windows 125% ×4, nhấp nút trong canvas trúng ở mọi cấu hình; Pixel 7 chạm hộp thoại/Bỏ qua/Kết quả vẫn đúng. M8: hạ Thorna ở cấp 1 → "Lên cấp 2! +1 SP", máu tối đa 100 → 104, Kết quả "+120 (cấp 1 → 2)", "+2 SP", menu "cấp 2 · SP 2". Không lỗi console.
+- **Còn dở:** cây kỹ năng rút gọn, module và ô theo cấp, Két giáp, loadout, Xưởng.
+- **Tiếp theo:** người dùng chọn phạm vi cây kỹ năng rút gọn (đề xuất 3 nhánh × 3 kỹ năng dùng cơ chế đã có), rồi làm Xưởng (kỹ năng, đặt lại miễn phí, lưu SP đã tiêu). Vẫn chờ kết quả cổng Prototype 5 người (nay bản điện thoại hiển thị to hơn).
+
 ## 2026-11-14: Sprint 8, hội thoại boss và màn Kết quả (đọc đầu vào bằng graphify)
 
 - **Nhánh / commit:** `ccr-9de01342-2046rb`.
@@ -48,15 +60,3 @@ Mẫu:
 - **Kiểm tra:** `npm test` 254 test (thêm 14 ở `tutorial.test.ts`), lint, format:check, build đều đạt. Chromium: chạm gai ở phòng thử màn chơi → S03, lưu `done: [S03]`; tắt hướng dẫn ở menu tạm dừng → lưu `off: true`; giả lập Pixel 7: hạ Thorna → S11, S12, S13 và nút VK > cùng nút vũ khí nhấp nháy; không có lỗi console.
 - **Còn dở:** gợi ý bậc 3–4, minh họa bóng mờ, mục Trợ giúp, sự kiện đo lường; trên cảm ứng tên nút dài nên một số lời thoại thành 3 dòng.
 - **Tiếp theo:** phần code Vertical slice đã đủ khung. Chờ người dùng báo kết quả chơi thử (Thorna/Golem, cổng Prototype 5 người). Trong lúc chờ, có thể làm: hộp hội thoại (thoại Thorna, cần cho S11), màn Kết quả, hoặc M8 RPG rút gọn của MVP (hỏi người dùng).
-
-## 2026-11-03: Sprint 7, M10 HUD cơ bản
-
-- **Nhánh / commit:** `claude/condense-plan-archive-logs-kqnyvb`.
-- **Mục tiêu:** người dùng giao làm phần tiếp theo (M10 HUD cơ bản); phần chơi thử người dùng sẽ báo sau.
-- **Đã làm:** `logic/hud/` (thuần): `buildHud` dựng mô hình HUD từ StageWorld, `MenuCursor`. HUD vẽ lại theo wireframe Main/HUDPC (máu kèm số, năng lượng, máu boss giữa trên, Core Bit gồm cả bản lưu, EXP, ô vũ khí PC, chừa chỗ nút II trên cảm ứng). Menu tạm dừng thay cho Esc về thẳng menu. Nút biểu tượng vũ khí cảm ứng (chạm = sau, vuốt trái = trước, nhãn là tên vũ khí): `controls.json` thêm nút `weapon` (`swipe: true`) và `swipeMinDp`, có kiểm tra.
-- **File chính:** `game/src/logic/hud/*.ts`, `game/src/scenes/stage/stage-hud.ts`, `pause-menu.ts`, `stage-scene.ts`, `game/src/input/touch-overlay.ts`, `input-service.ts`, `game/src/core/controls-config.ts`, `03-Data/controls.json`, `game/tests/hud.test.ts`.
-- **Quyết định:** HUD đọc mô hình thuần mỗi khung thay vì event bus (gợi ý trong P-UI-HUD), vì số liệu đổi mỗi bước. "Lắp module nhanh" và "Tùy chọn" hiện mờ tới khi có M8/Cài đặt. Thoát về menu (Hub mới là khung).
-- **Lỗi tìm thấy / đã sửa:** ô vũ khí đè dòng hướng dẫn phím ở cạnh dưới (đã đẩy lên). Dòng M8–M18 trong bảng module của `CONTEXT.md` chưa được cập nhật ở phiên M11 (khoảng trắng đệm làm lệnh thay không khớp), đã sửa.
-- **Kiểm tra:** `npm test` 240 test (thêm 9 ở `hud.test.ts`), lint, format:check, build đều đạt. Chromium: HUD trong trận Thorna, tạm dừng giữ trận đứng yên, thoát cần bấm hai lần, Esc tiếp tục; giả lập Pixel 7 ngang: chạm nút vũ khí đổi sang Vine Lash, nhãn đổi theo; không có lỗi console.
-- **Còn dở:** safe-area tai thỏ, hội thoại, màn Kết quả, Cài đặt, bản đồ nhỏ (phần còn lại của M10).
-- **Tiếp theo:** (1) người dùng chơi thử Thorna/Golem và cổng Prototype 5 người (sẽ báo); (2) code TutorialManager (`01-GDD/07-Kich-ban-huong-dan.md`).

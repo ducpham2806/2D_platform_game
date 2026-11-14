@@ -26,6 +26,8 @@ export interface HudModel {
   coreBits: number;
   /** EXP nhận trong lượt. */
   exp: number;
+  /** Cấp thật của nhân vật (M8). */
+  level: number;
   /** Phòng khóa đang đóng: số kẻ địch còn lại. */
   roomRemaining: number | undefined;
 }
@@ -35,8 +37,11 @@ function bar(value: number, max: number): HudBar {
   return { value, max, frac };
 }
 
-/** `savedCoreBits`: Core Bit trong bản lưu lúc vào màn (0 với màn không lưu). */
-export function buildHud(world: StageWorld, savedCoreBits = 0): HudModel {
+/**
+ * `savedCoreBits`: Core Bit trong bản lưu lúc vào màn (0 với màn không lưu); `level`: cấp thật
+ * (không có thì lấy cấp hiệu dụng của màn).
+ */
+export function buildHud(world: StageWorld, savedCoreBits = 0, level = world.level): HudModel {
   const pl = world.player;
   const hp = bar(Math.max(0, Math.ceil(pl.hp)), pl.maxHp);
   const slot = world.loadout.current;
@@ -57,6 +62,7 @@ export function buildHud(world: StageWorld, savedCoreBits = 0): HudModel {
         : undefined,
     coreBits: savedCoreBits + world.coreBits,
     exp: world.exp,
+    level,
     roomRemaining: world.lockedRoom?.remaining,
   };
 }
