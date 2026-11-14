@@ -92,6 +92,13 @@ export class TutorialManager {
     return this.enabled;
   }
 
+  /** Lời của các bước `remindOnResult` đang hiện hoặc đang chờ (nhắc lại ở màn Kết quả). */
+  get reminders(): string[] {
+    if (!this.enabled) return [];
+    const pending = [...(this.active ? [this.active.step] : []), ...this.queue];
+    return pending.filter((s) => s.remindOnResult).map((s) => s.text);
+  }
+
   /** `signals`: tín hiệu của bước logic này; `moveTiles`: quãng đi sang phải (ô, có thể âm). */
   step(signals: ReadonlySet<string>, moveTiles: number, dt: number): TutorialStepResult {
     const result: TutorialStepResult = { started: undefined, completed: [] };

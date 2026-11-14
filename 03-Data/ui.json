@@ -1,0 +1,12 @@
+{
+  "_note": "Thông số giao diện M10. dialogue: hộp hội thoại (P-UI-DIALOG, wireframe Dialogue.html; GDD mục 3.6): chữ hiện charsPerSec ký tự/giây, chạm/bấm lần đầu hiện hết câu, lần sau sang câu tiếp; Bỏ qua đóng ngay. Bỏ qua phím bấm trong inputGraceSec giây đầu để bấm dồn lúc hạ boss không lướt mất thoại. maxChars: giới hạn mỗi câu theo 01-GDD/09-Thoai-Warden.md (tiếng Anh dài hơn tới 30%). speakers: tên hiện trên hộp của người nói không phải boss (boss lấy tên trong bosses.json). result: màn Kết quả mở sau delaySec giây kể từ khi hạ boss của màn (và thoại sau trận đã đóng), để kịp thử vũ khí mới. Mọi số là [PLACEHOLDER].",
+  "dialogue": {
+    "charsPerSec": 40,
+    "inputGraceSec": 0.3,
+    "maxChars": { "vi": 140, "en": 182 },
+    "speakers": { "nova": "NOVA" }
+  },
+  "result": {
+    "delaySec": 8
+  }
+}

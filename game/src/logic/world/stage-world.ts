@@ -90,6 +90,8 @@ export class StageWorld {
   checkpointIndex = 0;
   /** Số lần rơi hố còn sống (không tính vào `deaths`). */
   falls = 0;
+  /** Thời gian của lượt chơi màn (giây, tính cả lúc hit-stop và chờ hồi sinh; màn Kết quả). */
+  elapsedSec = 0;
 
   private readonly rng: Rng;
   private readonly attackMul: number;
@@ -218,6 +220,7 @@ export class StageWorld {
   step(input: WorldInput): WorldEvents {
     const ev = noWorldEvents();
     const dt = this.setup.stepSec;
+    this.elapsedSec += dt;
     if (this.hitStop > 0) {
       this.hitStop -= 1;
       return ev;

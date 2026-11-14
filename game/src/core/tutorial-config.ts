@@ -70,6 +70,8 @@ export interface TutorialStep {
   hints: TutorialHint[];
   /** Người chơi đã làm được yêu cầu từ trước khi bước kích hoạt thì bỏ qua bước. */
   skipIfDone: boolean;
+  /** Bước đang hiện/đang chờ khi màn kết thúc thì nhắc lại lời ở màn Kết quả. */
+  remindOnResult: boolean;
 }
 
 export interface TutorialData {
@@ -164,8 +166,9 @@ export function parseTutorial(value: unknown, enemyIds: ReadonlySet<string>): Tu
       if (hl) hint.highlight = hl;
       return hint;
     });
-    if (s.skipIfDone !== undefined && typeof s.skipIfDone !== 'boolean')
-      throw new ConfigError(`${p}.skipIfDone: cần true/false`);
+    for (const flag of ['skipIfDone', 'remindOnResult'])
+      if (s[flag] !== undefined && typeof s[flag] !== 'boolean')
+        throw new ConfigError(`${p}.${flag}: cần true/false`);
     const step: TutorialStep = {
       id,
       stage: s.stage as TutorialStage,
@@ -185,6 +188,7 @@ export function parseTutorial(value: unknown, enemyIds: ReadonlySet<string>): Tu
       ),
       hints,
       skipIfDone: s.skipIfDone === true,
+      remindOnResult: s.remindOnResult === true,
     };
     if (require) step.require = require;
     const hl = optAction(s.highlight, `${p}.highlight`);

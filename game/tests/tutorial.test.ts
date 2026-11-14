@@ -27,9 +27,10 @@ function raw(): { steps: Record<string, unknown>[] } {
 }
 
 describe('dữ liệu hướng dẫn', () => {
-  it('tutorial.json hợp lệ, có đủ các bước S01–S13 của Stage 1', () => {
+  it('tutorial.json hợp lệ, có các bước S01–S13 của Stage 1 trừ S11, S12 (hộp hội thoại boss)', () => {
     const ids = config.tutorial.steps.filter((s) => s.stage === 'stage1').map((s) => s.id);
-    expect(ids).toEqual(Array.from({ length: 13 }, (_, i) => `S${String(i + 1).padStart(2, '0')}`));
+    const all = Array.from({ length: 13 }, (_, i) => `S${String(i + 1).padStart(2, '0')}`);
+    expect(ids).toEqual(all.filter((id) => id !== 'S11' && id !== 'S12'));
   });
 
   it('báo tín hiệu lạ, kẻ địch không có, bước "after" chưa khai báo, lời thoại quá dài', () => {
@@ -174,7 +175,7 @@ function play(w: StageWorld, input: (i: number) => WorldInput, steps: number): s
 }
 
 describe('chuỗi bước trận boss (dữ liệu thật)', () => {
-  it('hạ boss khi lời S08 còn hiện: bỏ S08–S10, chỉ còn S11 → S12 → S13', () => {
+  it('hạ boss khi lời S08 còn hiện: bỏ S08–S10, chỉ còn S13', () => {
     const m = new TutorialManager(config.tutorial, 'stage1');
     const started: string[] = [];
     const run = (s: Set<string>, n = 1) => {
@@ -185,11 +186,11 @@ describe('chuỗi bước trận boss (dữ liệu thật)', () => {
     };
     run(sig('bossGate'), 30);
     run(sig('bossDefeated', 'weaponGranted'), 60 * 10);
-    expect(started).toEqual(['S08', 'S11', 'S12', 'S13']);
+    expect(started).toEqual(['S08', 'S13']);
     expect(m.completed.has('S09') && m.completed.has('S10')).toBe(true);
   });
 
-  it('trận bình thường: S08 → S09 → (đổi pha) S10 → (hạ boss) S11', () => {
+  it('trận bình thường: S08 → S09 → (đổi pha) S10 → (hạ boss, nhận vũ khí) S13', () => {
     const m = new TutorialManager(config.tutorial, 'stage1');
     const started: string[] = [];
     const run = (s: Set<string>, n = 1) => {
@@ -201,7 +202,22 @@ describe('chuỗi bước trận boss (dữ liệu thật)', () => {
     run(sig('bossGate'), 60 * 4);
     run(sig('bossPhase'), 60);
     run(sig('bossDefeated', 'weaponGranted'), 60);
-    expect(started).toEqual(['S08', 'S09', 'S10', 'S11']);
+    expect(started).toEqual(['S08', 'S09', 'S10', 'S13']);
+  });
+
+  it('S13 còn dở thì nhắc lại ở màn Kết quả; làm xong hoặc tắt hướng dẫn thì không', () => {
+    const m = new TutorialManager(config.tutorial, 'stage1', ['S08', 'S09', 'S10']);
+    expect(m.reminders).toEqual([]);
+    m.step(sig('bossDefeated', 'weaponGranted'), 0, DT);
+    const s13 = config.tutorial.steps.find((s) => s.id === 'S13');
+    expect(m.reminders).toEqual([s13?.text]);
+    m.setEnabled(false);
+    expect(m.reminders).toEqual([]);
+    m.setEnabled(true);
+    m.step(sig('weaponGranted'), 0, DT);
+    m.step(sig('fireWarden'), 0, DT);
+    expect(m.completed.has('S13')).toBe(true);
+    expect(m.reminders).toEqual([]);
   });
 });
 

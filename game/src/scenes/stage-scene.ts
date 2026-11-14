@@ -7,6 +7,7 @@ import {
   SceneKey,
   TILE_SIZE,
 } from '../core/constants';
+import { wardenIds } from '../core/dialogue-config';
 import { getBus, getConfig, getInput, getSave } from '../core/phaser-services';
 import type { InputService } from '../input/input-service';
 import { FixedStep } from '../logic/fixed-step';
@@ -14,7 +15,14 @@ import type { InputSnapshot } from '../logic/input/actions';
 import { formatGlyphs } from '../logic/input/glyphs';
 import type { TuningData } from '../logic/playtest/tuning';
 import type { PlayerStateName } from '../logic/player/player-physics';
+import {
+  bossDialogue,
+  type BossDialogueMoment,
+  wardensDefeatedBefore,
+} from '../logic/dialogue/boss-dialogue';
+import { DialogueRunner } from '../logic/dialogue/dialogue-runner';
 import { buildHud } from '../logic/hud/hud-model';
+import { buildStageResult } from '../logic/result/stage-result';
 import { recordTutorialDone, setTutorialOff } from '../logic/save/save-data';
 import type { SaveManager } from '../logic/save/save-manager';
 import { TutorialManager } from '../logic/tutorial/tutorial-manager';
@@ -24,7 +32,9 @@ import { StageWorld } from '../logic/world/stage-world';
 import type { WorldEvents, WorldInput } from '../logic/world/world-types';
 import { buildStageLayout, STAGE_DEFS, type StageDefId } from '../stages';
 import type { StageDef } from '../stages/stage-def';
+import { DialogueBox } from './stage/dialogue-box';
 import { PauseMenu, type PauseChoice } from './stage/pause-menu';
+import { ResultPanel, type ResultChoice } from './stage/result-panel';
 import { StageHud } from './stage/stage-hud';
 import { TutorialBox } from './stage/tutorial-box';
 import { StagePlaytest, tunedData } from './stage/stage-playtest';
@@ -50,6 +60,8 @@ const DOWN_AXIS_THRESHOLD = 0.5;
 const DEBUG_HIT_DAMAGE = 10;
 /** Hạt giống ngẫu nhiên của màn xám (khe né Mưa đạn). */
 const WORLD_SEED = 2187;
+/** Báo nhận vũ khí sau khi chữ "HẠ BOSS!" tắt (khi boss không có thoại sau trận). */
+const WEAPON_FLASH_DELAY_MS = 1800;
 
 /**
  * Màn xám Prototype: chạy, nhảy, lướt, bám tường, bắn (Arc Cannon 3 mức nạp, Vine Lash),
@@ -79,6 +91,19 @@ export class StageScene extends Phaser.Scene {
   /** Khung camera đang khóa: 'boss', số thứ tự phòng khóa, hoặc undefined (theo người chơi). */
   private cameraLock: string | undefined;
   private def: StageDef = STAGE_DEFS.gray;
+  private stageKey: StageDefId = 'gray';
+  /** Hội thoại đang mở: trận đứng yên tới khi đóng (người chơi bỏ qua được bất cứ lúc nào). */
+  private dialogue: { runner: DialogueRunner; moment: BossDialogueMoment } | undefined;
+  private dialogueBox?: DialogueBox;
+  /** Thoại boss của lượt: số Warden đã hạ trước trận, đã nói câu trước trận, boss đã hạ. */
+  private talk = { defeatedBefore: 0, preShown: false, won: false };
+  /** Vũ khí vừa nhận lúc hạ boss: báo sau khi thoại sau trận đóng. */
+  private pendingWeapon: string | undefined;
+  /** Vũ khí nhận trong lượt (màn Kết quả). */
+  private newWeapon: string | undefined;
+  /** Giây còn lại tới khi mở màn Kết quả; undefined: chưa hạ boss hoặc màn không có Kết quả. */
+  private resultIn: number | undefined;
+  private result?: ResultPanel;
 
   constructor() {
     super(SceneKey.Stage);
@@ -86,7 +111,8 @@ export class StageScene extends Phaser.Scene {
 
   /** `scene.start(SceneKey.Stage, { stage: 'enemies' })` chọn màn; mặc định là màn xám. */
   init(data: { stage?: StageDefId } | undefined): void {
-    this.def = STAGE_DEFS[data?.stage ?? 'gray'];
+    this.stageKey = data?.stage ?? 'gray';
+    this.def = STAGE_DEFS[this.stageKey];
   }
 
   create(): void {
@@ -98,6 +124,11 @@ export class StageScene extends Phaser.Scene {
     if (!boss || !difficulty) throw new Error(`Thiếu dữ liệu boss "${bossId}" hoặc độ khó Thường`);
     this.stepper.reset();
     this.cameraLock = undefined;
+    // Scene chơi lại (restart) dùng lại đối tượng cũ nên phải đặt lại trạng thái của lượt.
+    this.dialogue = undefined;
+    this.pendingWeapon = undefined;
+    this.newWeapon = undefined;
+    this.resultIn = undefined;
     // Dữ liệu gốc từ 03-Data; khi bật ?tune=1 thì áp thêm phần đã chỉnh lưu trên máy.
     const base: TuningData = { player: config.player, weapons: config.weapons, boss };
     const tuned = tunedData(base);
@@ -105,6 +136,12 @@ export class StageScene extends Phaser.Scene {
     const save = this.def.playtest ? undefined : getSave(this);
     const fromSave = save ? stageSaveSetup(save.data, this.def.id, bossId) : {};
     this.savedCoreBits = save?.data.inventory.coreBits ?? 0;
+    const defeated = save?.data.progress.bossesDefeated ?? [];
+    this.talk = {
+      defeatedBefore: wardensDefeatedBefore(defeated, wardenIds(config.wardenDialogue), bossId),
+      preShown: false,
+      won: defeated.includes(bossId),
+    };
     const world = new StageWorld({
       layout: buildStageLayout(this.def, TILE_SIZE),
       tileSize: TILE_SIZE,
@@ -169,6 +206,8 @@ export class StageScene extends Phaser.Scene {
           }
         : undefined;
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => input.setTouchHighlight(undefined));
+    this.dialogueBox = new DialogueBox(this);
+    this.result = new ResultPanel(this, (c) => this.onResultChoice(c));
     // Chưa có chọn độ khó: màn luôn chơi ở Thường.
     const tut = this.tutorial;
     this.pause = new PauseMenu(
@@ -197,6 +236,10 @@ export class StageScene extends Phaser.Scene {
     const steps = this.stepper.advance(delta);
     for (let i = 0; i < steps; i += 1) {
       const snap = input.step();
+      if (this.result?.isOpen) {
+        this.result.handle(snap);
+        continue;
+      }
       if (this.pause?.isOpen) {
         // Menu tạm dừng: trận đứng yên, đầu vào chỉ dùng để chọn mục.
         this.pause.handle(snap);
@@ -206,12 +249,18 @@ export class StageScene extends Phaser.Scene {
         this.openPause(input);
         continue;
       }
+      if (this.dialogue) {
+        this.stepDialogue(snap);
+        continue;
+      }
       this.prev = { x: world.player.box.x, y: world.player.box.y };
       const ev = world.step(this.toWorldInput(snap, input));
+      this.startDialogue(ev, world);
       this.react(ev, world);
       this.saver?.step(ev, world, FIXED_STEP_MS / 1000);
       this.stepTutorial(ev, world);
       this.playtest?.record(ev, FIXED_STEP_MS / 1000);
+      this.tickResult(ev, world);
     }
     this.updateCamera(world);
     if (this.dynamic) {
@@ -223,7 +272,13 @@ export class StageScene extends Phaser.Scene {
     const hud = buildHud(world, this.savedCoreBits);
     input.setWeaponLabel(hud.weapon.name);
     this.hud?.update(hud, input.device === 'touch', formatGlyphs('{ĐỔI_VK}', ctx));
-    const view = this.tutorial?.manager.view;
+    const talk = this.dialogue?.runner.view;
+    if (talk) {
+      const keys = input.device === 'touch' ? '' : formatGlyphs('{NHẢY} tiếp · {LƯỚT} bỏ qua', ctx);
+      this.dialogueBox?.show(talk, keys);
+    }
+    // Hộp hội thoại hoặc màn Kết quả đang mở thì lời hướng dẫn chờ (không chồng lên nhau).
+    const view = talk || this.result?.isOpen ? undefined : this.tutorial?.manager.view;
     if (view)
       this.tutorial?.box.show(view.speaker, formatGlyphs(view.text, ctx), view.hintLevel > 0);
     else this.tutorial?.box.hide();
@@ -270,8 +325,90 @@ export class StageScene extends Phaser.Scene {
       return;
     }
     this.pause?.hide();
-    this.controls?.setGameplayActive(true);
+    // Đang có hộp hội thoại thì lớp nút cảm ứng vẫn ẩn để chạm được vào hộp.
+    this.controls?.setGameplayActive(!this.dialogue);
     this.stepper.reset();
+  }
+
+  /** Mở thoại trước trận (vào đấu trường lần đầu) hoặc sau trận (hạ boss lần đầu) nếu boss có thoại. */
+  private startDialogue(ev: WorldEvents, world: StageWorld): void {
+    let moment: BossDialogueMoment | undefined;
+    if (ev.gateClosed && !this.talk.preShown && !this.talk.won) moment = 'pre';
+    if (ev.bossDefeated && !this.talk.won) moment = 'post';
+    if (ev.gateClosed) this.talk.preShown = true;
+    if (ev.bossDefeated) this.talk.won = true;
+    const boss = world.boss?.data;
+    if (!moment || !boss) return;
+    const config = getConfig(this);
+    const lines = bossDialogue(config.wardenDialogue, {
+      bossId: boss.id,
+      bossName: boss.name,
+      speakers: config.ui.dialogue.speakers,
+      defeatedBefore: this.talk.defeatedBefore,
+      moment,
+    });
+    if (lines.length === 0) return;
+    this.dialogue = { runner: new DialogueRunner(lines, config.ui.dialogue), moment };
+    // Ẩn lớp nút cảm ứng để chạm vào hộp và nút Bỏ qua trên canvas.
+    this.controls?.setGameplayActive(false);
+  }
+
+  private stepDialogue(snap: InputSnapshot): void {
+    const d = this.dialogue;
+    if (!d) return;
+    const taps = this.dialogueBox?.consumeTaps() ?? { next: false, skip: false };
+    const r = d.runner.step(
+      {
+        next: taps.next || snap.pressed.jump || snap.pressed.shoot || snap.pressed.interact,
+        skip: taps.skip || snap.pressed.dash,
+      },
+      FIXED_STEP_MS / 1000,
+    );
+    if (!r.closed) return;
+    this.dialogue = undefined;
+    this.dialogueBox?.hide();
+    this.controls?.setGameplayActive(true);
+    const weapon = this.pendingWeapon;
+    this.pendingWeapon = undefined;
+    if (weapon) this.flashWeapon(weapon, 0);
+  }
+
+  private flashWeapon(weapon: string, delayMs: number): void {
+    const ctx = this.controls?.glyphContext();
+    const swap = ctx ? formatGlyphs('{ĐỔI_VK}', ctx) : '';
+    this.time.delayedCall(delayMs, () =>
+      this.hud?.flash(`Nhận vũ khí: ${weapon}\n${swap} để đổi vũ khí`, 2600),
+    );
+  }
+
+  /** Hạ boss của màn có Kết quả: đếm `ui.result.delaySec` (sau khi thoại đóng) rồi mở màn Kết quả. */
+  private tickResult(ev: WorldEvents, world: StageWorld): void {
+    if (ev.bossDefeated && this.def.result && this.resultIn === undefined)
+      this.resultIn = getConfig(this).ui.result.delaySec;
+    if (this.resultIn === undefined || this.dialogue) return;
+    this.resultIn -= FIXED_STEP_MS / 1000;
+    if (this.resultIn > 1e-9) return;
+    this.resultIn = undefined;
+    // Ghi EXP, Core Bit, thời gian của lượt trước khi hiện tổng.
+    this.saver?.exit(world);
+    const ctx = this.controls?.glyphContext();
+    const reminders = (this.tutorial?.manager.reminders ?? []).map((t) =>
+      ctx ? formatGlyphs(t, ctx) : t,
+    );
+    this.controls?.setGameplayActive(false);
+    this.result?.show(
+      buildStageResult(world, {
+        stageName: this.def.name,
+        savedCoreBits: this.savedCoreBits,
+        newWeapon: this.newWeapon,
+        reminders,
+      }),
+    );
+  }
+
+  private onResultChoice(choice: ResultChoice): void {
+    if (choice === 'retry') this.scene.restart({ stage: this.stageKey });
+    else this.scene.start(SceneKey.Menu);
   }
 
   private toWorldInput(snap: InputSnapshot, input: InputService): WorldInput {
@@ -305,11 +442,10 @@ export class StageScene extends Phaser.Scene {
     if (ev.playerHurt) camera.shake(80, 0.003);
     if (ev.bossDefeated) hud?.flash('HẠ BOSS!');
     if (ev.weaponGranted) {
-      const ctx = this.controls?.glyphContext();
-      const swap = ctx ? formatGlyphs('{ĐỔI_VK}', ctx) : '';
-      this.time.delayedCall(1800, () =>
-        hud?.flash(`Nhận vũ khí: ${ev.weaponGranted}\n${swap} để đổi vũ khí`, 2600),
-      );
+      this.newWeapon = ev.weaponGranted;
+      // Có thoại sau trận thì báo vũ khí khi hộp hội thoại đóng.
+      if (this.dialogue) this.pendingWeapon = ev.weaponGranted;
+      else this.flashWeapon(ev.weaponGranted, WEAPON_FLASH_DELAY_MS);
     }
     if (ev.emptyWeapon) hud?.flash('Hết năng lượng vũ khí', 600);
     if (ev.enemyKilled) camera.shake(60, 0.002);

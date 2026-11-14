@@ -26,6 +26,8 @@ interface StageDefBase {
   boss?: string;
   /** Chạy các bước hướng dẫn của giai đoạn này (tutorial.json → stage). Không có: không hướng dẫn. */
   tutorial?: TutorialStage;
+  /** Hạ boss là xong màn: hiện màn Kết quả (ui.json → result.delaySec giây sau khi thoại đóng). */
+  result?: boolean;
 }
 
 /** Màn dựng bằng ASCII (màn xám, phòng thử kẻ địch). Ký hiệu: logic/tilemap.ts, logic/stage/layout.ts. */

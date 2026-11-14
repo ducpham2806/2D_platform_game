@@ -33,4 +33,5 @@ export const THORNA_ROOM: AsciiStageDef = {
   playtest: false,
   tutorial: 'stage1',
   boss: 'thorna',
+  result: true,
 };

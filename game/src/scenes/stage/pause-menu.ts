@@ -1,6 +1,6 @@
 import type Phaser from 'phaser';
 import { LOGIC_HEIGHT, LOGIC_WIDTH } from '../../core/constants';
-import { MenuCursor } from '../../logic/hud/menu-cursor';
+import { MenuNavigator } from '../../logic/hud/menu-cursor';
 import type { InputSnapshot } from '../../logic/input/actions';
 import { MUTED_STYLE, TEXT_STYLE } from '../ui';
 
@@ -15,8 +15,6 @@ interface Item {
 const DEPTH = 30;
 const ITEM_W = 150;
 const ITEM_GAP = 19;
-/** Kéo cần quá mức này thì tính là một lần bấm lên/xuống trong menu. */
-const STICK_STEP = 0.6;
 const COLOR = { idle: '#1d2a3b', picked: '#2f6d8f', off: '#151d29' };
 
 /**
@@ -27,9 +25,8 @@ const COLOR = { idle: '#1d2a3b', picked: '#2f6d8f', off: '#151d29' };
 export class PauseMenu {
   private readonly root: Phaser.GameObjects.GameObject[] = [];
   private readonly items: Item[];
-  private readonly cursor: MenuCursor;
+  private readonly nav: MenuNavigator;
   private armedQuit = false;
-  private stickHeld = false;
   private open = false;
 
   constructor(
@@ -46,7 +43,7 @@ export class PauseMenu {
       { label: 'Tùy chọn (chưa có)', choice: undefined },
       { label: 'Thoát về menu', choice: 'quit' },
     ];
-    this.cursor = new MenuCursor(this.items.map((i) => i.choice !== undefined));
+    this.nav = new MenuNavigator(this.items.map((i) => i.choice !== undefined));
     const cx = LOGIC_WIDTH / 2;
     const top = 30;
     const h = 34 + this.items.length * ITEM_GAP + 8;
@@ -77,7 +74,7 @@ export class PauseMenu {
       if (enabled) {
         text.setInteractive({ useHandCursor: true });
         text.on('pointerup', () => {
-          this.cursor.select(i);
+          this.nav.cursor.select(i);
           this.activate();
         });
       }
@@ -99,8 +96,7 @@ export class PauseMenu {
   show(): void {
     this.open = true;
     this.armedQuit = false;
-    this.cursor.select(0);
-    this.stickHeld = true;
+    this.nav.reset(0);
     this.setVisible(true);
     this.refresh();
   }
@@ -117,22 +113,16 @@ export class PauseMenu {
       this.onChoice('resume');
       return;
     }
-    let dir: 1 | -1 | 0 = 0;
-    if (snap.pressed.up) dir = -1;
-    else if (snap.pressed.down) dir = 1;
-    const stick = Math.abs(snap.moveY) >= STICK_STEP;
-    if (dir === 0 && stick && !this.stickHeld) dir = snap.moveY < 0 ? -1 : 1;
-    this.stickHeld = stick;
-    if (dir !== 0) {
-      this.cursor.move(dir);
+    const r = this.nav.handle(snap);
+    if (r.moved) {
       this.armedQuit = false;
       this.refresh();
     }
-    if (snap.pressed.jump || snap.pressed.shoot || snap.pressed.interact) this.activate();
+    if (r.activate) this.activate();
   }
 
   private activate(): void {
-    const choice = this.items[this.cursor.index]?.choice;
+    const choice = this.items[this.nav.index]?.choice;
     if (choice === 'quit' && !this.armedQuit) {
       this.armedQuit = true;
       this.refresh();
@@ -147,9 +137,7 @@ export class PauseMenu {
       const t = item.text;
       if (!t) return;
       const enabled = item.choice !== undefined;
-      t.setBackgroundColor(
-        !enabled ? COLOR.off : i === this.cursor.index ? COLOR.picked : COLOR.idle,
-      );
+      t.setBackgroundColor(!enabled ? COLOR.off : i === this.nav.index ? COLOR.picked : COLOR.idle);
       if (item.choice === 'quit') t.setText(this.armedQuit ? 'Bấm lần nữa để thoát' : item.label);
       if (item.choice === 'tutorial')
         t.setText(this.tutorialOn?.() ? 'Tắt hướng dẫn' : 'Bật hướng dẫn');

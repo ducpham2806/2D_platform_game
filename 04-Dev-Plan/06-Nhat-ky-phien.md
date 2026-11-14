@@ -25,6 +25,18 @@ Mẫu:
 
 ---
 
+## 2026-11-14: Sprint 8, hội thoại boss và màn Kết quả (đọc đầu vào bằng graphify)
+
+- **Nhánh / commit:** `ccr-9de01342-2046rb`.
+- **Mục tiêu:** người dùng giao "làm tiếp plan", dùng graphify đọc dữ liệu đầu vào. Làm hai phần M10 còn thiếu của Vertical slice mà không cần bản đồ thật: hội thoại boss (thoại Thorna, cần cho S11) và màn Kết quả.
+- **Đã làm:** cài `graphifyy`, dựng đồ thị repo (`graphify update .`, 1692 node, không cần khóa LLM), tra `graphify query/explain` để tìm P-UI-DIALOG, P-UI-PREP-RESULT, `09-Thoai-Warden.md`, đặc tả Thorna mục 5, kịch bản S11–S13, wireframe Dialogue/Result; tra thêm skill `dialogue-systems` trong đồ thị Game_Studio_Agent. Code: `03-Data/ui.json` + kiểm tra (`core/ui-config.ts`, `core/dialogue-config.ts`), `logic/dialogue/` (chọn biến thể theo số Warden đã hạ, DialogueRunner), `DialogueBox`, `logic/result/` + `ResultPanel`, `MenuNavigator` dùng chung (menu tạm dừng chuyển sang dùng), `world.elapsedSec`, `StageDef.result` (phòng Thorna), `remindOnResult` cho bước hướng dẫn.
+- **File chính:** `03-Data/ui.json`, `03-Data/tutorial.json`, `game/src/core/{ui,dialogue,game}-config.ts`, `game/src/logic/{dialogue,result}/*`, `game/src/logic/hud/menu-cursor.ts`, `game/src/scenes/stage/{dialogue-box,result-panel,pause-menu}.ts`, `stage-scene.ts`, `game/tests/{dialogue,result,tutorial}.test.ts`.
+- **Quyết định:** hộp mở thì trận đứng yên, không tự đóng (luôn bỏ qua được); S11/S12 chuyển thành hộp hội thoại (hiện cả khi tắt hướng dẫn), S13 kích hoạt khi nhận vũ khí; Kết quả mở sau 8 s kể từ khi thoại đóng; nút "Về menu" thay "Về Hub" tới khi Hub dùng được trên cảm ứng; `graphify-out/` vào `.gitignore` (sinh lại được).
+- **Lỗi tìm thấy / đã sửa:** chạy thử thấy chữ HUD lờ mờ xuyên qua hộp thoại (nền đục lại), nút Bỏ qua nhỏ khi chạm (phóng to). **Chưa sửa, cần chốt:** điện thoại ngang ~360 px CSS chỉ được phóng ×1 (canvas 320 × 192 px CSS, khoảng 1/3 màn hình) vì hệ số nguyên tính theo px CSS.
+- **Kiểm tra:** `npm test` 273 test (thêm 19), lint, format:check, build đạt. Chromium bàn phím: thoại trước trận (boss đứng yên), hạ Thorna → Thorna → NOVA → báo Vine Lash → S13 → Kết quả 8 s sau; Chơi lại thành trận đấu lại không thoại, Kết quả "Không có phần thưởng mới"; Về menu. Pixel 7 ngang: chạm hộp hiện hết/đóng, chạm Bỏ qua, lớp nút ẩn/hiện đúng, chạm Chơi lại màn. Không lỗi console.
+- **Còn dở:** ChoicePanel, thoại NPC/Prologue, tự tiến, âm thanh biểu cảm, chân dung thật; Kết quả chưa có cấp/SP (M8), Data Chip, Memory Log/Két giáp, kỷ lục.
+- **Tiếp theo:** (1) hỏi người dùng có sửa hệ số phóng theo px thiết bị trước đợt chơi thử 5 người không (ảnh hưởng trải nghiệm trên điện thoại); (2) chờ kết quả cổng Prototype; (3) trong lúc chờ: M8 RPG rút gọn (cấp, SP, Két giáp) để màn Kết quả có lên cấp.
+
 ## 2026-11-03: Sprint 7, TutorialManager
 
 - **Nhánh / commit:** `claude/condense-plan-archive-logs-kqnyvb`.
@@ -48,15 +60,3 @@ Mẫu:
 - **Kiểm tra:** `npm test` 240 test (thêm 9 ở `hud.test.ts`), lint, format:check, build đều đạt. Chromium: HUD trong trận Thorna, tạm dừng giữ trận đứng yên, thoát cần bấm hai lần, Esc tiếp tục; giả lập Pixel 7 ngang: chạm nút vũ khí đổi sang Vine Lash, nhãn đổi theo; không có lỗi console.
 - **Còn dở:** safe-area tai thỏ, hội thoại, màn Kết quả, Cài đặt, bản đồ nhỏ (phần còn lại của M10).
 - **Tiếp theo:** (1) người dùng chơi thử Thorna/Golem và cổng Prototype 5 người (sẽ báo); (2) code TutorialManager (`01-GDD/07-Kich-ban-huong-dan.md`).
-
-## 2026-11-03: Sprint 7, M11 lưu cục bộ
-
-- **Nhánh / commit:** `claude/condense-plan-archive-logs-kqnyvb`.
-- **Mục tiêu:** người dùng đồng ý làm M11 (lưu cục bộ của Vertical slice).
-- **Đã làm:** `logic/save/` (thuần): `SaveData` (boss đã hạ, checkpoint + bí mật theo màn, EXP, vũ khí boss, Core Bit, thời gian chơi, revision, savedAt; hỏng từng phần về mặc định), mã sao lưu `CV1.<base64url>.<FNV-1a>`, `SaveManager` (ghi theo thứ tự, không ghi đè bản của phiên bản mới hơn), `StageSave` (nối sự kiện StageWorld với bản lưu). Kho IndexedDB, dự phòng localStorage. `StageWorld` nhận `ownedWeapons`, `takenSecrets`, `bossDefeated`. Màn mới "Dữ liệu lưu" (menu S): tóm tắt, sao chép/nhập mã, xóa tiến trình; menu hiện tóm tắt bản lưu.
-- **File chính:** `game/src/logic/save/*.ts`, `game/src/save/*.ts`, `game/src/scenes/save-scene.ts`, `stage-scene.ts`, `menu-scene.ts`, `preload-scene.ts`, `game/src/logic/world/stage-world.ts`, `game/tests/save.test.ts`.
-- **Quyết định:** ghi ngay khi qua checkpoint/nhặt bí mật/nhận vũ khí/hạ boss; EXP và Core Bit cộng phần chênh lệch cả khi thoát màn (không mất, không trùng). Hạ boss thì lần sau vào lại từ đầu màn. Vũ khí boss dùng được ở mọi màn. Màn xám (cổng Prototype) không đọc, không ghi bản lưu. Cài đặt điều khiển tạm giữ ở `cv.controls`, gộp vào bản lưu khi làm cloud.
-- **Lỗi tìm thấy / đã sửa:** không có.
-- **Kiểm tra:** `npm test` 231 test (thêm 15 ở `save.test.ts`), lint, format:check, build đều đạt. Chromium: qua checkpoint ở phòng thử màn chơi → Esc → tải lại trang → vào lại đúng checkpoint 1; bảng Dữ liệu lưu vừa màn 740 × 360, mã sai báo lỗi, gõ phím trong ô không lọt xuống menu; không có lỗi console.
-- **Còn dở:** cloud save (Backend, xung đột hai thiết bị), các nhóm dữ liệu của module chưa làm (SP, kỹ năng, skin, nhiệm vụ, kỷ lục).
-- **Tiếp theo:** (1) người dùng chơi thử Thorna/Golem và cổng Prototype 5 người; (2) code M10 HUD cơ bản, rồi TutorialManager.

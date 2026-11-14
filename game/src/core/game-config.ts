@@ -7,6 +7,8 @@ import { checkEnemyRules, type EnemiesData, parseEnemies } from './enemy-config'
 import { evaluateFormula } from '../logic/formula';
 import { parseStageMechanics, type StageMechanics } from './stage-mechanics-config';
 import { parseTutorial, type TutorialData } from './tutorial-config';
+import { parseUi, type UiData } from './ui-config';
+import { parseWardenDialogue, type WardenDialogueData } from './dialogue-config';
 
 export { ConfigError } from './json-check';
 export { parsePlayer, type PlayerData } from './player-config';
@@ -73,6 +75,8 @@ export const REQUIRED_DATA_FILES = [
   'bosses',
   'enemies',
   'tutorial',
+  'ui',
+  'dialogue_wardens',
 ] as const;
 export type RequiredDataFile = (typeof REQUIRED_DATA_FILES)[number];
 
@@ -85,6 +89,10 @@ export interface GameConfig {
   bosses: Record<string, BossData>;
   enemies: EnemiesData;
   tutorial: TutorialData;
+  /** Thông số giao diện M10 (hộp hội thoại, màn Kết quả). */
+  ui: UiData;
+  /** Thoại trước/sau trận của Warden (dialogue_wardens.json). */
+  wardenDialogue: WardenDialogueData;
   /** Các file chưa có module dùng (shop, economy, modules, endgame…), giữ nguyên dạng thô. */
   raw: Readonly<Record<string, unknown>>;
 }
@@ -268,6 +276,20 @@ export function checkDesignInvariants(config: GameConfig): string[] {
       errors.push(`stages.mechanics.${name}.damage: ${damage} giết ngay Kai cấp 1 (${baseHp} máu)`);
   }
 
+  // Thoại Warden: biến thể phủ hết số boss có thể đã hạ trước trận (0 đến số màn − 1);
+  // boss của màn đã có dữ liệu trận đánh thì phải có thoại (GDD 3.6: boss có thoại trước/sau trận).
+  const dlg = config.wardenDialogue;
+  const lastVariant = dlg.variants[dlg.variants.length - 1];
+  if (lastVariant && lastVariant.max < stages.length - 1)
+    errors.push(
+      `dialogue_wardens.variantByBossesDefeated: chỉ phủ tới ${lastVariant.max} boss, cần tới ${stages.length - 1}`,
+    );
+  const first = dlg.variants[0]?.id ?? '';
+  for (const stage of stages) {
+    if (config.bosses[stage.boss] && dlg.lines.vi[`boss.${stage.boss}.${first}.pre`] === undefined)
+      errors.push(`dialogue_wardens: boss ${stage.boss} (màn ${stage.index}) chưa có thoại`);
+  }
+
   return errors;
 }
 
@@ -278,6 +300,7 @@ export function parseGameConfig(files: Readonly<Record<string, unknown>>): GameC
     throw new ConfigError(`Thiếu file dữ liệu: ${missing.join(', ')}`);
   }
   const enemies = parseEnemies(files.enemies);
+  const ui = parseUi(files.ui);
   const config: GameConfig = {
     player: parsePlayer(files.player),
     weapons: parseWeapons(files.weapons),
@@ -287,6 +310,8 @@ export function parseGameConfig(files: Readonly<Record<string, unknown>>): GameC
     bosses: parseBosses(files.bosses),
     enemies,
     tutorial: parseTutorial(files.tutorial, new Set(Object.keys(enemies.enemies))),
+    ui,
+    wardenDialogue: parseWardenDialogue(files.dialogue_wardens, ui.dialogue.maxChars),
     raw: { ...files },
   };
   const errors = checkDesignInvariants(config);
