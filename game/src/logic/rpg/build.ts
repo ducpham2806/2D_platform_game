@@ -7,6 +7,7 @@
 import type { PlayerData } from '../../core/player-config';
 import type { SkillEffects, SkillsData } from '../../core/skills-config';
 import type { WeaponsData } from '../../core/weapons-config';
+import { NO_PLAYER_MODS, type PlayerMods } from '../player/player-params';
 import { levelStats, type LevelStats } from './progression';
 import { rankOf, type SkillRanks } from './skill-tree';
 
@@ -20,6 +21,8 @@ export interface BuildStats {
   maxHpMul: number;
   energyRegenMul: number;
   regenDelayMul: number;
+  /** Loại đòn tính là đạn (skills.json → rules.bulletKinds), cho P3. */
+  bulletKinds: ReadonlySet<string>;
 }
 
 /** Build trống: không đổi gì (màn chơi thử, bản lưu chưa học kỹ năng). */
@@ -31,6 +34,7 @@ export const EMPTY_BUILD: BuildStats = {
   maxHpMul: 1,
   energyRegenMul: 1,
   regenDelayMul: 1,
+  bulletKinds: new Set(),
 };
 
 function combine(effects: SkillEffects, key: keyof SkillEffects, value: number): void {
@@ -59,6 +63,7 @@ export function computeBuild(data: SkillsData, skills: SkillRanks): BuildStats {
     maxHpMul: effects.maxHpMul ?? 1,
     energyRegenMul: effects.energyRegenMul ?? 1,
     regenDelayMul: effects.regenDelayMul ?? 1,
+    bulletKinds: data.rules.bulletKinds,
   };
 }
 
@@ -95,6 +100,17 @@ export function applyBuild(
         afterNoFireSec: weapons.energyRegen.afterNoFireSec * build.regenDelayMul,
       },
     },
+  };
+}
+
+/** Thông số vật lý do build quyết định (P1, P2 bậc 2, P3); `stepSec` đổi số bước ra giây. */
+export function playerModsOf(build: BuildStats, stepSec: number): PlayerMods {
+  const e = build.effects;
+  if (build === EMPTY_BUILD) return NO_PLAYER_MODS;
+  return {
+    airDashes: e.airDashesPerAirborne ?? 0,
+    wallJumpGraceSec: e.wallJumpGraceSec ?? 0,
+    bulletIFrameExtraSec: (e.projectileIFrameSteps ?? 0) * stepSec,
   };
 }
 

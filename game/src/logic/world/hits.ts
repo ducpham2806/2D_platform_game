@@ -110,9 +110,23 @@ export function resolvePlayerHits(
   return hitStop;
 }
 
+/** id giả trong `hitIds` của đạn địch: đã tính sượt đạn với viên này. */
+const GRAZE_ID = -2;
+
+/** Phòng thủ của Kai từ build (M8). */
+export interface KaiDefense {
+  /** Loại đòn tính là đạn (P3 chỉ bất tử thêm với các loại này). */
+  bulletKinds: ReadonlySet<string>;
+  /** Có sượt đạn (P3 bậc 3): gọi khi một viên đạn đi xuyên trong phần bất tử thêm. */
+  onGraze: (() => void) | undefined;
+}
+
+export const NO_DEFENSE: KaiDefense = { bulletKinds: new Set(), onGraze: undefined };
+
 /**
  * Đạn kẻ địch, thân kẻ địch đang hoạt động và thân boss trúng người chơi (đã nhân hệ số
  * độ khó). Kẻ địch "vô hại" (Prologue nhịp 1–3) gây 0 máu nhưng vẫn đẩy lùi.
+ * Đang lướt với P3: đạn (theo `bulletKinds`) đi xuyên qua; sượt đạn trong phần bất tử thêm.
  */
 export function resolveEnemyHits(
   pool: ProjectilePool,
@@ -121,10 +135,19 @@ export function resolveEnemyHits(
   player: PlayerPhysics,
   damageTaken: number,
   ev: WorldEvents,
+  defense: KaiDefense = NO_DEFENSE,
 ): void {
   if (player.state === 'dead') return;
   for (const p of pool.all) {
     if (!p.alive || p.owner !== 'enemy' || !overlaps(p, player.box)) continue;
+    if (player.bulletGuard && defense.bulletKinds.has(p.kind)) {
+      if (player.bulletGuardExtended && defense.onGraze && !p.hitIds.has(GRAZE_ID)) {
+        p.hitIds.add(GRAZE_ID);
+        ev.graze = true;
+        defense.onGraze();
+      }
+      continue;
+    }
     if (player.applyHit(incomingDamage(p.damage, damageTaken), p.x + p.w / 2)) {
       ev.playerHurt = true;
       p.alive = false;

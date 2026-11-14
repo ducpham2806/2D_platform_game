@@ -242,7 +242,7 @@ Mọi số ở mục 2–3 nằm trong `skills.json`, `modules.json`, `armor.jso
 | SP được dùng | SP còn lại khi vào Stage 2 | ≥ 70% người chơi tiêu hết SP trước Stage 2 |
 | Không phá trần | Test logic: hệ số thường trực ở cấp tối đa, trường hợp có điều kiện, máu hiệu dụng; mô phỏng 4 lối bắn (mục 3.2) | ≤ `storyPowerCap` trong dữ liệu; lối nạp đầy có build thấp hơn lối mạnh nhất không build |
 | Phòng thủ không thay được né | Mô phỏng: bot không né, có và không có nhánh Core đủ bậc, đấu Thorna ở Thường | Build Core không đổi số đòn trúng; chỉ thêm máu đúng phần C1 (và một đòn mỗi lần khiên hồi, ST-08-08). Ghi chú: mô phỏng ST-08-04 thấy bot không né **thắng** Thorna sau khoảng 15 s, chỉ trúng 5–6 đòn, kể cả không có build, trong khi đặc tả Stage 1 dự kiến 60–90 s. Đây là việc cân bằng boss ở cổng Prototype, không thuộc hệ thống kỹ năng |
-| P3 không thành bất tử liên tục | Test logic, mẫu lướt đủ cú liên tục (0,25 s lướt + 0,6 s hồi) | Tỉ lệ thời gian bất tử với đạn ≤ gốc + 8 điểm % (gốc 11,8%; bậc 3: 10/51 = 19,6%) |
+| P3 không thành bất tử liên tục | Test logic, mẫu lướt đủ cú liên tục (chu kỳ đo được 50 bước: 15 bước lướt + 36 bước hồi tính từ bước lướt kết thúc) | Tỉ lệ thời gian bất tử với đạn ≤ gốc + 8 điểm % (gốc 6/50 = 12%; bậc 3: 10/50 = 20%) |
 | Khiên không "ăn" được đòn đỉnh | Mô phỏng Hoa Nở với khiên sẵn | Đứng yên vẫn trúng ít nhất 1 hạt sau khi khiên vỡ |
 
 Nghiệm thu: test logic cho `applyBuild`, `BuildRuntime`, cộng dồn, sàn, trần, `normalizeBuild`, bản lưu 2; chạy thử trên PC và điện thoại theo quy tắc nhìn tận mắt.

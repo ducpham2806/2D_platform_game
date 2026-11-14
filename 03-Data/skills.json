@@ -4,7 +4,9 @@
     "minFullChargeSec": 0.8,
     "minBuildDamageTakenMul": 0.5,
     "shieldIFrameSec": 0.3,
-    "note": "minFullChargeSec: sàn thời gian nạp đầy sau mọi giảm của build, phải lớn hơn thời gian nạp vừa (kỹ năng chỉ giảm nạp đầy, không nâng DPS tối đa). minBuildDamageTakenMul: sàn của tích hệ số giảm sát thương nhận của build (không gồm độ khó). shieldIFrameSec: bất tử sau khi khiên C3 chặn một đòn."
+    "shieldBreakHitStopSteps": 2,
+    "bulletKinds": ["enemyShot", "drop", "seed", "bomb"],
+    "note": "bulletKinds: loại đòn tính là đạn, để bất tử thêm của Lướt Xuyên Đạn có tác dụng (sóng đất, roi, rễ không tính). shieldBreakHitStopSteps: dừng hình khi khiên C3 vỡ (bậc phản hồi Vừa). minFullChargeSec: sàn thời gian nạp đầy sau mọi giảm của build, phải lớn hơn thời gian nạp vừa (kỹ năng chỉ giảm nạp đầy, không nâng DPS tối đa). minBuildDamageTakenMul: sàn của tích hệ số giảm sát thương nhận của build (không gồm độ khó). shieldIFrameSec: bất tử sau khi khiên C3 chặn một đòn."
   },
   "branches": [
     {

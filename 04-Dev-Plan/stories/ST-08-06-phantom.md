@@ -1,6 +1,6 @@
 # ST-08-06: Phantom: lượt lướt trên không, ân hạn nhảy tường, lướt xuyên đạn
 
-- **Thuộc Epic:** EP-08 · **Ưu tiên:** P0 (MVP) · **Trạng thái:** TODO
+- **Thuộc Epic:** EP-08 · **Ưu tiên:** P0 (MVP) · **Trạng thái:** DONE (14/11/2026)
 - **Phụ thuộc:** ST-08-03
 - **Bằng chứng:** [x] Logic [x] Visual
 
@@ -33,7 +33,13 @@
 
 ## 4. Tiêu chí nghiệm thu
 
-- [ ] AC-1: Có P1: nhảy, lướt trên không 1 lần; lần 2 không lướt; chạm đất hoặc bám tường thì lướt lại được.
-- [ ] AC-2: Có P3 bậc 3: lướt đủ cú liên tục (0,25 s lướt + 0,6 s hồi), tỉ lệ thời gian bất tử với đạn là 10/51 ≈ 19,6% (≤ gốc 11,8% + 8 điểm); thân boss trúng ở bước 7.
-- [ ] AC-3: Lướt bị hủy bằng nhảy ở bước 2 thì phần bất tử thêm mất ngay.
-- [ ] AC-4: Ảnh tín hiệu đèn chân và bóng mờ ở `04-Dev-Plan/qa/ST-08-06/`.
+- [x] AC-1: Có P1: nhảy, lướt trên không 1 lần; lần 2 không lướt; chạm đất hoặc bám tường thì lướt lại được. Có P1, lướt trong thời gian coyote không tốn lượt. Không có P1 thì như cũ: không lướt trên không, không lướt trong coyote (`tests/phantom.test.ts`).
+- [x] AC-2: Có P3 bậc 3, lướt đủ cú liên tục:
+  - Chu kỳ đo được là **50 bước** (đặc tả cũ ghi 51), nên bất tử với đạn là 10/50 = 20%, gốc 6/50 = 12%, chênh đúng 8 điểm.
+  - Đòn không phải đạn (sóng đất trong test) vẫn trúng ở phần thêm; đạn đi xuyên, sượt đạn tính 1 lần mỗi viên.
+  - Loại đòn tính là đạn: `skills.json → rules.bulletKinds` (đạn thường, mưa đạn, hạt Hoa Nở, bom; không gồm sóng đất, roi, rễ).
+- [x] AC-3: Lướt bị hủy bằng nhảy ở bước 2 thì phần bất tử thêm mất ngay. P2 bậc 2: rời tường 4 bước vẫn nhảy tường được; 8 bước (quá 0,1 s) thì không; bậc 1 thì không có ân hạn.
+- [x] AC-4: Chạy thử Chromium (bản lưu cấp 6, P1 + P2 + P3), ảnh ở `04-Dev-Plan/qa/ST-08-06/`:
+  - Nhảy: đèn chân màu cam (đổi từ lục lam vì trùng màu thân Kai lúc nhảy).
+  - Lướt trên không: lượt về 0, bóng mờ và viền lục lam ở phần bất tử thêm.
+  - Đáp đất thì hồi lượt. Không lỗi console.

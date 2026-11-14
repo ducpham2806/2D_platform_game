@@ -72,6 +72,11 @@ export interface WorldEvents {
   barrierBroken: boolean;
   /** Vật phẩm bí mật vừa nhặt (id vật phẩm). */
   secretFound: string | undefined;
+  /** M8: vừa lướt trên không (P1); lượt lướt trên không vừa hồi. */
+  airDash: boolean;
+  airDashRestored: boolean;
+  /** M8: một viên đạn vừa sượt qua trong phần bất tử thêm (P3 bậc 3). */
+  graze: boolean;
 }
 
 export function noWorldEvents(): WorldEvents {
@@ -104,5 +109,8 @@ export function noWorldEvents(): WorldEvents {
     roomCleared: false,
     barrierBroken: false,
     secretFound: undefined,
+    airDash: false,
+    airDashRestored: false,
+    graze: false,
   };
 }

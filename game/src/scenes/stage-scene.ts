@@ -124,6 +124,8 @@ export class StageScene extends Phaser.Scene {
   private storyBossWon = false;
   /** Boss của màn này là boss chiến dịch và chưa hạ lúc vào màn (hạ thì +SP mỗi boss). */
   private storyBossPending = false;
+  /** Hiệu ứng ngắn trên người Kai (thời điểm hết, ms theo đồng hồ scene). */
+  private kaiFx = { restoredUntil: 0, grazeUntil: 0 };
 
   constructor() {
     super(SceneKey.Stage);
@@ -243,6 +245,7 @@ export class StageScene extends Phaser.Scene {
     this.result = undefined;
     this.workshop = undefined;
     this.pendingBuild = undefined;
+    this.kaiFx = { restoredUntil: 0, grazeUntil: 0 };
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       this.workshop?.destroy();
       this.workshop = undefined;
@@ -565,6 +568,10 @@ export class StageScene extends Phaser.Scene {
     }
     if (ev.emptyWeapon) hud?.flash('Hết năng lượng vũ khí', 600);
     if (ev.enemyKilled) camera.shake(60, 0.002);
+    // M8 Phantom: chớp đèn chân khi hồi lượt lướt trên không (lúc đang ở trên không), tia sượt đạn.
+    if (ev.airDashRestored && !world.player.grounded)
+      this.kaiFx.restoredUntil = this.time.now + 160;
+    if (ev.graze) this.kaiFx.grazeUntil = this.time.now + 140;
     if (ev.healed > 0) hud?.flash(`+${ev.healed} máu`, 500);
     if (ev.checkpoint !== undefined)
       hud?.flash(`Checkpoint ${ev.checkpoint}${this.saver ? ' · đã lưu' : ''}`, 900);
@@ -632,5 +639,27 @@ export class StageScene extends Phaser.Scene {
         : undefined;
     if (color !== undefined && visible)
       this.glow.lineStyle(1, color, 1).strokeRect(x - 2, y - 2, pl.box.w + 4, pl.box.h + 4);
+    if (!visible) return;
+    const now = this.time.now;
+    const { w, h } = pl.box;
+    // P1: đèn đẩy (màu cam, khác mọi màu trạng thái của Kai) sáng khi còn lượt lướt trên không.
+    if (pl.airDashMax > 0 && !pl.grounded && pl.airDashesLeft > 0) {
+      const flash = now < this.kaiFx.restoredUntil;
+      this.glow
+        .fillStyle(flash ? 0xffffff : 0xff9f43, flash ? 1 : 0.85)
+        .fillRect(x + 2, y + h, w - 4, flash ? 3 : 2);
+    }
+    // P3: bóng mờ lục lam trong phần bất tử thêm với đạn.
+    if (pl.bulletGuardExtended) {
+      this.glow.fillStyle(0x4fd1ff, 0.25).fillRect(x - pl.facing * 6, y, w, h);
+      this.glow.lineStyle(1, 0x7fe0ff, 0.7).strokeRect(x - 1, y - 1, w + 2, h + 2);
+    }
+    // Sượt đạn: hai tia trắng ngắn hai bên.
+    if (now < this.kaiFx.grazeUntil) {
+      this.glow.lineStyle(1, 0xffffff, 1);
+      this.glow
+        .lineBetween(x - 4, y + 6, x - 1, y + 9)
+        .lineBetween(x + w + 4, y + 6, x + w + 1, y + 9);
+    }
   }
 }

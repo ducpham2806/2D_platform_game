@@ -2,6 +2,7 @@
  * Kiểm tra 03-Data/skills.json (cây kỹ năng MVP, 01-GDD/10-He-thong-RPG-Xuong.md mục 2.1).
  * Logic thuần.
  */
+import type { ProjectileKind } from '../logic/combat/projectiles';
 import { arr, ConfigError, type Json, num, obj, str } from './json-check';
 
 /**
@@ -56,10 +57,25 @@ export interface SkillBranch {
   nodes: SkillNode[];
 }
 
+/** Loại đòn của địch (logic/combat/projectiles.ts) có thể ghi trong `rules.bulletKinds`. */
+export const ENEMY_ATTACK_KINDS = [
+  'enemyShot',
+  'shockwave',
+  'drop',
+  'bomb',
+  'lash',
+  'root',
+  'seed',
+] as const satisfies readonly ProjectileKind[];
+
 export interface SkillRules {
   minFullChargeSec: number;
   minBuildDamageTakenMul: number;
   shieldIFrameSec: number;
+  /** Dừng hình (bước) khi khiên C3 vỡ. */
+  shieldBreakHitStopSteps: number;
+  /** Loại đòn tính là đạn (Lướt Xuyên Đạn chỉ bất tử thêm với các loại này). */
+  bulletKinds: ReadonlySet<string>;
 }
 
 export interface SkillsData {
@@ -155,6 +171,19 @@ export function parseSkills(value: unknown): SkillsData {
       min: 0.05,
     }),
     shieldIFrameSec: num(r.shieldIFrameSec, 'skills.rules.shieldIFrameSec', { min: 0 }),
+    shieldBreakHitStopSteps: num(
+      r.shieldBreakHitStopSteps,
+      'skills.rules.shieldBreakHitStopSteps',
+      { min: 0 },
+    ),
+    bulletKinds: new Set(
+      arr(r.bulletKinds, 'skills.rules.bulletKinds').map((k, i) => {
+        const kind = str(k, `skills.rules.bulletKinds[${i}]`);
+        if (!(ENEMY_ATTACK_KINDS as readonly string[]).includes(kind))
+          throw new ConfigError(`skills.rules.bulletKinds[${i}]: loại đòn "${kind}" không có`);
+        return kind;
+      }),
+    ),
   };
   if (rules.minBuildDamageTakenMul > 1)
     throw new ConfigError('skills.rules.minBuildDamageTakenMul: tối đa 1');

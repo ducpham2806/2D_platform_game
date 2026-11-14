@@ -9,14 +9,14 @@ import { WeaponLoadout } from '../combat/loadout';
 import { ProjectilePool } from '../combat/projectiles';
 import { TrainingTarget } from '../combat/targets';
 import type { Enemy } from '../enemy/enemy';
-import { applyBuild, type BuildStats, EMPTY_BUILD, statsFor } from '../rpg/build';
+import { applyBuild, type BuildStats, EMPTY_BUILD, playerModsOf, statsFor } from '../rpg/build';
 import { playerParams } from '../player/player-params';
 import { PlayerPhysics } from '../player/player-physics';
 import { createRng, type Rng } from '../rng';
 import { type EnemyMarkers, layoutFromRows, type StageLayout } from '../stage/layout';
 import { Tile, type TileMap } from '../tilemap';
 import { EnemyField } from './enemy-field';
-import { resolveEnemyHits, resolvePlayerHits } from './hits';
+import { type KaiDefense, resolveEnemyHits, resolvePlayerHits } from './hits';
 import { Barrier, LockedRoom, makeSecret, type Secret, standPoint, Vine } from './stage-mechanics';
 import { noWorldEvents, type WorldEvents, type WorldInput, type WorldPhase } from './world-types';
 
@@ -103,6 +103,8 @@ export class StageWorld {
   build: BuildStats;
   /** Dữ liệu gốc đã áp build: dùng cho vật lý Kai và vũ khí (`setup` giữ dữ liệu gốc). */
   private built: { player: PlayerData; weapons: WeaponsData };
+  /** Phòng thủ từ build: loại đạn P3 xuyên qua, sượt đạn cộng thời gian nạp. */
+  private defense: KaiDefense;
   private readonly start: { x: number; y: number };
   private checkpoint: { x: number; y: number };
   private respawnTimer = 0;
@@ -136,13 +138,14 @@ export class StageWorld {
     const { maxHp, attackMul } = statsFor(this.level, setup.player.level, this.build);
     this.attackMul = attackMul;
     this.player = new PlayerPhysics(
-      playerParams(this.built.player, t, setup.stepSec),
+      playerParams(this.built.player, t, setup.stepSec, playerModsOf(this.build, setup.stepSec)),
       this.map,
       this.checkpoint.x,
       this.checkpoint.y,
       maxHp,
     );
     this.loadout = new WeaponLoadout(this.built.weapons, t);
+    this.defense = this.defenseOf(this.build);
     for (const w of setup.ownedWeapons ?? []) this.loadout.grant(w);
     this.everWon = setup.bossDefeated ?? false;
 
@@ -214,7 +217,12 @@ export class StageWorld {
     this.built = applyBuild(this.setup.player, this.setup.weapons, this.build);
     if (patch.player) {
       this.player.setParams(
-        playerParams(this.built.player, this.setup.tileSize, this.setup.stepSec),
+        playerParams(
+          this.built.player,
+          this.setup.tileSize,
+          this.setup.stepSec,
+          playerModsOf(this.build, this.setup.stepSec),
+        ),
       );
     }
     if (patch.weapons) this.loadout.setData(this.built.weapons);
@@ -229,6 +237,14 @@ export class StageWorld {
     this.player.setMaxHp(stats.maxHp);
   }
 
+  private defenseOf(build: BuildStats): KaiDefense {
+    const graze = build.effects.grazeChargeSec ?? 0;
+    return {
+      bulletKinds: build.bulletKinds,
+      onGraze: graze > 0 ? () => this.loadout.addCharge(graze) : undefined,
+    };
+  }
+
   /**
    * Đổi build giữa màn (kỹ năng chỉnh từ menu tạm dừng, áp ở lần hồi sinh kế tiếp): dựng lại dữ
    * liệu đã áp build, máu tối đa theo build mới (máu hiện tại cộng phần chênh).
@@ -236,7 +252,15 @@ export class StageWorld {
   setBuild(build: BuildStats): void {
     this.build = build;
     this.built = applyBuild(this.setup.player, this.setup.weapons, build);
-    this.player.setParams(playerParams(this.built.player, this.setup.tileSize, this.setup.stepSec));
+    this.player.setParams(
+      playerParams(
+        this.built.player,
+        this.setup.tileSize,
+        this.setup.stepSec,
+        playerModsOf(build, this.setup.stepSec),
+      ),
+    );
+    this.defense = this.defenseOf(build);
     this.loadout.setData(this.built.weapons);
     const stats = statsFor(this.level, this.setup.player.level, build);
     this.attackMul = stats.attackMul;
@@ -285,6 +309,8 @@ export class StageWorld {
       dt,
     );
     this.attachSweeps();
+    ev.airDash = pe.airDashed;
+    ev.airDashRestored = pe.airDashRestored;
 
     const canShoot = pl.state !== 'dead' && pl.state !== 'hurt';
     const fire = this.loadout.step(
@@ -340,6 +366,7 @@ export class StageWorld {
       pl,
       this.setup.difficulty.damageTaken,
       ev,
+      this.defense,
     );
     this.field?.updatePickups(pl, dt, ev);
 
