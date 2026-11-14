@@ -117,16 +117,16 @@ Mỗi module một dòng; chi tiết ở file quyết định và Epic.
 - **M2 Đầu vào:** Xong. Bàn phím, tay cầm, cảm ứng (cần ảo, 6 nút, đa chạm, rung), đổi phím, chỉnh bố cục, tự bắn, hỗ trợ ngắm. Còn: thử tay cầm thật.
 - **M3 Nhân vật:** Xong logic. Chạy, nhảy biến thiên, coyote, buffer, lướt, dash-jump, bám/nhảy tường, bục một chiều, bị đánh, chết, rơi hố. Còn: sprite, hoạt ảnh (asset P0); leo thang (đặc tả 02 đoạn A, B).
 - **M4 Chiến đấu:** Xong. Arc Cannon 3 mức nạp, vũ khí boss theo dữ liệu (Vine Lash), điểm yếu, choáng, hit-stop. Còn: hành vi Prism Beam, Frost Shard, Gale Cutter (Stage 2–4).
-- **M5 Kẻ địch:** Xong cho Prologue, Stage 1 (5 loại + bản Thử thách). Còn: kẻ địch Stage 2–4, sprite.
-- **M6 Boss:** Xong boss xám, Thorna (250 máu, Rễ Đuổi ở Thử thách), mini-boss Bramble Golem. Còn: Lumen, Cryo, Aeris và 3 mini-boss; bản đồ thật phòng boss.
+- **M5 Kẻ địch:** Xong cho Prologue, Stage 1 (5 loại + bản Thử thách); kẻ địch dựng lại sau khi Kai chết không trả thưởng lần nữa (QB-20). Còn: kẻ địch Stage 2–4 (EP-15), tầm dọc và chỉ bắn khi trên màn (QB-23), sprite.
+- **M6 Boss:** Xong boss xám, Thorna (250 máu, Rễ Đuổi ở Thử thách), mini-boss Bramble Golem; boss và Kai hết máu cùng bước thì thắng (QB-30). Còn: Lumen, Cryo, Aeris và 3 mini-boss (EP-15, Draft `16-…`); kẹp pha, chống khóa choáng (QB-14, QB-31); bản đồ thật phòng boss.
 - **M7 Màn chơi:** Khung xong (Tiled, checkpoint theo độ khó, hố, gai, dây leo đu, phòng khóa, vật chắn, bí mật, camera khóa phòng). Còn: bản đồ thật Prologue/Stage 1 (sau cổng Prototype), Stage 2–4, thang, bệ dây di chuyển, parallax.
 - **M8 Hệ thống RPG:** Xong cấp, SP, cây kỹ năng 3 × 3 có hiệu ứng trong trận, Xưởng tab Kỹ năng, trần sức mạnh. Còn: Module, Két giáp (ST-08-09, bị chặn), âm thanh kỹ năng, loadout (Alpha).
-- **M9 Kinh tế và Shop:** Xong bản MVP chỉ Upgrade (Quầy Mira, giao dịch nguyên tử, hoàn số đã trả). Còn: Booster, Skin, Premium (Alpha).
-- **M10 Giao diện:** Xong HUD, menu tạm dừng, hội thoại boss, màn Kết quả, Xưởng, Quầy, màn Chuẩn bị. Còn: Hub dạng menu MVP, Cài đặt, ChoicePanel, thoại NPC, bản đồ nhỏ, safe-area, sprite/bitmap font.
+- **M9 Kinh tế và Shop:** Xong bản MVP chỉ Upgrade (Quầy Mira, giao dịch nguyên tử, hoàn số đã trả, gợi ý thu nhập theo màn có trong bản build và độ khó chọn lần cuối). Còn: Booster, Skin, Premium (Alpha).
+- **M10 Giao diện:** Xong HUD, menu tạm dừng, hội thoại boss, màn Kết quả, Xưởng, Quầy, màn Chuẩn bị; hộp chữ theo thứ tự ưu tiên (QB-70). Còn (EP-14): Hub dạng menu MVP, Cài đặt (`14-Cai-dat-Tiep-can.md`), chữ ≥ 16 sp và nút ≥ 48 dp, safe-area, tự tạm dừng, báo lỗi lưu, bỏ qua thoại giữ 0,6 s, i18n; ChoicePanel, thoại NPC, bản đồ nhỏ (Alpha).
 - **TUT Hướng dẫn:** Khung xong, 11 bước Stage 1. Còn: Prologue (sau cổng), giai đoạn Hub (R01–R06), gợi ý bậc 3–4.
 - **ĐK Ba độ khó:** Xong cho Stage 1 (EP-10). Còn: checkpoint theo độ khó trên bản đồ thật, chốt số mẫu đòn (sau cổng), Stage 2–4.
 - **M11 Lưu:** Xong lưu cục bộ, bản lưu 4, mã sao lưu. Còn: cloud (Beta).
-- **M12 Âm thanh, M16 Đo lường MVP:** Chưa làm; cần trước đợt thử MVP 50 người (`01-GDD/12-Am-thanh.md`, `13-Do-luong-MVP.md`).
+- **M12 Âm thanh, M16 Đo lường MVP:** Chưa làm; tài liệu Draft (`01-GDD/12-Am-thanh.md`, `13-Do-luong-MVP.md`, ADR-002); EP-12, EP-13 làm được ngay.
 - **M13–M15, M17, M18:** Chưa làm (sau cổng MVP).
 - **Cổng Prototype:** Công cụ xong (`?gate=1`, `gate-check`, `gate-flow`). Còn: chơi thử 5 người thật.
 
@@ -145,6 +145,7 @@ npm run format:check  # Prettier (kiểm); npm run format để sửa
 npm run build         # typecheck + bản build trong dist/ (tự chạy sync-data)
 npm run gate-check    # đo cổng Prototype trên bản build (Playwright + Chromium)
 npm run gate-flow     # chạy thử trọn luồng người thử ?gate=1 (máy tính + Pixel 7)
+npm run docs-check    # kiểm nhật ký ≤ 3 mục, ngân sách file đầu phiên, đường dẫn trong file chỉ mục (CI)
 ```
 
 Kiểm tra trước commit: `npm test && npm run lint && npm run format:check && npm run build`.

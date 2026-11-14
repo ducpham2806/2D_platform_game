@@ -1,6 +1,7 @@
 # EP-08: Hệ thống RPG và Xưởng (M8)
 
 - **Mốc:** Vertical slice cần ST-08-01 → ST-08-05 (tab Kỹ năng và hiệu ứng thông số); MVP thêm ST-08-06 → ST-08-08 (cơ chế mới của tầng 2–3); ST-08-09 (Module, Két giáp) bị chặn.
+- **File Story đã xong** (ST-08-01…08) nằm ở `stories/xong/` (dời 14/11/2026 để thư mục chỉ còn việc đang mở).
 - **GDD:** `01-GDD/10-He-thong-RPG-Xuong.md` (bản 2, Approved 14/11/2026). **ADR:** `04-Dev-Plan/adr/ADR-001-xuong-bang-html.md`.
 - **Đã có trước epic này:** cấp, EXP, SP, đồng bộ cấp, lên cấp giữa màn (`game/src/logic/rpg/progression.ts`, Sprint 8).
 - **Điều kiện bắt đầu:** đã có: người dùng duyệt các quyết định ở mục 10 của GDD ngày 14/11/2026.

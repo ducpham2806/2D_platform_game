@@ -8,7 +8,8 @@ Mọi con số là `[PLACEHOLDER]`; chốt sau soft launch. Đây không phải 
 |---|---|---|---|
 | Logic thuần | Vitest | Công thức EXP/chỉ số, vật lý nhảy/lướt, kinh tế, xác suất rơi đồ và pity, tính tiền, xung đột lưu | Mỗi commit (CI) |
 | Dữ liệu | Script kiểm tra JSON | Schema, giá trị trong khoảng, tham chiếu đúng (màn, boss, vũ khí) | Mỗi commit |
-| Tích hợp | Playwright (web) | Luồng chính: menu, vào màn, mua hàng, lưu/tải; chụp ảnh so sánh màn quan trọng | Mỗi sprint |
+| Tích hợp | Playwright (web) | Luồng chính: menu, vào màn, mua hàng, lưu/tải; chụp ảnh so sánh màn quan trọng. Hiện có `npm run gate-flow` (luồng người thử `?gate=1`); EP-19 thêm e2e toàn chiến dịch vào CI | Mỗi Story có giao diện; CI từ EP-19 |
+| Tài liệu | `npm run docs-check` | Nhật ký ≤ 3 mục, ngân sách file đầu phiên, đường dẫn trong file chỉ mục | Mỗi commit (CI) |
 | Chơi thử | Người thật | Cảm giác điều khiển, độ khó, hiểu giao diện | Cuối mỗi sprint |
 | Thiết bị | Máy thật | Hiệu năng, cảm ứng, quảng cáo, thanh toán | Từ Alpha |
 | Mô phỏng kinh tế | Script | 100.000 lượt rơi đồ, thu/chi Core Bit và Gem theo ngày chơi | Trước Alpha và trước soft launch |
@@ -19,8 +20,13 @@ Mọi con số là `[PLACEHOLDER]`; chốt sau soft launch. Đây không phải 
 |---|---|
 | M3 Nhân vật | Độ cao nhảy tối thiểu/tối đa; coyote 0,1 s; buffer 0,12 s; lướt 3 ô và hồi 0,6 s; bám tường trượt 2 ô/giây; bất tử 1 s |
 | M4 Chiến đấu | Tối đa 3 đạn; nạp 1,2 s ×3; điểm yếu ×2,5; xuyên 1 kẻ địch |
-| M7 Màn chơi | Hồi sinh ≤ 1,5 s; giữ Core Bit và EXP; gai 30 sát thương và về ô an toàn; phòng khóa mở khi hết kẻ địch |
-| M9 Shop | Không mua trùng; không âm tiền; mất mạng không mất tiền; gỡ upgrade hoàn 100% |
+| M7 Màn chơi | Hồi sinh ≤ 1,5 s; giữ Core Bit và EXP; gai 30 sát thương và về ô an toàn; phòng khóa mở khi hết kẻ địch; kẻ địch dựng lại không trả thưởng lần nữa (QB-20) |
+| M6 Boss | Boss và Kai hết máu cùng bước thì thắng (QB-30); một đòn qua hai ngưỡng pha bị kẹp (QB-31); báo trước ≥ 0,5 s sau `speedMul` |
+| M9 Shop | Không mua trùng; không âm tiền; mất mạng không mất tiền; gỡ upgrade hoàn đúng số đã trả; gợi ý thu nhập chỉ trỏ màn có trong bản build (QB-65) |
+| M10 Cài đặt | Lưu và chuyển phiên bản (`cv.settings`, `cv.controls` không mất phím đã đổi); bảng màu mù màu ΔE00 ≥ 20; giảm nhấp nháy; tốc độ game; nút ≥ 48 dp, chữ ≥ 16 sp (`01-GDD/14-Cai-dat-Tiep-can.md`) |
+| M10 Hộp chữ | Thứ tự ưu tiên (QB-70); câu ghép ≤ giới hạn ký tự và ≤ 2 dòng (QB-73) |
+| M12 Âm thanh | Dừng khi ẩn tab; không giật khi đổi tab; cảnh báo đòn boss phát trước hoặc cùng lúc báo trước hình (`01-GDD/12-Am-thanh.md`) |
+| M16 Đo lường MVP | Lược đồ, bộ đệm theo ưu tiên, giới hạn dung lượng, thử lại, không gửi khi tắt đồng ý, báo cáo khớp bộ dữ liệu mẫu (`01-GDD/13-Do-luong-MVP.md`) |
 | M11 Lưu | Hai thiết bị xung đột hiện màn chọn; không nhân đôi tiền; mã sao lưu sai checksum bị từ chối |
 | M13 Live-ops | Phân phối vòng quay khớp tỷ lệ; pity lượt thứ 7; bù ngày đăng nhập; 7 ngày tân thủ không mất thưởng khi lỡ |
 | M14 Kiếm tiền | Mua, hủy, khôi phục; quyền Cyber+ bật/tắt đúng; tần suất interstitial đúng giới hạn; không quảng cáo ở Prologue, Stage 1, boss |
@@ -59,7 +65,8 @@ Mọi con số là `[PLACEHOLDER]`; chốt sau soft launch. Đây không phải 
 | Mốc | Câu hỏi kiểm tra |
 |---|---|
 | Prototype | Nhảy, lướt, bắn có "sướng" không (điểm ≥ 4/5 từ ít nhất 4 người)? Quy trình và công cụ: `05-Cong-Prototype.md` |
-| Vertical slice | Prologue hoàn thành ≥ 90%; Stage 1 ≥ 70% ở phiên đầu; Thorna thắng được bằng Arc Cannon |
+| Vertical slice (G2) | Prologue hoàn thành ≥ 90%; Stage 1 ≥ 70% ở phiên đầu; Thorna thắng được bằng Arc Cannon |
+| MVP (G3) | Khoảng 50 người, 2 đợt × 25, bản web: tiêu chí, cách đo, quy tắc quyết định ở `08-Cong-MVP.md`; dữ liệu theo `01-GDD/13-Do-luong-MVP.md` |
 | Alpha | Có người nào mua được món đầu tiên mà không cần hướng dẫn? Kinh tế không vỡ? |
 | Beta | Độ khó từng màn theo thứ tự tự do có hợp lý không? Có chuỗi build phá boss quá nhanh không? |
 | Soft launch | Đạt cổng KPI (mục 4.2) |
