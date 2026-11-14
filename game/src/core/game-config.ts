@@ -10,7 +10,7 @@ import { parseStageMechanics, type StageMechanics } from './stage-mechanics-conf
 import { parseTutorial, type TutorialData } from './tutorial-config';
 import { parseUi, type UiData } from './ui-config';
 import { parseSkills, type SkillsData } from './skills-config';
-import { parseShop, type ShopData } from './shop-config';
+import { type EconomyData, parseEconomy, parseShop, type ShopData } from './shop-config';
 import { parseWardenDialogue, type WardenDialogueData } from './dialogue-config';
 
 export { ConfigError } from './json-check';
@@ -101,6 +101,8 @@ export interface GameConfig {
   skills: SkillsData;
   /** Upgrade và Booster (M9, shop.json). */
   shop: ShopData;
+  /** Thu Core Bit theo màn (M9, economy.json; phần còn lại vẫn ở `raw`). */
+  economy: EconomyData;
   /** Các file chưa có module dùng (shop, economy, modules, endgame…), giữ nguyên dạng thô. */
   raw: Readonly<Record<string, unknown>>;
 }
@@ -394,6 +396,7 @@ export function parseGameConfig(files: Readonly<Record<string, unknown>>): GameC
     wardenDialogue: parseWardenDialogue(files.dialogue_wardens, ui.dialogue.maxChars),
     skills: parseSkills(files.skills),
     shop: parseShop(files.shop),
+    economy: parseEconomy(files.economy),
     raw: { ...files },
   };
   const errors = checkDesignInvariants(config);

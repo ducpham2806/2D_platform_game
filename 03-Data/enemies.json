@@ -11,6 +11,7 @@
       "coreBitLifetimeSec": 10,
       "maxCoreBitPickups": 3,
       "gravityTilesPerSec2": 40,
+      "magnetSpeedTilesPerSec": 12,
       "sizePx": {
         "w": 6,
         "h": 6

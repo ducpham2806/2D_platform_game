@@ -20,6 +20,7 @@
       "id": "energy_cell",
       "maxLevel": 5,
       "effectPerLevel": "+10% weapon energy",
+      "energyMaxPerLevel": 0.1,
       "baseCost": 250,
       "costGrowth": 1.25
     },
@@ -41,6 +42,7 @@
       "id": "magnet_range",
       "maxLevel": 3,
       "effectPerLevel": "+1 tile magnet",
+      "magnetTilesPerLevel": 1,
       "baseCost": 200,
       "costGrowth": 1.25
     },
@@ -50,6 +52,41 @@
       "effectPerLevel": "unlock 3rd booster slot",
       "baseCost": 1000,
       "costGrowth": 1.25
+    }
+  ],
+  "unlockSchedule": [
+    {
+      "afterBosses": 2,
+      "maxLevel": {
+        "arc_core": 2,
+        "energy_cell": 2,
+        "armor_plating": 2,
+        "magnet_range": 2
+      }
+    },
+    {
+      "afterBosses": 5,
+      "maxLevel": {
+        "arc_core": 3,
+        "energy_cell": 3,
+        "armor_plating": 3,
+        "magnet_range": 3,
+        "nano_cell_cap": 3,
+        "dash_coil": 3,
+        "booster_slot": 1
+      }
+    },
+    {
+      "afterBosses": 8,
+      "maxLevel": {
+        "arc_core": 5,
+        "energy_cell": 5,
+        "armor_plating": 5,
+        "magnet_range": 3,
+        "nano_cell_cap": 4,
+        "dash_coil": 3,
+        "booster_slot": 1
+      }
     }
   ],
   "boosters": [
@@ -124,5 +161,6 @@
   },
   "skinsAffectStats": false,
   "hitboxFixed": true,
-  "refundUpgradePct": 100
+  "refundUpgradePct": 100,
+  "note": "Giá Upgrade cấp n = round(baseCost × costGrowth^(n−1)) (01-GDD/04-Can-bang-kinh-te.md mục 1); gỡ hoàn 100% giá cấp cao nhất. unlockSchedule: cấp tối đa mở được của từng Upgrade theo số boss chiến dịch đã hạ (đặc tả Hub mục 4.3; cấp 3 mở sau 5 boss là quyết định lấp khoảng trống của EP-09, [PLACEHOLDER]); Upgrade không có trong một mốc thì chưa mở. energyMaxPerLevel: năng lượng tối đa vũ khí boss cộng thêm mỗi cấp (làm tròn). magnetTilesPerLevel: tầm hút Core Bit mỗi cấp (ô, tính từ tâm Kai)."
 }

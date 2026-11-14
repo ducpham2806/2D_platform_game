@@ -134,6 +134,8 @@ export interface PickupRules {
   /** Core Bit của một kẻ địch chia thành tối đa chừng này viên. */
   maxCoreBitPickups: number;
   gravityTilesPerSec2: number;
+  /** Tốc độ viên Core Bit bay tới Kai khi trong tầm hút (Upgrade Magnet Range, M9). */
+  magnetSpeedTilesPerSec: number;
   sizePx: SizePx;
 }
 
@@ -332,6 +334,11 @@ export function parseEnemies(value: unknown): EnemiesData {
       gravityTilesPerSec2: num(
         pk.gravityTilesPerSec2,
         'enemies.rules.pickups.gravityTilesPerSec2',
+        { min: 1 },
+      ),
+      magnetSpeedTilesPerSec: num(
+        pk.magnetSpeedTilesPerSec,
+        'enemies.rules.pickups.magnetSpeedTilesPerSec',
         { min: 1 },
       ),
       sizePx: size(pk.sizePx, 'enemies.rules.pickups.sizePx'),
