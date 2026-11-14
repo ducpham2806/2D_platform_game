@@ -2,6 +2,8 @@
 
 Kế hoạch chi tiết cho quảng cáo trong Cyber Vanguard: vị trí, phần thưởng (năng lượng, mạng, lượt), tần suất, kỹ thuật, đo lường và triển khai. Bổ sung cho mục 4 của tab Kế hoạch kiếm tiền và Live-ops. Mọi con số đánh dấu `[PLACEHOLDER]` là giả thuyết cần đo khi soft launch. Không phải tư vấn pháp lý.
 
+Cập nhật 14/11/2026 (rà soát `/consistency-check` + `/balance-check`): `03-Data/adplacements.json` là nguồn chuẩn (`monetization.json` chỉ trỏ tới); `AD_DOUBLE` ×1,5 trong cốt truyện; `AD_GIFT` trước AEGIS chỉ cho booster; `AD_SPIN` dùng bảng giải QC; "sau boss" là lần đầu hạ boss chiến dịch; trần chung interstitial 2 mỗi ngày; ước tính doanh thu tính lại (mục 7.1).
+
 ## 1. Mục tiêu, nguyên tắc và cách hiểu yêu cầu
 
 **Mục tiêu:** doanh thu quảng cáo chủ yếu từ rewarded ads tự nguyện, không làm hỏng cảm giác chơi, không chặn cốt truyện, không ép người chơi xem.
@@ -21,7 +23,7 @@ Kế hoạch chi tiết cho quảng cáo trong Cyber Vanguard: vị trí, phần
 1. **Tự nguyện:** mọi rewarded ads là lựa chọn, có mô tả phần thưởng trước khi xem, không tự phát.
 2. **Đúng lúc:** chỉ đề nghị ở các khoảnh khắc nghỉ (sau khi chết, ở menu tạm dừng, màn Chuẩn bị, màn Kết quả, Hub), không bao giờ ngắt lúc đang điều khiển.
 3. **Không chặn cốt truyện:** không có phần nào của cốt truyện bắt buộc xem quảng cáo.
-4. **Phần thưởng tiện ích, không phải sức mạnh vĩnh viễn:** không thưởng Chip Lõi, chỉ số, Gem trực tiếp từ quảng cáo thường (bảo vệ doanh thu IAP).
+4. **Phần thưởng tiện ích, không phải sức mạnh vĩnh viễn:** không thưởng Chip Lõi, chỉ số, Gem trực tiếp từ quảng cáo thường (bảo vệ doanh thu IAP). Ngoại lệ duy nhất: `AD_SPIN` dùng bảng giải QC (Core Bit, Gem, mỹ phẩm), kỳ vọng ≤ 3 Gem mỗi lượt (tab Kế hoạch kiếm tiền mục 8.3).
 5. **Giới hạn rõ ràng:** mỗi vị trí có hạn mức mỗi màn và mỗi ngày, hiển thị cho người chơi.
 6. **Cyber+ bỏ phiền toái:** người đăng ký nhận thưởng ngay, không còn interstitial.
 
@@ -42,18 +44,18 @@ Kế hoạch chi tiết cho quảng cáo trong Cyber Vanguard: vị trí, phần
 
 ### 3.1 Rewarded ads
 
-Hạn mức là `[PLACEHOLDER]`, chỉnh bằng Remote Config.
+Hạn mức là `[PLACEHOLDER]`, chỉnh bằng Remote Config. **`03-Data/adplacements.json` là nguồn chuẩn** cho id, hạn mức và điều kiện (kể cả hồi sinh: 1 lần mỗi màn); `monetization.json` chỉ trỏ tới file này.
 
 | ID | Vị trí và thời điểm | Phần thưởng | Hạn mức | Cyber+ |
 | --- | --- | --- | --- | --- |
 | `AD_REVIVE` | Màn hồi sinh sau khi chết, **chỉ ở màn thường** (phòng boss đã hồi sinh miễn phí) | Hồi sinh tại chỗ, 50% máu, bất tử 2 giây | 1 lần mỗi màn (dùng chung với Second Wind và Second Chance, GDD mục 10), 6 mỗi ngày | Nhận ngay, vẫn giới hạn 1 mỗi màn |
 | `AD_ENERGY` | Mục "Hỗ trợ" trong menu tạm dừng, và chip "+Năng lượng" cạnh thanh năng lượng khi dưới 15% (chạm vào sẽ tạm dừng game) | Nạp đầy năng lượng vũ khí | 1 lần mỗi màn, 4 mỗi ngày | Nhận ngay |
 | `AD_HEAL` | Mục "Hỗ trợ" trong menu tạm dừng khi hết Nano Cell và máu dưới 30% | Hồi đầy 1 Nano Cell | 1 lần mỗi màn, 3 mỗi ngày | Nhận ngay |
-| `AD_BOOSTER` | Màn Chuẩn bị: nút "Booster miễn phí" | 1 booster tự chọn trong Shield Cell, Magnet Pulse, Overcharge | 1 lần mỗi màn, 5 mỗi ngày | Nhận ngay |
-| `AD_DOUBLE` | Màn Kết quả: "Nhân đôi Core Bit" | Nhân đôi **Core Bit** của màn (không nhân EXP, Data Chip) | 6 mỗi ngày | Tự động nhân đôi |
-| `AD_GIFT` | Hub: "Quà miễn phí", hồi chiêu 4 giờ | 100–200 Core Bit hoặc 1 booster ngẫu nhiên | 3 mỗi ngày | Nhận không cần xem |
-| `AD_SPIN` | Màn vòng quay | +1 lượt quay | 2 mỗi ngày | Nhận +1 lượt miễn phí |
-| `AD_LOGIN` | Đăng nhập hằng ngày khi lỡ ngày | Bù 1 ngày | 1 mỗi ngày | Nhận ngay |
+| `AD_BOOSTER` | Màn Chuẩn bị: nút "Booster miễn phí" | 1 booster tự chọn trong Shield Cell, Magnet Pulse, Overcharge; chỉ booster đã mở (Overcharge từ sau 5 boss) | 1 lần mỗi màn, 5 mỗi ngày | Nhận ngay |
+| `AD_DOUBLE` | Màn Kết quả: "Nhân Core Bit" | Nhân **Core Bit** của màn: ×1,5 trong cốt truyện, ×2 ở endgame (không nhân EXP, Data Chip; không áp cho Sweep) | 6 mỗi ngày | Tự động nhân |
+| `AD_GIFT` | Hub: "Quà miễn phí", hồi chiêu 4 giờ | Trước khi hạ AEGIS: 1 booster ngẫu nhiên (trước boss 4 vào kho). Sau AEGIS: 100–200 Core Bit hoặc 1 booster ngẫu nhiên | 3 mỗi ngày | Nhận không cần xem |
+| `AD_SPIN` | Màn vòng quay | +1 lượt quay, bảng giải QC (Core Bit, Gem, mỹ phẩm) | 2 mỗi ngày | Nhận ngay; thêm 1 lượt cùng bảng QC |
+| `AD_LOGIN` | Đăng nhập hằng ngày khi lỡ ngày | Bù 1 ngày (cách bù duy nhất, không bù bằng Gem) | 1 mỗi ngày, tối đa 3 mỗi chu kỳ 30 lần nhận | Nhận ngay |
 | `AD_SWEEP` | Menu Farm / Sweep | +1 lượt Sweep | 2 mỗi ngày | Nhận ngay |
 | `AD_FARM2X` | Menu Farm | +1 lượt thưởng gấp đôi | 2 mỗi ngày | Nhận ngay |
 | `AD_QUEST` | Màn nhiệm vụ | Đổi 1 nhiệm vụ ngày | 1 mỗi ngày | Nhận ngay |
@@ -63,8 +65,11 @@ Hạn mức là `[PLACEHOLDER]`, chỉnh bằng Remote Config.
 
 | ID | Vị trí | Điều kiện | Cyber+ |
 | --- | --- | --- | --- |
-| `INT_HUB` | Khi chuyển từ màn Kết quả về Hub | Cách quảng cáo trước ≥ 4 phút; tối đa 1 mỗi 2 màn và ≤ 2 mỗi ngày; không trong 20 phút đầu, không ở Prologue, Stage 1, sau boss, hoặc khi vừa chết ≥ 3 lần liên tiếp | Tắt |
-| `INT_FARM` | Khi về menu Farm sau 3 lượt Farm liên tiếp | Tối đa 1 mỗi ngày; cùng giới hạn cách quãng | Tắt |
+| `INT_HUB` | Khi chuyển từ màn Kết quả về Hub | Cách quảng cáo trước ≥ 4 phút; tối đa 1 mỗi 2 màn; không trong 20 phút đầu, không ở Prologue, Stage 1, sau lần đầu hạ boss chiến dịch, hoặc khi vừa chết ≥ 3 lần liên tiếp | Tắt |
+| `INT_FARM` | Khi về menu Farm sau 3 lượt Farm liên tiếp | Tối đa 1 mỗi ngày; cùng giới hạn cách quãng và ngày bắt đầu | Tắt |
+
+- **Trần chung (rà soát 14/11):** `INT_HUB` + `INT_FARM` tối đa **2 mỗi ngày** (trước đây 2 + 1 = 3, vượt KPI ≤ 2).
+- **"Sau boss"** là màn Kết quả sau **lần đầu hạ boss của một màn chiến dịch** (ở độ khó nào cũng vậy). Lần hạ boss sau đó (chơi lại, Thử thách, Farm) không tính. Trước đây cấm mọi màn Kết quả sau boss; mà màn Kết quả cốt truyện luôn đến sau boss, nên interstitial gần như không hiện.
 
 ### 3.3 Nơi **không bao giờ** có quảng cáo
 
@@ -77,7 +82,7 @@ Prologue; trận boss và mọi lúc đang điều khiển nhân vật; màn Chu
 | Quy tắc | Giá trị |
 | --- | --- |
 | Ngày đầu tiên | Chỉ có rewarded; interstitial bật từ ngày 2 |
-| Interstitial | ≥ 4 phút giữa hai quảng cáo, tối đa 2 mỗi ngày, 1 mỗi 2 màn |
+| Interstitial | ≥ 4 phút giữa hai quảng cáo, tối đa 2 mỗi ngày (chung `INT_HUB` và `INT_FARM`), 1 mỗi 2 màn |
 | Bảo vệ bực bội | Vừa chết ≥ 3 lần liên tiếp trong 5 phút: tắt interstitial 10 phút |
 | Đề nghị rewarded | Tối đa 1 gợi ý nổi mỗi 3 phút; không chồng lên popup IAP hay ưu đãi |
 | Popup mỗi phiên | Tổng ưu đãi IAP và gợi ý quảng cáo chủ động tối đa 1 mỗi phiên (nút rewarded do người chơi tự bấm không tính) |
@@ -86,7 +91,7 @@ Prologue; trận boss và mọi lúc đang điều khiển nhân vật; màn Chu
 
 ### 4.2 Ảnh hưởng kinh tế (đã kiểm tra bằng mô hình)
 
-Chỉ `AD_DOUBLE` và `AD_GIFT` tăng Core Bit. Với 6 lượt chơi 250 Core Bit mỗi ngày (1.500) và ngân sách Chip +15 ở tab Cân bằng kinh tế:
+Chỉ `AD_DOUBLE`, `AD_GIFT` (sau AEGIS) và lượt quay QC (30 Core Bit) tăng Core Bit. Ở endgame, với 6 lượt Farm Run Mức 5 (250 Core Bit mỗi lượt, 1.500 mỗi ngày) và ngân sách Chip +15 ở tab Cân bằng kinh tế:
 
 | Tỷ lệ lượt được nhân đôi | Core Bit mỗi lượt | Số lượt đủ Core Bit cho 6 Chip +15 (86.448) | Giờ cho một bộ Legendary +15 |
 | --- | --- | --- | --- |
@@ -95,9 +100,11 @@ Chỉ `AD_DOUBLE` và `AD_GIFT` tăng Core Bit. Với 6 lượt chơi 250 Core B
 | 50% | 375 | 231 | \~24,3 |
 | 100% | 500 | 173 | \~24,3 |
 
-Kết luận: quảng cáo nhân đôi **không làm vỡ** cân bằng endgame vì giới hạn thật là tỷ lệ rơi Chip (291 lượt, \~24 giờ). Nó chỉ rút nút thắt Core Bit từ \~29 xuống \~24 giờ cho người xem quảng cáo. Ở phần cốt truyện, người nhân đôi mọi màn hoàn thiện Shop nhanh hơn khoảng 30%, chấp nhận được vì đó là nhóm đang đóng góp doanh thu quảng cáo.
+Kết luận: quảng cáo nhân đôi **không làm vỡ** cân bằng endgame vì giới hạn thật là tỷ lệ rơi Chip (291 lượt, \~24 giờ). Nó chỉ rút nút thắt Core Bit từ \~29 xuống \~24 giờ cho người xem quảng cáo.
 
-**Quy tắc bảo vệ kinh tế:** (1) chỉ nhân đôi Core Bit, **không** nhân EXP để không phá cân bằng cấp; (2) không thưởng Gem, Data Chip, Chip Lõi từ quảng cáo thường; (3) hạn mức `AD_DOUBLE` 6 mỗi ngày (thay cho 10 ở kế hoạch trước); (4) theo dõi thu Core Bit từ quảng cáo, báo động nếu vượt 60% thu cơ bản.
+**Ở cốt truyện (rà soát 14/11):** với ×2, người nhân đôi mọi màn có upgrade nhanh gấp 2 (câu "nhanh hơn \~30%" cũ chỉ đúng khi gộp cả skin), cộng live-ops thì upgrade đủ trước lượt Thử thách. Nay `AD_DOUBLE` trong cốt truyện chỉ **×1,5**: người nhân mọi màn và xem quảng cáo live-ops có upgrade 0 → 64% ở lượt Thường, đủ ở \~39% lượt Thử thách (không quảng cáo: đủ ở \~94% lượt Thử thách). Chấp nhận được vì đó là nhóm đang đóng góp doanh thu quảng cáo (tab Cân bằng kinh tế mục 4).
+
+**Quy tắc bảo vệ kinh tế:** (1) chỉ nhân Core Bit, **không** nhân EXP để không phá cân bằng cấp; (2) không thưởng Gem, Data Chip, Chip Lõi từ quảng cáo thường (ngoại lệ `AD_SPIN`, mục 1.2); (3) hạn mức `AD_DOUBLE` 6 mỗi ngày (thay cho 10 ở kế hoạch trước), ×1,5 trong cốt truyện; (4) theo dõi thu Core Bit từ quảng cáo, báo động nếu vượt 60% thu cơ bản; (5) trong cốt truyện, Core Bit ngoài màn (gồm lượt quay QC) ≤ 25% thu từ màn, `AD_GIFT` trước AEGIS chỉ cho booster.
 
 ## 5. Luồng giao diện và xử lý lỗi
 
@@ -175,11 +182,12 @@ interface AdService {
   "ads": {
     "AD_REVIVE": {"enabled": true, "capPerStage": 1, "capPerDay": 6, "reviveHpPct": 50, "invincibleSec": 2},
     "AD_ENERGY": {"enabled": true, "capPerStage": 1, "capPerDay": 4, "triggerEnergyPct": 15},
-    "AD_DOUBLE": {"enabled": true, "capPerDay": 6, "multiplier": 2, "applyTo": ["core_bit"]},
-    "AD_GIFT": {"enabled": true, "capPerDay": 3, "cooldownHours": 4},
+    "AD_DOUBLE": {"enabled": true, "capPerDay": 6, "multiplierStory": 1.5, "multiplierEndgame": 2, "applyTo": ["core_bit"]},
+    "AD_GIFT": {"enabled": true, "capPerDay": 3, "cooldownHours": 4, "beforeFinalBoss": "random_booster_only"},
     "INT_HUB": {"enabled": true, "minGapMin": 4, "capPerDay": 2, "everyNStages": 2,
                 "noAdFirstMinutes": 20, "startDay": 2, "frustrationGuard": {"deaths": 3, "windowMin": 5, "muteMin": 10}}
-  }
+  },
+  "interstitialCapPerDayTotal": 2
 }
 ```
 
@@ -205,7 +213,9 @@ interface AdService {
 
 ### 7.1 Ước tính theo vị trí `[PLACEHOLDER]`
 
-Giả định kịch bản cơ sở: eCPM rewarded 6 USD, interstitial 3 USD. Tổng khoảng 2,9 lượt rewarded và 1,5 interstitial mỗi người dùng hoạt động mỗi ngày, khớp bảng doanh thu ở tab Kế hoạch kiếm tiền (ARPDAU quảng cáo \~0,022).
+Giả định kịch bản cơ sở: eCPM rewarded 6 USD, interstitial 3 USD. Tổng khoảng 2,9 lượt rewarded và 1,0 interstitial mỗi người dùng hoạt động mỗi ngày, khớp bảng doanh thu ở tab Cân bằng kinh tế mục 13 (ARPDAU quảng cáo \~0,0204).
+
+**Điều chỉnh rà soát 14/11:** interstitial hạ từ 1,5 xuống 1,0 lượt mỗi DAU. Lý do: trần chung 2 mỗi ngày; ngày 1 và Cyber+ không có; người đang ở lượt Thường đầu gần như chỉ thấy màn Kết quả sau lần đầu hạ boss. Ước tính: \~30% DAU \~0 lượt, \~30% (Thử thách, chơi lại) \~1,2, \~40% (endgame) \~1,5 `[PLACEHOLDER]`. Doanh thu quảng cáo giảm \~0,0015 USD mỗi DAU.
 
 **Điều chỉnh từ GDD 0.5:** `AD_REVIVE` giảm từ 0,35 xuống 0,25 lượt mỗi DAU vì hai lý do. (1) Giới hạn mỗi màn hạ từ 2 xuống 1 lần, nên mất các lượt hồi sinh thứ hai; theo giả định khoảng 20% lượt hồi sinh cũ là lượt thứ hai trong cùng màn. (2) Giới hạn này dùng chung với Second Wind và Second Chance; người đã có một trong hai thứ đó thì không còn nút quảng cáo, ước tính mất thêm khoảng 10% `[PLACEHOLDER]`. Tổng giảm khoảng 0,0006 USD mỗi DAU (khoảng 3% doanh thu quảng cáo).
 
@@ -222,8 +232,8 @@ Giả định kịch bản cơ sở: eCPM rewarded 6 USD, interstitial 3 USD. T�
 | `AD_HEAL` | 0,10 | 0,0006 |
 | `AD_LOGIN` | 0,05 | 0,0003 |
 | Rewarded tổng | 2,90 | 0,0174 |
-| Interstitial (`INT_HUB`, `INT_FARM`) | 1,50 | 0,0045 |
-| **Tổng quảng cáo** |  | **0,0219** |
+| Interstitial (`INT_HUB`, `INT_FARM`) | 1,00 | 0,0030 |
+| **Tổng quảng cáo** |  | **0,0204** |
 
 Nhóm đem lại nhiều doanh thu nhất: nhân đôi thưởng, vòng quay, booster miễn phí, hồi sinh. `AD_QUEST`, `AD_SALVAGE` có lượt rất nhỏ nên chưa tính.
 
@@ -246,7 +256,7 @@ Nhóm đem lại nhiều doanh thu nhất: nhân đôi thưởng, vòng quay, bo
 | Khoảng cách interstitial | 4 phút hay 6 phút | ARPDAU | Giữ chân D1/D7 |
 | Ngưỡng gợi ý năng lượng | 15% hay 25% | Tỷ lệ bấm | Số lần dừng game |
 | Hồi chiêu quà | 4 giờ hay 6 giờ | Lượt xem mỗi DAU | Giữ chân ngày 7 |
-| Nhân đôi Core Bit | ×2 hay ×1,5 | Tỷ lệ bấm | Tốc độ hoàn thiện Shop |
+| Nhân Core Bit ở endgame (cốt truyện đã chốt ×1,5) | ×2 hay ×1,5 | Tỷ lệ bấm | Tốc độ nâng Chip |
 | Rewarded interstitial ở màn Kết quả | Bật hay tắt | ARPDAU | Khiếu nại, giữ chân |
 
 ## 8. Tuân thủ và chính sách
@@ -275,6 +285,8 @@ Nhóm đem lại nhiều doanh thu nhất: nhân đôi thưởng, vòng quay, bo
 - [ ] Âm thanh tắt trong quảng cáo, bật lại đúng; đếm ngược 3–2–1 trước khi tiếp tục.
 - [ ] Cyber+ nhận thưởng không cần xem, không còn interstitial, vẫn trừ hạn mức.
 - [ ] Bảo vệ bực bội: chết 3 lần liên tiếp thì tắt interstitial 10 phút.
+- [ ] Interstitial không quá 2 mỗi ngày (chung `INT_HUB`, `INT_FARM`); không hiện sau lần đầu hạ boss chiến dịch, có hiện sau lần hạ boss sau đó.
+- [ ] `AD_SPIN` và lượt Cyber+ dùng bảng giải QC; `AD_DOUBLE` ×1,5 trong cốt truyện, ×2 ở endgame; `AD_GIFT` trước AEGIS chỉ cho booster.
 - [ ] Thưởng lâu dài được máy chủ ghi một lần (kiểm tra nhận lặp).
 - [ ] Bản web: adBreak tạm dừng và khôi phục game đúng.
 
@@ -295,7 +307,7 @@ Mỗi giai đoạn có công tắc bằng Remote Config để tắt nhanh từng
 | --- | --- |
 | Tab Kế hoạch kiếm tiền, mục 4 | `AD_DOUBLE`: chỉ nhân đôi Core Bit (không EXP), hạn mức 6 mỗi ngày (đã sửa) |
 | GDD mục 13 (UI) | Trỏ tới tab này; thêm vị trí quảng cáo ở menu tạm dừng, màn Chuẩn bị, Kết quả, Hub (đã bổ sung wireframe bản đồ vị trí) |
-| Dữ liệu | `03-Data/adplacements.json` (mới) và `monetization.json` (cập nhật hạn mức) |
+| Dữ liệu | `03-Data/adplacements.json` là nguồn chuẩn; `monetization.json → ads` chỉ còn trỏ tới (`detailsFile`) từ rà soát 14/11 |
 | Wireframe | 5 màn mới: bản đồ vị trí ở HUD, Chuẩn bị, Kết quả, Hub và các kết quả của quảng cáo; sửa `NAdDouble` |
 | Bộ prompt code | Thêm P-ADS-01 đến P-ADS-04 |
 | Kế hoạch test | Thêm mục kiểm thử quảng cáo (mục 9.1) |

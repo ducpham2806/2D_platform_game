@@ -8,16 +8,15 @@
       },
       {
         "day": 2,
-        "reward": "20 gem + repair_kit",
-        "showStarterPack": true
+        "reward": "20 gem + repair_kit"
       },
       {
         "day": 3,
-        "reward": "300 core_bit + 1 spin"
+        "reward": "300 core_bit + 1 spin (normal table)"
       },
       {
         "day": 4,
-        "reward": "1 data_chip"
+        "reward": "20 gem"
       },
       {
         "day": 5,
@@ -29,7 +28,7 @@
       },
       {
         "day": 7,
-        "reward": "rookie skin set + 100 gem + 2 data_chip"
+        "reward": "rookie skin set + 130 gem"
       }
     ],
     "pointsChest": [
@@ -38,21 +37,26 @@
       60,
       80,
       100
-    ]
+    ],
+    "note": "Rà soát 14/11/2026: Data Chip bỏ khỏi live-ops (ngày 4 → 20 Gem, ngày 7 → +30 Gem). Starter Pack không gắn ngày 2: xem monetization.json → starterPack.showWhen."
   },
   "dailyLogin": {
     "cycleDays": 30,
     "makeup": {
       "ad": 1,
-      "gemCost": 30
+      "maxPerCycle": 3,
+      "gem": false
     },
     "milestones": {
       "3,10,17,24": "15 gem",
-      "7": "1 data_chip",
+      "7": "20 gem",
       "14": "50 gem + farm_double_ticket",
       "21": "rare chip",
-      "30": "100 gem + 1 data_chip + profile frame"
-    }
+      "30": "100 gem + profile frame + profile icon"
+    },
+    "cycleBy": "claims",
+    "otherDays": "50-100 core_bit or 1 booster, alternating",
+    "note": "Chu kỳ 30 lần nhận, không theo lịch tháng; lỡ ngày giữ ô kế tiếp; bù chỉ bằng AD_LOGIN (05 KT-02). Không Data Chip. Ngày thường giảm từ 150-300 để giữ trần Core Bit ngoài màn (04 mục 4)."
   },
   "dailySpin": {
     "freePerDay": 1,
@@ -63,11 +67,11 @@
     "prizes": [
       {
         "p": 30,
-        "r": "200 core_bit"
+        "r": "60 core_bit"
       },
       {
         "p": 18,
-        "r": "500 core_bit"
+        "r": "150 core_bit"
       },
       {
         "p": 18,
@@ -87,14 +91,39 @@
       },
       {
         "p": 3,
-        "r": "1 data_chip"
+        "r": "small cosmetic (owned all: 30 core_bit)"
       },
       {
         "p": 1,
         "r": "epic chip"
       }
     ],
-    "oddsVisible": true
+    "adPrizes": [
+      {
+        "p": 60,
+        "r": "30 core_bit"
+      },
+      {
+        "p": 24,
+        "r": "10 gem"
+      },
+      {
+        "p": 2,
+        "r": "30 gem"
+      },
+      {
+        "p": 14,
+        "r": "small cosmetic (owned all: 30 core_bit)"
+      }
+    ],
+    "adPrizesUsedBy": [
+      "AD_SPIN",
+      "cyber_plus_extra_spin"
+    ],
+    "gemEvPerSpinMax": 3,
+    "oddsVisible": true,
+    "pityApplies": "free_spin_streak",
+    "note": "prizes: bảng thường (lượt miễn phí, lượt tặng). adPrizes: bảng QC, chỉ Core Bit, Gem, mỹ phẩm. Kỳ vọng mỗi lượt: thường 45 Core Bit + 3 Gem; QC 18 Core Bit + 3 Gem (rà soát 14/11/2026, 05 mục 8.3)."
   },
   "quests": {
     "daily": 5,
@@ -106,16 +135,41 @@
       60,
       80,
       100
-    ]
+    ],
+    "weeklyRewards": [
+      "gem",
+      "rare chip",
+      "cosmetic"
+    ],
+    "coreBitBeforeFinalBoss": "booster"
   },
   "events": {
     "weekendDoubleDrop": true,
     "limitedBossEveryDays": 14,
     "riftSeasonDays": 28,
-    "welcomeBackAfterDays": 7
+    "welcomeBackAfterDays": 7,
+    "weekendDoubleStacksWithDoubleTurn": false,
+    "welcomeBackReward": "1 booster + 1 spin (normal table) + 20 gem",
+    "welcomeBackCooldownDays": 30
   },
   "push": {
     "optIn": true,
     "maxPerDay": 1
-  }
+  },
+  "dayReset": {
+    "localTime": "04:00",
+    "timezone": "account",
+    "authority": "server"
+  },
+  "storyCoreBitCap": {
+    "maxShareOfStageIncome": 0.25,
+    "until": "final_boss",
+    "coreBitSources": [
+      "daily_login",
+      "daily_spin",
+      "new_player_7day"
+    ],
+    "otherSourcesGiveBooster": true
+  },
+  "note": "Rà soát 14/11/2026: không Data Chip ở mọi live-ops; trước khi hạ AEGIS, Core Bit ngoài màn chỉ từ đăng nhập, vòng quay, 7 ngày tân thủ và ≤ 25% thu từ màn (04 mục 4). Quy tắc biên: 05 mục 14."
 }

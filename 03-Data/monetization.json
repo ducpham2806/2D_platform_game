@@ -11,47 +11,8 @@
   "ads": {
     "app": "AdMob",
     "web": "H5 Games Ads",
-    "rewarded": [
-      {
-        "id": "revive",
-        "capPerStage": 2
-      },
-      {
-        "id": "double_reward",
-        "capPerDay": 6
-      },
-      {
-        "id": "extra_spin",
-        "capPerDay": 2
-      },
-      {
-        "id": "free_booster",
-        "capPerStage": 1
-      },
-      {
-        "id": "farm_double",
-        "capPerDay": 2
-      },
-      {
-        "id": "login_makeup",
-        "capPerDay": 1
-      }
-    ],
-    "interstitial": {
-      "when": "sau màn Kết quả khi về Hub",
-      "minGapMin": 4,
-      "maxPerStages": 1,
-      "perStages": 2,
-      "noAdFirstMinutes": 20,
-      "neverIn": [
-        "prologue",
-        "stage1",
-        "boss",
-        "gameplay"
-      ]
-    },
-    "banner": false,
-    "detailsFile": "adplacements.json"
+    "detailsFile": "adplacements.json",
+    "note": "Vị trí, hạn mức, điều kiện quảng cáo (rewarded, interstitial, banner) chỉ ghi ở adplacements.json, là nguồn chuẩn; hồi sinh tại chỗ 1 lần mỗi màn (rà soát 14/11/2026, bỏ bản trùng ở đây)."
   },
   "gemPacks": [
     {
@@ -84,15 +45,22 @@
     }
   ],
   "firstPurchaseBonusMul": 2,
+  "firstPurchaseBonusScope": "per_pack_per_account_all_platforms",
   "starterPack": {
     "usd": 1.99,
     "gem": 300,
     "items": [
-      "skin_rookie_set",
-      "dash_trail_rookie",
+      "skin_rookie_neon_set",
+      "dash_trail_rookie_neon",
       "farm_double_ticket_x5"
     ],
-    "once": true
+    "once": true,
+    "showWhen": {
+      "fromDay": 2,
+      "afterBosses": 2,
+      "untilNewPlayerWindowDays": 14
+    },
+    "note": "Rookie Neon là biến thể riêng, khác bộ Rookie tặng ngày 7 tân thủ. Hiện khi đã qua ngày 2 và đã hạ 2 boss (07 L05). Vé Farm đôi dùng trong trần 5 vé mỗi ngày."
   },
   "cyberPlus": {
     "monthlyUsd": 2.99,
@@ -108,14 +76,61 @@
       "monthly_exclusive_skin"
     ],
     "noStats": true,
-    "gemPerDay": 10
+    "gemPerDay": 10,
+    "gemPerDayYearly": 5,
+    "lifetimeBenefits": [
+      "no_interstitial",
+      "rewarded_auto_claim"
+    ],
+    "extraSpinTable": "ad",
+    "note": "benefits và gemPerDay là của gói tháng. Gói năm như gói tháng nhưng gemPerDayYearly. Lifetime chỉ có lifetimeBenefits: không Gem mỗi ngày, không skin tháng, không thêm lượt quay hay Sweep (rà soát 14/11/2026)."
   },
   "seasonPass": {
     "usd": 4.99,
-    "days": 30,
+    "days": 28,
     "levels": 30,
     "premiumTrack": "cosmetic_and_gem_only",
-    "buyLevelWithGemMaxPerSeason": 10
+    "buyLevelWithGemMaxPerSeason": 10,
+    "xpPerLevel": 100,
+    "buyLevelCostGem": 50,
+    "gemBoughtLevelRewards": "gem_and_cosmetic_only",
+    "note": "28 ngày, trùng mùa Rift (endgame.json → rift.seasonDays). Cấp mua bằng Gem chỉ trao Gem và mỹ phẩm. Trước khi hạ AEGIS, phần Core Bit của làn Free đổi thành booster. [PLACEHOLDER]"
+  },
+  "weeklyDeal": {
+    "usd": [
+      0.99,
+      4.99
+    ],
+    "allowedContents": [
+      "gem",
+      "cosmetic",
+      "farm_double_ticket"
+    ],
+    "maxPopupPerSession": 1
+  },
+  "gemRules": {
+    "wallets": [
+      "paid",
+      "free"
+    ],
+    "spendFirst": "free",
+    "neverConvertsTo": [
+      "core_bit",
+      "data_chip",
+      "booster",
+      "material",
+      "chip"
+    ],
+    "exceptions": [
+      "farm_double_ticket",
+      "extra_sweep"
+    ],
+    "restorePurchases": [
+      "starter_pack",
+      "skin_bundle",
+      "cyber_plus"
+    ],
+    "note": "Gem không đổi ra Core Bit, Data Chip, booster, vật liệu hay Chip, kể cả gián tiếp; ngoại lệ là tiện ích Farm trong trần ngày. Gem là hàng tiêu hao: số dư lấy từ máy chủ, không khôi phục bằng cửa hàng (05 mục 6, 14)."
   },
   "premiumSkinGem": [
     400,
