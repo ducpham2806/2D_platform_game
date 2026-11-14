@@ -76,6 +76,8 @@ export interface SkillRules {
   shieldBreakHitStopSteps: number;
   /** Loại đòn tính là đạn (Lướt Xuyên Đạn chỉ bất tử thêm với các loại này). */
   bulletKinds: ReadonlySet<string>;
+  /** Loại đòn khiên C3 không chặn (đòn đỉnh): đòn đi qua, khiên vẫn sẵn. */
+  shieldPierceKinds: ReadonlySet<string>;
 }
 
 export interface SkillsData {
@@ -162,6 +164,18 @@ export function checkRankRules(node: SkillNode): string[] {
   return errors;
 }
 
+/** Danh sách loại đòn của địch (mỗi loại phải có trong ENEMY_ATTACK_KINDS). */
+function attackKinds(value: unknown, path: string): ReadonlySet<string> {
+  return new Set(
+    arr(value, path).map((k, i) => {
+      const kind = str(k, `${path}[${i}]`);
+      if (!(ENEMY_ATTACK_KINDS as readonly string[]).includes(kind))
+        throw new ConfigError(`${path}[${i}]: loại đòn "${kind}" không có`);
+      return kind;
+    }),
+  );
+}
+
 export function parseSkills(value: unknown): SkillsData {
   const s = obj(value, 'skills');
   const r = obj(s.rules, 'skills.rules');
@@ -176,14 +190,8 @@ export function parseSkills(value: unknown): SkillsData {
       'skills.rules.shieldBreakHitStopSteps',
       { min: 0 },
     ),
-    bulletKinds: new Set(
-      arr(r.bulletKinds, 'skills.rules.bulletKinds').map((k, i) => {
-        const kind = str(k, `skills.rules.bulletKinds[${i}]`);
-        if (!(ENEMY_ATTACK_KINDS as readonly string[]).includes(kind))
-          throw new ConfigError(`skills.rules.bulletKinds[${i}]: loại đòn "${kind}" không có`);
-        return kind;
-      }),
-    ),
+    bulletKinds: attackKinds(r.bulletKinds, 'skills.rules.bulletKinds'),
+    shieldPierceKinds: attackKinds(r.shieldPierceKinds, 'skills.rules.shieldPierceKinds'),
   };
   if (rules.minBuildDamageTakenMul > 1)
     throw new ConfigError('skills.rules.minBuildDamageTakenMul: tối đa 1');

@@ -161,6 +161,7 @@ function noDodgeFight(build: ReturnType<typeof computeBuild>, keepTiles: number)
   world.player.respawn((world.arena!.first + 3) * T, 11 * T);
   world.step(IDLE_INPUT);
   let hits = 0;
+  let absorbed = 0;
   for (let i = 0; i < 60 * 120; i += 1) {
     const gap = world.boss!.centerX - world.player.centerX;
     const press = i % 8 === 0;
@@ -172,26 +173,41 @@ function noDodgeFight(build: ReturnType<typeof computeBuild>, keepTiles: number)
       shootReleased: i % 8 === 1,
     });
     if (ev.playerHurt) hits += 1;
+    if (ev.kaiShieldAbsorbed) absorbed += 1;
     if (ev.playerDied || ev.bossDefeated)
       return {
         won: ev.bossDefeated,
         hits,
+        absorbed,
         hp: world.player.hp,
         maxHp: world.player.maxHp,
         sec: i * DT,
       };
   }
-  return { won: false, hits, hp: world.player.hp, maxHp: world.player.maxHp, sec: 120 };
+  return {
+    won: false,
+    hits,
+    absorbed,
+    hp: world.player.hp,
+    maxHp: world.player.maxHp,
+    sec: 120,
+  };
 }
 
 describe('phòng thủ không thay được né (GDD 10 mục 8)', () => {
-  it('build Core không đổi số đòn trúng, chỉ thêm đúng phần máu của C1', () => {
+  it('build Core: khiên chặn đúng một đòn mỗi lần hồi, số đòn chạm Kai gần như không đổi, máu thêm đúng C1', () => {
+    const recharge = computeBuild(config.skills, { C1: 1, C2: 2, C3: 3 }).shield!.rechargeSec;
     for (const keep of [3, 8]) {
       const plain = noDodgeFight(computeBuild(config.skills, {}), keep);
       const core = noDodgeFight(computeBuild(config.skills, { C1: 1, C2: 2, C3: 3 }), keep);
-      expect(core.hits).toBe(plain.hits);
+      expect(plain.absorbed).toBe(0);
+      expect(core.absorbed).toBeGreaterThanOrEqual(1);
+      expect(core.absorbed).toBeLessThanOrEqual(1 + Math.floor(core.sec / recharge));
+      // Khiên không bật lùi nên vị trí sau đó khác đi; số đòn chạm Kai lệch tối đa 1
+      // (bám 3 ô: 6 → 4 trúng + 1 chặn; bám 8 ô: 5 → 5 trúng + 1 chặn).
+      expect(Math.abs(core.hits + core.absorbed - plain.hits)).toBeLessThanOrEqual(1);
+      expect(core.hits).toBeGreaterThan(0);
       expect(core.maxHp - plain.maxHp).toBe(18);
-      expect(core.hp - plain.hp).toBe(18);
     }
   });
 

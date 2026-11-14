@@ -12,6 +12,10 @@ const BOSS_W = 120;
 const DEPTH = 10;
 /** Mép trên của chữ thông báo giữa màn hình (px logic). */
 const MESSAGE_TOP = 72;
+/** Màu khiên C3 (vòng HUD và viền quanh Kai): tím nhạt, khác lục lam của P3 và cam của P1. */
+export const KAI_SHIELD_COLOR = 0xa5b4fc;
+/** Vòng khiên dưới thanh năng lượng (tâm, bán kính px logic). */
+const SHIELD_ICON = { x: PAD + 5, y: PAD + 27, r: 4 };
 
 const SMALL: Phaser.Types.GameObjects.Text.TextStyle = {
   ...MUTED_STYLE,
@@ -147,6 +151,20 @@ export class StageHud {
       this.energyText.setText(`${hud.energy.value}/${hud.energy.max}`);
     } else {
       this.energyText.setText('');
+    }
+    // Khiên C3: vòng đầy khi sẵn; đang hồi thì cung sáng chạy theo tiến độ.
+    if (hud.shield) {
+      const { x, y, r } = SHIELD_ICON;
+      g.fillStyle(0x0f1724, 0.8).fillCircle(x, y, r + 2);
+      if (hud.shield.ready) {
+        g.lineStyle(2, KAI_SHIELD_COLOR, 1).strokeCircle(x, y, r);
+        g.fillStyle(KAI_SHIELD_COLOR, 0.55).fillCircle(x, y, r - 2);
+      } else {
+        g.lineStyle(2, 0x3b4252, 1).strokeCircle(x, y, r);
+        const start = -Math.PI / 2;
+        g.lineStyle(2, KAI_SHIELD_COLOR, 0.8).beginPath();
+        g.arc(x, y, r, start, start + 2 * Math.PI * hud.shield.progress, false).strokePath();
+      }
     }
     // Máu boss.
     if (hud.boss) {

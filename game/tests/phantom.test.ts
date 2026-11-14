@@ -204,7 +204,11 @@ describe('P3 Lướt Xuyên Đạn', () => {
     });
     pool.spawn(spec('enemyShot'));
     let grazes = 0;
-    const defense = { bulletKinds: config.skills.rules.bulletKinds, onGraze: () => (grazes += 1) };
+    const defense = {
+      bulletKinds: config.skills.rules.bulletKinds,
+      onGraze: () => (grazes += 1),
+      shield: undefined,
+    };
     const ev = noWorldEvents();
     resolveEnemyHits(pool, [], undefined, pl, 1, ev, defense);
     resolveEnemyHits(pool, [], undefined, pl, 1, noWorldEvents(), defense);

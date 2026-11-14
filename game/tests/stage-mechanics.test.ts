@@ -217,6 +217,17 @@ describe('hố rơi', () => {
     expect((evs.length - 1 - fallAt) * DT).toBeLessThanOrEqual(mech.pit.returnSec + DT);
   });
 
+  it('rơi hố chỉ hồi sinh một lần: không hồi đầy máu, không dựng lại màn ở bước sau', () => {
+    // Lỗi cũ: đồng hồ chờ hồi sinh còn dư sai số (> 0) nên bước sau hồi sinh lần nữa theo nhánh
+    // chết (đầy máu, xóa đạn, dựng lại kẻ địch và boss).
+    const world = makeWorld(PIT);
+    runUntil(world, input({ moveX: 1 }), (e) => e.respawned);
+    const hp = world.player.hp;
+    const after = Array.from({ length: 60 }, () => world.step(input({})));
+    expect(after.some((e) => e.respawned)).toBe(false);
+    expect(world.player.hp).toBe(hp);
+  });
+
   it('rơi hố khi còn ít máu thì chết, hồi sinh đầy máu', () => {
     const world = makeWorld(PIT);
     world.player.hp = 5;

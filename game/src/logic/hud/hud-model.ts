@@ -30,6 +30,8 @@ export interface HudModel {
   level: number;
   /** Phòng khóa đang đóng: số kẻ địch còn lại. */
   roomRemaining: number | undefined;
+  /** Khiên C3 (vòng đếm hồi): chưa học thì không có; `progress` 0..1, 1 khi sẵn. */
+  shield: { ready: boolean; progress: number } | undefined;
 }
 
 function bar(value: number, max: number): HudBar {
@@ -64,5 +66,8 @@ export function buildHud(world: StageWorld, savedCoreBits = 0, level = world.lev
     exp: world.exp,
     level,
     roomRemaining: world.lockedRoom?.remaining,
+    shield: world.runtime.hasShield
+      ? { ready: world.runtime.shieldReady, progress: world.runtime.shieldProgress }
+      : undefined,
   };
 }

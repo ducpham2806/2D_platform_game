@@ -40,7 +40,7 @@ import type { StageDef } from '../stages/stage-def';
 import { DialogueBox } from './stage/dialogue-box';
 import { PauseMenu, type PauseChoice } from './stage/pause-menu';
 import { ResultPanel, type ResultChoice } from './stage/result-panel';
-import { StageHud } from './stage/stage-hud';
+import { KAI_SHIELD_COLOR, StageHud } from './stage/stage-hud';
 import { TutorialBox } from './stage/tutorial-box';
 import { StagePlaytest, tunedData } from './stage/stage-playtest';
 import { barrierCells, drawMechanics } from './stage/mechanics-renderer';
@@ -67,6 +67,8 @@ const DEBUG_HIT_DAMAGE = 10;
 const WORLD_SEED = 2187;
 /** Báo nhận vũ khí sau khi chữ "HẠ BOSS!" tắt (khi boss không có thoại sau trận). */
 const WEAPON_FLASH_DELAY_MS = 1800;
+/** Thời gian mảnh kính của khiên C3 bay ra khi vỡ (ms). */
+const SHIELD_SHARD_MS = 350;
 /** Thời gian giữ chữ "Lên cấp". */
 const LEVEL_FLASH_MS = 1800;
 
@@ -125,7 +127,9 @@ export class StageScene extends Phaser.Scene {
   /** Boss của màn này là boss chiến dịch và chưa hạ lúc vào màn (hạ thì +SP mỗi boss). */
   private storyBossPending = false;
   /** Hiệu ứng ngắn trên người Kai (thời điểm hết, ms theo đồng hồ scene). */
-  private kaiFx = { restoredUntil: 0, grazeUntil: 0 };
+  private kaiFx = { restoredUntil: 0, grazeUntil: 0, shieldReadyUntil: 0 };
+  /** Mảnh kính khi khiên C3 vỡ (tâm Kai lúc vỡ, thời điểm hết). */
+  private shieldShards: { x: number; y: number; until: number }[] = [];
   /** Vòng nổ lan đang vẽ (V2), thời điểm hết theo đồng hồ scene. */
   private bursts: { x: number; y: number; r: number; until: number }[] = [];
 
@@ -247,8 +251,9 @@ export class StageScene extends Phaser.Scene {
     this.result = undefined;
     this.workshop = undefined;
     this.pendingBuild = undefined;
-    this.kaiFx = { restoredUntil: 0, grazeUntil: 0 };
+    this.kaiFx = { restoredUntil: 0, grazeUntil: 0, shieldReadyUntil: 0 };
     this.bursts = [];
+    this.shieldShards = [];
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       this.workshop?.destroy();
       this.workshop = undefined;
@@ -326,6 +331,7 @@ export class StageScene extends Phaser.Scene {
         const left = (b.until - time) / (getConfig(this).ui.feedback.burstRingSec * 1000);
         this.dynamic.lineStyle(1, 0xffd166, Math.max(0.2, left)).strokeCircle(b.x, b.y, b.r);
       }
+      this.drawShieldShards(this.dynamic, time);
     }
     this.syncSprites(this.stepper.alpha);
     const ctx = input.glyphContext();
@@ -587,6 +593,17 @@ export class StageScene extends Phaser.Scene {
       camera.shake(fb.medium.shakeMs, fb.medium.shakeIntensity);
     }
     if (ev.punishHit) camera.shake(fb.large.shakeMs, fb.large.shakeIntensity);
+    // M8 Core: khiên vỡ là bậc vừa (dừng hình ở thế giới); khiên hồi chớp viền trắng.
+    if (ev.kaiShieldAbsorbed) {
+      const pl = world.player;
+      this.shieldShards.push({
+        x: pl.centerX,
+        y: pl.box.y + pl.box.h / 2,
+        until: this.time.now + SHIELD_SHARD_MS,
+      });
+      camera.shake(fb.medium.shakeMs, fb.medium.shakeIntensity);
+    }
+    if (ev.kaiShieldReady) this.kaiFx.shieldReadyUntil = this.time.now + 220;
     if (ev.healed > 0) hud?.flash(`+${ev.healed} máu`, 500);
     if (ev.checkpoint !== undefined)
       hud?.flash(`Checkpoint ${ev.checkpoint}${this.saver ? ' · đã lưu' : ''}`, 900);
@@ -637,6 +654,22 @@ export class StageScene extends Phaser.Scene {
     }
   }
 
+  /** Khiên C3 vỡ: 8 mảnh kính bay ra quanh Kai rồi mờ dần (vẽ cả lúc Kai đang nhấp nháy). */
+  private drawShieldShards(g: Phaser.GameObjects.Graphics, time: number): void {
+    this.shieldShards = this.shieldShards.filter((s) => s.until > time);
+    for (const s of this.shieldShards) {
+      const left = (s.until - time) / SHIELD_SHARD_MS;
+      const r = 10 + 14 * (1 - left);
+      g.lineStyle(1, left > 0.7 ? 0xffffff : KAI_SHIELD_COLOR, left);
+      for (let i = 0; i < 8; i += 1) {
+        const a = (i / 8) * Math.PI * 2 + 0.3;
+        const c = Math.cos(a);
+        const sn = Math.sin(a);
+        g.lineBetween(s.x + c * r, s.y + sn * r, s.x + c * (r + 4), s.y + sn * (r + 3));
+      }
+    }
+  }
+
   /** Vẽ Kai ở vị trí nội suy giữa bước trước và bước hiện tại, cùng quầng nạp đạn. */
   private syncSprites(alpha: number): void {
     const world = this.world;
@@ -663,6 +696,14 @@ export class StageScene extends Phaser.Scene {
       this.glow
         .fillStyle(flash ? 0xffffff : 0xff9f43, flash ? 1 : 0.85)
         .fillRect(x + 2, y + h, w - 4, flash ? 3 : 2);
+    }
+    // C3: viền khiên tím nhạt quanh Kai khi khiên sẵn (chớp trắng lúc vừa hồi).
+    if (world.runtime.shieldReady) {
+      const fresh = now < this.kaiFx.shieldReadyUntil;
+      const pulse = 0.75 + 0.2 * Math.sin(now / 180);
+      this.glow
+        .lineStyle(1, fresh ? 0xffffff : KAI_SHIELD_COLOR, fresh ? 1 : pulse)
+        .strokeEllipse(x + w / 2, y + h / 2, w + 10, h + 8);
     }
     // P3: bóng mờ lục lam trong phần bất tử thêm với đạn.
     if (pl.bulletGuardExtended) {

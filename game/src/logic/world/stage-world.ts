@@ -17,6 +17,7 @@ import {
   statsFor,
   vanguardOf,
 } from '../rpg/build';
+import { BuildRuntime } from '../rpg/build-runtime';
 import { playerParams } from '../player/player-params';
 import { PlayerPhysics } from '../player/player-physics';
 import { createRng, type Rng } from '../rng';
@@ -114,6 +115,8 @@ export class StageWorld {
   private defense: KaiDefense;
   /** Nổ lan và Đòn Trừng Phạt từ build. */
   private vanguard: VanguardMods;
+  /** Trạng thái build trong trận (khiên C3). Chạm gai không làm mới; chết thì khiên sẵn. */
+  readonly runtime: BuildRuntime;
   private readonly start: { x: number; y: number };
   private checkpoint: { x: number; y: number };
   private respawnTimer = 0;
@@ -154,6 +157,7 @@ export class StageWorld {
       maxHp,
     );
     this.loadout = new WeaponLoadout(this.built.weapons, t);
+    this.runtime = new BuildRuntime(this.build.shield);
     this.defense = this.defenseOf(this.build);
     this.vanguard = vanguardOf(this.build, t);
     for (const w of setup.ownedWeapons ?? []) this.loadout.grant(w);
@@ -252,6 +256,7 @@ export class StageWorld {
     return {
       bulletKinds: build.bulletKinds,
       onGraze: graze > 0 ? () => this.loadout.addCharge(graze) : undefined,
+      shield: build.shield ? this.runtime : undefined,
     };
   }
 
@@ -270,6 +275,7 @@ export class StageWorld {
         playerModsOf(build, this.setup.stepSec),
       ),
     );
+    this.runtime.setShield(build.shield);
     this.defense = this.defenseOf(build);
     this.vanguard = vanguardOf(build, this.setup.tileSize);
     this.loadout.setData(this.built.weapons);
@@ -296,9 +302,16 @@ export class StageWorld {
     }
     if (this.respawnTimer > 0) {
       this.respawnTimer -= dt;
-      if (this.respawnTimer <= 1e-9) this.respawn(ev);
+      if (this.respawnTimer <= 1e-9) {
+        // Đặt về 0: phần dư sai số (≤ 1e-9 nhưng > 0) sẽ làm bước sau hồi sinh lần nữa theo
+        // nhánh chết (hồi đầy máu, dựng lại boss) ngay sau khi rơi hố.
+        this.respawnTimer = 0;
+        this.respawn(ev);
+      }
       return ev;
     }
+    // Khiên hồi trước khi xử lý trúng đòn; đồng hồ dừng trong hit-stop và lúc chờ hồi sinh.
+    if (this.runtime.step(dt)) ev.kaiShieldReady = true;
 
     for (const v of this.vines) v.step(dt);
 
@@ -380,6 +393,8 @@ export class StageWorld {
       ev,
       this.defense,
     );
+    if (ev.kaiShieldAbsorbed)
+      this.hitStop = Math.max(this.hitStop, this.build.shield?.hitStopSteps ?? 0);
     this.field?.updatePickups(pl, dt, ev);
 
     this.updateHazards(ev);
@@ -578,6 +593,7 @@ export class StageWorld {
     pl.respawn(this.checkpoint.x, this.checkpoint.y);
     this.pool.clear();
     this.loadout.refill();
+    this.runtime.resetOnDeath();
     this.field?.reset();
     for (const r of this.rooms) r.reset();
     if (this.phase === 'boss') {

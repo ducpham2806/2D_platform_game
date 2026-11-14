@@ -80,6 +80,9 @@ export interface WorldEvents {
   /** M8 Vanguard: vụ nổ lan (tâm, bán kính px) và đạn nạp đầy trúng lúc mục tiêu đang hở. */
   burst: { x: number; y: number; r: number } | undefined;
   punishHit: boolean;
+  /** M8 Core: khiên C3 vừa chặn một đòn (và vỡ); khiên vừa hồi xong. */
+  kaiShieldAbsorbed: boolean;
+  kaiShieldReady: boolean;
 }
 
 export function noWorldEvents(): WorldEvents {
@@ -117,5 +120,7 @@ export function noWorldEvents(): WorldEvents {
     graze: false,
     burst: undefined,
     punishHit: false,
+    kaiShieldAbsorbed: false,
+    kaiShieldReady: false,
   };
 }

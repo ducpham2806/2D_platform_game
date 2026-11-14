@@ -172,20 +172,37 @@ export function resolvePlayerHits(
 /** id giả trong `hitIds` của đạn địch: đã tính sượt đạn với viên này. */
 const GRAZE_ID = -2;
 
+/** Khiên C3 (BuildRuntime của StageWorld). */
+export interface KaiShield {
+  readonly shieldReady: boolean;
+  readonly shieldIFrameSec: number;
+  /** Loại đòn khiên không chặn (đòn đỉnh). */
+  readonly shieldPierceKinds: ReadonlySet<string>;
+  breakShield(): void;
+}
+
 /** Phòng thủ của Kai từ build (M8). */
 export interface KaiDefense {
   /** Loại đòn tính là đạn (P3 chỉ bất tử thêm với các loại này). */
   bulletKinds: ReadonlySet<string>;
   /** Có sượt đạn (P3 bậc 3): gọi khi một viên đạn đi xuyên trong phần bất tử thêm. */
   onGraze: (() => void) | undefined;
+  /** Khiên C3; chưa học thì không có. */
+  shield: KaiShield | undefined;
 }
 
-export const NO_DEFENSE: KaiDefense = { bulletKinds: new Set(), onGraze: undefined };
+export const NO_DEFENSE: KaiDefense = {
+  bulletKinds: new Set(),
+  onGraze: undefined,
+  shield: undefined,
+};
 
 /**
  * Đạn kẻ địch, thân kẻ địch đang hoạt động và thân boss trúng người chơi (đã nhân hệ số
  * độ khó). Kẻ địch "vô hại" (Prologue nhịp 1–3) gây 0 máu nhưng vẫn đẩy lùi.
  * Đang lướt với P3: đạn (theo `bulletKinds`) đi xuyên qua; sượt đạn trong phần bất tử thêm.
+ * Khiên C3 sẵn: chặn trọn đòn có sát thương đầu tiên (trừ `shieldPierceKinds`), không mất máu,
+ * không bật lùi, không phát `hurt`; bất tử ngắn sau đó nên đòn cùng bước cũng không trúng.
  */
 export function resolveEnemyHits(
   pool: ProjectilePool,
@@ -197,6 +214,16 @@ export function resolveEnemyHits(
   defense: KaiDefense = NO_DEFENSE,
 ): void {
   if (player.state === 'dead') return;
+  /** Khiên chặn đòn này (gây `amount` máu, loại `kind`; thân kẻ địch/boss không có loại)? */
+  const absorbed = (amount: number, kind?: string): boolean => {
+    const s = defense.shield;
+    if (!s?.shieldReady || amount <= 0 || player.invulnerable) return false;
+    if (kind !== undefined && s.shieldPierceKinds.has(kind)) return false;
+    s.breakShield();
+    player.absorbHit(s.shieldIFrameSec);
+    ev.kaiShieldAbsorbed = true;
+    return true;
+  };
   for (const p of pool.all) {
     if (!p.alive || p.owner !== 'enemy' || !overlaps(p, player.box)) continue;
     if (player.bulletGuard && defense.bulletKinds.has(p.kind)) {
@@ -207,18 +234,25 @@ export function resolveEnemyHits(
       }
       continue;
     }
-    if (player.applyHit(incomingDamage(p.damage, damageTaken), p.x + p.w / 2)) {
+    const amount = incomingDamage(p.damage, damageTaken);
+    if (absorbed(amount, p.kind)) {
+      p.alive = false;
+      continue;
+    }
+    if (player.applyHit(amount, p.x + p.w / 2)) {
       ev.playerHurt = true;
       p.alive = false;
     }
   }
   for (const e of enemies) {
     if (!e.alive || !overlaps(e.box, player.box)) continue;
-    if (player.applyHit(incomingDamage(e.contactDamage, damageTaken), e.centerX))
-      ev.playerHurt = true;
+    const amount = incomingDamage(e.contactDamage, damageTaken);
+    if (absorbed(amount)) continue;
+    if (player.applyHit(amount, e.centerX)) ev.playerHurt = true;
   }
   if (boss && boss.state !== 'dead' && boss.state !== 'waiting' && overlaps(boss.box, player.box)) {
-    if (player.applyHit(incomingDamage(boss.touchDamage, damageTaken), boss.centerX))
-      ev.playerHurt = true;
+    const amount = incomingDamage(boss.touchDamage, damageTaken);
+    if (absorbed(amount)) return;
+    if (player.applyHit(amount, boss.centerX)) ev.playerHurt = true;
   }
 }

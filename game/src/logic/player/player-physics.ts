@@ -205,6 +205,15 @@ export class PlayerPhysics {
   }
 
   /** Nhận sát thương từ một nguồn ở tọa độ X. Trả về false nếu đang bất tử. */
+  /**
+   * Khiên C3 chặn một đòn (StageWorld đã kiểm tra khiên sẵn và Kai không bất tử): không mất máu,
+   * không bật lùi, không ngắt lướt, không phát `hurt` (giữ mức nạp, không kích tín hiệu `hurt` của
+   * hướng dẫn); chỉ bất tử `iFrameSec` để đòn khác cùng lúc không trúng ngay.
+   */
+  absorbHit(iFrameSec: number): void {
+    this.iFrames = Math.max(this.iFrames, iFrameSec);
+  }
+
   applyHit(damage: number, sourceX: number): boolean {
     if (this.invulnerable) return false;
     this.hp = Math.max(0, this.hp - damage);

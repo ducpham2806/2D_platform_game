@@ -68,6 +68,10 @@ describe('dữ liệu cây kỹ năng (skills.json)', () => {
     bad((r) => (node(r, 'V3').ranks[0]!.punishMul = 1.1), /bậc 1 chỉ có 20%/);
     bad((r) => (node(r, 'P2').id = 'P1'), /trùng "P1"/);
     bad((r) => (node(r, 'P3').ranks[0]!.projectileIFrameSteps = 3.5), /số nguyên/);
+    bad(
+      (r) => (r.rules.shieldPierceKinds = ['laser']),
+      /shieldPierceKinds\[0\]: loại đòn "laser" không có/,
+    );
   });
 
   it('sàn nạp đầy phải lớn hơn thời gian nạp vừa (kỹ năng không nâng DPS tối đa)', () => {

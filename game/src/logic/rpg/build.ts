@@ -1,7 +1,7 @@
 /**
  * Build của nhân vật (01-GDD/10-He-thong-RPG-Xuong.md mục 3.1, 4): gom hiệu ứng các bậc kỹ năng đã
  * học thành hệ số, rồi biến đổi dữ liệu gốc (player.json, weapons.json) thành dữ liệu dùng trong
- * trận. Phần cơ chế (lượt lướt trên không, nổ lan, khiên...) đọc `effects` ở các Story sau.
+ * trận. Phần cơ chế đọc `effects` (lượt lướt, nổ lan) hoặc `shield` (khiên C3, chạy trong BuildRuntime).
  * Logic thuần.
  */
 import type { PlayerData } from '../../core/player-config';
@@ -10,6 +10,18 @@ import type { WeaponsData } from '../../core/weapons-config';
 import { NO_PLAYER_MODS, type PlayerMods } from '../player/player-params';
 import { levelStats, type LevelStats } from './progression';
 import { rankOf, type SkillRanks } from './skill-tree';
+
+/** Khiên C3 (GDD 10 mục 2.1, 5): thông số từ bậc đã học và skills.json → rules. */
+export interface ShieldStats {
+  /** Hồi sau chừng này giây tính từ lúc khiên vỡ. */
+  rechargeSec: number;
+  /** Bất tử sau khi khiên chặn một đòn. */
+  iFrameSec: number;
+  /** Dừng hình (bước) khi khiên vỡ. */
+  hitStopSteps: number;
+  /** Loại đòn khiên không chặn (đòn đỉnh). */
+  pierceKinds: ReadonlySet<string>;
+}
 
 export interface BuildStats {
   /** Hiệu ứng gộp của mọi bậc đã học (hệ số `*Mul` nhân với nhau, thời gian hồi khiên lấy nhỏ nhất, còn lại cộng). */
@@ -23,6 +35,8 @@ export interface BuildStats {
   regenDelayMul: number;
   /** Loại đòn tính là đạn (skills.json → rules.bulletKinds), cho P3. */
   bulletKinds: ReadonlySet<string>;
+  /** Khiên C3; chưa học thì không có. */
+  shield: ShieldStats | undefined;
 }
 
 /** Build trống: không đổi gì (màn chơi thử, bản lưu chưa học kỹ năng). */
@@ -35,6 +49,7 @@ export const EMPTY_BUILD: BuildStats = {
   energyRegenMul: 1,
   regenDelayMul: 1,
   bulletKinds: new Set(),
+  shield: undefined,
 };
 
 function combine(effects: SkillEffects, key: keyof SkillEffects, value: number): void {
@@ -64,6 +79,15 @@ export function computeBuild(data: SkillsData, skills: SkillRanks): BuildStats {
     energyRegenMul: effects.energyRegenMul ?? 1,
     regenDelayMul: effects.regenDelayMul ?? 1,
     bulletKinds: data.rules.bulletKinds,
+    shield:
+      effects.shieldRechargeSec === undefined
+        ? undefined
+        : {
+            rechargeSec: effects.shieldRechargeSec,
+            iFrameSec: data.rules.shieldIFrameSec,
+            hitStopSteps: data.rules.shieldBreakHitStopSteps,
+            pierceKinds: data.rules.shieldPierceKinds,
+          },
   };
 }
 
