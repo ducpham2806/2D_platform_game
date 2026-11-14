@@ -79,6 +79,16 @@ const SHIELD_SHARD_MS = 350;
 const LEVEL_FLASH_MS = 1800;
 
 /**
+ * Bỏ phần tử đã hết hạn ngay trong mảng (không cấp phát mảng mới mỗi khung hình; quy tắc
+ * `core-and-ai-rules`: không cấp phát trên hot-path).
+ */
+function dropExpired(list: { until: number }[], time: number): void {
+  let n = 0;
+  for (const item of list) if (item.until > time) list[n++] = item;
+  list.length = n;
+}
+
+/**
  * Màn xám Prototype: chạy, nhảy, lướt, bám tường, bắn (Arc Cannon 3 mức nạp, Vine Lash),
  * bia tập bắn và boss xám. Toàn bộ luật chơi nằm trong StageWorld (logic thuần); scene chỉ
  * đổi đầu vào, vẽ, khóa camera trong phòng boss và tạo hiệu ứng.
@@ -390,7 +400,7 @@ export class StageScene extends Phaser.Scene {
     if (this.dynamic) {
       drawDynamic(this.dynamic, world, time);
       drawMechanics(this.dynamic, world, time);
-      this.bursts = this.bursts.filter((b) => b.until > time);
+      dropExpired(this.bursts, time);
       for (const b of this.bursts) {
         const left = (b.until - time) / (getConfig(this).ui.feedback.burstRingSec * 1000);
         this.dynamic.lineStyle(1, 0xffd166, Math.max(0.2, left)).strokeCircle(b.x, b.y, b.r);
@@ -781,7 +791,7 @@ export class StageScene extends Phaser.Scene {
 
   /** Khiên C3 vỡ: 8 mảnh kính bay ra quanh Kai rồi mờ dần (vẽ cả lúc Kai đang nhấp nháy). */
   private drawShieldShards(g: Phaser.GameObjects.Graphics, time: number): void {
-    this.shieldShards = this.shieldShards.filter((s) => s.until > time);
+    dropExpired(this.shieldShards, time);
     for (const s of this.shieldShards) {
       const left = (s.until - time) / SHIELD_SHARD_MS;
       const r = 10 + 14 * (1 - left);

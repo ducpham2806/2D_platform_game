@@ -1,4 +1,6 @@
-# Tóm tắt kỹ thuật
+# Tóm tắt kỹ thuật (lưu trữ 14/11/2026)
+
+> Đã chuyển vào lưu trữ: kiến trúc và quyết định kỹ thuật hiện hành nằm ở `game/CONTEXT.md` và GDD chính mục 15. Các "quyết định còn mở" bên dưới đã chốt ở `01-GDD/05-Ke-hoach-kiem-tien.md` mục 13.
 
 Chi tiết nằm trong `04-Dev-Plan/`. Phần này chỉ giữ các quyết định kỹ thuật cốt lõi.
 

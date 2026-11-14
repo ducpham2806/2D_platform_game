@@ -1,4 +1,4 @@
-/** Kích thước logic cố định của game (GDD mục 15, DEV-HANDOFF): 20 × 12 ô, ô 16 px. */
+/** Kích thước logic cố định của game (GDD mục 15): 20 × 12 ô, ô 16 px. */
 export const TILE_SIZE = 16;
 export const TILES_X = 20;
 export const TILES_Y = 12;

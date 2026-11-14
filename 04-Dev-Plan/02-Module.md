@@ -4,7 +4,7 @@ Mỗi module có giao diện công khai nhỏ để dán vào ChatGPT. Tài li�
 
 | ID | Module | Trách nhiệm | Phụ thuộc | Nguồn | Tiêu chí xong |
 |---|---|---|---|---|---|
-| M0 | Dự án và công cụ | Vite + TypeScript + Phaser 3, lint, test (Vitest), Git, CI cơ bản | | DEV-HANDOFF | `npm run dev` và `npm test` chạy |
+| M0 | Dự án và công cụ | Vite + TypeScript + Phaser 3, lint, test (Vitest), Git, CI cơ bản | | GDD 15, `game/CONTEXT.md` | `npm run dev` và `npm test` chạy |
 | M1 | Khung game | Scene (Boot, Preload, Menu, Hub, Stage), scale 320×192 nguyên tỷ lệ, khóa ngang, nạp atlas và JSON cấu hình | M0 | GDD 15 | 60 FPS trên điện thoại tầm trung; tỷ lệ không méo |
 | M2 | Đầu vào | Bàn phím, tay cầm, cảm ứng (cần ảo nổi, nút), đổi phím, chỉnh bố cục nút | M1 | GDD 5.2, tab Hub, wireframe | Nút ≥ 48 dp; bố cục lưu được |
 | M3 | Nhân vật | Chạy, nhảy biến thiên, lướt, bám tường, bị đánh, bất tử 1 giây, va chạm lưới ô | M1, M2 | GDD 5.1, `player.json` | Đúng thông số `player.json` |

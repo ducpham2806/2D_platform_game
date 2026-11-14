@@ -29,7 +29,7 @@ magnet      = magnet_range.magnetTilesPerLevel × lvl ô (Core Bit, tính từ t
 
 - [x] AC-1: Arc Core cấp 2: phát Arc Cannon gốc 1 vào bia/boss gây đúng 1 × 1,1 (theo cách làm tròn hiện có của `outgoingDamage`).
 - [x] AC-2: Armor Plating cấp 2, độ khó Thường: Gai Quạt 12 → round(12 × 0,92) = 11; gai môi trường vẫn 30.
-- [x] AC-3: Energy Cell cấp 2: năng lượng tối đa 34, HUD hiện x/34.
+- [x] AC-3: Energy Cell cấp 2: năng lượng tối đa 36 (+15%/cấp sau duyệt; bản đầu +10% cho 34), HUD hiện x/36.
 - [x] AC-4: Magnet Range cấp 1: viên Core Bit cách 0,9 ô bay tới và được nhặt; viên cách 1,5 ô nằm yên. Cấp 0: không viên nào bay. Viên máu không bị hút.
 - [x] AC-5: Trần sức mạnh cho cùng kết quả như trước (Arc Core và Armor Plating tối đa); test cũ đạt.
 

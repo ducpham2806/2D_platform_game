@@ -46,7 +46,7 @@
   - Bảng HTML tắt `scene.input`, ẩn lớp nút cảm ứng; nút không giữ focus nên phím vẫn tới InputService.
   - Tay cầm đi cùng đường InputService nhưng chưa thử bằng tay cầm thật.
 - [x] AC-4: Ảnh chạy thử ở `04-Dev-Plan/qa/ST-08-05/`: PC mở Xưởng, PC đã học, từ menu tạm dừng, Pixel 7 ngang. Trên Pixel 7, nút nhỏ nhất 48 px, dòng SP dính trên cùng khi cuộn. Không lỗi console.
-- [ ] AC-5: Bước hướng dẫn R02/R03 **chưa làm**: TutorialManager hiện chỉ chạy trong màn (giai đoạn `prologue`, `stage1`), chưa có giai đoạn Hub. Làm cùng Hub hoặc kịch bản hướng dẫn giai đoạn 2.
+- [→] AC-5 (chuyển sang Epic Hub/hướng dẫn giai đoạn Hub, EP-14; không tính vào DoD của Story này): Bước hướng dẫn R02/R03 **chưa làm**: TutorialManager hiện chỉ chạy trong màn (giai đoạn `prologue`, `stage1`), chưa có giai đoạn Hub. Làm cùng Hub hoặc kịch bản hướng dẫn giai đoạn 2.
 - **Lỗi tìm thấy khi chạy thử, đã sửa:**
   - Phím ↑/W vừa là Lên vừa là Tương tác (`controls.json`), nên trong menu tạm dừng, màn Kết quả và Xưởng, bấm ↑ vừa di chuyển vừa kích hoạt mục mới.
   - Sửa bằng `menuActivate`: lần bấm có Lên thì không tính Tương tác là chọn. Có test.

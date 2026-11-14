@@ -15,7 +15,7 @@
   - 5 boss: các loại trên đến cấp 3; Nano Cell Cap, Dash Coil đến cấp 3; Booster Slot cấp 1;
   - 8 boss: mọi loại đến cấp tối đa.
 - Gỡ: chỉ cấp cao nhất đang có, hoàn 100% giá cấp đó.
-- Trường số mới: `energy_cell.energyMaxPerLevel = 0.1`, `magnet_range.magnetTilesPerLevel = 1`.
+- Trường số mới: `energy_cell.energyMaxPerLevel = 0.15` (bản đầu 0,1; đổi theo duyệt EP-09 quyết định 3), `magnet_range.magnetTilesPerLevel = 1`.
 
 ## 3. File
 

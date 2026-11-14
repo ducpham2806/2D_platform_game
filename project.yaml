@@ -1,0 +1,26 @@
+# Cấu hình cho Game Studio Agent (router, rigor) — xem /Game_Studio_Agent/CLAUDE.md mục 1.
+# Ánh xạ đường dẫn: dự án này dùng tên thư mục riêng thay cho design/, production/.
+project: cyber-vanguard
+engine: phaser
+engineVersion: "3.90.0"   # Phaser 3, không phải Phaser 4
+language: typescript
+modes:
+  rigor: standard          # GDD hệ thống đủ 8 mục; Story nhúng thông số; Look rule có ảnh
+genres: [platformer, rpg]
+locale: vi
+paths:
+  gdd: 01-GDD/                       # design/gdd
+  systemsIndex: 04-Dev-Plan/07-Ban-do-he-thong.md   # design/gdd/systems-index.md + entity registry (mục 3)
+  data: 03-Data/                     # nguồn số liệu duy nhất
+  wireframes: 02-Wireframes/boards/
+  adr: 04-Dev-Plan/adr/              # docs/adr
+  epics: 04-Dev-Plan/stories/        # production/epics + production/stories
+  qaEvidence: 04-Dev-Plan/qa/        # production/qa/evidence
+  sessionState: 04-Dev-Plan/00-Bat-dau.md   # production/session-state/active.md
+  sessionLog: 04-Dev-Plan/06-Nhat-ky-phien.md
+  code: game/src/
+  tests: game/tests/
+naming:
+  stories: "ST-<epic>-<nn>-<slug>.md"
+  epics: "EP-<nn>-<slug>.md"
+  adr: "ADR-<nnn>-<slug>.md"

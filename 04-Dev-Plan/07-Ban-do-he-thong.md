@@ -12,7 +12,7 @@ Quy ước "Tài liệu":
 
 | ID | Hệ thống | Loại | Ưu tiên | Phụ thuộc | Tài liệu nguồn | Tài liệu | Code |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| M1–M4 | Khung, đầu vào, nhân vật, chiến đấu | Core | P0 | | GDD 5, DEV-HANDOFF, `player.json`, `weapons.json` | Đủ | Xong |
+| M1–M4 | Khung, đầu vào, nhân vật, chiến đấu | Core | P0 | | GDD 5, `player.json`, `weapons.json` | Đủ | Xong |
 | M5 | Kẻ địch Prologue, Stage 1 | Gameplay | P0 | M4 | `02-Dac-ta-Prologue-Stage1.md` mục 4 | Đủ | Xong |
 | M5 | Kẻ địch Stage 2–4 (12 loại + 3 mini-boss) | Gameplay | P0 | M4 | GDD 9.1 (chỉ có tên), wireframe `Stage2–4.html` | **Chưa có** | Chưa |
 | M6 | Boss Thorna | Gameplay | P0 | M4, M5 | Đặc tả Stage 1 mục 5 | Đủ | Xong |
