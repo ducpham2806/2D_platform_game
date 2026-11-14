@@ -10,7 +10,7 @@
 
 ## Chờ người dùng (đường găng)
 
-1. ~~Merge PR #10~~ xong (14/11, `main` = `eeb8ca1`). Repo công khai, Pages đã bật; bản `eeb8ca1` đã đăng ở `https://ducpham2806.github.io/2D_platform_game/?gate=1` (14/11). Còn: người dùng mở thử trên điện thoại; **tạo tag `gate-r1` trên GitHub** (Releases → Draft a new release → tag `gate-r1`, Target chọn commit `eeb8ca1`): môi trường của Claude không đẩy được tag (proxy trả 403). Code mới tiếp tục trên nhánh này, chỉ merge vào `main` sau đợt thử. **Không merge PR #9** (nhánh của phiên 13/11, tách từ `main` song song, xung đột 31 file); người dùng chọn cách A (14/11): chuyển từng phần sau tag (`stories/EP-21-chuyen-PR9.md`), rồi đóng PR #9.
+1. ~~Merge PR #10~~ xong (14/11, `main` = `eeb8ca1`). Repo công khai, Pages đã bật; bản `eeb8ca1` đã đăng ở `https://ducpham2806.github.io/2D_platform_game/?gate=1` (14/11). Tag `gate-r1` → `eeb8ca1` (người dùng tạo trên GitHub, 14/11; môi trường của Claude không đẩy được tag). Còn: người dùng mở thử trên điện thoại rồi phát link. Code mới tiếp tục trên nhánh này, chỉ merge vào `main` sau đợt thử. **Không merge PR #9** (nhánh của phiên 13/11, tách từ `main` song song, xung đột 31 file); người dùng chọn cách A (14/11): chuyển từng phần sau tag (`stories/EP-21-chuyen-PR9.md`), rồi đóng PR #9.
 2. Chơi thử cổng Prototype với 5 người, ≥ 3 người cảm ứng: `05-Cong-Prototype.md` mục 3; ghi kết quả vào mục 7.
 3. Chọn kênh gửi dữ liệu đo lường (`adr/ADR-002-do-luong-mvp.md`).
 4. Asset nhóm P0 (10 sheet): `05-Assets/01-Huong-dan-asset.md`, sau khi chọn hướng đồ họa (mục 6).
