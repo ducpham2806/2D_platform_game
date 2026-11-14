@@ -38,7 +38,7 @@ Quy ước đo như Stage 1: 1 ô = 16 px, 1 màn hình = 20 × 12 ô, đấu tr
 
 - Telegraph kẻ địch ≥ `enemies.rules.minTelegraphSec` (0,4 s); boss ≥ `minTelegraphSec` (0,5 s) **sau khi chia `speedMul` của pha 3**, kể cả bản Thử thách (`11-Do-kho.md` mục 2.6).
 - Không chết một đòn: đòn mạnh nhất (kẻ địch, boss, môi trường, cả bản Thử thách) × `damageTaken` lớn nhất (1,5) < 100 (máu cấp 1). Game kiểm tra lúc nạp.
-- Kẻ địch xuất hiện cách điểm xuất phát/checkpoint ≥ `minSpawnDistanceTiles` (6 ô); chỉ hoạt động trong `activeRangeTiles` (12 ô ngang); hồi sinh ở checkpoint thì dựng lại, giữ Core Bit và EXP.
+- Kẻ địch xuất hiện cách điểm xuất phát/checkpoint ≥ `minSpawnDistanceTiles` (6 ô); chỉ hoạt động trong `activeRangeTiles` (12 ô ngang) và `activeRangeTilesY` (7 ô dọc), chỉ bắt đầu báo trước khi đã ở trong khung camera (`attackRequiresOnScreen`, `17-Quy-tac-bien.md` QB-23; quan trọng cho Stage 4 cuộn dọc); hồi sinh ở checkpoint thì dựng lại, giữ Core Bit và EXP.
 - Luật duyệt màn (GDD 8.3): đường chính, Memory Log, bí mật và mục tiêu nhiệm vụ phụ tới được bằng **bộ động tác gốc + Arc Cannon**. Chỉ Két giáp cần vũ khí Warden. Lối chỉ lướt trên không (Phantom P1) mới tới thì thưởng tối đa là Core Bit.
 - Vine Lash luôn có (Stage 1 phải xong trước Stage 2–8) nhưng **không dùng để chặn đường chính**: hành vi "kéo thùng, móc dây leo" của Vine Lash chưa có trong `weapons.json` (chỉ có `sweep`).
 - Kẻ địch dùng lại (Drone Lính, Bướm Sắt, Lính Kén) giữ nguyên id và nguyên bản Thử thách đã có ở `11-Do-kho.md` mục 2.6.
@@ -149,7 +149,7 @@ Giá trị biên: Weapon Mastery tối đa (endgame, ngoài MVP: +30% sát thư�
 
 ### 2.4 Checkpoint theo độ khó
 
-Theo `11-Do-kho.md` mục 2.4: Thường có CP1–CP4 (cuối A, cuối B, trước mini-boss, trước cửa boss); Thử thách bỏ CP1 (`difficulties: "story,normal"`); Cốt truyện thêm 1 checkpoint `difficulties: "story"` giữa mỗi đoạn dài ≥ 2,5 phút. Ràng buộc kiểm bằng test khi có bản đồ:
+Theo `11-Do-kho.md` mục 2.4: Thường có CP1–CP4 (cuối A, cuối B, trước mini-boss, trước cửa boss); Thử thách bỏ CP1 (`difficulties: "story,normal"`); Cốt truyện thêm 1 checkpoint `difficulties: "story"` giữa mỗi đoạn dài hơn 1,5 phút (90 s; sửa theo `11-Do-kho.md` mục 2.4 sau rà soát 14/11/2026), nên mọi đoạn \~2,5 phút của Stage 2–4 đều có checkpoint Cốt truyện ở giữa. Ràng buộc kiểm bằng test khi có bản đồ:
 
 ```text
 khoảng Thử thách(i) = Σ thời lượng giữa hai điểm hồi sinh liền nhau ở Thử thách ≤ 4,5 phút
