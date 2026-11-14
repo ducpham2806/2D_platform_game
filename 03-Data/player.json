@@ -47,13 +47,15 @@
     "max": 30,
     "expFormula": "40*L^1.4",
     "hp": "100+4*(L-1)",
-    "atk": "10+0.25*(L-1)",
+    "atk": "10+0.2*(L-1)",
     "spPerLevelFrom2": 1,
     "spPerBoss": 1,
     "storyPowerCap": {
       "damageMul": 2.2,
       "hpMul": 2.5,
-      "note": "cấp + upgrade + module trong cốt truyện [PLACEHOLDER]"
+      "conditionalDamageMul": 2.6,
+      "effectiveHpMul": 3.75,
+      "note": "Đo ở cấp tối đa (01-GDD/10-He-thong-RPG-Xuong.md mục 3.3): damageMul = công theo cấp × upgrade sát thương tối đa (hệ số thường trực); hpMul = máu theo cấp × kỹ năng máu tối đa; conditionalDamageMul = thường trực × hiệu ứng có điều kiện (Last Stand); effectiveHpMul = máu tối đa / hệ số giảm sát thương tốt nhất của build (upgrade, giáp). Kỹ năng tăng tốc nạp chỉ áp nạp đầy nên không nâng DPS tối đa (kiểm bằng mô phỏng). [PLACEHOLDER]"
     }
   },
   "inPlaceRevivePerStage": {

@@ -1,6 +1,6 @@
 # ST-08-01: Dữ liệu kỹ năng, số hóa Upgrade/Booster, trần sức mạnh mới
 
-- **Thuộc Epic:** EP-08 · **Ưu tiên:** P1 (Vertical slice) · **Trạng thái:** READY
+- **Thuộc Epic:** EP-08 · **Ưu tiên:** P1 (Vertical slice) · **Trạng thái:** DONE (14/11/2026)
 - **Phụ thuộc:** không (GDD đã duyệt 14/11/2026)
 - **Bằng chứng:** [x] Logic [x] Config [ ] Visual
 
@@ -40,11 +40,14 @@
 
 ## 4. Tiêu chí nghiệm thu
 
-- [ ] AC-1: dữ liệu thật nạp được; `config.skills` có 3 nhánh, 9 nút, 18 bậc.
-- [ ] AC-2: báo lỗi khi:
-  - nút tầng 2 có bậc 1 yếu hơn nút tầng 1;
+- [x] AC-1: dữ liệu thật nạp được; `config.skills` có 3 nhánh, 9 nút, 18 bậc (`tests/skills-config.test.ts`).
+- [x] AC-2: báo lỗi khi:
+  - bậc sau không mạnh hơn ≥ 20% và không thêm hiệu ứng, hoặc yếu hơn bậc trước;
   - bậc 1 nút tầng 3 dưới 60% hiệu lực tối đa;
+  - hiệu ứng lạ, ngoài khoảng, không nguyên khi cần;
+  - số bậc khác số tầng;
   - `minFullChargeSec` ≤ thời gian nạp vừa;
-  - trường số Upgrade thiếu hoặc âm;
-  - trường hợp có điều kiện vượt `conditionalDamageMul`.
-- [ ] AC-3: `npm test`, lint, format, build đạt; không số gameplay nào trong mã.
+  - trường số Upgrade/Booster thiếu, hoặc giảm sát thương × cấp tối đa ≥ 100%.
+
+  (Kiểm tra trần có điều kiện `conditionalDamageMul` làm ở ST-08-04. Tiêu chí cũ "bậc 1 nút tầng 2 yếu hơn nút tầng 1" bỏ vì so hai hiệu ứng khác loại.)
+- [x] AC-3: `npm test` 294 test, lint, format, build đạt; không số gameplay nào trong mã.

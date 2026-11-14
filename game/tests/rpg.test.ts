@@ -45,11 +45,11 @@ describe('cấp và EXP (GDD 6.1)', () => {
     expect(skillPoints(level, 1, lv)).toBe(4);
   });
 
-  it('chỉ số theo cấp: cấp 1 = 100 máu, công ×1; cấp 30 = 216 máu, công ×1,725', () => {
+  it('chỉ số theo cấp: cấp 1 = 100 máu, công ×1; cấp 30 = 216 máu, công ×1,58 (GDD 0.7)', () => {
     expect(levelStats(1, lv)).toEqual({ maxHp: 100, attackMul: 1 });
     const top = levelStats(30, lv);
     expect(top.maxHp).toBe(216);
-    expect(top.attackMul).toBeCloseTo(1.725, 9);
+    expect(top.attackMul).toBeCloseTo(1.58, 9);
   });
 
   it('đồng bộ cấp: Stage 1 (khuyến nghị 2–4) kẹp trong 1–6; tắt hoặc ngoài chiến dịch thì cấp thật', () => {

@@ -9,6 +9,8 @@ import { levelStats } from '../logic/rpg/progression';
 import { parseStageMechanics, type StageMechanics } from './stage-mechanics-config';
 import { parseTutorial, type TutorialData } from './tutorial-config';
 import { parseUi, type UiData } from './ui-config';
+import { parseSkills, type SkillsData } from './skills-config';
+import { parseShop, type ShopData } from './shop-config';
 import { parseWardenDialogue, type WardenDialogueData } from './dialogue-config';
 
 export { ConfigError } from './json-check';
@@ -78,6 +80,7 @@ export const REQUIRED_DATA_FILES = [
   'tutorial',
   'ui',
   'dialogue_wardens',
+  'skills',
 ] as const;
 export type RequiredDataFile = (typeof REQUIRED_DATA_FILES)[number];
 
@@ -94,6 +97,10 @@ export interface GameConfig {
   ui: UiData;
   /** Thoại trước/sau trận của Warden (dialogue_wardens.json). */
   wardenDialogue: WardenDialogueData;
+  /** Cây kỹ năng (M8, skills.json). */
+  skills: SkillsData;
+  /** Upgrade và Booster (M9, shop.json). */
+  shop: ShopData;
   /** Các file chưa có module dùng (shop, economy, modules, endgame…), giữ nguyên dạng thô. */
   raw: Readonly<Record<string, unknown>>;
 }
@@ -295,6 +302,15 @@ export function checkDesignInvariants(config: GameConfig): string[] {
       `player.level.atk: cấp ${lv.max} gấp ${top.attackMul} lần cấp 1, trần ${lv.storyPowerCap.damageMul}`,
     );
 
+  // Kỹ năng chỉ giảm thời gian nạp đầy; sàn nạp đầy phải lớn hơn nạp vừa để lối nạp đầy không
+  // vượt lối mạnh nhất (01-GDD/10-He-thong-RPG-Xuong.md mục 3.2).
+  const arc = config.weapons.arcCannon;
+  const minFull = config.skills.rules.minFullChargeSec;
+  if (minFull <= arc.midCharge.timeSec || minFull > arc.charge.timeSec)
+    errors.push(
+      `skills.rules.minFullChargeSec: ${minFull} phải lớn hơn nạp vừa (${arc.midCharge.timeSec} s) và không quá nạp đầy gốc (${arc.charge.timeSec} s)`,
+    );
+
   // Thoại Warden: biến thể phủ hết số boss có thể đã hạ trước trận (0 đến số màn − 1);
   // boss của màn đã có dữ liệu trận đánh thì phải có thoại (GDD 3.6: boss có thoại trước/sau trận).
   const dlg = config.wardenDialogue;
@@ -331,6 +347,8 @@ export function parseGameConfig(files: Readonly<Record<string, unknown>>): GameC
     tutorial: parseTutorial(files.tutorial, new Set(Object.keys(enemies.enemies))),
     ui,
     wardenDialogue: parseWardenDialogue(files.dialogue_wardens, ui.dialogue.maxChars),
+    skills: parseSkills(files.skills),
+    shop: parseShop(files.shop),
     raw: { ...files },
   };
   const errors = checkDesignInvariants(config);

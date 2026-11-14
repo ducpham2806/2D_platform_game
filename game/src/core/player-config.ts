@@ -34,7 +34,14 @@ export interface LevelData {
   spPerLevelFrom2: number;
   spPerBoss: number;
   /** Trần so với cấp 1 của cấp + upgrade + module trong cốt truyện (GDD 6.1). */
-  storyPowerCap: { damageMul: number; hpMul: number };
+  storyPowerCap: {
+    damageMul: number;
+    hpMul: number;
+    /** Thường trực × hiệu ứng có điều kiện (Last Stand). */
+    conditionalDamageMul: number;
+    /** Máu tối đa / hệ số giảm sát thương tốt nhất của build. */
+    effectiveHpMul: number;
+  };
 }
 
 export function parsePlayer(value: unknown): PlayerData {
@@ -108,6 +115,14 @@ export function parsePlayer(value: unknown): PlayerData {
       storyPowerCap: {
         damageMul: num(cap.damageMul, 'player.level.storyPowerCap.damageMul', { min: 1 }),
         hpMul: num(cap.hpMul, 'player.level.storyPowerCap.hpMul', { min: 1 }),
+        conditionalDamageMul: num(
+          cap.conditionalDamageMul,
+          'player.level.storyPowerCap.conditionalDamageMul',
+          { min: 1 },
+        ),
+        effectiveHpMul: num(cap.effectiveHpMul, 'player.level.storyPowerCap.effectiveHpMul', {
+          min: 1,
+        }),
       },
     },
     inPlaceRevivePerStage: { max: num(revive.max, 'player.inPlaceRevivePerStage.max', { min: 0 }) },
