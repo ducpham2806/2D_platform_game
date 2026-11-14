@@ -67,7 +67,7 @@ const BASES = [
 ];
 // Không kiểm: file ở repo khác (Game Studio Agent) và file dữ liệu đã lên kế hoạch, chưa tạo.
 const EXTERNAL = ['templates/story-template.md'];
-const PLANNED = ['armor.json', 'quests.json', 'strings.vi/en.json'];
+const PLANNED = ['armor.json', 'quests.json', 'strings.vi/en.json', 'audio.json', 'telemetry.json'];
 for (const file of INDEX_FILES) {
   for (const m of read(file).matchAll(/`([\w./-]+\.(?:md|json))`/g)) {
     const ref = m[1];
