@@ -9,7 +9,7 @@ import { WeaponLoadout } from '../combat/loadout';
 import { ProjectilePool } from '../combat/projectiles';
 import { TrainingTarget } from '../combat/targets';
 import type { Enemy } from '../enemy/enemy';
-import { levelStats } from '../rpg/progression';
+import { applyBuild, type BuildStats, EMPTY_BUILD, statsFor } from '../rpg/build';
 import { playerParams } from '../player/player-params';
 import { PlayerPhysics } from '../player/player-physics';
 import { createRng, type Rng } from '../rng';
@@ -49,6 +49,8 @@ export interface WorldSetup {
   bossDefeated?: boolean;
   /** Cấp hiệu dụng (M8, đã đồng bộ cấp theo màn) quyết định máu và công; không có thì cấp 1. */
   level?: number;
+  /** Build kỹ năng (M8); không có thì build trống. `player`/`weapons` ở trên là dữ liệu gốc. */
+  build?: BuildStats;
 }
 
 /** Bia tập bắn: máu (phát Arc Cannon) và thời gian dựng lại. Chỉ dùng trong màn xám. */
@@ -97,6 +99,10 @@ export class StageWorld {
   private attackMul: number;
   /** Cấp hiệu dụng đang dùng để tính máu và công. */
   level: number;
+  /** Build kỹ năng đang áp. */
+  build: BuildStats;
+  /** Dữ liệu gốc đã áp build: dùng cho vật lý Kai và vũ khí (`setup` giữ dữ liệu gốc). */
+  private built: { player: PlayerData; weapons: WeaponsData };
   private readonly start: { x: number; y: number };
   private checkpoint: { x: number; y: number };
   private respawnTimer = 0;
@@ -125,16 +131,18 @@ export class StageWorld {
     this.safe = this.checkpoint;
     // Sát thương gốc tính ở cấp 1, nên hệ số công = công hiện tại / công cấp 1.
     this.level = setup.level ?? 1;
-    const { maxHp, attackMul } = levelStats(this.level, setup.player.level);
+    this.build = setup.build ?? EMPTY_BUILD;
+    this.built = applyBuild(setup.player, setup.weapons, this.build);
+    const { maxHp, attackMul } = statsFor(this.level, setup.player.level, this.build);
     this.attackMul = attackMul;
     this.player = new PlayerPhysics(
-      playerParams(setup.player, t, setup.stepSec),
+      playerParams(this.built.player, t, setup.stepSec),
       this.map,
       this.checkpoint.x,
       this.checkpoint.y,
       maxHp,
     );
-    this.loadout = new WeaponLoadout(setup.weapons, t);
+    this.loadout = new WeaponLoadout(this.built.weapons, t);
     for (const w of setup.ownedWeapons ?? []) this.loadout.grant(w);
     this.everWon = setup.bossDefeated ?? false;
 
@@ -202,16 +210,20 @@ export class StageWorld {
    */
   retune(patch: Partial<Pick<WorldSetup, 'player' | 'weapons' | 'boss'>>): void {
     this.setup = { ...this.setup, ...patch };
+    // Dữ liệu chỉnh là dữ liệu gốc: áp lại build để không mất hiệu ứng kỹ năng.
+    this.built = applyBuild(this.setup.player, this.setup.weapons, this.build);
     if (patch.player) {
-      this.player.setParams(playerParams(patch.player, this.setup.tileSize, this.setup.stepSec));
+      this.player.setParams(
+        playerParams(this.built.player, this.setup.tileSize, this.setup.stepSec),
+      );
     }
-    if (patch.weapons) this.loadout.setData(patch.weapons);
+    if (patch.weapons) this.loadout.setData(this.built.weapons);
   }
 
   /** Lên cấp giữa màn (M8): máu tối đa và công theo cấp hiệu dụng mới, máu cộng phần chênh. */
   setLevel(level: number): void {
     if (level === this.level) return;
-    const stats = levelStats(level, this.setup.player.level);
+    const stats = statsFor(level, this.setup.player.level, this.build);
     this.level = level;
     this.attackMul = stats.attackMul;
     this.player.setMaxHp(stats.maxHp);
@@ -301,7 +313,7 @@ export class StageWorld {
     this.hitStop = resolvePlayerHits(
       this.pool,
       { targets: this.targets, enemies: this.enemies, boss: this.boss },
-      this.setup.weapons,
+      this.built.weapons,
       this.attackMul,
       ev,
       killed,
@@ -425,7 +437,7 @@ export class StageWorld {
     for (const p of this.pool.all) {
       if (!p.attached || p.owner !== 'player') continue;
       p.x = pl.facing > 0 ? pl.centerX : pl.centerX - p.w;
-      p.y = pl.box.y + this.setup.weapons.arcCannon.muzzleOffsetPx.y - p.h / 2;
+      p.y = pl.box.y + this.built.weapons.arcCannon.muzzleOffsetPx.y - p.h / 2;
     }
   }
 

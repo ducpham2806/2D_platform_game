@@ -24,6 +24,7 @@ import {
 import { DialogueRunner } from '../logic/dialogue/dialogue-runner';
 import { buildHud } from '../logic/hud/hud-model';
 import { buildStageResult } from '../logic/result/stage-result';
+import { computeBuild, EMPTY_BUILD } from '../logic/rpg/build';
 import { LevelTracker, skillPoints, syncLevel } from '../logic/rpg/progression';
 import { recordTutorialDone, setTutorialOff } from '../logic/save/save-data';
 import type { SaveManager } from '../logic/save/save-manager';
@@ -176,6 +177,8 @@ export class StageScene extends Phaser.Scene {
       level: this.levels
         ? syncLevel(this.levels.info.level, this.levelRange, config.stages.levelSync)
         : 1,
+      // Màn chơi thử (không bản lưu) dùng build trống để số liệu các phiên so sánh được.
+      build: save ? computeBuild(config.skills, save.data.character.skills) : EMPTY_BUILD,
     });
     this.world = world;
     this.saver = save ? new StageSave(save, this.def.id, bossId) : undefined;

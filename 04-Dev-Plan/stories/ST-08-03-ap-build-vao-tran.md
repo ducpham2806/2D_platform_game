@@ -1,6 +1,6 @@
 # ST-08-03: Áp build vào trận: V1, P2 bậc 1, C1, C2
 
-- **Thuộc Epic:** EP-08 · **Ưu tiên:** P1 · **Trạng thái:** TODO
+- **Thuộc Epic:** EP-08 · **Ưu tiên:** P1 · **Trạng thái:** DONE (14/11/2026)
 - **Phụ thuộc:** ST-08-02
 - **Bằng chứng:** [x] Logic [x] Integration [x] Visual (chạy thử màn với build)
 
@@ -28,7 +28,11 @@
 
 ## 4. Tiêu chí nghiệm thu
 
-- [ ] AC-1: Có V1 thì nạp đầy 1,02 s, nạp vừa vẫn 0,5 s; V1 + Overcharge (khi có booster) kẹp ở 0,75 s.
-- [ ] AC-2: Có C1 ở cấp 4: máu tối đa 129; lên cấp 5 giữa màn: 133 (116 × 1,15 = 133,4), máu hiện tại cộng phần chênh.
-- [ ] AC-3: `retune()` giữ build; màn xám bỏ qua build.
-- [ ] AC-4: Chạy thử phòng thử màn chơi với P2: trượt tường chậm thấy rõ; lưu ảnh ở `04-Dev-Plan/qa/ST-08-03/`.
+- [x] AC-1: Có V1 thì nạp đầy 1,02 s, nạp vừa vẫn 0,5 s; hệ số quá nhỏ thì kẹp ở sàn 0,75 s (`tests/build.test.ts`). (Overcharge áp khi có Booster, M9.)
+- [x] AC-2: Có C1 ở cấp 4: máu tối đa 129; lên cấp 5 giữa màn: 133, máu hiện tại cộng phần chênh.
+- [x] AC-3: `retune()` giữ build (dữ liệu chỉnh là dữ liệu gốc, `world.tuning` vẫn trả số gốc); màn xám bỏ qua build.
+- [x] AC-4: Chạy thử Chromium với bản lưu cấp 3, P1 + P2 + C1:
+  - Phòng thử màn chơi: cấp 3, máu tối đa 124 (108 × 1,15), trượt tường 19,2 px/s (2 × 0,6 ô/s).
+  - Màn xám: build trống, máu 100, trượt tường 32 px/s.
+  - Menu hiện "SP còn 0". Không lỗi console.
+  - Ảnh HUD: `04-Dev-Plan/qa/ST-08-03/hud-c1-cap3.png`.
