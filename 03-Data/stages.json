@@ -272,6 +272,7 @@
       "jumpBonus": 0.1
     },
     "minEnemySpawnTiles": 6,
-    "note": "Cơ chế màn chơi (M7, đặc tả Prologue & Stage 1 mục 3): hồi sinh ở checkpoint sau respawnSec (≤ maxRespawnSec = 1,5 s), giữ Core Bit và EXP. Hố: mất pit.damage máu (nhân damageTaken của độ khó) rồi về checkpoint sau pit.returnSec, hết máu thì tính là chết. Gai: mất spikes.damage máu, về chỗ đứng an toàn gần nhất, bất tử như khi bị đánh; module Spike Guard miễn nhiễm. Dây leo đu: chu kỳ periodSec, lệch ngang tối đa amplitudeTiles, dây dài lengthTiles (bản đồ ghi đè được), bệ rộng platformWidthTiles, nhảy khỏi dây cộng jumpBonus lực nhảy. Kẻ địch cách điểm xuất phát/checkpoint ≥ minEnemySpawnTiles ô. [PLACEHOLDER]"
+    "enemyRewardOncePerRun": true,
+    "note": "Cơ chế màn chơi (M7, đặc tả Prologue & Stage 1 mục 3): hồi sinh ở checkpoint sau respawnSec (≤ maxRespawnSec = 1,5 s), giữ Core Bit và EXP. Hố: mất pit.damage máu (nhân damageTaken của độ khó) rồi về checkpoint sau pit.returnSec, hết máu thì tính là chết. Gai: mất spikes.damage máu, về chỗ đứng an toàn gần nhất, bất tử như khi bị đánh; module Spike Guard miễn nhiễm. Dây leo đu: chu kỳ periodSec, lệch ngang tối đa amplitudeTiles, dây dài lengthTiles (bản đồ ghi đè được), bệ rộng platformWidthTiles, nhảy khỏi dây cộng jumpBonus lực nhảy. Kẻ địch cách điểm xuất phát/checkpoint ≥ minEnemySpawnTiles ô. enemyRewardOncePerRun: kẻ địch dựng lại sau khi Kai chết vẫn có thể bị hạ, nhưng EXP và Core Bit chỉ nhận một lần cho mỗi kẻ địch trong một lượt vào màn (chặn cày bằng cách chết; rà soát 15/11/2026); viên máu vẫn rơi. [PLACEHOLDER]"
   }
 }

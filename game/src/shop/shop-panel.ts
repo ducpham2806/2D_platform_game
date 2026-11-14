@@ -6,7 +6,7 @@
  * Điều hướng như Xưởng: chạm/chuột trực tiếp; bàn phím và tay cầm qua `InputSnapshot` của
  * InputService (lưới thẻ rồi hàng nút); Tạm dừng quay lại. Nút không giữ focus.
  */
-import type { GameConfig } from '../core/game-config';
+import { type GameConfig, STAGES_WITH_ENEMY_DATA } from '../core/game-config';
 import { SHOP } from '../debug/flags';
 import { gridMove, type GridPos, MENU_STICK_STEP, menuActivate } from '../logic/hud/menu-cursor';
 import type { InputSnapshot } from '../logic/input/actions';
@@ -42,6 +42,8 @@ export function shopModel(save: SaveManager, config: GameConfig): ShopModel {
     coreBits: save.data.inventory.coreBits,
     bosses: shopBosses(save, config),
     readOnly: save.readOnly,
+    playableStages: STAGES_WITH_ENEMY_DATA,
+    difficultyBy: save.data.progress.difficulty,
   });
 }
 
@@ -353,7 +355,7 @@ export class ShopPanel {
         // Chỉ gợi ý, không chặn, không đẩy mua (đặc tả Hub mục 4.2).
         const inc = model.income;
         lines.push(
-          `<p class="hint">Thiếu ${c.missing} Core Bit. Một lượt Stage ${inc.stage}${inc.name ? ` ${inc.name}` : ''} (Thường) cho khoảng ${inc.coreBits} Core Bit.</p>`,
+          `<p class="hint">Thiếu ${c.missing} Core Bit. ${inc.replay ? 'Chơi lại' : 'Một lượt'} Stage ${inc.stage}${inc.name ? ` ${inc.name}` : ''}${inc.difficultyName ? ` (${inc.difficultyName})` : ''} cho khoảng ${inc.coreBits} Core Bit.</p>`,
         );
       }
     }

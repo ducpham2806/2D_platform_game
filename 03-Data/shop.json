@@ -35,7 +35,7 @@
       "name": "Nano Cell Cap",
       "desc": "+25% lượng hồi mỗi Nano Cell mỗi cấp.",
       "maxLevel": 4,
-      "effectPerLevel": "+25% heal per sub-tank",
+      "effectPerLevel": "+25% heal per Nano Cell",
       "baseCost": 400,
       "costGrowth": 1.25
     },

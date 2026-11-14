@@ -417,12 +417,13 @@ export class StageScene extends Phaser.Scene {
       const keys = input.device === 'touch' ? '' : formatGlyphs('{NHẢY} tiếp · {LƯỚT} bỏ qua', ctx);
       this.dialogueBox?.show(talk, keys);
     }
-    // Hộp hội thoại hoặc màn Kết quả đang mở thì lời hướng dẫn chờ (không chồng lên nhau).
-    const view = talk || this.result?.isOpen ? undefined : this.tutorial?.manager.view;
+    // Thứ tự hộp (17-Quy-tac-bien mục 8): hội thoại > Kết quả > gợi ý chết > hướng dẫn.
+    const busy = talk !== undefined || !!this.result?.isOpen;
+    const hinting = this.drawDeathHint(time, busy);
+    const view = busy || hinting ? undefined : this.tutorial?.manager.view;
     if (view)
       this.tutorial?.box.show(view.speaker, formatGlyphs(view.text, ctx), view.hintLevel > 0);
     else this.tutorial?.box.hide();
-    this.drawDeathHint(time, talk !== undefined || view !== undefined || !!this.result?.isOpen);
     input.setTouchHighlight(view?.highlight);
     this.hud?.hint.setText(
       formatGlyphs(
@@ -617,6 +618,8 @@ export class StageScene extends Phaser.Scene {
   /** Chết đủ số lần liên tiếp thì chuẩn bị câu gợi ý của NOVA (GDD 11 mục 2.5). */
   private checkDeathHint(ev: WorldEvents, world: StageWorld): void {
     const hint = this.deathHint;
+    // Mất ngữ cảnh (đã thắng boss, đã qua checkpoint): bỏ câu đang chờ.
+    if (hint.pending && (ev.bossDefeated || ev.checkpoint !== undefined)) hint.pending = undefined;
     if (!ev.playerDied || hint.used || !hint.box || this.save?.data.tutorial.off) return;
     const config = getConfig(this);
     const data = config.ui.difficultyHint;
@@ -631,22 +634,30 @@ export class StageScene extends Phaser.Scene {
       world.loadout.current.name !== weak
         ? weak
         : undefined;
-    hint.pending = difficultyHintText(data, this.difficultyId, counter);
+    const early = !this.save || !workshopUnlocked(this.save, config);
+    hint.pending = difficultyHintText(data, this.difficultyId, counter, early);
   }
 
-  /** Hiện gợi ý khi không có hội thoại, lời hướng dẫn hay màn Kết quả; tự tắt sau `showSec`. */
-  private drawDeathHint(time: number, busy: boolean): void {
+  /**
+   * Hiện gợi ý khi không có hội thoại hay màn Kết quả; gợi ý được ưu tiên hơn lời hướng dẫn
+   * (hướng dẫn tạm ẩn trong lúc gợi ý hiện). Tự tắt sau max(showSec, số ký tự / tốc độ đọc).
+   * Trả true khi gợi ý đang hiện.
+   */
+  private drawDeathHint(time: number, busy: boolean): boolean {
     const hint = this.deathHint;
-    if (!hint.box) return;
+    if (!hint.box) return false;
+    const data = getConfig(this).ui.difficultyHint;
     if (hint.pending && !busy) {
       const speaker = getConfig(this).ui.dialogue.speakers.nova ?? 'NOVA';
       hint.box.show(speaker, hint.pending, true);
-      hint.until = time + getConfig(this).ui.difficultyHint.showSec * 1000;
+      const sec = Math.max(data.showSec, hint.pending.length / data.charsPerSecRead);
+      hint.until = time + sec * 1000;
       hint.pending = undefined;
     } else if (hint.until > 0 && (time >= hint.until || busy)) {
       hint.box.hide();
       hint.until = 0;
     }
+    return hint.until > 0;
   }
 
   /** Id các độ khó còn khóa ở màn chiến dịch `campaign` theo bản lưu. */

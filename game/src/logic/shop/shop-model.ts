@@ -58,8 +58,22 @@ export interface ShopModel {
   /** Bản lưu chỉ đọc (phiên bản game mới hơn): chỉ xem. */
   readOnly: boolean;
   cards: ShopCardView[];
-  /** Gợi ý khi thiếu tiền: một lượt màn kế tiếp ở độ khó Thường cho khoảng bao nhiêu Core Bit. */
-  income: { stage: number; name: string; coreBits: number };
+  /** Gợi ý khi thiếu tiền: một lượt màn nên chơi tiếp cho khoảng bao nhiêu Core Bit. */
+  income: ShopIncome;
+}
+
+/**
+ * Gợi ý thu nhập (rà soát 14/11/2026, E02): chỉ gợi ý màn đã có trong bản build; độ khó là độ khó
+ * chọn lần cuối ở màn đó (chưa chọn: Thường). Thưởng boss chỉ trả lần đầu hạ ở mỗi độ khó, nên
+ * màn đã hạ boss ở độ khó đó chỉ tính phần kẻ địch (`replay`).
+ */
+export interface ShopIncome {
+  stage: number;
+  name: string;
+  coreBits: number;
+  /** Đã nhận thưởng boss của màn ở độ khó này: chỉ còn Core Bit của kẻ địch. */
+  replay: boolean;
+  difficultyName: string;
 }
 
 export interface ShopSources {
@@ -67,8 +81,10 @@ export interface ShopSources {
   economy: EconomyData;
   /** Năng lượng tối đa gốc của vũ khí boss (Energy Cell hiện số thật). */
   weapons: { energyMax: number };
-  stages: { stages: readonly { index: number; name: string }[] };
+  stages: { stages: readonly { index: number; id: string; name: string; boss: string }[] };
   difficulties: readonly DifficultyData[];
+  /** Thưởng Core Bit lần đầu hạ boss (trừ ra khi chơi lại). */
+  bosses: Readonly<Record<string, { rewardCoreBit: number }>>;
 }
 
 export interface ShopState {
@@ -78,12 +94,52 @@ export interface ShopState {
   /** Số boss chiến dịch đã hạ. */
   bosses: number;
   readOnly?: boolean;
+  /** Số màn chiến dịch đã có trong bản build (mặc định: mọi màn). */
+  playableStages?: number;
+  /** Tiến trình độ khó theo id màn chiến dịch (bản lưu `progress.difficulty`). */
+  difficultyBy?: Readonly<Record<string, { last: string | null; cleared: readonly string[] }>>;
 }
 
 /** Core Bit một lượt màn `stage` ở độ khó `difficultyId` (kinh tế mục 2), làm tròn. */
 export function stageIncome(src: ShopSources, stage: number, difficultyId = 'normal'): number {
   const mul = src.difficulties.find((d) => d.id === difficultyId)?.rewardMul ?? 1;
   return Math.round(evaluateFormula(src.economy.incomeFormula, { stage }) * mul);
+}
+
+/** Core Bit một lượt chơi lại màn đã nhận thưởng boss ở độ khó này: bỏ phần thưởng boss. */
+export function replayIncome(
+  src: ShopSources,
+  stage: number,
+  bossReward: number,
+  difficultyId = 'normal',
+): number {
+  const mul = src.difficulties.find((d) => d.id === difficultyId)?.rewardMul ?? 1;
+  const base = evaluateFormula(src.economy.incomeFormula, { stage }) - bossReward;
+  return Math.round(Math.max(0, base) * mul);
+}
+
+/** Màn nên gợi ý: màn kế tiếp nếu đã có trong bản build, không thì màn cuối đã có. */
+export function shopIncome(src: ShopSources, state: ShopState): ShopIncome {
+  const sorted = [...src.stages.stages].sort((a, b) => a.index - b.index);
+  const playable = sorted.filter((s) => s.index <= (state.playableStages ?? Infinity));
+  const built = playable.length > 0 ? playable : sorted.slice(0, 1);
+  const target = built[Math.min(state.bosses, built.length - 1)];
+  if (!target) return { stage: 1, name: '', coreBits: 0, replay: false, difficultyName: '' };
+  const prog = state.difficultyBy?.[target.id];
+  const known = src.difficulties.find((d) => d.id === prog?.last);
+  const diff = known ?? src.difficulties.find((d) => d.id === 'normal');
+  const diffId = diff?.id ?? 'normal';
+  const replay = prog?.cleared.includes(diffId) ?? false;
+  const reward = src.bosses[target.boss]?.rewardCoreBit ?? 0;
+  return {
+    stage: target.index,
+    name: target.name,
+    coreBits: replay
+      ? replayIncome(src, target.index, reward, diffId)
+      : stageIncome(src, target.index, diffId),
+    replay,
+    difficultyName: diff?.name ?? '',
+  };
 }
 
 /** "12,5%" kiểu Việt Nam. */
@@ -109,10 +165,6 @@ export function upgradeEffectText(
 
 export function buildShop(src: ShopSources, state: ShopState): ShopModel {
   const { shop } = src;
-  const stages = [...src.stages.stages].sort((a, b) => a.index - b.index);
-  // Màn người chơi sẽ chơi tiếp: màn sau boss vừa hạ (kẹp ở màn cuối).
-  const next = stages[Math.min(state.bosses, stages.length - 1)];
-  const stage = next?.index ?? 1;
   const cards = Object.values(shop.upgrades).map((u): ShopCardView => {
     const level = Math.min(levelOf(state.levels, u.id), u.maxLevel);
     const maxed = level >= u.maxLevel;
@@ -147,6 +199,6 @@ export function buildShop(src: ShopSources, state: ShopState): ShopModel {
     coreBits: state.coreBits,
     readOnly: state.readOnly ?? false,
     cards,
-    income: { stage, name: next?.name ?? '', coreBits: stageIncome(src, stage) },
+    income: shopIncome(src, state),
   };
 }

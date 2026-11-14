@@ -24,6 +24,8 @@ export class EnemyField {
   exp = 0;
   coreBits = 0;
   private readonly rng: Rng;
+  /** Kẻ địch (theo id) đã cho EXP, Core Bit trong lượt vào màn này. */
+  private readonly rewarded = new Set<number>();
 
   constructor(
     private readonly data: EnemiesData,
@@ -34,6 +36,8 @@ export class EnemyField {
     seed: number,
     /** Hệ số thưởng của độ khó (EXP, Core Bit mỗi kẻ địch, làm tròn; GDD 11 mục 3.1). */
     private readonly rewardMul = 1,
+    /** EXP, Core Bit chỉ nhận một lần cho mỗi kẻ địch trong lượt (stages.json → mechanics). */
+    private readonly rewardOnce = false,
   ) {
     const t = map.tileSize;
     this.rng = createRng(seed);
@@ -70,11 +74,18 @@ export class EnemyField {
     }
   }
 
-  /** Kẻ địch vừa bị hạ: cộng EXP, rơi đồ. */
+  /**
+   * Kẻ địch vừa bị hạ: cộng EXP, rơi đồ. Kẻ địch đã cho thưởng trong lượt này (dựng lại sau khi
+   * Kai chết) thì chỉ rơi viên máu, để không cày được bằng cách chết.
+   */
   onKilled(killed: readonly Enemy[], player: PlayerPhysics): void {
     for (const e of killed) {
-      this.exp += scaleReward(e.data.exp, this.rewardMul);
-      const coreBit = scaleReward(e.data.coreBit, this.rewardMul);
+      const paid = this.rewardOnce && this.rewarded.has(e.id);
+      if (!paid) {
+        this.rewarded.add(e.id);
+        this.exp += scaleReward(e.data.exp, this.rewardMul);
+      }
+      const coreBit = paid ? 0 : scaleReward(e.data.coreBit, this.rewardMul);
       this.pickups.drop(e.centerX, e.centerY, coreBit, player.hp < player.maxHp, this.rng);
     }
   }

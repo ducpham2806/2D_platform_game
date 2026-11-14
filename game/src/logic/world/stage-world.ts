@@ -206,6 +206,7 @@ export class StageWorld {
           () => nextId++,
           setup.seed + 1,
           setup.difficulty.rewardMul,
+          setup.mechanics.enemyRewardOncePerRun,
         )
       : undefined;
     this.bossSpawn = layout.boss ? standPoint(layout.boss, t) : undefined;

@@ -80,8 +80,11 @@ export function difficultyHintText(
   hint: { lines: Readonly<Record<string, string>>; weapon: string },
   difficultyId: string,
   counterWeapon?: string,
+  /** Xưởng chưa mở: dùng câu `<id>_early` nếu có (câu thường nhắc tới Xưởng, Quầy). */
+  early = false,
 ): string {
-  const line = hint.lines[difficultyId] ?? '';
+  const line =
+    (early ? hint.lines[`${difficultyId}_early`] : undefined) ?? hint.lines[difficultyId] ?? '';
   if (!counterWeapon) return line;
   return `${line} ${hint.weapon.replace('{weapon}', counterWeapon)}`.trim();
 }

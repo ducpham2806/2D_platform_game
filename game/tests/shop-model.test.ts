@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { parseGameConfig } from '@/core/game-config';
-import { buildShop, stageIncome } from '@/logic/shop/shop-model';
+import { buildShop, replayIncome, stageIncome } from '@/logic/shop/shop-model';
 import { buyUpgrade } from '@/logic/shop/upgrades';
 import { loadData } from './helpers';
 
@@ -52,10 +52,56 @@ describe('mô hình Quầy Mira, tab Upgrade (ST-09-04)', () => {
     expect(stageIncome(config, 1)).toBe(225);
     expect(stageIncome(config, 3)).toBe(375);
     expect(stageIncome(config, 3, 'story')).toBe(188);
+    const normal = config.difficulties.find((d) => d.id === 'normal')!.name;
     const m = buildShop(config, { levels: {}, coreBits: 0, bosses: 2 });
-    expect(m.income).toEqual({ stage: 3, name: config.stages.stages[2]!.name, coreBits: 375 });
+    expect(m.income).toEqual({
+      stage: 3,
+      name: config.stages.stages[2]!.name,
+      coreBits: 375,
+      replay: false,
+      difficultyName: normal,
+    });
     // Đã hạ cả 8 boss: gợi ý màn cuối.
     expect(buildShop(config, { levels: {}, coreBits: 0, bosses: 8 }).income.stage).toBe(8);
+  });
+
+  it('chỉ gợi ý màn đã có trong bản build; đã nhận thưởng boss thì chỉ tính kẻ địch (E02)', () => {
+    const s1 = config.stages.stages.find((s) => s.index === 1)!;
+    const reward = config.bosses[s1.boss]!.rewardCoreBit;
+    expect(replayIncome(config, 1, reward)).toBe(225 - reward);
+    // Bản build chỉ có Stage 1, đã hạ Thorna ở Thường: chơi lại Stage 1, không gợi ý Stage 3.
+    const m = buildShop(config, {
+      levels: {},
+      coreBits: 0,
+      bosses: 2,
+      playableStages: 1,
+      difficultyBy: { [s1.id]: { last: 'normal', cleared: ['normal'] } },
+    });
+    expect(m.income).toMatchObject({ stage: 1, coreBits: 225 - reward, replay: true });
+    // Lần cuối chọn Cốt truyện, chưa hạ boss ở Cốt truyện: tính cả thưởng boss, ×0,5.
+    const story = config.difficulties.find((d) => d.id === 'story')!;
+    const s = buildShop(config, {
+      levels: {},
+      coreBits: 0,
+      bosses: 2,
+      playableStages: 1,
+      difficultyBy: { [s1.id]: { last: 'story', cleared: ['normal'] } },
+    });
+    expect(s.income).toMatchObject({
+      stage: 1,
+      coreBits: stageIncome(config, 1, 'story'),
+      replay: false,
+      difficultyName: story.name,
+    });
+    // Id độ khó lạ trong bản lưu: về Thường.
+    const odd = buildShop(config, {
+      levels: {},
+      coreBits: 0,
+      bosses: 2,
+      playableStages: 1,
+      difficultyBy: { [s1.id]: { last: 'nightmare', cleared: [] } },
+    });
+    expect(odd.income).toMatchObject({ coreBits: 225, replay: false });
   });
 });
 

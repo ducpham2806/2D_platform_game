@@ -23,7 +23,9 @@ export interface FeedbackTier {
 /** Gợi ý của NOVA khi chết liên tiếp (01-GDD/11-Do-kho.md mục 2.5). */
 export interface DifficultyHintUi {
   deaths: number;
+  /** Hiện ít nhất chừng này giây; câu dài thì max(showSec, số ký tự / charsPerSecRead). */
   showSec: number;
+  charsPerSecRead: number;
   /** Câu theo id độ khó đang chơi. */
   lines: Readonly<Record<string, string>>;
   /** Câu thêm về vũ khí khắc chế; `{weapon}` là tên vũ khí. */
@@ -99,6 +101,7 @@ export function parseUi(value: unknown): UiData {
     difficultyHint: {
       deaths,
       showSec: num(h.showSec, 'ui.difficultyHint.showSec', { min: 1 }),
+      charsPerSecRead: num(h.charsPerSecRead, 'ui.difficultyHint.charsPerSecRead', { min: 5 }),
       lines,
       weapon,
     },

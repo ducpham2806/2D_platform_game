@@ -311,10 +311,24 @@ export function checkDesignInvariants(config: GameConfig): string[] {
     }
   }
 
-  // Mỗi độ khó có câu gợi ý của NOVA (GDD 11 mục 2.5).
+  // Mỗi độ khó có câu gợi ý của NOVA (GDD 11 mục 2.5); câu ghép với tên vũ khí dài nhất vẫn
+  // không vượt giới hạn hộp chữ.
+  const hint = config.ui.difficultyHint;
   for (const d of config.difficulties)
-    if (config.ui.difficultyHint.lines[d.id] === undefined)
+    if (hint.lines[d.id] === undefined)
       errors.push(`ui.difficultyHint.lines: thiếu câu cho độ khó "${d.id}"`);
+  const longestWeapon = config.weapons.bossWeapons.reduce(
+    (a, w) => (w.name.length > a.length ? w.name : a),
+    '',
+  );
+  const maxVi = config.ui.dialogue.maxChars.vi;
+  for (const [id, line] of Object.entries(hint.lines)) {
+    const full = `${line} ${hint.weapon.replace('{weapon}', longestWeapon)}`;
+    if (full.length > maxVi)
+      errors.push(
+        `ui.difficultyHint.lines.${id}: ghép với "${longestWeapon}" dài ${full.length} ký tự, quá ${maxVi}`,
+      );
+  }
 
   // Hệ số thưởng trong economy.json phải khớp difficulties.json.
   const economy = config.raw.economy;

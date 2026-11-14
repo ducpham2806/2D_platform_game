@@ -433,7 +433,14 @@ describe('ST-10-03: checkpoint theo độ khó, chết liên tiếp, gợi ý NO
     expect(hint.deaths).toBe(3);
     expect(difficultyHintText(hint, 'challenge')).toMatch(/Thường ở màn Chuẩn bị/);
     expect(difficultyHintText(hint, 'normal')).toMatch(/Cốt truyện/);
-    expect(difficultyHintText(hint, 'story', 'Vine Lash')).toMatch(/Xưởng.*Hoặc thử Vine Lash\./);
+    expect(difficultyHintText(hint, 'story', 'Vine Lash')).toMatch(/Xưởng.*Hoặc thử Vine Lash:/);
+    // Xưởng chưa mở (chưa hạ boss nào): câu Cốt truyện không nhắc Xưởng, Quầy.
+    expect(difficultyHintText(hint, 'story', undefined, true)).not.toMatch(/Xưởng|Upgrade/);
+    expect(difficultyHintText(hint, 'normal', undefined, true)).toBe(hint.lines.normal);
+    // Câu ghép với tên vũ khí dài nhất vẫn trong giới hạn hộp chữ (kiểm tra lúc nạp).
+    const long = structuredClone(loadData()) as Record<string, Record<string, unknown>>;
+    (long.ui!.difficultyHint as { lines: Record<string, string> }).lines.normal = 'x'.repeat(120);
+    expect(() => parseGameConfig(long)).toThrow('ghép với "Torrent Wave"');
     const raw = structuredClone(loadData()) as Record<string, Record<string, unknown>>;
     delete (raw.ui!.difficultyHint as { lines: Record<string, string> }).lines.story;
     expect(() => parseGameConfig(raw)).toThrow('thiếu câu cho độ khó "story"');
