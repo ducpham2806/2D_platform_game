@@ -94,7 +94,12 @@
     "pity": {
       "legendary": 80,
       "mythic": 600,
-      "firstBossHuntClear": "epic_or_better"
+      "firstBossHuntClear": "epic_or_better",
+      "countUnit": "chip_dropped",
+      "scope": "account",
+      "mythicResetsLegendary": true,
+      "sweepCounts": true,
+      "counterVisible": true
     }
   },
   "mastery": {
@@ -106,25 +111,50 @@
     "freePerDay": 5,
     "cyberPlusExtra": 5,
     "adExtra": 2,
-    "gemExtraMax": 5
+    "gemExtraMax": 5,
+    "requiresStars": 3,
+    "reward": "same_as_full_farm_run",
+    "countsForPity": true,
+    "adDouble": false
+  },
+  "stars": {
+    "one": "clear",
+    "twoMaxDeaths": 2,
+    "threeTimeMul": 1.25,
+    "cumulativeSameRun": true,
+    "keepBest": true,
+    "targetTime": "per stage [PLACEHOLDER]"
   },
   "doubleDrop": {
     "freePerDay": 3,
-    "maxPerDay": 10
+    "maxPerDay": 10,
+    "appliesTo": "item_drops",
+    "ticketUsePerDayMax": 5
   },
   "serverAuthoritativeDrops": true,
   "leaderboards": [
     "standard",
     "open"
   ],
+  "chipInventory": {
+    "freeSlots": 300,
+    "expandCurrency": "core_bit",
+    "note": "Mở rộng bằng Core Bit, không bán bằng Gem; giá [PLACEHOLDER] (05 mục 6)."
+  },
   "costs": {
     "chipUpgradeCoreBit": "200*1.2^(n-1)",
     "chipUpgradeCrystals": "ceil(n/2)",
     "masteryShards": "6*n",
     "farmRun": {
       "chipsPerRun": 3,
-      "coreBitPerRun": 250,
-      "shardsPerRun": 6
+      "coreBitPerRun": "150+20*L",
+      "shardsPerRun": 6,
+      "modeRewardMul": {
+        "full": 1,
+        "oneSection": 0.25,
+        "bossOnly": 0.4
+      },
+      "note": "L là Mức Eclipse (Mức 5 = 250, Mức 10 = 350). modeRewardMul nhân mọi thưởng của lượt (Core Bit, chip, Mảnh; số lẻ tung xác suất). Rà soát 14/11/2026, bản trước luôn 250 [PLACEHOLDER]."
     },
     "bossHunt": {
       "chipsPerRun": 2,

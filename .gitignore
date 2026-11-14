@@ -3,3 +3,10 @@ game/node_modules/
 game/dist/
 game/public/data/
 game/coverage/
+
+# graphify: đồ thị tri thức sinh lại được bằng `graphify update .`
+graphify-out/
+
+# Python
+__pycache__/
+*.pyc

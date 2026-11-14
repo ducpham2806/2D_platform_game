@@ -1,5 +1,6 @@
 import type { SaveManager } from '../logic/save/save-manager';
-import { SaveError, summarize } from '../logic/save/save-data';
+import type { CharacterProgress } from '../logic/rpg/progression';
+import { type SaveData, SaveError, summarize } from '../logic/save/save-data';
 import { createPanel, panelActions, panelButton } from '../playtest/panel';
 
 function formatTime(sec: number): string {
@@ -15,7 +16,12 @@ function formatDate(ms: number): string {
  * Bảng "Dữ liệu lưu" (M11): tóm tắt bản lưu, mã sao lưu để chép sang máy khác, nhập mã,
  * xóa tiến trình (bấm hai lần để xác nhận). Trả về hàm đóng bảng.
  */
-export function showSavePanel(save: SaveManager, onBack: () => void): () => void {
+export function showSavePanel(
+  save: SaveManager,
+  onBack: () => void,
+  /** Cấp và SP của bản lưu (M8), tính từ dữ liệu cấu hình. */
+  progress: (data: SaveData) => CharacterProgress,
+): () => void {
   const { root, body } = createPanel('Dữ liệu lưu', 'cv-json cv-save');
   const summary = document.createElement('div');
   const exportLabel = document.createElement('div');
@@ -30,8 +36,10 @@ export function showSavePanel(save: SaveManager, onBack: () => void): () => void
 
   const refresh = (): void => {
     const s = summarize(save.data);
+    const p = progress(save.data);
     summary.textContent =
-      `Boss đã hạ: ${s.bosses} · EXP: ${s.exp} · Core Bit: ${s.coreBits} · ` +
+      `Cấp: ${p.level} · SP: ${p.skillPoints} · EXP: ${s.exp} · Boss đã hạ: ${s.bosses} · ` +
+      `Core Bit: ${s.coreBits} · ` +
       `Thời gian chơi: ${formatTime(s.playTimeSec)} · Lần lưu cuối: ${formatDate(s.savedAt)}`;
     exportArea.value = save.exportCode();
     if (save.readOnly) status.textContent = `${save.lastError ?? ''} Bản lưu không bị ghi đè.`;
@@ -49,7 +57,8 @@ export function showSavePanel(save: SaveManager, onBack: () => void): () => void
     try {
       save.importCode(importArea.value);
       importArea.value = '';
-      status.textContent = 'Đã nhập bản lưu.';
+      status.textContent = save.notice ? `Đã nhập bản lưu. ${save.notice}` : 'Đã nhập bản lưu.';
+      save.notice = undefined;
       refresh();
     } catch (e) {
       status.textContent = e instanceof SaveError ? e.message : String(e);

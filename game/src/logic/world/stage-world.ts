@@ -9,14 +9,23 @@ import { WeaponLoadout } from '../combat/loadout';
 import { ProjectilePool } from '../combat/projectiles';
 import { TrainingTarget } from '../combat/targets';
 import type { Enemy } from '../enemy/enemy';
-import { evaluateFormula } from '../formula';
+import {
+  applyBuild,
+  type BuildStats,
+  EMPTY_BUILD,
+  playerModsOf,
+  statsFor,
+  vanguardOf,
+} from '../rpg/build';
+import { BuildRuntime } from '../rpg/build-runtime';
+import { checkpointActive, scaleReward, startCheckpointFor } from '../difficulty/difficulty';
 import { playerParams } from '../player/player-params';
 import { PlayerPhysics } from '../player/player-physics';
 import { createRng, type Rng } from '../rng';
 import { type EnemyMarkers, layoutFromRows, type StageLayout } from '../stage/layout';
 import { Tile, type TileMap } from '../tilemap';
 import { EnemyField } from './enemy-field';
-import { resolveEnemyHits, resolvePlayerHits } from './hits';
+import { type KaiDefense, resolveEnemyHits, resolvePlayerHits, type VanguardMods } from './hits';
 import { Barrier, LockedRoom, makeSecret, type Secret, standPoint, Vine } from './stage-mechanics';
 import { noWorldEvents, type WorldEvents, type WorldInput, type WorldPhase } from './world-types';
 
@@ -47,6 +56,15 @@ export interface WorldSetup {
   takenSecrets?: readonly string[];
   /** Từ bản lưu (M11): boss của màn đã hạ, thắng lại không nhận thưởng lần đầu nữa. */
   bossDefeated?: boolean;
+  /**
+   * Thưởng lần đầu hạ boss (EXP, Core Bit) đã nhận ở độ khó này (GDD 11 mục 2.3: một lần mỗi cặp
+   * boss, độ khó). Không có thì theo `bossDefeated`. Vũ khí vẫn chỉ một lần mỗi boss.
+   */
+  bossRewardClaimed?: boolean;
+  /** Cấp hiệu dụng (M8, đã đồng bộ cấp theo màn) quyết định máu và công; không có thì cấp 1. */
+  level?: number;
+  /** Build kỹ năng (M8); không có thì build trống. `player`/`weapons` ở trên là dữ liệu gốc. */
+  build?: BuildStats;
 }
 
 /** Bia tập bắn: máu (phát Arc Cannon) và thời gian dựng lại. Chỉ dùng trong màn xám. */
@@ -55,8 +73,6 @@ const TARGET_RESPAWN_SEC = 2;
 const TARGET_SIZE = { w: 12, h: 24 };
 /** Hộp người chơi thu nhỏ mỗi phía khi xét chạm gai, để chạm sượt mép ô không tính. */
 const HAZARD_INSET_PX = 2;
-/** Cấp của Kai ở mốc Prototype (chưa có hệ thống cấp). */
-const PROTOTYPE_LEVEL = 1;
 
 /**
  * Thế giới màn chơi (logic thuần): Kai, vũ khí, đạn, bia tập bắn, boss, cửa phòng boss,
@@ -90,9 +106,28 @@ export class StageWorld {
   checkpointIndex = 0;
   /** Số lần rơi hố còn sống (không tính vào `deaths`). */
   falls = 0;
+  /**
+   * Số lần chết liên tiếp kể từ checkpoint gần nhất (gợi ý NOVA, GDD 11 mục 2.5). Không tính rơi
+   * hố còn máu; chạm checkpoint hoặc vào đấu trường boss thì về 0. Khác `deaths` (màn Kết quả).
+   */
+  deathStreak = 0;
+  /** Thời gian của lượt chơi màn (giây, tính cả lúc hit-stop và chờ hồi sinh; màn Kết quả). */
+  elapsedSec = 0;
 
   private readonly rng: Rng;
-  private readonly attackMul: number;
+  private attackMul: number;
+  /** Cấp hiệu dụng đang dùng để tính máu và công. */
+  level: number;
+  /** Build kỹ năng đang áp. */
+  build: BuildStats;
+  /** Dữ liệu gốc đã áp build: dùng cho vật lý Kai và vũ khí (`setup` giữ dữ liệu gốc). */
+  private built: { player: PlayerData; weapons: WeaponsData };
+  /** Phòng thủ từ build: loại đạn P3 xuyên qua, sượt đạn cộng thời gian nạp. */
+  private defense: KaiDefense;
+  /** Nổ lan và Đòn Trừng Phạt từ build. */
+  private vanguard: VanguardMods;
+  /** Trạng thái build trong trận (khiên C3). Chạm gai không làm mới; chết thì khiên sẵn. */
+  readonly runtime: BuildRuntime;
   private readonly start: { x: number; y: number };
   private checkpoint: { x: number; y: number };
   private respawnTimer = 0;
@@ -101,6 +136,7 @@ export class StageWorld {
   /** Chỗ đứng an toàn gần nhất (tâm, đáy) để đưa về khi chạm gai. */
   private safe: { x: number; y: number };
   private everWon = false;
+  private rewardClaimed = false;
   /** EXP và Core Bit thưởng khi thắng boss lần đầu (cộng thêm vào của kẻ địch thường). */
   private bossExp = 0;
   private bossCoreBits = 0;
@@ -115,27 +151,35 @@ export class StageWorld {
     this.map = this.layout.map;
     this.rng = createRng(setup.seed);
     this.start = standPoint(this.layout.spawn, t);
-    const cps = this.layout.checkpoints;
-    this.checkpointIndex = Math.max(0, Math.min(cps.length, setup.startCheckpoint ?? 0));
+    // Checkpoint đã lưu là chỉ số trên danh sách đầy đủ; xuất phát ở checkpoint gần nhất phía
+    // trước có ở độ khó này (GDD 11 mục 2.4).
+    this.checkpointIndex = startCheckpointFor(
+      this.layout.checkpoints,
+      setup.difficulty.id,
+      Math.max(0, setup.startCheckpoint ?? 0),
+    );
     this.checkpoint = this.checkpointPoint();
     this.safe = this.checkpoint;
-    // Prototype chơi ở cấp 1; hệ thống cấp (M8) sẽ truyền cấp thật vào đây.
-    const level = { L: PROTOTYPE_LEVEL };
-    const maxHp = evaluateFormula(setup.player.level.hp, level);
     // Sát thương gốc tính ở cấp 1, nên hệ số công = công hiện tại / công cấp 1.
-    this.attackMul =
-      evaluateFormula(setup.player.level.atk, level) /
-      evaluateFormula(setup.player.level.atk, { L: 1 });
+    this.level = setup.level ?? 1;
+    this.build = setup.build ?? EMPTY_BUILD;
+    this.built = applyBuild(setup.player, setup.weapons, this.build);
+    const { maxHp, attackMul } = statsFor(this.level, setup.player.level, this.build);
+    this.attackMul = attackMul;
     this.player = new PlayerPhysics(
-      playerParams(setup.player, t, setup.stepSec),
+      playerParams(this.built.player, t, setup.stepSec, playerModsOf(this.build, setup.stepSec)),
       this.map,
       this.checkpoint.x,
       this.checkpoint.y,
       maxHp,
     );
-    this.loadout = new WeaponLoadout(setup.weapons, t);
+    this.loadout = new WeaponLoadout(this.built.weapons, t);
+    this.runtime = new BuildRuntime(this.build.shield);
+    this.defense = this.defenseOf(this.build);
+    this.vanguard = vanguardOf(this.build, t);
     for (const w of setup.ownedWeapons ?? []) this.loadout.grant(w);
     this.everWon = setup.bossDefeated ?? false;
+    this.rewardClaimed = setup.bossRewardClaimed ?? this.everWon;
 
     let nextId = 1;
     const layout = this.layout;
@@ -161,6 +205,8 @@ export class StageWorld {
           setup.difficulty.enemyHp,
           () => nextId++,
           setup.seed + 1,
+          setup.difficulty.rewardMul,
+          setup.mechanics.enemyRewardOncePerRun,
         )
       : undefined;
     this.bossSpawn = layout.boss ? standPoint(layout.boss, t) : undefined;
@@ -201,10 +247,61 @@ export class StageWorld {
    */
   retune(patch: Partial<Pick<WorldSetup, 'player' | 'weapons' | 'boss'>>): void {
     this.setup = { ...this.setup, ...patch };
+    // Dữ liệu chỉnh là dữ liệu gốc: áp lại build để không mất hiệu ứng kỹ năng.
+    this.built = applyBuild(this.setup.player, this.setup.weapons, this.build);
     if (patch.player) {
-      this.player.setParams(playerParams(patch.player, this.setup.tileSize, this.setup.stepSec));
+      this.player.setParams(
+        playerParams(
+          this.built.player,
+          this.setup.tileSize,
+          this.setup.stepSec,
+          playerModsOf(this.build, this.setup.stepSec),
+        ),
+      );
     }
-    if (patch.weapons) this.loadout.setData(patch.weapons);
+    if (patch.weapons) this.loadout.setData(this.built.weapons);
+  }
+
+  /** Lên cấp giữa màn (M8): máu tối đa và công theo cấp hiệu dụng mới, máu cộng phần chênh. */
+  setLevel(level: number): void {
+    if (level === this.level) return;
+    const stats = statsFor(level, this.setup.player.level, this.build);
+    this.level = level;
+    this.attackMul = stats.attackMul;
+    this.player.setMaxHp(stats.maxHp);
+  }
+
+  private defenseOf(build: BuildStats): KaiDefense {
+    const graze = build.effects.grazeChargeSec ?? 0;
+    return {
+      bulletKinds: build.bulletKinds,
+      onGraze: graze > 0 ? () => this.loadout.addCharge(graze) : undefined,
+      shield: build.shield ? this.runtime : undefined,
+    };
+  }
+
+  /**
+   * Đổi build giữa màn (kỹ năng chỉnh từ menu tạm dừng, áp ở lần hồi sinh kế tiếp): dựng lại dữ
+   * liệu đã áp build, máu tối đa theo build mới (máu hiện tại cộng phần chênh).
+   */
+  setBuild(build: BuildStats): void {
+    this.build = build;
+    this.built = applyBuild(this.setup.player, this.setup.weapons, build);
+    this.player.setParams(
+      playerParams(
+        this.built.player,
+        this.setup.tileSize,
+        this.setup.stepSec,
+        playerModsOf(build, this.setup.stepSec),
+      ),
+    );
+    this.runtime.setShield(build.shield);
+    this.defense = this.defenseOf(build);
+    this.vanguard = vanguardOf(build, this.setup.tileSize);
+    this.loadout.setData(this.built.weapons);
+    const stats = statsFor(this.level, this.setup.player.level, build);
+    this.attackMul = stats.attackMul;
+    this.player.setMaxHp(stats.maxHp);
   }
 
   get enemies(): readonly Enemy[] {
@@ -218,15 +315,23 @@ export class StageWorld {
   step(input: WorldInput): WorldEvents {
     const ev = noWorldEvents();
     const dt = this.setup.stepSec;
+    this.elapsedSec += dt;
     if (this.hitStop > 0) {
       this.hitStop -= 1;
       return ev;
     }
     if (this.respawnTimer > 0) {
       this.respawnTimer -= dt;
-      if (this.respawnTimer <= 1e-9) this.respawn(ev);
+      if (this.respawnTimer <= 1e-9) {
+        // Đặt về 0: phần dư sai số (≤ 1e-9 nhưng > 0) sẽ làm bước sau hồi sinh lần nữa theo
+        // nhánh chết (hồi đầy máu, dựng lại boss) ngay sau khi rơi hố.
+        this.respawnTimer = 0;
+        this.respawn(ev);
+      }
       return ev;
     }
+    // Khiên hồi trước khi xử lý trúng đòn; đồng hồ dừng trong hit-stop và lúc chờ hồi sinh.
+    if (this.runtime.step(dt)) ev.kaiShieldReady = true;
 
     for (const v of this.vines) v.step(dt);
 
@@ -248,6 +353,8 @@ export class StageWorld {
       dt,
     );
     this.attachSweeps();
+    ev.airDash = pe.airDashed;
+    ev.airDashRestored = pe.airDashRestored;
 
     const canShoot = pl.state !== 'dead' && pl.state !== 'hurt';
     const fire = this.loadout.step(
@@ -290,21 +397,29 @@ export class StageWorld {
     this.hitStop = resolvePlayerHits(
       this.pool,
       { targets: this.targets, enemies: this.enemies, boss: this.boss },
-      this.setup.weapons,
+      this.built.weapons,
       this.attackMul,
       ev,
       killed,
+      this.vanguard,
     );
     this.field?.onKilled(killed, pl);
+    // Boss hết máu vì đạn của Kai trong bước này thì thắng ngay, trước khi xét đòn lên Kai
+    // (trước đây cùng bước Kai chết thì boss được dựng lại đầy máu).
+    if (this.phase === 'boss' && this.boss?.settleDefeat()) this.onBossDefeated(ev);
     resolveEnemyHits(
       this.pool,
       this.field?.active(pl) ?? [],
       this.phase === 'boss' ? this.boss : undefined,
       pl,
-      this.setup.difficulty.damageTaken,
+      // Đòn kẻ địch và boss: độ khó × build (Armor Plating, đã kẹp sàn). Gai, hố chỉ theo độ khó.
+      this.setup.difficulty.damageTaken * this.build.damageTakenMul,
       ev,
+      this.defense,
     );
-    this.field?.updatePickups(pl, dt, ev);
+    if (ev.kaiShieldAbsorbed)
+      this.hitStop = Math.max(this.hitStop, this.build.shield?.hitStopSteps ?? 0);
+    this.field?.updatePickups(pl, dt, ev, this.build.magnetTiles * this.setup.tileSize);
 
     this.updateHazards(ev);
     this.updateSecrets(ev);
@@ -327,6 +442,7 @@ export class StageWorld {
     if (pe.died || pl.state === 'dead') {
       ev.playerDied = true;
       this.deaths += 1;
+      this.deathStreak += 1;
       this.pitReturn = false;
       this.respawnTimer = mech.respawnSec;
     }
@@ -399,10 +515,13 @@ export class StageWorld {
     for (let i = this.checkpointIndex; i < cps.length; i += 1) {
       const cp = cps[i]!;
       if (pl.centerX < (cp.col + 0.5) * t || !pl.grounded) break;
+      // Checkpoint không có ở độ khó này: đi qua không ghi.
+      if (!checkpointActive(cp, this.setup.difficulty.id)) continue;
       this.checkpointIndex = i + 1;
       ev.checkpoint = i + 1;
     }
     if (ev.checkpoint !== undefined) {
+      this.deathStreak = 0;
       this.checkpoint = this.checkpointPoint();
       this.safe = this.checkpoint;
     }
@@ -414,7 +533,7 @@ export class StageWorld {
     for (const p of this.pool.all) {
       if (!p.attached || p.owner !== 'player') continue;
       p.x = pl.facing > 0 ? pl.centerX : pl.centerX - p.w;
-      p.y = pl.box.y + this.setup.weapons.arcCannon.muzzleOffsetPx.y - p.h / 2;
+      p.y = pl.box.y + this.built.weapons.arcCannon.muzzleOffsetPx.y - p.h / 2;
     }
   }
 
@@ -429,8 +548,11 @@ export class StageWorld {
 
   private makeBoss(): Boss | undefined {
     if (!this.bossSpawn || !this.arena) return undefined;
+    // Máu boss nhân hệ số độ khó như kẻ địch thường (GDD 11 mục 3.1); pha tính theo % nên giữ nguyên.
+    const data = this.setup.boss;
+    const hpMul = this.setup.difficulty.enemyHp;
     return new Boss(
-      this.setup.boss,
+      hpMul === 1 ? data : { ...data, hp: data.hp * hpMul },
       this.map,
       this.bossSpawn.x,
       this.bossSpawn.y,
@@ -456,6 +578,7 @@ export class StageWorld {
       this.boss?.activate();
       this.checkpoint = { x: (this.arena.first + 1.5) * t, y: this.start.y };
       ev.gateClosed = true;
+      this.deathStreak = 0;
     } else if (this.phase === 'won' && pl.box.x + pl.box.w < this.gateCol * t) {
       this.phase = 'explore';
       this.boss = this.makeBoss();
@@ -482,8 +605,13 @@ export class StageWorld {
       this.everWon = true;
       const reward = this.setup.boss.reward;
       if (this.loadout.grant(reward)) ev.weaponGranted = reward;
-      this.bossExp += this.setup.boss.rewardExp;
-      this.bossCoreBits += this.setup.boss.rewardCoreBit;
+    }
+    if (!this.rewardClaimed) {
+      this.rewardClaimed = true;
+      // Thưởng lần đầu nhân hệ số độ khó (GDD 11 mục 3.1); vũ khí và SP không đổi.
+      const mul = this.setup.difficulty.rewardMul;
+      this.bossExp += scaleReward(this.setup.boss.rewardExp, mul);
+      this.bossCoreBits += scaleReward(this.setup.boss.rewardCoreBit, mul);
     }
     this.checkpoint = this.checkpointPoint();
   }
@@ -502,6 +630,7 @@ export class StageWorld {
     pl.respawn(this.checkpoint.x, this.checkpoint.y);
     this.pool.clear();
     this.loadout.refill();
+    this.runtime.resetOnDeath();
     this.field?.reset();
     for (const r of this.rooms) r.reset();
     if (this.phase === 'boss') {

@@ -7,6 +7,10 @@
  * - bước không có yêu cầu chỉ hiện lời thoại `showSec` giây;
  * - gặp tín hiệu `cancelOn` (ví dụ đã hạ boss) thì bước đang chờ/đang hiện bị bỏ, tính là xong,
  *   và bước nối sau nó cũng bỏ trong cùng bước logic (không hiện lời trận đấu sau khi trận xong).
+ * Chuỗi bước (`trigger.after`) nối theo bước đứng trước đã xong **trong lượt này** (QB-88): bước
+ * đã xong từ bản lưu không làm bước nối sau hiện ngay đầu màn ở lượt sau. Khi điều kiện kích hoạt
+ * của bước đã lưu xảy ra lại (ví dụ vào lại phòng boss), bước đó tính là xong trong lượt mà không
+ * hiện lại lời, nên phần còn lại của chuỗi chạy tiếp đúng chỗ.
  * Chết thì bước vẫn giữ nguyên (hồi sinh ngay tại bước). Không bao giờ khóa điều khiển.
  * Logic thuần.
  */
@@ -39,6 +43,8 @@ interface Active {
 
 export class TutorialManager {
   private readonly done: Set<string>;
+  /** Bước xong trong lượt này, kể cả bước đã lưu mà điều kiện xảy ra lại; điều kiện của `after`. */
+  private readonly doneThisRun = new Set<string>();
   private readonly steps: TutorialStep[];
   private readonly queue: TutorialStep[] = [];
   private active: Active | undefined;
@@ -92,6 +98,13 @@ export class TutorialManager {
     return this.enabled;
   }
 
+  /** Lời của các bước `remindOnResult` đang hiện hoặc đang chờ (nhắc lại ở màn Kết quả). */
+  get reminders(): string[] {
+    if (!this.enabled) return [];
+    const pending = [...(this.active ? [this.active.step] : []), ...this.queue];
+    return pending.filter((s) => s.remindOnResult).map((s) => s.text);
+  }
+
   /** `signals`: tín hiệu của bước logic này; `moveTiles`: quãng đi sang phải (ô, có thể âm). */
   step(signals: ReadonlySet<string>, moveTiles: number, dt: number): TutorialStepResult {
     const result: TutorialStepResult = { started: undefined, completed: [] };
@@ -128,11 +141,13 @@ export class TutorialManager {
     }
 
     for (const s of this.steps) {
-      if (this.done.has(s.id) || this.active?.step === s || this.queue.includes(s)) continue;
-      if (s.trigger.after !== undefined && !this.done.has(s.trigger.after)) continue;
-      const on = s.trigger.on;
-      if (on !== undefined && !signals.has(on)) continue;
-      if (s.trigger.not.some((n) => signals.has(n))) continue;
+      if (this.done.has(s.id)) {
+        // Đã xong từ bản lưu: điều kiện xảy ra lại thì nối chuỗi, không hiện lại (QB-88).
+        if (!this.doneThisRun.has(s.id) && this.triggered(s, signals)) this.doneThisRun.add(s.id);
+        continue;
+      }
+      if (this.active?.step === s || this.queue.includes(s)) continue;
+      if (!this.triggered(s, signals)) continue;
       if (cancelled(s)) this.finish(s, result);
       else this.queue.push(s);
     }
@@ -149,6 +164,14 @@ export class TutorialManager {
     return result;
   }
 
+  /** Điều kiện kích hoạt của bước thỏa ở bước logic này (`after` xét theo lượt này, QB-88). */
+  private triggered(s: TutorialStep, signals: ReadonlySet<string>): boolean {
+    const t = s.trigger;
+    if (t.after !== undefined && !this.doneThisRun.has(t.after)) return false;
+    if (t.on !== undefined && !signals.has(t.on)) return false;
+    return !t.not.some((n) => signals.has(n));
+  }
+
   private alreadyDone(step: TutorialStep): boolean {
     const rq = step.require;
     if (!rq) return false;
@@ -158,6 +181,7 @@ export class TutorialManager {
 
   private finish(step: TutorialStep, result: TutorialStepResult): void {
     this.done.add(step.id);
+    this.doneThisRun.add(step.id);
     result.completed.push(step.id);
   }
 }

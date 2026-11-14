@@ -63,6 +63,13 @@ export class PlayerPhysics {
   private wallLock = 0;
   private iFrames = 0;
   private dashIFrames = 0;
+  /** Bất tử chỉ với đạn (P3): gốc + phần thêm, mất phần thêm khi cú lướt kết thúc/bị hủy. */
+  private bulletIFrames = 0;
+  /** Lượt lướt trên không còn lại (P1). */
+  airDashesLeft = 0;
+  /** Ân hạn nhảy tường (P2 bậc 2): thời gian còn lại và hướng tường vừa rời. */
+  private wallGrace = 0;
+  private lastWallDir = 0;
   private hurtTime = 0;
   private dropThrough = 0;
   private wallJumpedThisStep = false;
@@ -71,16 +78,27 @@ export class PlayerPhysics {
   /** Các bệ di động của màn; thế giới cập nhật vị trí trước mỗi bước. */
   platforms: readonly Platform[] = [];
 
+  /** Máu tối đa theo cấp hiệu dụng (M8 đổi khi lên cấp giữa màn). */
+  maxHp: number;
+
   constructor(
     private params: PlayerParams,
     private readonly map: TileMap,
     spawnX: number,
     spawnBottom: number,
-    readonly maxHp: number,
+    maxHp: number,
   ) {
+    this.maxHp = maxHp;
     this.box = { x: 0, y: 0, w: params.width, h: params.height };
     this.hp = maxHp;
     this.respawn(spawnX, spawnBottom);
+  }
+
+  /** Đổi máu tối đa (lên cấp): máu hiện tại tăng/giảm cùng phần chênh, không dưới 1 khi còn sống. */
+  setMaxHp(maxHp: number): void {
+    const delta = maxHp - this.maxHp;
+    this.maxHp = maxHp;
+    if (this.hp > 0) this.hp = Math.max(1, Math.min(maxHp, this.hp + delta));
   }
 
   /** Đặt Kai đứng tại (giữa, đáy) và xóa mọi trạng thái tạm. */
@@ -100,6 +118,10 @@ export class PlayerPhysics {
     this.wallLock = 0;
     this.iFrames = 0;
     this.dashIFrames = 0;
+    this.bulletIFrames = 0;
+    this.airDashesLeft = this.params.airDashes;
+    this.wallGrace = 0;
+    this.lastWallDir = 0;
     this.hurtTime = 0;
     this.dropThrough = 0;
     this.riding = undefined;
@@ -142,6 +164,7 @@ export class PlayerPhysics {
 
   /** Đổi thông số vật lý khi đang chơi (bảng chỉnh cảm giác). Hộp va chạm giữ nguyên. */
   setParams(params: PlayerParams): void {
+    if (params.airDashes !== this.params.airDashes) this.airDashesLeft = params.airDashes;
     this.params = params;
   }
 
@@ -161,12 +184,36 @@ export class PlayerPhysics {
     return this.iFrames > 0 || this.dashIFrames > 0 || this.state === 'dead';
   }
 
+  /** Đang bất tử với đạn (gốc của cú lướt hoặc phần thêm của P3). */
+  get bulletGuard(): boolean {
+    return this.bulletIFrames > 0;
+  }
+
+  /** Đang ở phần bất tử THÊM của P3 (hết bất tử gốc): để vẽ bóng mờ và tính sượt đạn. */
+  get bulletGuardExtended(): boolean {
+    return this.bulletIFrames > 0 && this.dashIFrames <= 0 && this.iFrames <= 0;
+  }
+
+  /** Số lượt lướt trên không tối đa (0 khi chưa có P1). */
+  get airDashMax(): number {
+    return this.params.airDashes;
+  }
+
   /** Còn bất tử sau khi bị đánh (để nhấp nháy). */
   get blinking(): boolean {
     return this.iFrames > 0;
   }
 
   /** Nhận sát thương từ một nguồn ở tọa độ X. Trả về false nếu đang bất tử. */
+  /**
+   * Khiên C3 chặn một đòn (StageWorld đã kiểm tra khiên sẵn và Kai không bất tử): không mất máu,
+   * không bật lùi, không ngắt lướt, không phát `hurt` (giữ mức nạp, không kích tín hiệu `hurt` của
+   * hướng dẫn); chỉ bất tử `iFrameSec` để đòn khác cùng lúc không trúng ngay.
+   */
+  absorbHit(iFrameSec: number): void {
+    this.iFrames = Math.max(this.iFrames, iFrameSec);
+  }
+
   applyHit(damage: number, sourceX: number): boolean {
     if (this.invulnerable) return false;
     this.hp = Math.max(0, this.hp - damage);
@@ -201,6 +248,8 @@ export class PlayerPhysics {
     this.wallLock = tick(this.wallLock, dt);
     this.iFrames = tick(this.iFrames, dt);
     this.dashIFrames = tick(this.dashIFrames, dt);
+    this.bulletIFrames = tick(this.bulletIFrames, dt);
+    this.wallGrace = tick(this.wallGrace, dt);
     this.hurtTime = tick(this.hurtTime, dt);
     this.dropThrough = tick(this.dropThrough, dt);
 
@@ -217,19 +266,27 @@ export class PlayerPhysics {
     const dir = input.moveX > 0 ? 1 : input.moveX < 0 ? -1 : 0;
     if (control && input.jumpPressed) this.buffer = p.bufferSec;
 
-    // Lướt.
+    // Lướt. Có P1 thì lướt trong thời gian coyote tính là lướt đất (không tốn lượt trên không).
+    const groundDash = this.grounded || (p.airDashes > 0 && this.coyote > 0);
+    const airDash = !groundDash && this.airDashesLeft > 0;
     if (
       control &&
       input.dashPressed &&
       !this.dashing &&
       this.dashCooldown <= 0 &&
-      (this.grounded || p.airDash)
+      (groundDash || airDash)
     ) {
+      if (!groundDash) {
+        this.airDashesLeft -= 1;
+        this.events.airDashed = true;
+      }
       this.dashTime = p.dashSec;
       this.dashActive = true;
       this.dashDir = dir !== 0 ? dir : this.facing;
       this.facing = this.dashDir;
       this.dashIFrames = p.dashIFrameSec;
+      this.bulletIFrames =
+        p.bulletIFrameExtraSec > 0 ? p.dashIFrameSec + p.bulletIFrameExtraSec : 0;
       this.dashCarry = false;
       this.vy = 0;
       this.events.dashed = true;
@@ -278,10 +335,19 @@ export class PlayerPhysics {
       if (!wasGrounded) this.events.landed = true;
     }
     this.wallDir = this.grounded ? 0 : wallBeside(this.box, this.map);
+    if (this.wallDir !== 0) {
+      this.lastWallDir = this.wallDir;
+      this.wallGrace = p.wallJumpGraceSec;
+    }
     if (this.box.y > this.map.heightPx) this.events.fellOut = true;
     this.state = this.deriveState(dir);
     // Chạm tường lúc đang rơi nhanh: hãm ngay trong bước này, không đợi bước sau.
     if (this.state === 'wall_slide') this.vy = Math.min(this.vy, p.wallSlideSpeed);
+    // Hồi lượt lướt trên không khi chạm đất (gồm đứng trên dây leo) hoặc bám tường.
+    if ((this.grounded || this.state === 'wall_slide') && this.airDashesLeft < p.airDashes) {
+      this.airDashesLeft = p.airDashes;
+      this.events.airDashRestored = true;
+    }
     return this.events;
   }
 
@@ -312,8 +378,11 @@ export class PlayerPhysics {
       this.events.jumped = true;
       return;
     }
-    const wall = this.wallDir !== 0 ? this.wallDir : wallBeside(this.box, this.map);
+    const beside = this.wallDir !== 0 ? this.wallDir : wallBeside(this.box, this.map);
+    // Ân hạn (P2 bậc 2): vừa rời tường trong wallJumpGraceSec vẫn nhảy tường được.
+    const wall = beside !== 0 ? beside : this.wallGrace > 0 ? this.lastWallDir : 0;
     if (p.wallJump && wall !== 0) {
+      this.wallGrace = 0;
       this.endDash();
       this.vy = -p.jumpSpeed;
       this.vx = -wall * p.wallJumpPush;
@@ -333,6 +402,8 @@ export class PlayerPhysics {
     if (this.dashActive) this.dashCooldown = this.params.dashCooldownSec;
     this.dashActive = false;
     this.dashTime = 0;
+    // Phần bất tử thêm của P3 mất ngay khi cú lướt kết thúc hoặc bị hủy (nhảy, tường, bị đánh).
+    this.bulletIFrames = Math.min(this.bulletIFrames, this.dashIFrames);
   }
 
   private applyGravity(dt: number, sliding: boolean): void {

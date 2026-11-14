@@ -318,7 +318,18 @@ function buildLayout(map: TileMap, objects: readonly TiledObject[]): StageLayout
     ...(bosses[0] ? { boss: cellOf(bosses[0]) } : {}),
     ...(gate ? { gate } : {}),
     checkpoints: of('checkpoint')
-      .map(cellOf)
+      .map((o) => {
+        // Thuộc tính tùy chọn `difficulties`: id độ khó cách nhau bằng dấu phẩy (GDD 11 mục 2.4).
+        const raw = o.props.difficulties;
+        if (raw === undefined) return cellOf(o);
+        if (typeof raw !== 'string') fail(label(o), 'difficulties phải là chuỗi');
+        const ids = raw
+          .split(',')
+          .map((x) => x.trim())
+          .filter((x) => x.length > 0);
+        if (ids.length === 0) fail(label(o), 'difficulties rỗng');
+        return { ...cellOf(o), difficulties: ids };
+      })
       .sort((a, b) => a.col - b.col),
     vines,
     rooms,

@@ -13,7 +13,9 @@ import {
   grantWeapon,
   recordBossDefeated,
   recordCheckpoint,
+  recordDifficultyCleared,
   recordSecret,
+  savedCheckpoint,
   type SaveData,
   stageProgress,
 } from './save-data';
@@ -26,11 +28,19 @@ export interface StageSaveSetup {
   bossDefeated: boolean;
 }
 
-/** Phần WorldSetup lấy từ bản lưu cho màn `stageId` có boss `bossId`. */
-export function stageSaveSetup(save: SaveData, stageId: string, bossId: string): StageSaveSetup {
+/**
+ * Phần WorldSetup lấy từ bản lưu cho màn `stageId` có boss `bossId`. `allowed`: các độ khó được
+ * mang checkpoint sang (độ khó đang chọn và khó hơn, GDD 11 mục 2.4); không có thì mọi độ khó.
+ */
+export function stageSaveSetup(
+  save: SaveData,
+  stageId: string,
+  bossId: string,
+  allowed?: readonly string[],
+): StageSaveSetup {
   const progress = stageProgress(save, stageId);
   return {
-    startCheckpoint: progress.checkpoint,
+    startCheckpoint: savedCheckpoint(progress, allowed),
     ownedWeapons: [...save.character.weapons],
     takenSecrets: [...progress.secrets],
     bossDefeated: save.progress.bossesDefeated.includes(bossId),
@@ -51,6 +61,12 @@ export class StageSave {
     private readonly manager: SaveManager,
     private readonly stageId: string,
     private readonly bossId: string,
+    private readonly opts: {
+      /** Độ khó của lượt: checkpoint ghi theo độ khó này (mặc định Thường). */
+      difficulty?: string;
+      /** Màn chiến dịch mà boss của phòng này là boss chiến dịch: hạ boss thì ghi `cleared`. */
+      clearsCampaign?: string;
+    } = {},
   ) {}
 
   /** Gọi sau mỗi bước logic. Trả về true nếu đã ghi. */
@@ -60,7 +76,8 @@ export class StageSave {
     const changes: ((s: SaveData) => SaveData)[] = [];
     if (ev.checkpoint !== undefined) {
       const index = ev.checkpoint;
-      changes.push((s) => recordCheckpoint(s, stageId, index));
+      const difficulty = this.opts.difficulty ?? 'normal';
+      changes.push((s) => recordCheckpoint(s, stageId, index, difficulty));
     }
     if (ev.secretFound !== undefined) {
       const item = ev.secretFound;
@@ -72,6 +89,9 @@ export class StageSave {
     }
     if (ev.bossDefeated) {
       changes.push((s) => completeStage(recordBossDefeated(s, bossId), stageId));
+      const campaign = this.opts.clearsCampaign;
+      const difficulty = this.opts.difficulty ?? 'normal';
+      if (campaign) changes.push((s) => recordDifficultyCleared(s, campaign, difficulty));
     }
     if (changes.length === 0) return false;
     return this.commit(run, changes);

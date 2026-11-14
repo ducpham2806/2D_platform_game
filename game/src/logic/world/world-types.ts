@@ -72,6 +72,17 @@ export interface WorldEvents {
   barrierBroken: boolean;
   /** Vật phẩm bí mật vừa nhặt (id vật phẩm). */
   secretFound: string | undefined;
+  /** M8: vừa lướt trên không (P1); lượt lướt trên không vừa hồi. */
+  airDash: boolean;
+  airDashRestored: boolean;
+  /** M8: một viên đạn vừa sượt qua trong phần bất tử thêm (P3 bậc 3). */
+  graze: boolean;
+  /** M8 Vanguard: vụ nổ lan (tâm, bán kính px) và đạn nạp đầy trúng lúc mục tiêu đang hở. */
+  burst: { x: number; y: number; r: number } | undefined;
+  punishHit: boolean;
+  /** M8 Core: khiên C3 vừa chặn một đòn (và vỡ); khiên vừa hồi xong. */
+  kaiShieldAbsorbed: boolean;
+  kaiShieldReady: boolean;
 }
 
 export function noWorldEvents(): WorldEvents {
@@ -104,5 +115,12 @@ export function noWorldEvents(): WorldEvents {
     roomCleared: false,
     barrierBroken: false,
     secretFound: undefined,
+    airDash: false,
+    airDashRestored: false,
+    graze: false,
+    burst: undefined,
+    punishHit: false,
+    kaiShieldAbsorbed: false,
+    kaiShieldReady: false,
   };
 }

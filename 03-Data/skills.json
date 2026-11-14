@@ -1,0 +1,119 @@
+{
+  "_note": "Cây kỹ năng MVP (01-GDD/10-He-thong-RPG-Xuong.md mục 2.1, duyệt 14/11/2026). 3 nhánh × 3 nút; nút tầng k có k bậc; mỗi bậc 1 SP; tầng sau mở khi tầng trước đủ bậc. 'ranks' ghi giá trị đầy đủ của từng hiệu ứng TẠI bậc đó, tương đối so với số gốc trong player.json/weapons.json (Mul nhân, Sec/Steps cộng hoặc đặt); hiệu ứng không ghi ở một bậc = chưa có. Game kiểm tra lúc nạp: mỗi bậc sau tăng phần thưởng ≥ 20% hoặc thêm hiệu ứng mới; bậc 1 nút tầng 3 ≥ 60% hiệu lực tối đa. Mọi số là [PLACEHOLDER].",
+  "rules": {
+    "minFullChargeSec": 0.8,
+    "minBuildDamageTakenMul": 0.5,
+    "shieldIFrameSec": 0.3,
+    "shieldBreakHitStopSteps": 2,
+    "bulletKinds": ["enemyShot", "drop", "seed", "bomb"],
+    "shieldPierceKinds": ["seed"],
+    "note": "bulletKinds: loại đòn tính là đạn, để bất tử thêm của Lướt Xuyên Đạn có tác dụng (sóng đất, roi, rễ không tính). shieldBreakHitStopSteps: dừng hình khi khiên C3 vỡ (bậc phản hồi Vừa). minFullChargeSec: sàn thời gian nạp đầy sau mọi giảm của build, phải lớn hơn thời gian nạp vừa (kỹ năng chỉ giảm nạp đầy, không nâng DPS tối đa). minBuildDamageTakenMul: sàn của tích hệ số giảm sát thương nhận của build (không gồm độ khó). shieldIFrameSec: bất tử sau khi khiên C3 chặn một đòn. shieldPierceKinds: loại đòn khiên C3 không chặn (hạt Hoa Nở: 12 hạt rơi cùng lúc nên Kai đứng yên chỉ trúng đúng một hạt; khiên chặn được thì đòn đỉnh mất tác dụng). Khiên để đòn đi qua và vẫn sẵn."
+  },
+  "branches": [
+    {
+      "id": "vanguard",
+      "name": "Vanguard",
+      "role": "Sát thương: chuyên nạp đầy",
+      "nodes": [
+        {
+          "id": "V1",
+          "tier": 1,
+          "name": "Nạp Nhanh",
+          "desc": "Nạp đầy nhanh hơn. Nạp vừa giữ nguyên.",
+          "ranks": [{ "fullChargeTimeMul": 0.85, "text": "Nạp đầy ×0,85 thời gian" }]
+        },
+        {
+          "id": "V2",
+          "tier": 2,
+          "name": "Đạn Nạp Nổ Lan",
+          "desc": "Đạn nạp đầy trúng mục tiêu thì nổ, gây sát thương cho mục tiêu khác ở gần. Không phá khiên.",
+          "ranks": [
+            { "burstDamageMul": 0.3, "burstRadiusTiles": 1.0, "text": "Nổ 30% sát thương, bán kính 1 ô" },
+            { "burstDamageMul": 0.5, "burstRadiusTiles": 1.5, "text": "Nổ 50% sát thương, bán kính 1,5 ô" }
+          ]
+        },
+        {
+          "id": "V3",
+          "tier": 3,
+          "name": "Đòn Trừng Phạt",
+          "desc": "Đạn nạp đầy trúng boss đang hở (sau đòn hoặc đang choáng, lõi sáng) gây thêm sát thương.",
+          "ranks": [
+            { "punishMul": 1.3, "text": "×1,3 khi boss đang hở" },
+            { "punishMul": 1.4, "text": "×1,4 khi boss đang hở" },
+            { "punishMul": 1.5, "text": "×1,5 khi boss đang hở" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "phantom",
+      "name": "Phantom",
+      "role": "Cơ động: né bằng di chuyển",
+      "nodes": [
+        {
+          "id": "P1",
+          "tier": 1,
+          "name": "Lướt Trên Không",
+          "desc": "Lướt một lần mỗi khi ở trên không; hồi khi chạm đất hoặc bám tường.",
+          "ranks": [{ "airDashesPerAirborne": 1, "text": "1 lần lướt trên không" }]
+        },
+        {
+          "id": "P2",
+          "tier": 2,
+          "name": "Bám Tường Bền",
+          "desc": "Trượt tường chậm hơn; bậc 2 cho nhảy tường ngay sau khi rời tường.",
+          "ranks": [
+            { "wallSlideMul": 0.6, "text": "Trượt tường ×0,6 tốc độ" },
+            { "wallSlideMul": 0.6, "wallJumpGraceSec": 0.1, "text": "Thêm: rời tường 0,1 s vẫn nhảy tường được" }
+          ]
+        },
+        {
+          "id": "P3",
+          "tier": 3,
+          "name": "Lướt Xuyên Đạn",
+          "desc": "Đầu cú lướt bất tử lâu hơn, chỉ với đạn. Bậc 3: đạn sượt qua thì cộng thời gian nạp.",
+          "ranks": [
+            { "projectileIFrameSteps": 3, "text": "Bất tử với đạn +3 khung" },
+            { "projectileIFrameSteps": 4, "text": "Bất tử với đạn +4 khung" },
+            { "projectileIFrameSteps": 4, "grazeChargeSec": 0.25, "text": "Thêm: sượt đạn +0,25 s nạp" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core",
+      "name": "Core",
+      "role": "Sống sót và tiện ích",
+      "nodes": [
+        {
+          "id": "C1",
+          "tier": 1,
+          "name": "Khung Gia Cố",
+          "desc": "Tăng máu tối đa, chịu thêm khoảng một đòn boss.",
+          "ranks": [{ "maxHpMul": 1.15, "text": "Máu tối đa ×1,15" }]
+        },
+        {
+          "id": "C2",
+          "tier": 2,
+          "name": "Tái Nạp",
+          "desc": "Năng lượng vũ khí Warden tự hồi nhanh hơn.",
+          "ranks": [
+            { "energyRegenMul": 1.25, "text": "Hồi năng lượng ×1,25" },
+            { "energyRegenMul": 1.5, "regenDelayMul": 0.6667, "text": "Hồi ×1,5 và bắt đầu hồi sớm hơn (3 → 2 s)" }
+          ]
+        },
+        {
+          "id": "C3",
+          "tier": 3,
+          "name": "Khiên Hấp Thụ",
+          "desc": "Chặn trọn một đòn của kẻ địch hoặc boss, rồi hồi lại. Không chặn gai, hố và hạt Hoa Nở (đòn đỉnh).",
+          "ranks": [
+            { "shieldRechargeSec": 30, "text": "Hồi khiên sau 30 s" },
+            { "shieldRechargeSec": 25, "text": "Hồi khiên sau 25 s" },
+            { "shieldRechargeSec": 20, "text": "Hồi khiên sau 20 s" }
+          ]
+        }
+      ]
+    }
+  ]
+}

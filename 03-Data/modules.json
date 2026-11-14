@@ -13,7 +13,7 @@
   },
   {
     "id": "energy_siphon",
-    "effect": "kill restores 2% weapon energy"
+    "effect": "kill restores 2 weapon energy"
   },
   {
     "id": "spike_guard",

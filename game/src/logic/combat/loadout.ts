@@ -79,6 +79,11 @@ export class WeaponLoadout {
     return this.slots[this.index] ?? (this.slots[0] as WeaponSlot);
   }
 
+  /** Sượt đạn (P3 bậc 3): cộng thời gian nạp nếu đang giữ nút nạp Arc Cannon. */
+  addCharge(sec: number): void {
+    if (this.chargeTime > 0) this.chargeTime += sec;
+  }
+
   get chargeLevel(): ChargeLevel {
     const arc = this.data.arcCannon;
     if (this.chargeTime >= arc.charge.timeSec - 1e-9) return 2;

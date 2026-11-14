@@ -129,6 +129,8 @@ Mẫu điểm neo:
 
 Danh sách cần có: khoảng 25 SFX, và nhạc cho Prologue, 8 màn, Hub, Citadel, boss, boss cuối, kết thúc, menu, jingle thắng.
 
+**Bản MVP (cập nhật 14/11/2026):** danh sách đầy đủ, quy cách file, thư mục `audio-src/` và ghi giấy phép (`licenses/audio.csv`) ở `01-GDD/12-Am-thanh.md` mục 2 và 5.4: 94 id âm (78 file riêng, còn lại dùng lại file khác), một bản nhạc boss chung 3 lớp theo pha; nhạc riêng từng boss từ Alpha.
+
 ## 10. Kiểm tra chất lượng cho mỗi asset
 
 - [ ] Đúng kích thước khung và số khung theo `manifest.csv`.

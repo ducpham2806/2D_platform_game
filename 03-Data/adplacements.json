@@ -49,13 +49,15 @@
       "where": [
         "prep"
       ],
-      "cyberPlus": "instant"
+      "cyberPlus": "instant",
+      "choicesOnlyUnlocked": true
     },
     "AD_DOUBLE": {
       "enabled": true,
       "capPerDay": 6,
       "rewardType": "double_reward",
-      "multiplier": 2,
+      "multiplierStory": 1.5,
+      "multiplierEndgame": 2,
       "applyTo": [
         "core_bit"
       ],
@@ -66,7 +68,10 @@
       "where": [
         "result"
       ],
-      "cyberPlus": "auto"
+      "cyberPlus": "auto",
+      "notOn": [
+        "sweep"
+      ]
     },
     "AD_GIFT": {
       "enabled": true,
@@ -78,6 +83,7 @@
         200
       ],
       "orRandomBooster": true,
+      "beforeFinalBoss": "random_booster_only",
       "where": [
         "hub"
       ],
@@ -90,7 +96,9 @@
       "where": [
         "spin"
       ],
-      "cyberPlus": "+1 free spin"
+      "cyberPlus": "+1 free spin (ad table)",
+      "prizeTable": "liveops.json → dailySpin.adPrizes",
+      "gemEvPerSpinMax": 3
     },
     "AD_LOGIN": {
       "enabled": true,
@@ -98,7 +106,9 @@
       "rewardType": "login_makeup",
       "where": [
         "daily_login"
-      ]
+      ],
+      "maxPerCycle": 3,
+      "onlyMakeupMethod": true
     },
     "AD_SWEEP": {
       "enabled": true,
@@ -145,7 +155,7 @@
       "neverIn": [
         "prologue",
         "stage1",
-        "after_boss"
+        "after_first_campaign_boss_clear"
       ],
       "frustrationGuard": {
         "deaths": 3,
@@ -158,9 +168,12 @@
       "enabled": true,
       "where": "farm_menu_after_3_runs",
       "capPerDay": 1,
+      "minGapMin": 4,
+      "startDay": 2,
       "cyberPlus": "off"
     }
   },
+  "interstitialCapPerDayTotal": 2,
   "neverShowIn": [
     "prologue",
     "boss_fight",
@@ -179,5 +192,6 @@
     "persistent": "server_ssv_or_nonce",
     "temporary": "client_ok"
   },
-  "ageRating": "13+"
+  "ageRating": "13+",
+  "note": "Nguồn chuẩn cho vị trí quảng cáo; monetization.json → ads.detailsFile trỏ tới đây. Rà soát 14/11/2026: AD_DOUBLE ×1,5 trong cốt truyện, ×2 ở endgame; AD_GIFT trước AEGIS chỉ cho booster; AD_SPIN dùng bảng giải QC; after_first_campaign_boss_clear = màn Kết quả sau lần đầu hạ boss của một màn chiến dịch; trần chung interstitial 2 mỗi ngày (06 mục 3)."
 }

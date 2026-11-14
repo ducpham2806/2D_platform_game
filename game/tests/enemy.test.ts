@@ -360,3 +360,26 @@ describe('kẻ địch trong màn', () => {
     expect(world.player.hp).toBe(70);
   });
 });
+
+describe('chặn cày bằng cách chết (rà soát 14/11/2026)', () => {
+  it('kẻ địch dựng lại bị hạ lần nữa trong cùng lượt: không cho lại EXP, Core Bit; viên máu vẫn có thể rơi', () => {
+    expect(config.stages.mechanics.enemyRewardOncePerRun).toBe(true);
+    const rows = [
+      ...Array.from({ length: 10 }, () => `#${'.'.repeat(28)}#`),
+      `#..P........U${'.'.repeat(16)}#`,
+      '#'.repeat(30),
+    ];
+    const world = roomWorld(rows);
+    const field = world.field!;
+    const turret = world.enemies[0]!;
+    field.onKilled([turret], world.player);
+    const exp = field.exp;
+    const bits = field.pickups.all.filter((p) => p.kind === 'coreBit').length;
+    expect(exp).toBe(6);
+    expect(bits).toBeGreaterThan(0);
+    field.reset(); // Kai chết: kẻ địch dựng lại, vật phẩm chưa nhặt mất
+    field.onKilled([turret], world.player);
+    expect(field.exp).toBe(exp);
+    expect(field.pickups.all.filter((p) => p.kind === 'coreBit')).toHaveLength(0);
+  });
+});

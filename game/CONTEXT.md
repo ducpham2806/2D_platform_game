@@ -1,11 +1,11 @@
 # CONTEXT: Cyber Vanguard (mã nguồn game)
 
-Tóm tắt để dán vào đầu mỗi phiên làm việc mới (theo `04-Dev-Plan/01-Ke-hoach-lam-viec.md`). Cập nhật sau mỗi sprint.
+Kiến trúc, cấu trúc, lệnh và trạng thái module của mã nguồn. Đọc khi code. Quyết định chi tiết của từng module nằm ở `game/docs/quyet-dinh/` (chỉ đọc file của module đang làm). Trạng thái chỉ ghi ở mục "Module và trạng thái" bên dưới; file khác trỏ về đây.
 
 ## Kiến trúc
 
 - **Công nghệ:** Phaser 3.90 + TypeScript 5.9 (strict, không `any`) + Vite 8; test Vitest 5; ESLint 10 + Prettier.
-- **Độ phân giải logic:** 320 × 192 (20 × 12 ô, ô 16 px). Phóng to theo hệ số **nguyên** lớn nhất vừa màn hình, dư thì viền đen, `pixelArt: true`. Cầm dọc thì che game và nhắc xoay ngang.
+- **Độ phân giải logic:** 320 × 192 (20 × 12 ô, ô 16 px). Phóng to theo hệ số **nguyên** (tính theo px thiết bị) lớn nhất vừa màn hình, dư thì viền đen, `pixelArt: true`. Cầm dọc thì che game và nhắc xoay ngang.
 - **Vòng lặp:** logic chạy theo bước cố định 60 Hz (`src/logic/fixed-step.ts`), tách khỏi FPS.
 - **Dữ liệu:** nguồn duy nhất là `../03-Data/*.json`. `npm run sync-data` (tự chạy trước `dev`/`build`) chép sang `public/data/` (bị gitignore). Không sửa tay `public/data/`, không viết cứng chỉ số trong mã.
 - **Kiểm tra dữ liệu:** `src/core/game-config.ts` kiểm tra kiểu từng file bắt buộc và các bất biến thiết kế giữa nhiều file (vòng khắc chế, Két giáp, cấp khuyến nghị, weapons khớp stages, hệ số thưởng khớp độ khó). Dữ liệu sai thì game dừng ở màn tải với thông báo lỗi, và test/CI báo đỏ.
@@ -56,17 +56,37 @@ src/
                           phòng thử màn chơi M7 (Tiled)
   scenes/                 Boot → Preload → Menu, Hub, Stage, Controls, Playtest (kết quả chơi thử)
   scenes/stage/           vẽ màn chơi (renderer, kẻ địch, vật phẩm), HUD vẽ theo HudModel, menu tạm dừng,
-                          gắn công cụ chơi thử vào màn (stage-playtest.ts)
+                          hộp hội thoại, màn Kết quả, gắn công cụ chơi thử vào màn (stage-playtest.ts)
   logic/hud/              M10: mô hình HUD từ StageWorld (máu, năng lượng, vũ khí, máu boss, Core Bit, EXP,
-                          phòng khóa), con trỏ menu bỏ qua mục khóa (thuần)
+                          phòng khóa), con trỏ menu bỏ qua mục khóa, MenuNavigator (dọc/ngang, cần) (thuần)
   logic/tutorial/         TutorialManager (máy trạng thái bước theo tutorial.json, hàng đợi, bỏ qua khi đã làm
-                          được, gợi ý theo giây/thất bại, cancelOn) và TutorialSignals (StageWorld → tín hiệu) (thuần)
+                          được, gợi ý theo giây/thất bại, cancelOn, chuỗi `after` theo lượt QB-88) và TutorialSignals
+                          (StageWorld → tín hiệu) (thuần)
   core/tutorial-config.ts kiểm tra 03-Data/tutorial.json (tín hiệu hợp lệ, after, lời thoại ≤ maxTextChars)
+  core/ui-config.ts       kiểm tra 03-Data/ui.json (hộp hội thoại, màn Kết quả)
+  core/dialogue-config.ts kiểm tra 03-Data/dialogue_wardens.json (khóa, biến thể nối liền từ 0, độ dài câu, vi/en khớp)
+  logic/dialogue/         chọn thoại Warden theo số boss đã hạ trước trận; DialogueRunner (chữ hiện dần, Tiếp,
+                          Bỏ qua, bỏ phím bấm dồn lúc mở) (thuần)
+  logic/result/           mô hình màn Kết quả (thời gian, chết, EXP và lên cấp, Core Bit, vũ khí mới, SP, bí mật) (thuần)
+  logic/rpg/              M8: cấp từ EXP, SP, đồng bộ cấp theo màn, chỉ số theo cấp, LevelTracker; cây kỹ năng, build, BuildRuntime
+                          (học, đặt lại), build (computeBuild, applyBuild, statsFor), chuẩn hóa build theo dữ liệu,
+                          mô hình Xưởng (thuần)
+  core/skills-config.ts   kiểm tra 03-Data/skills.json (hiệu ứng, khoảng, luật bậc); core/shop-config.ts: shop.json
+                          (Upgrade, lịch mở theo boss, Booster) và economy.incomeFormula
+  workshop/               bảng HTML Xưởng tab Kỹ năng (ADR-001)
+  logic/shop/             M9: giá Upgrade theo cấp, cấp mở theo số boss chiến dịch, mua/gỡ, chuẩn hóa cấp trong
+                          bản lưu, mô hình Quầy Mira (thuần)
+  shop/                   bảng HTML Quầy Mira tab Upgrade (ADR-001)
+  logic/difficulty/       độ khó (01-GDD/11-Do-kho.md): mở Thử thách theo màn, độ khó mặc định, làm tròn thưởng,
+                          checkpoint theo độ khó, câu gợi ý NOVA, mô hình màn Chuẩn bị, chuẩn hóa bản lưu (thuần)
+  prep/                   bảng HTML màn Chuẩn bị (chọn độ khó; ADR-001)
+  core/deep-merge.ts      ghép khối `challenge` (bản Thử thách) lên dữ liệu gốc
   logic/save/             M11: SaveData (tiến trình, nhân vật, kho; hỏng từng phần về mặc định), mã sao lưu
-                          có checksum, SaveManager (ghi theo thứ tự, revision), StageSave nối màn với bản lưu (thuần)
+                          có checksum, SaveManager (ghi theo thứ tự, revision, giao dịch `transact` chờ ghi và
+                          hoàn tác khi lỗi), StageSave nối màn với bản lưu (thuần)
   save/                   kho IndexedDB (dự phòng localStorage), bảng HTML "Dữ liệu lưu"
   playtest/               bảng HTML: phiếu chấm 1–5, bảng chỉnh cảm giác, kết quả, xuất JSON
-  debug/flags.ts          cờ DEBUG (?debug=1) và TUNE (?tune=1); bản dev luôn bật
+  debug/flags.ts          cờ DEBUG (?debug=1) và TUNE (?tune=1), bản dev luôn bật; GATE (?gate=1), SHOP (?shop=1)
 maps/                     bản đồ Tiled JSON + tileset xám; maps/src/ là bản phác ASCII; README quy ước
 tests/                    Vitest cho phần thuần, đọc thẳng 03-Data
 scripts/sync-data.mjs     chép dữ liệu 03-Data → public/data
@@ -75,66 +95,60 @@ scripts/gate-check.mjs    đo cổng Prototype bằng Playwright: dung lượng,
                           CPU chậm, độ trễ phím/chạm (xem 04-Dev-Plan/05-Cong-Prototype.md)
 ```
 
-## Quyết định đã chốt
+## Quyết định đã chốt (theo module)
 
-- Thư mục mã nguồn là `game/` (script `05-Assets/tools/validate_assets.py` mặc định trỏ `game/public/assets`).
-- Scale tự tính (`Phaser.Scale.NONE` + `setZoom` nguyên) thay vì `Scale.FIT` (FIT cho hệ số lẻ, làm mờ pixel).
-- Font tạm là font hệ thống sans-serif (đủ dấu tiếng Việt; font monospace trên một số máy thiếu glyph như "ử"); thay bằng bitmap font khi có asset.
-- `minimatch` được ghim ≥ 11.0.1 qua `overrides` để vá lỗ hổng trong chuỗi ESLint (`npm audit`: 0 lỗ hổng).
-- **Nút cảm ứng là lớp HTML phủ toàn màn hình**, không vẽ trong canvas: dùng được cả vùng viền đen, kích thước tính bằng px CSS = dp nên bảo đảm ≥ 48 dp, đa chạm bằng Pointer Events. Lớp chỉ hiện khi đang chơi và thiết bị dùng gần nhất là cảm ứng. Khi mở bảng HTML đè lên một màn Phaser có nút, tắt `scene.input.enabled` (Phaser nghe sự kiện thả trên cả cửa sổ nên cú bấm có thể xuyên xuống).
-- Màn có đổi phím đọc `keydown` thẳng từ `window` (không qua hàng đợi phím của Phaser) để thứ tự sự kiện khớp với lớp bắt phím của InputService.
-- Phím tương tác là **W / ↑** (E dành cho đổi vũ khí theo GDD 5.2); W/↑ được phép dùng chung giữa "lên" và "tương tác". Đổi phím sang phím đang thuộc hành động khác thì hoán đổi, không để hành động bắt buộc trống.
-- Cài đặt điều khiển lưu ở `localStorage` (khóa `cv.controls`, có số phiên bản; hỏng từng phần thì phần đó về mặc định). Vẫn tách khỏi bản lưu M11 (đọc đồng bộ khi khởi động); gộp vào khi làm cloud save.
-- Hai nút đổi vũ khí trên wireframe LayoutEdit chỉ 44 px; dữ liệu nâng lên 48 dp theo GDD.
-- **Vật lý Kai (M3):** trọng lực và vận tốc nhảy suy ra từ `jump.maxTiles` và `jump.apexSec`, nên độ cao nhảy luôn đúng GDD 5.1 khi chỉnh cảm giác; rơi nặng hơn lên (`fallGravityMul`). Vị trí dời theo vận tốc trung bình của bước để quỹ đạo khớp công thức. Coyote trừ giờ _sau_ khi xét nhảy (đủ 6 bước = 0,1 s). Đồng hồ còn dưới 1 µs coi như hết (tránh sai số dấu phẩy động). Va chạm trục X rồi Y, chia quãng đi tối đa nửa ô mỗi lần nên không xuyên tường. Ngoài cạnh trái/phải bản đồ là tường, dưới đáy là hố.
-- Lướt trên không tắt mặc định (`abilities.airDash`), vì GDD 6.2 xếp nó vào nhánh Phantom. Nhảy khi đang lướt giữ tốc độ lướt trên không tới khi đáp (dash-jump). Nhảy tường khóa điều khiển ngang `wallJump.lockSec` để không dính lại tường.
-- Phím T gây 10 sát thương thử để xem bật lùi và bất tử; `window.__cvGame`/`__cvWorld` để thử và đo bằng trình duyệt. Cả hai chỉ có ở bản dev hoặc khi mở bằng `?debug=1` (bản build trên Pages).
-- **Cổng Prototype:** mỗi lần vào màn thử là một phiên nhật ký (thời gian theo thiết bị, chết theo đoạn, lượt đánh và thời gian thắng boss, điểm 1–5) lưu ở `localStorage` `cv.playtest` (tối đa 200 phiên, phiên < 10 s không lưu). Không gửi đi đâu: người thử sao chép JSON và gửi tay; người tổng hợp gộp ở màn Kết quả chơi thử. Bảng chỉnh cảm giác (`?tune=1`, F2) đổi thông số ngay qua `world.retune()`, lưu phần đã đổi ở `cv.tuning` và chỉ áp khi bật `?tune=1`. Khi bảng HTML mở thì trận dừng hẳn (không bù bước khi đóng), lớp cảm ứng ẩn, phím bấm trong bảng không lọt vào game (`KeyboardSource` bỏ qua phím có đích nằm trong `.cv-panel`).
-- Bản web đăng lên GitHub Pages bằng `.github/workflows/pages.yml` mỗi khi `main` đổi (đường dẫn tương đối `base: './'` nên chạy được ở thư mục con của Pages).
-- **Chiến đấu (M4):** sát thương gây ra tính bằng "phát Arc Cannon gốc" (= 1), máu kẻ địch/boss cùng đơn vị; sát thương nhận vào tính bằng máu người chơi, nhân `damageTaken` của độ khó, làm tròn, tối thiểu 1. Hệ số công = công(cấp)/công(cấp 1) tính bằng công thức trong `player.json`. Điểm yếu (×2,5, choáng 0,5 s) lấy từ chính vũ khí đang bắn. Mỗi viên chỉ trúng một mục tiêu một lần; đạn nạp đầy xuyên 1 mục tiêu; roi Vine Lash trúng mọi mục tiêu trong tầm một lần.
-- Đạn nạp (vừa/đầy) luôn bắn được khi thả nút, không tính vào giới hạn 3 đạn thường. Bị trúng đòn khi đang nạp thì mất hết (GDD 5.1). Tự bắn và hỗ trợ ngắm chỉ có tác dụng khi thiết bị gần nhất là cảm ứng.
-- Hit-stop 3 bước khi trúng bằng đạn nạp đầy hoặc trúng điểm yếu (`weapons.json` `hitStopSteps`), làm ở StageWorld nên mọi thứ cùng dừng.
-- **Boss:** đòn lặp theo danh sách của pha (dễ học, không ngẫu nhiên), trừ vị trí khe né Mưa đạn (ngẫu nhiên có hạt giống). Telegraph sau khi chia `speedMul` không ngắn hơn `minTelegraphSec`; dữ liệu boss vi phạm GDD 9 (telegraph ngắn, đòn chết ngay) bị chặn ngay lúc nạp. Chết trong phòng boss thì hồi sinh trong phòng, boss đầy máu lại. Boss xám máu 100 như Thorna; bắn liên tục không né mất khoảng 23 giây (test mô phỏng).
-- **Kẻ địch thường (M5):** dữ liệu ở `03-Data/enemies.json`, mỗi loại một `behavior` (`drone`, `turret`, `butterfly`, `shieldCharger`); Tháp Pháo Tập Sự và Tháp Gai cùng hành vi `turret`, khác số viên và góc xòe. Lúc nạp, game chặn telegraph < 0,4 s, telegraph dài hơn nhịp bắn, đòn chết ngay, và màn đã làm (Stage 1) thiếu dữ liệu kẻ địch. Test chặn kẻ địch đặt gần điểm xuất phát/checkpoint dưới 6 ô. Kẻ địch chỉ chạy khi người chơi trong `activeRangeTiles` (12 ô ngang); người chơi hồi sinh thì mọi kẻ địch dựng lại, Core Bit và EXP giữ nguyên. Máu nhân `enemyHp` của độ khó. Cờ `harmless` trên bản đồ (Prologue nhịp 1–3) làm đạn và thân gây 0 máu nhưng vẫn đẩy lùi. Core Bit là vật phẩm phải nhặt; EXP cộng ngay. Hạt giống ngẫu nhiên của rơi đồ tách khỏi của boss để thêm kẻ địch không đổi khe né Mưa đạn.
-- **Cơ chế màn (M7):** thông số ở `03-Data/stages.json` → `mechanics`; game chặn hồi sinh chậm hơn 1,5 s và gai/hố giết ngay Kai cấp 1 ở độ khó nặng nhất. Sát thương gai/hố nhân `damageTaken` của độ khó như đòn kẻ địch.
-  - **Hố:** rơi khỏi đáy mất 20 máu rồi về checkpoint sau 0,3 s, giữ máu, kẻ địch không dựng lại; hết máu thì tính là chết. `world.falls` đếm riêng, không cộng vào `deaths`; nhật ký chơi thử vẫn tính rơi hố là một lần hỏng ở đoạn đó (giữ so sánh được với các đợt trước M7).
-  - **Gai:** ô `Tile.Hazard` không chặn đường. Chạm (hộp Kai thu 2 px mỗi phía) thì mất 30 máu và về chỗ đứng an toàn gần nhất (lần cuối đứng vững trên nền thật, hai chân đều trên ô đặc/bục, không trên bệ di động), bất tử như bị đánh. Bất tử của lướt không cứu; đang bất tử sau cú đánh thì chỉ đưa về, không mất máu. `spikeGuard` trong WorldSetup để M8 bật module Spike Guard.
-  - **Checkpoint:** đi qua cột checkpoint khi đang đứng trên nền thì lưu (chỉ tiến). Chết thì hồi sinh ở đó sau `respawnSec` (1 s), đầy máu, kẻ địch dựng lại, giữ Core Bit/EXP. `startCheckpoint` trong WorldSetup để M11 vào lại đúng checkpoint đã lưu. Thắng boss rồi ra khỏi phòng thì về checkpoint cuối (không còn về điểm xuất phát).
-  - **Dây leo đu:** con lắc, góc tối đa asin(biên độ/chiều dài), đầu dây là bệ một chiều (`Platform` trong vật lý Kai). Vật lý Kai có danh sách `platforms`: đứng trên bệ thì được chở (vẫn bị tường chặn), nhảy khỏi bệ cộng `jumpBonus`, Xuống + Nhảy rơi xuyên. Bệ cập nhật trước Kai trong mỗi bước.
-  - **Phòng khóa:** cửa là ô trống ở hai cột mép; vào hẳn bên trong (qua khỏi cột cửa) thì đóng, kẻ địch của phòng là kẻ địch xuất phát giữa hai cột cửa. Hạ hết thì mở hẳn. Chết trong phòng thì cửa mở lại để hồi sinh ở checkpoint. Camera khóa trong phòng như phòng boss.
-  - **Vật chắn và bí mật:** vật chắn đặt ô đặc vào lưới; đạn người chơi vỡ vì chạm khối đặc thì `ProjectilePool.update` gọi lại `onWall`, vật chắn vỡ nếu đúng `requiresWeapon` (tên vũ khí). Bí mật nhặt một lần, ghi vào `world.collected` và bản lưu (M11).
-- **Boss Thorna và Golem (M6):** `GrayBoss` đổi tên thành `Boss` (`logic/boss/boss.ts`), dùng chung cho boss xám và Thorna; `bosses.json` → `attacks` chỉ cần khai các đòn mà boss dùng (đòn có trong danh sách pha mà thiếu dữ liệu thì báo lỗi khi nạp). Đòn mới: `thorns` (Gai Quạt, xòe quạt ngang tầm người), `lash` (Dây Quất: hộp ngang sát sàn, bị cắt ngắn khi sát tường), `roots` (Rễ Trồi: cột rễ đứng yên mọc lần lượt trái → phải quanh chỗ người chơi lúc báo trước), `bloom` (Hoa Nở: `seeds` hạt rơi, `planBloom` luôn chừa khe an toàn, rồi boss choáng). Mỗi boss có `weakness` (vũ khí gây 2,5×) tách khỏi `reward` (vũ khí nhận khi thắng lần đầu; Thorna: weakness Ember Burst, reward Vine Lash) cùng `rewardExp`/`rewardCoreBit` (cộng một lần khi thắng đầu, đọc qua `world.exp` / `world.coreBits`). Game kiểm tra `reward` = `weaponGranted` và `weakness` = `bossWeakness` của màn tương ứng. Boss có `walk` thì đi chậm về phía người chơi khi nghỉ (Thorna 0,8 ô/s, giữ cách 5 ô). Gai Quạt báo trước 0,6 s (đặc tả 0,5 s) để sau khi pha 3 tăng tốc 20% vẫn còn 0,5 s. Đấu trường 24 ô rộng hơn khung hình 20 ô nên camera đi theo Kai trong đấu trường. Bramble Golem là kẻ địch (`behavior: golem` trong `enemies.json`, 60 máu, pha 2 khi ≤ 50%) nên chạy trong phòng khóa như kẻ địch thường; `miniBoss` của mỗi màn đã làm phải có trong `enemies.json`. Chưa làm: thoại trước/sau trận (cần hệ thống thoại), 1 SP (cần hệ thống cấp), sprite.
-- **HUD và tạm dừng (M10):** HUD vẽ theo `HudModel` (`buildHud(world, savedCoreBits)`, thuần) dựng mỗi khung, không đọc StageWorld trực tiếp; không dùng event bus cho số liệu từng khung (đọc mô hình đơn giản và không lệch với bước cố định). Bố cục theo wireframe: máu (kèm số) trái trên, năng lượng vũ khí boss dưới máu, máu boss giữa trên có vạch pha, Core Bit (bản lưu lúc vào màn + nhặt trong lượt) và EXP góc phải, chừa 30 px logic cho nút II khi chơi cảm ứng; ô vũ khí góc phải dưới trên PC/tay cầm. Trên cảm ứng, biểu tượng vũ khí là nút `weapon` (`swipe: true` trong `controls.json`): chạm = vũ khí sau, vuốt trái ≥ `swipeMinDp` = vũ khí trước; chữ trên nút là tên vũ khí đang cầm (`InputService.setWeaponLabel`). Chỉ nút đổi vũ khí được đặt `swipe`. Tạm dừng (Esc/Start/II) mở menu (Tiếp tục; Lắp module nhanh và Tùy chọn hiện mờ "chưa có"; Thoát về menu bấm hai lần): trận đứng yên, lớp cảm ứng ẩn để chạm vào menu, chọn bằng lên/xuống (hoặc cần) + Nhảy/Bắn, bấm Tạm dừng lần nữa để tiếp tục.
-- **Hướng dẫn (TutorialManager):** các bước ở `03-Data/tutorial.json` (bắt buộc, game kiểm tra lúc nạp). Bước kích hoạt/hoàn thành/đếm thất bại theo **tín hiệu** của màn (`start`, `jump`, `wallSlide`, `wallJump`, `vine`, `spike`, `roomLocked`, `roomLocked:<kẻ địch>`, `near:<kẻ địch>`, `section:<đoạn>`, `bossGate`, `bossPhase`, `bossDefeated`, `weaponGranted`, `fireWarden`...; danh sách ở `core/tutorial-config.ts`), không theo tọa độ, nên dùng lại được khi có bản đồ thật. Mỗi lúc hiện một bước, bước khác kích hoạt thì xếp hàng; `after` nối bước; `skipIfDone` bỏ qua nếu đã làm được trong lượt; `cancelOn` bỏ bước hết ý nghĩa (lời trận boss khi boss đã bị hạ) kèm các bước nối sau; bước không có `require` hiện `showSec` giây. Gợi ý: `afterSec` (khi chưa tiến triển) và `afterFails`; viền hộp chuyển vàng, nút cảm ứng của `highlight` nhấp nháy (`InputService.setTouchHighlight`). Không khóa điều khiển; chết thì bước giữ nguyên. Bước đã xong và cờ tắt lưu trong bản lưu (`tutorial.done`, `tutorial.off`); menu tạm dừng có mục Bật/Tắt hướng dẫn. Màn chọn giai đoạn bằng `StageDef.tutorial` (4 phòng thử dùng `stage1`; màn xám không có để giữ số liệu chơi thử). Lời thoại hiện ở hộp giữa trên (`TutorialBox`), tên người nói đứng trước. Chưa làm: bước Prologue P01–P13 và F01–F04 (chờ bản đồ Prologue sau cổng Prototype), bậc gợi ý 3–4 (giảm độ khó khu vực, đề nghị độ khó Cốt truyện), minh họa bóng mờ, mục Trợ giúp xem lại, sự kiện đo lường `tutorial_*` (M16), tiếng Anh.
-- **Lưu cục bộ (M11):** một ô lưu trong IndexedDB (`cyber-vanguard` → `save` → `main`, chuỗi JSON), không mở được thì dùng `localStorage` `cv.save`. `SaveManager` mở trước khi vào Menu; mỗi thay đổi tăng `revision`, ghi `savedAt`, ghi xuống kho theo thứ tự (ghi lỗi thì giữ bản trong bộ nhớ, báo `lastError`). Bản của phiên bản game mới hơn thì không đọc và không ghi đè (`readOnly`). Hàm đổi bản lưu là hàm thuần, không đổi gì thì trả lại đúng bản cũ và không ghi. `StageSave` ghi ngay khi qua checkpoint, nhặt bí mật, nhận vũ khí, hạ boss; EXP/Core Bit/thời gian cộng phần chênh lệch mỗi lần ghi và khi thoát màn (SHUTDOWN của scene, `pagehide`). Hạ boss thì checkpoint của màn về 0 (vào lại từ đầu màn), bí mật giữ; boss đã hạ thì thắng lại không nhận thưởng lần đầu. Vũ khí boss là của nhân vật nên có ở mọi màn. Bí mật nhận dạng theo `item` trong màn. Màn `playtest` (màn xám) không đọc, không ghi. Mã sao lưu `CV1.<base64url JSON>.<FNV-1a hex>`; checksum chỉ bắt chép sai, không chống sửa (tiền cao cấp và giao dịch do máy chủ giữ).
-- **Sửa lỗi có từ Sprint 3–5:** sau khi chết và hồi sinh, sự kiện "chết" của bước cũ còn trong `PlayerPhysics.events` nên Kai chết lặp mãi. `respawn()` giờ xóa sự kiện; test "chết một lần chỉ tính một lần".
-- Bản đồ ASCII: mọi chữ hoa là ký hiệu đặt đối tượng; chữ cố định: P T S B D C V L (`RESERVED_MARKERS`), chữ khác tra `enemyMarkers` của màn, không có thì báo lỗi. Màn chọn bằng `scene.start(SceneKey.Stage, { stage })`; chỉ màn xám ghi nhật ký chơi thử.
+| File                                                     | Nội dung                                                                                                  |
+| -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `docs/quyet-dinh/nen-tang-dau-vao-nhan-vat-chien-dau.md` | Khung, scale, font, nút cảm ứng HTML, đổi phím, vật lý Kai, chiến đấu, hit-stop, phím Lên trùng Tương tác |
+| `docs/quyet-dinh/ke-dich-boss.md`                        | Hành vi kẻ địch, boss theo danh sách pha, Thorna, Golem, cân bằng Thorna                                  |
+| `docs/quyet-dinh/man-choi.md`                            | Hố, gai, checkpoint, dây leo, phòng khóa, vật chắn, bí mật, bản đồ ASCII, lỗi hồi sinh đã sửa             |
+| `docs/quyet-dinh/giao-dien-huong-dan-hoi-thoai.md`       | HUD, menu tạm dừng, TutorialManager, hội thoại boss, màn Kết quả                                          |
+| `docs/quyet-dinh/luu.md`                                 | IndexedDB, mã sao lưu, phiên bản bản lưu                                                                  |
+| `docs/quyet-dinh/rpg-xuong.md`                           | Cấp, SP, cây kỹ năng, build, Phantom, Vanguard, Core, trần sức mạnh, Xưởng                                |
+| `docs/quyet-dinh/shop.md`                                | Quầy Mira, giá, lịch mở, tác dụng Upgrade, giao dịch                                                      |
+| `docs/quyet-dinh/do-kho.md`                              | Ba độ khó, màn Chuẩn bị, checkpoint theo độ khó, bản Thử thách                                            |
+| `docs/quyet-dinh/cong-prototype.md`                      | Nhật ký chơi thử, Pages, bản `?gate=1`                                                                    |
 
 ## Module và trạng thái
 
-| ID     | Module           | Trạng thái                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| ------ | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| M0     | Dự án và công cụ | **Xong** (Sprint 1): dev/build/test/lint/format, alias `@/`, CI GitHub Actions                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| M1     | Khung game       | **Xong phần khung** (Sprint 1): Boot/Preload/Menu/Hub/Stage, scale nguyên, nhắc xoay ngang, nạp + kiểm tra JSON, event bus. Đo tự động: 60 FPS khi CPU chậm 4–6× (`npm run gate-check`). Còn chờ: nạp atlas khi có asset; xác nhận 60 FPS trên điện thoại thật                                                                                                                                                                                                                                          |
-| M2     | Đầu vào          | **Xong** (Sprint 2): bàn phím, tay cầm, cảm ứng (cần ảo nổi/cố định, 6 nút, đa chạm, rung), đổi phím/nút có hoán đổi, chỉnh bố cục kéo thả + cỡ/độ trong suốt/thuận tay trái, lưu cài đặt, biểu tượng nút theo thiết bị. Tự bắn và hỗ trợ ngắm có tác dụng từ M4. Vuốt vào biểu tượng vũ khí để đổi: làm ở M10                                                                                                                                                                                          |
-| M3     | Nhân vật         | **Xong** (Sprint 3): chạy, nhảy biến thiên, coyote 0,1 s, jump buffer 0,12 s, lướt 3 ô/0,25 s (hồi 0,6 s, bất tử 0,1 s), dash-jump, bám và nhảy tường, bục một chiều (xuống + nhảy để xuyên), bị đánh (bật lùi, bất tử 1 s), chết, rơi hố, hồi sinh; màn xám thử cảm giác. Chưa: sprite và hoạt ảnh (chờ asset nhóm P0)                                                                                                                                                                                 |
-| M4     | Chiến đấu        | **Xong** (Sprint 4): Arc Cannon tối đa 3 đạn, 3 mức nạp, bị trúng mất nạp, giữ nạp 2 s khi đổi vũ khí, tự bắn, hỗ trợ ngắm nhẹ; sát thương, điểm yếu, choáng, độ khó; vũ khí boss theo dữ liệu với năng lượng 28 và tự hồi (Vine Lash làm thật); hit-stop                                                                                                                                                                                                                                               |
-| M6     | Boss             | **Code xong** (Sprint 6): boss xám (khung Prototype) và **Thorna** theo đặc tả mục 5 (HP 100, 3 pha tại 60%/30%, Gai Quạt, Dây Quất, Rễ Trồi, Hoa Nở có 3 khe né rồi choáng 2 s, đi chậm, thưởng Vine Lash + 120 EXP + 80 Core Bit, điểm yếu Ember Burst); **Bramble Golem** (mini-boss 60 máu, giậm đất → sóng; pha 2 hạt nổ + lao) chạy trong phòng khóa; phòng thử cho cả hai (menu B và G). Còn: thoại trước/sau trận, SP, sprite, bản đồ thật của phòng boss và đoạn C (Tiled, chờ cổng Prototype) |
-| Cổng   | Cổng Prototype   | **Công cụ xong**: bản web trên Pages, nhật ký + phiếu chấm + màn Kết quả, bảng chỉnh cảm giác, đo tự động đạt mọi ngưỡng. Còn: chơi thử với 5 người thật (`04-Dev-Plan/05-Cong-Prototype.md`)                                                                                                                                                                                                                                                                                                           |
-| M5     | Kẻ địch          | **Xong** (Sprint 5): 5 loại thường của Prologue và Stage 1 (Drone Lính và bản Prologue vô hại, Tháp Pháo Tập Sự, Bướm Sắt, Tháp Gai, Lính Kén có khiên) theo dữ liệu, telegraph ≥ 0,4 s, tầm hoạt động, rơi Core Bit/viên máu, EXP; phòng thử kẻ địch. Chưa: sprite (mini-boss Bramble Golem đã làm ở M6)                                                                                                                                                                                               |
-| M7     | Màn chơi         | **Khung xong** (Sprint 6): nạp bản đồ Tiled JSON, checkpoint (hồi sinh 1 s giữ Core Bit/EXP), hố (−20 máu về checkpoint), gai (−30 máu về chỗ an toàn, Spike Guard), dây leo đu (2,4 s, 3 ô, +10% nhảy), phòng khóa đếm kẻ địch, vật chắn cần vũ khí, bí mật, camera khóa phòng; phòng thử màn chơi. Chưa: bản đồ thật Prologue/Stage 1 (chờ qua cổng Prototype), thang/dây leo đứng yên (cần leo trèo ở M3), bệ dây di chuyển, parallax                                                                |
-| M11    | Lưu và cloud     | **Lưu cục bộ xong** (Sprint 7): IndexedDB, checkpoint/bí mật theo màn, boss đã hạ, vũ khí boss, EXP, Core Bit, thời gian chơi, revision; mã sao lưu có checksum, bảng Dữ liệu lưu (menu S). Còn: cloud (Backend, đồng bộ thưa, màn chọn khi xung đột), gộp cài đặt điều khiển vào bản lưu, các nhóm dữ liệu của module chưa làm (SP, kỹ năng, module, skin, nhiệm vụ, kỷ lục)                                                                                                                           |
-| M10    | Giao diện        | **HUD cơ bản xong** (Sprint 7): HUD theo wireframe Main/HUDPC, menu tạm dừng, nút biểu tượng vũ khí vuốt để đổi (cảm ứng). Còn: hội thoại, màn chuẩn bị, Kết quả, Hub, Xưởng, Cài đặt, bản đồ nhỏ, safe-area tai thỏ, sprite/bitmap font                                                                                                                                                                                                                                                                |
-| TUT    | Hướng dẫn        | **Khung xong** (Sprint 7): TutorialManager theo dữ liệu, 13 bước Stage 1 (S01–S13) chạy trên các phòng thử, hộp lời thoại, gợi ý 2 bậc, nút cảm ứng nhấp nháy, lưu tiến độ, bật/tắt ở menu tạm dừng. Còn: Prologue (chờ cổng Prototype), gợi ý bậc 3–4, minh họa, Trợ giúp, đo lường                                                                                                                                                                                                                    |
-| M8–M18 |                  | Chưa làm (phần code Vertical slice còn lại phụ thuộc bản đồ thật và asset P1, chờ cổng Prototype)                                                                                                                                                                                                                                                                                                                                                                                                       |
+Mỗi module một dòng; chi tiết ở file quyết định và Epic.
+
+- **M0 Dự án và công cụ:** Xong. dev/build/test/lint/format, alias `@/`, CI (lint, format, typecheck, test, build), Pages tự đăng khi `main` đổi.
+- **M1 Khung game:** Xong phần khung. Scale nguyên, nhắc xoay ngang, nạp + kiểm tra JSON, event bus; 60 FPS ở CPU chậm 4–6× (`gate-check`). Còn: nạp atlas khi có asset; đo trên điện thoại thật.
+- **M2 Đầu vào:** Xong. Vùng an toàn tai thỏ cho nút cảm ứng, canvas, bảng HTML (ST-11-01, QB-92). Bàn phím, tay cầm, cảm ứng (cần ảo, 6 nút, đa chạm, rung), đổi phím, chỉnh bố cục, tự bắn, hỗ trợ ngắm. Còn: thử tay cầm thật.
+- **M3 Nhân vật:** Xong logic. Chạy, nhảy biến thiên, coyote, buffer, lướt, dash-jump, bám/nhảy tường, bục một chiều, bị đánh, chết, rơi hố. Còn: sprite, hoạt ảnh (asset P0); leo thang (đặc tả 02 đoạn A, B).
+- **M4 Chiến đấu:** Xong. Arc Cannon 3 mức nạp, vũ khí boss theo dữ liệu (Vine Lash), điểm yếu, choáng, hit-stop. Còn: hành vi Prism Beam, Frost Shard, Gale Cutter (Stage 2–4).
+- **M5 Kẻ địch:** Xong cho Prologue, Stage 1 (5 loại + bản Thử thách); kẻ địch dựng lại sau khi Kai chết không trả thưởng lần nữa (QB-20). Còn: kẻ địch Stage 2–4 (EP-15), tầm dọc và chỉ bắn khi trên màn (QB-23), sprite.
+- **M6 Boss:** Xong boss xám, Thorna (250 máu, Rễ Đuổi ở Thử thách), mini-boss Bramble Golem; boss và Kai hết máu cùng bước thì thắng (QB-30). Còn: Lumen, Cryo, Aeris và 3 mini-boss (EP-15, Draft `16-…`); kẹp pha, chống khóa choáng (QB-14, QB-31); bản đồ thật phòng boss.
+- **M7 Màn chơi:** Khung xong (Tiled, checkpoint theo độ khó, hố, gai, dây leo đu, phòng khóa, vật chắn, bí mật, camera khóa phòng). Còn: bản đồ thật Prologue/Stage 1 (sau cổng Prototype), Stage 2–4, thang, bệ dây di chuyển, parallax.
+- **M8 Hệ thống RPG:** Xong cấp, SP, cây kỹ năng 3 × 3 có hiệu ứng trong trận, Xưởng tab Kỹ năng, trần sức mạnh. Còn: Module, Két giáp (ST-08-09, bị chặn), âm thanh kỹ năng, loadout (Alpha).
+- **M9 Kinh tế và Shop:** Xong bản MVP chỉ Upgrade (Quầy Mira, giao dịch nguyên tử, hoàn số đã trả, gợi ý thu nhập theo màn có trong bản build và độ khó chọn lần cuối). Còn: Booster, Skin, Premium (Alpha).
+- **M10 Giao diện:** Xong HUD, menu tạm dừng, hội thoại boss, màn Kết quả, Xưởng, Quầy, màn Chuẩn bị; hộp chữ theo thứ tự ưu tiên (QB-70). Còn (EP-14): Hub dạng menu MVP, Cài đặt (`14-Cai-dat-Tiep-can.md`), chữ ≥ 16 sp và nút ≥ 48 dp, safe-area, tự tạm dừng, báo lỗi lưu, bỏ qua thoại giữ 0,6 s, i18n; ChoicePanel, thoại NPC, bản đồ nhỏ (Alpha).
+- **TUT Hướng dẫn:** Khung xong, 11 bước Stage 1. Còn: Prologue (sau cổng), giai đoạn Hub (R01–R06), gợi ý bậc 3–4.
+- **ĐK Ba độ khó:** Xong cho Stage 1 (EP-10). Còn: checkpoint theo độ khó trên bản đồ thật, chốt số mẫu đòn (sau cổng), Stage 2–4.
+- **M11 Lưu:** Xong lưu cục bộ, bản lưu 4, mã sao lưu. Còn: cloud (Beta).
+- **M12 Âm thanh, M16 Đo lường MVP:** Chưa làm; tài liệu Draft (`01-GDD/12-Am-thanh.md`, `13-Do-luong-MVP.md`, ADR-002); EP-12, EP-13 làm được ngay.
+- **M13–M15, M17, M18:** Chưa làm (sau cổng MVP).
+- **Cổng Prototype:** Công cụ xong (`?gate=1`, `gate-check`, `gate-flow`). Còn: chơi thử 5 người thật.
 
 ## Lệnh
 
+Chạy trong `game/`.
+
 ```
-npm install        # lần đầu
-npm run dev        # chạy thử ở http://localhost:5173
-npm test           # test logic thuần
-npm run lint       # ESLint
-npm run build      # typecheck + bản build trong dist/
-npm run gate-check # đo cổng Prototype trên bản build (cần Playwright + Chromium)
+npm install           # lần đầu
+npm run dev           # chạy thử ở http://localhost:5173 (tự chạy sync-data)
+npm run sync-data     # chép 03-Data/*.json sang public/data
+npm test              # Vitest (logic thuần)
+npm run typecheck     # tsc --noEmit
+npm run lint          # ESLint
+npm run format:check  # Prettier (kiểm); npm run format để sửa
+npm run build         # typecheck + bản build trong dist/ (tự chạy sync-data)
+npm run gate-check    # đo cổng Prototype trên bản build (Playwright + Chromium)
+npm run gate-flow     # chạy thử trọn luồng người thử ?gate=1 (máy tính + Pixel 7)
+npm run docs-check    # kiểm nhật ký ≤ 3 mục, ngân sách file đầu phiên, đường dẫn trong file chỉ mục (CI)
 ```
+
+Kiểm tra trước commit: `npm test && npm run lint && npm run format:check && npm run build`.
+
+Cờ địa chỉ (bản build cần `?debug=1` cho các cờ chạy thử): `?debug=1` (gắn `window.__cvGame`, `__cvWorld`), `?tune=1` (bảng chỉnh cảm giác), `?gate=1` (bản người thử), `?shop=1` (mở Quầy khi chưa đủ boss), `?unlock=1` (mở mọi độ khó).

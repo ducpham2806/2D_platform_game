@@ -10,6 +10,9 @@ import { PlaytestScene } from './scenes/playtest-scene';
 import { PreloadScene } from './scenes/preload-scene';
 import { SaveScene } from './scenes/save-scene';
 import { StageScene } from './scenes/stage-scene';
+import { PrepScene } from './scenes/prep-scene';
+import { ShopScene } from './scenes/shop-scene';
+import { WorkshopScene } from './scenes/workshop-scene';
 import './style.css';
 
 const game = new Phaser.Game({
@@ -23,7 +26,8 @@ const game = new Phaser.Game({
   scale: {
     // Tự tính hệ số phóng nguyên ở phaser-scale.ts thay vì để Phaser co giãn lẻ.
     mode: Phaser.Scale.NONE,
-    autoCenter: Phaser.Scale.CENTER_BOTH,
+    // Căn giữa ở phaser-scale.ts theo biên px thiết bị.
+    autoCenter: Phaser.Scale.NO_CENTER,
     zoom: currentLayout().zoom,
   },
   fps: { target: 60 },
@@ -37,6 +41,9 @@ const game = new Phaser.Game({
     ControlsScene,
     PlaytestScene,
     SaveScene,
+    WorkshopScene,
+    ShopScene,
+    PrepScene,
   ],
 });
 

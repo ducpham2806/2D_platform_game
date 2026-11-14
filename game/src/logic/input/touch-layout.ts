@@ -48,9 +48,24 @@ export interface TouchSettings {
   offsets: Record<string, { x: number; y: number }>;
 }
 
+/**
+ * Vùng an toàn (px CSS): phần mép màn hình bị tai thỏ, góc bo hoặc vùng vuốt hệ thống chiếm
+ * (`env(safe-area-inset-*)`, QB-92). Nút cảm ứng và cần ảo không được nằm trong đó.
+ */
+export interface Insets {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+}
+
+export const NO_INSETS: Insets = { top: 0, right: 0, bottom: 0, left: 0 };
+
 export interface Viewport {
   width: number;
   height: number;
+  /** Vùng an toàn; không có thì coi như 0 cả bốn phía. */
+  insets?: Insets;
 }
 
 export interface ResolvedButton {
@@ -100,21 +115,35 @@ function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
 }
 
-/** Tọa độ tâm (px CSS trong viewport) từ khoảng cách tới cạnh neo. */
+/**
+ * Tọa độ tâm (px CSS trong viewport) từ khoảng cách tới cạnh neo. Cạnh neo là mép **vùng an toàn**
+ * (QB-92), nên cùng một khoảng cách cho vị trí đúng trên máy có hay không có tai thỏ.
+ */
 export function anchorToPoint(anchor: Anchor, x: number, y: number, viewport: Viewport) {
   const right = anchor.endsWith('right');
   const bottom = anchor.startsWith('bottom');
-  return { cx: right ? viewport.width - x : x, cy: bottom ? viewport.height - y : y };
+  const i = viewport.insets ?? NO_INSETS;
+  return {
+    cx: right ? viewport.width - i.right - x : i.left + x,
+    cy: bottom ? viewport.height - i.bottom - y : i.top + y,
+  };
 }
 
 /** Ngược lại với anchorToPoint: dùng khi người chơi kéo nút trong chế độ chỉnh. */
 export function pointToAnchor(anchor: Anchor, cx: number, cy: number, viewport: Viewport) {
   const right = anchor.endsWith('right');
   const bottom = anchor.startsWith('bottom');
-  return { x: right ? viewport.width - cx : cx, y: bottom ? viewport.height - cy : cy };
+  const i = viewport.insets ?? NO_INSETS;
+  return {
+    x: right ? viewport.width - i.right - cx : cx - i.left,
+    y: bottom ? viewport.height - i.bottom - cy : cy - i.top,
+  };
 }
 
-/** Vị trí và kích thước thật của mọi nút cho viewport hiện tại; nút luôn nằm trọn trong màn hình. */
+/**
+ * Vị trí và kích thước thật của mọi nút cho viewport hiện tại; nút luôn nằm trọn trong vùng an toàn
+ * (màn hình trừ tai thỏ, góc bo, vùng vuốt hệ thống).
+ */
 export function resolveButtons(
   viewport: Viewport,
   config: TouchConfig,
@@ -130,12 +159,13 @@ export function resolveButtons(
     const y = custom ? custom.y : button.y * scale;
     const point = anchorToPoint(anchor, x, y, viewport);
     const half = size / 2;
+    const i = viewport.insets ?? NO_INSETS;
     return {
       id: button.id,
       action: button.action,
       label: button.label,
-      cx: clamp(point.cx, half, viewport.width - half),
-      cy: clamp(point.cy, half, viewport.height - half),
+      cx: clamp(point.cx, i.left + half, viewport.width - i.right - half),
+      cy: clamp(point.cy, i.top + half, viewport.height - i.bottom - half),
       size,
       swipe: button.swipe ?? false,
     };
@@ -174,11 +204,13 @@ export function stickZone(viewport: Viewport, config: TouchConfig, leftHanded: b
   };
 }
 
+/** Tâm cần ảo cố định: tính từ mép vùng an toàn như các nút (QB-92). */
 export function fixedStickCenter(viewport: Viewport, config: TouchConfig, leftHanded: boolean) {
   const { left, bottom } = config.stick.fixedCenter;
+  const i = viewport.insets ?? NO_INSETS;
   return {
-    cx: leftHanded ? viewport.width - left : left,
-    cy: viewport.height - bottom,
+    cx: leftHanded ? viewport.width - i.right - left : i.left + left,
+    cy: viewport.height - i.bottom - bottom,
   };
 }
 

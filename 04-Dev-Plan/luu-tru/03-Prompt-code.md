@@ -1,3 +1,5 @@
+> Lưu trữ 14/11/2026: quy trình viết code bằng prompt ChatGPT không còn dùng. Code hiện làm theo Epic/Story trong `04-Dev-Plan/stories/` và `game/CONTEXT.md`; cấu trúc thư mục ở đây đã lỗi thời.
+
 # Bộ prompt code cho ChatGPT
 
 Cách dùng: mỗi module một cuộc trò chuyện. Luôn bắt đầu bằng **Prompt ngữ cảnh chung (mục 1)**, rồi dán prompt của module. Thay các chỗ trong `[ngoặc vuông]` bằng nội dung thật (dán giao diện của module khác, đường dẫn file, lỗi...). Prompt viết bằng tiếng Việt; tên kỹ thuật giữ tiếng Anh.

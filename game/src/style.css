@@ -1,3 +1,11 @@
+:root {
+  /* Vùng an toàn (tai thỏ, góc bo, thanh vuốt; QB-92, ST-11-01). Cần viewport-fit=cover. */
+  --sa-top: env(safe-area-inset-top, 0px);
+  --sa-right: env(safe-area-inset-right, 0px);
+  --sa-bottom: env(safe-area-inset-bottom, 0px);
+  --sa-left: env(safe-area-inset-left, 0px);
+}
+
 html,
 body {
   margin: 0;
@@ -18,6 +26,7 @@ body {
 }
 
 #game canvas {
+  display: block;
   image-rendering: pixelated;
 }
 
@@ -133,11 +142,11 @@ body.portrait #rotate-overlay {
 .touch-editor {
   position: fixed;
   z-index: 6;
-  top: 12px;
-  left: 50%;
+  top: calc(12px + var(--sa-top));
+  left: calc(50% + (var(--sa-left) - var(--sa-right)) / 2);
   transform: translateX(-50%);
-  width: min(360px, calc(100vw - 32px));
-  max-height: calc(100vh - 24px);
+  width: min(360px, calc(100vw - 32px - var(--sa-left) - var(--sa-right)));
+  max-height: calc(100vh - 24px - var(--sa-top) - var(--sa-bottom));
   overflow-y: auto;
   box-sizing: border-box;
   padding: 12px 14px;
@@ -213,11 +222,11 @@ body.portrait #rotate-overlay {
 .cv-panel {
   position: fixed;
   z-index: 7;
-  top: 50%;
-  left: 50%;
+  top: calc(50% + (var(--sa-top) - var(--sa-bottom)) / 2);
+  left: calc(50% + (var(--sa-left) - var(--sa-right)) / 2);
   transform: translate(-50%, -50%);
-  width: min(420px, calc(100vw - 24px));
-  max-height: calc(100vh - 24px);
+  width: min(420px, calc(100vw - 24px - var(--sa-left) - var(--sa-right)));
+  max-height: calc(100vh - 24px - var(--sa-top) - var(--sa-bottom));
   overflow-y: auto;
   box-sizing: border-box;
   padding: 12px 14px;
@@ -297,7 +306,7 @@ body.portrait #rotate-overlay {
 }
 
 .cv-tuning {
-  width: min(520px, calc(100vw - 24px));
+  width: min(520px, calc(100vw - 24px - var(--sa-left) - var(--sa-right)));
 }
 
 .cv-tuning-group {
@@ -328,7 +337,7 @@ body.portrait #rotate-overlay {
   position: fixed;
   z-index: 6;
   top: 6px;
-  left: 50%;
+  left: calc(50% + (var(--sa-left) - var(--sa-right)) / 2);
   transform: translateX(-50%);
   min-width: 64px;
   min-height: 32px;
@@ -342,7 +351,7 @@ body.portrait #rotate-overlay {
 }
 
 .cv-results {
-  width: min(560px, calc(100vw - 24px));
+  width: min(560px, calc(100vw - 24px - var(--sa-left) - var(--sa-right)));
 }
 
 .cv-results p {
@@ -424,4 +433,288 @@ body.portrait #rotate-overlay {
     animation: none;
     border-color: #ffd166;
   }
+}
+
+/* Xưởng Lắp Ráp, tab Kỹ năng (src/workshop, ADR-001). */
+.cv-panel.cv-workshop {
+  width: min(760px, calc(100vw - 16px - var(--sa-left) - var(--sa-right)));
+  max-height: calc(100vh - 16px - var(--sa-top) - var(--sa-bottom));
+  padding: 10px 12px;
+}
+
+/* Nút cảm ứng ≥ 48 dp (GDD 5.2). */
+.cv-panel.cv-workshop button {
+  min-height: 48px;
+}
+
+.cv-ws-head {
+  /* Dính trên cùng khi cuộn (điện thoại ngang chỉ cao ~360 px CSS). */
+  position: sticky;
+  top: -10px;
+  z-index: 1;
+  padding: 4px 0;
+  background: #121c2b;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+  color: #9fb0c5;
+  margin-bottom: 6px;
+}
+
+.cv-ws-head b {
+  color: #ffd166;
+}
+
+.cv-ws-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+
+.cv-ws-tabs span {
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: #151d29;
+  color: #6f7f95;
+}
+
+.cv-ws-tabs span.on {
+  background: #2f6d8f;
+  color: #e8f1ff;
+}
+
+.cv-ws-cols {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.cv-ws-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cv-ws-branch {
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+}
+
+.cv-ws-branch small,
+.cv-ws-detail small {
+  color: #9fb0c5;
+}
+
+.cv-panel button.cv-ws-node {
+  min-height: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.cv-ws-node .dots {
+  letter-spacing: 2px;
+  color: #ffd166;
+}
+
+.cv-panel button.cv-ws-node.locked {
+  opacity: 0.45;
+}
+
+.cv-panel button.cv-ws-node.maxed {
+  border-color: #ffd166;
+}
+
+.cv-panel button.cv-ws-node.selected {
+  background: #2f4766;
+}
+
+.cv-panel button.cursor {
+  outline: 2px solid #ffd166;
+  outline-offset: 1px;
+}
+
+.cv-panel button.cv-ws-reset {
+  font-size: 12px;
+}
+
+.cv-ws-detail {
+  margin-top: 8px;
+  padding: 8px;
+  border-radius: 8px;
+  background: #0b111b;
+  font-size: 13px;
+  min-height: 72px;
+}
+
+.cv-ws-detail p {
+  margin: 4px 0;
+}
+
+.cv-ws-detail ul {
+  margin: 4px 0;
+  padding-left: 18px;
+}
+
+.cv-ws-detail li.done {
+  color: #7fe0a0;
+}
+
+.cv-ws-detail li.next {
+  color: #ffd166;
+}
+
+.cv-ws-detail .lock {
+  color: #ff8787;
+}
+
+/* Quầy Mira, tab Upgrade (src/shop, M9). Dùng chung khung và chi tiết của Xưởng. */
+.cv-shop-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+  align-items: start;
+}
+
+/* Màn ngang (điện thoại ngang chỉ cao ~360 px CSS): thẻ bên trái, chi tiết và nút bên phải. */
+@media (min-width: 640px) {
+  .cv-shop-layout {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  }
+
+  .cv-shop-side .cv-ws-detail {
+    margin-top: 0;
+  }
+}
+
+.cv-shop-side .cv-panel-actions {
+  justify-content: stretch;
+}
+
+.cv-shop-side .cv-panel-actions button {
+  flex: 1 1 auto;
+}
+.cv-shop-cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.cv-panel button.cv-shop-card {
+  min-height: 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  padding: 4px;
+  font-size: 13px;
+}
+
+.cv-shop-card .dots {
+  letter-spacing: 2px;
+  color: #ffd166;
+  font-size: 11px;
+}
+
+.cv-shop-card .price {
+  font-size: 12px;
+  color: #ffd166;
+  font-weight: 600;
+}
+
+.cv-panel button.cv-shop-card.funds .price {
+  color: #8a96a8;
+  font-weight: 400;
+}
+
+.cv-panel button.cv-shop-card.locked {
+  opacity: 0.5;
+}
+
+.cv-panel button.cv-shop-card.locked .price {
+  color: #ff8787;
+  font-weight: 400;
+}
+
+.cv-panel button.cv-shop-card.maxed {
+  border-color: #7fe0a0;
+}
+
+.cv-panel button.cv-shop-card.maxed .price {
+  color: #7fe0a0;
+}
+
+.cv-panel button.cv-shop-card.selected {
+  background: #2f4766;
+}
+
+.cv-ws-detail .hint {
+  color: #9fb0c5;
+}
+
+/* Màn Chuẩn bị, bản cắt MVP (src/prep, 01-GDD/11-Do-kho.md mục 2.1). */
+.cv-panel.cv-prep {
+  width: min(640px, calc(100vw - 16px - var(--sa-left) - var(--sa-right)));
+}
+
+.cv-prep-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.cv-panel button.cv-prep-card {
+  min-height: 96px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 3px;
+  padding: 6px 8px;
+  text-align: left;
+}
+
+.cv-prep-card .name {
+  font-weight: 600;
+}
+
+.cv-prep-card .desc,
+.cv-prep-card .stats {
+  font-size: 12px;
+  color: #9fb0c5;
+}
+
+.cv-prep-card .lock {
+  font-size: 12px;
+  color: #ff8787;
+}
+
+.cv-panel button.cv-prep-card.locked {
+  opacity: 0.6;
+}
+
+.cv-panel button.cv-prep-card.selected {
+  background: #2f4766;
+  border-color: #4fd1ff;
+}
+
+.cv-panel button.cv-prep-start {
+  flex: 1 1 auto;
+  min-height: 56px;
+}
+
+/* Quầy Mira trên điện thoại ngang: dòng gợi ý thiếu tiền dài thêm, bớt khoảng cách để không phải cuộn. */
+.cv-shop .cv-ws-detail p {
+  margin: 2px 0;
+}
+
+.cv-shop .cv-panel-actions {
+  margin-top: 6px;
 }

@@ -10,6 +10,12 @@ const HP_W = 80;
 const ENERGY_W = 56;
 const BOSS_W = 120;
 const DEPTH = 10;
+/** Mép trên của chữ thông báo giữa màn hình (px logic). */
+const MESSAGE_TOP = 72;
+/** Màu khiên C3 (vòng HUD và viền quanh Kai): tím nhạt, khác lục lam của P3 và cam của P1. */
+export const KAI_SHIELD_COLOR = 0xa5b4fc;
+/** Vòng khiên dưới thanh năng lượng (tâm, bán kính px logic). */
+const SHIELD_ICON = { x: PAD + 5, y: PAD + 27, r: 4 };
 
 const SMALL: Phaser.Types.GameObjects.Text.TextStyle = {
   ...MUTED_STYLE,
@@ -83,14 +89,15 @@ export class StageHud {
     );
     this.message = fixed(
       scene.add
-        .text(LOGIC_WIDTH / 2, 70, '', {
+        // Neo mép trên dưới hộp hướng dẫn (3 dòng chữ 9 px, đáy ≈ y 70) để không chồng lên nhau.
+        .text(LOGIC_WIDTH / 2, MESSAGE_TOP, '', {
           ...TEXT_STYLE,
           fontSize: '12px',
           align: 'center',
           stroke: '#0f1724',
           strokeThickness: 3,
         })
-        .setOrigin(0.5)
+        .setOrigin(0.5, 0)
         .setDepth(DEPTH + 1)
         .setAlpha(0),
     );
@@ -145,6 +152,20 @@ export class StageHud {
     } else {
       this.energyText.setText('');
     }
+    // Khiên C3: vòng đầy khi sẵn; đang hồi thì cung sáng chạy theo tiến độ.
+    if (hud.shield) {
+      const { x, y, r } = SHIELD_ICON;
+      g.fillStyle(0x0f1724, 0.8).fillCircle(x, y, r + 2);
+      if (hud.shield.ready) {
+        g.lineStyle(2, KAI_SHIELD_COLOR, 1).strokeCircle(x, y, r);
+        g.fillStyle(KAI_SHIELD_COLOR, 0.55).fillCircle(x, y, r - 2);
+      } else {
+        g.lineStyle(2, 0x3b4252, 1).strokeCircle(x, y, r);
+        const start = -Math.PI / 2;
+        g.lineStyle(2, KAI_SHIELD_COLOR, 0.8).beginPath();
+        g.arc(x, y, r, start, start + 2 * Math.PI * hud.shield.progress, false).strokePath();
+      }
+    }
     // Máu boss.
     if (hud.boss) {
       const b = hud.boss;
@@ -161,7 +182,7 @@ export class StageHud {
     // Core Bit, EXP, phòng khóa.
     const right = LOGIC_WIDTH - PAD - (touch ? TOUCH_PAUSE_RESERVE : 0);
     this.coreBits.setX(right).setText(`◆ ${hud.coreBits}`);
-    const lines = [`EXP ${hud.exp}`];
+    const lines = [`Cấp ${hud.level} · EXP ${hud.exp}`];
     if (hud.roomRemaining !== undefined) lines.push(`Còn ${hud.roomRemaining} kẻ địch`);
     this.side.setX(right).setText(lines.join('\n'));
     // Ô vũ khí (PC/tay cầm).

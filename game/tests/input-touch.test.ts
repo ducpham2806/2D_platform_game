@@ -4,6 +4,7 @@ import { defaultTouchSettings } from '@/logic/input/settings';
 import { applyDeadzone, clampToRadius, stickVector } from '@/logic/input/stick';
 import {
   anchorToPoint,
+  fixedStickCenter,
   hitTest,
   pointToAnchor,
   resolveButtons,
@@ -120,5 +121,63 @@ describe('bố cục nút cảm ứng', () => {
     expect(hitTest(buttons, 778, 318, 48)?.action).toBe('jump');
     expect(hitTest(buttons, 690, 330, 48)?.action).toBe('shoot');
     expect(hitTest(buttons, 400, 200, 48)).toBeUndefined();
+  });
+});
+
+describe('vùng an toàn: tai thỏ, góc bo, thanh vuốt (QB-92, ST-11-01)', () => {
+  // iPhone 14 cầm ngang: tai thỏ, góc bo trái/phải 47 px; thanh vuốt home dưới 21 px.
+  const INSETS = { top: 0, right: 47, bottom: 21, left: 47 };
+  const NOTCH = { ...PHONE, insets: INSETS };
+
+  it('QB-92: nút neo theo mép vùng an toàn, lệch đúng bằng phần vùng an toàn', () => {
+    const config = touch();
+    const settings = defaultTouchSettings(config);
+    const plain = resolveButtons(PHONE, config, settings);
+    const safe = resolveButtons(NOTCH, config, settings);
+    const pausePlain = plain.find((b) => b.id === 'pause')!;
+    const pauseSafe = safe.find((b) => b.id === 'pause')!;
+    // Nút II neo trên-phải: dời vào trong đúng 47 px, chiều dọc không đổi (trên = 0).
+    expect(pauseSafe.cx).toBeCloseTo(pausePlain.cx - 47, 9);
+    expect(pauseSafe.cy).toBeCloseTo(pausePlain.cy, 9);
+    const jumpPlain = plain.find((b) => b.id === 'jump')!;
+    const jumpSafe = safe.find((b) => b.id === 'jump')!;
+    expect(jumpSafe.cx).toBeCloseTo(jumpPlain.cx - 47, 9);
+    expect(jumpSafe.cy).toBeCloseTo(jumpPlain.cy - 21, 9);
+  });
+
+  it('QB-92: mọi nút nằm trọn trong vùng an toàn, kể cả khi người chơi kéo sát mép', () => {
+    const config = touch();
+    const settings = defaultTouchSettings(config);
+    const offsets = Object.fromEntries(config.buttons.map((b) => [b.id, { x: 0, y: 0 }]));
+    for (const s of [settings, { ...settings, offsets }, { ...settings, leftHanded: true }]) {
+      for (const b of resolveButtons(NOTCH, config, s)) {
+        expect(b.cx - b.size / 2).toBeGreaterThanOrEqual(INSETS.left - 1e-9);
+        expect(b.cx + b.size / 2).toBeLessThanOrEqual(NOTCH.width - INSETS.right + 1e-9);
+        expect(b.cy - b.size / 2).toBeGreaterThanOrEqual(INSETS.top - 1e-9);
+        expect(b.cy + b.size / 2).toBeLessThanOrEqual(NOTCH.height - INSETS.bottom + 1e-9);
+      }
+    }
+  });
+
+  it('QB-92: cần ảo cố định dời theo vùng an toàn trái (phải khi thuận tay trái)', () => {
+    const config = touch();
+    const { left, bottom } = config.stick.fixedCenter;
+    expect(fixedStickCenter(NOTCH, config, false)).toEqual({
+      cx: 47 + left,
+      cy: NOTCH.height - 21 - bottom,
+    });
+    expect(fixedStickCenter(NOTCH, config, true).cx).toBe(NOTCH.width - 47 - left);
+    expect(fixedStickCenter(PHONE, config, false)).toEqual({ cx: left, cy: PHONE.height - bottom });
+  });
+
+  it('QB-92: vị trí kéo trong chế độ chỉnh lưu theo mép vùng an toàn, dùng lại được trên máy khác', () => {
+    for (const anchor of ['bottom-right', 'top-right', 'bottom-left', 'top-left'] as const) {
+      const p = anchorToPoint(anchor, 30, 70, NOTCH);
+      expect(pointToAnchor(anchor, p.cx, p.cy, NOTCH)).toEqual({ x: 30, y: 70 });
+      // Cùng khoảng cách lưu, máy không tai thỏ: cùng khoảng cách tới mép màn hình.
+      const plain = anchorToPoint(anchor, 30, 70, PHONE);
+      const back = pointToAnchor(anchor, plain.cx, plain.cy, PHONE);
+      expect(back).toEqual({ x: 30, y: 70 });
+    }
   });
 });

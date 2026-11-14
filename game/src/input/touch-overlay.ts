@@ -14,6 +14,7 @@ import {
   type TouchSettings,
   type Viewport,
 } from '../logic/input/touch-layout';
+import { readSafeAreaInsets } from './safe-area';
 
 interface StickTouch {
   pointerId: number;
@@ -117,11 +118,20 @@ export class TouchOverlay {
     this.root.remove();
   }
 
+  /** Kích thước và vùng an toàn chỉ đọc lại khi đổi kích thước (`layout`), không đọc mỗi lần chạm. */
+  private view: Viewport | undefined;
+
   private viewport(): Viewport {
-    return { width: window.innerWidth, height: window.innerHeight };
+    this.view ??= {
+      width: window.innerWidth,
+      height: window.innerHeight,
+      insets: readSafeAreaInsets(),
+    };
+    return this.view;
   }
 
   private layout(): void {
+    this.view = undefined; // đổi kích thước, xoay máy: đọc lại vùng an toàn (QB-92)
     const viewport = this.viewport();
     this.buttons = resolveButtons(viewport, this.config, this.settings);
     this.root.style.setProperty('--touch-opacity', String(this.settings.opacity));

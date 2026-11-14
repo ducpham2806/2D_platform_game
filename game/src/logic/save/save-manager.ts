@@ -28,9 +28,33 @@ export class MemorySaveStore implements SaveStore {
   }
 }
 
+/** Chuẩn hóa bản lưu theo dữ liệu cấu hình (ví dụ build M8); trả `save` cũ nếu không đổi. */
+export type SaveNormalizer = (save: SaveData) => { save: SaveData; notice: string | undefined };
+
+const IDENTITY: SaveNormalizer = (save) => ({ save, notice: undefined });
+
+/** Chạy lần lượt nhiều bước chuẩn hóa; gộp thông báo. */
+export function chainNormalizers(...steps: SaveNormalizer[]): SaveNormalizer {
+  return (save) => {
+    let cur = save;
+    const notices: string[] = [];
+    for (const step of steps) {
+      const r = step(cur);
+      cur = r.save;
+      if (r.notice) notices.push(r.notice);
+    }
+    return { save: cur, notice: notices.length > 0 ? notices.join(' ') : undefined };
+  };
+}
+
+/** Kết quả giao dịch: đã ghi xuống kho (hoặc không có gì đổi), hoặc lỗi và đã hoàn tác. */
+export type TransactResult = { ok: true; changed: boolean } | { ok: false; error: string };
+
 export class SaveManager {
   /** Lỗi đọc/ghi gần nhất (để hiện cho người chơi); undefined = ổn. */
   lastError: string | undefined;
+  /** Thông báo cần hiện một lần (bản lưu được chuẩn hóa lại); người hiện xong thì xóa. */
+  notice: string | undefined;
   /**
    * Bản trên máy thuộc phiên bản game mới hơn: chơi bằng bản mặc định nhưng không ghi đè,
    * tránh làm mất dữ liệu thật.
@@ -45,27 +69,41 @@ export class SaveManager {
     data: SaveData,
     readOnly: boolean,
     error: string | undefined,
+    private readonly normalize: SaveNormalizer,
   ) {
     this.current = data;
     this.readOnly = readOnly;
     this.lastError = error;
+    const fixed = normalize(data);
+    if (fixed.save !== data) {
+      this.notice = fixed.notice;
+      void this.commit(fixed.save, data.revision + 1);
+    }
   }
 
-  /** Mở kho và đọc bản lưu. Không đọc được thì bắt đầu bản mới (và ghi lại lỗi). */
-  static async open(store: SaveStore, now: () => number = Date.now): Promise<SaveManager> {
+  /**
+   * Mở kho và đọc bản lưu. Không đọc được thì bắt đầu bản mới (và ghi lại lỗi). `normalize`
+   * chạy ngay sau khi đọc (và sau mỗi lần nhập mã sao lưu); có sửa thì ghi lại một lần.
+   */
+  static async open(
+    store: SaveStore,
+    now: () => number = Date.now,
+    normalize: SaveNormalizer = IDENTITY,
+  ): Promise<SaveManager> {
     let text: string | null;
+    const make = (data: SaveData, readOnly: boolean, error: string | undefined): SaveManager =>
+      new SaveManager(store, now, data, readOnly, error, normalize);
     try {
       text = await store.read();
     } catch (e) {
-      return new SaveManager(store, now, defaultSave(), false, `Không đọc được dữ liệu lưu: ${e}`);
+      return make(defaultSave(), false, `Không đọc được dữ liệu lưu: ${e}`);
     }
-    if (text === null) return new SaveManager(store, now, defaultSave(), false, undefined);
+    if (text === null) return make(defaultSave(), false, undefined);
     try {
-      return new SaveManager(store, now, parseSave(JSON.parse(text)), false, undefined);
+      return make(parseSave(JSON.parse(text)), false, undefined);
     } catch (e) {
-      if (e instanceof SaveError)
-        return new SaveManager(store, now, defaultSave(), true, e.message);
-      return new SaveManager(store, now, defaultSave(), false, 'Dữ liệu lưu hỏng, bắt đầu lại.');
+      if (e instanceof SaveError) return make(defaultSave(), true, e.message);
+      return make(defaultSave(), false, 'Dữ liệu lưu hỏng, bắt đầu lại.');
     }
   }
 
@@ -80,8 +118,26 @@ export class SaveManager {
   update(change: (save: SaveData) => SaveData): boolean {
     const next = change(this.current);
     if (next === this.current) return false;
-    this.commit(next, this.current.revision + 1);
+    void this.commit(next, this.current.revision + 1);
     return true;
+  }
+
+  /**
+   * Giao dịch nguyên tử (Shop, đặc tả Hub mục 4.2, 8): đổi bản lưu bằng một hàm thuần rồi **chờ
+   * ghi xong**. Ghi lỗi thì trả bản trong bộ nhớ về như trước giao dịch (nếu chưa có thay đổi
+   * nào khác chồng lên) và báo lỗi; người gọi chỉ báo "đã mua" khi `ok`.
+   */
+  async transact(change: (save: SaveData) => SaveData): Promise<TransactResult> {
+    if (this.readOnly) return { ok: false, error: 'Bản lưu chỉ đọc (của phiên bản game mới hơn).' };
+    const before = this.current;
+    const next = change(before);
+    if (next === before) return { ok: true, changed: false };
+    const written = this.commit(next, before.revision + 1);
+    const committed = this.current;
+    const error = await written;
+    if (error === undefined) return { ok: true, changed: true };
+    if (this.current === committed) this.current = before;
+    return { ok: false, error };
   }
 
   /** Mã sao lưu của bản hiện tại. */
@@ -91,13 +147,15 @@ export class SaveManager {
 
   /** Nhập mã sao lưu, thay hẳn bản hiện tại. Mã sai thì ném SaveError, bản hiện tại giữ nguyên. */
   importCode(code: string): void {
-    const save = decodeSaveCode(code);
-    this.commit(save, Math.max(save.revision, this.current.revision) + 1);
+    const decoded = decodeSaveCode(code);
+    const fixed = this.normalize(decoded);
+    this.notice = fixed.notice;
+    void this.commit(fixed.save, Math.max(decoded.revision, this.current.revision) + 1);
   }
 
   /** Xóa tiến trình, về bản mới (revision vẫn tăng để cloud biết đây là bản mới hơn). */
   reset(): void {
-    this.commit(defaultSave(), this.current.revision + 1);
+    void this.commit(defaultSave(), this.current.revision + 1);
   }
 
   /** Chờ mọi lần ghi đang xếp hàng xong (khi đóng trang, trong test). */
@@ -105,19 +163,24 @@ export class SaveManager {
     return this.chain;
   }
 
-  private commit(next: SaveData, revision: number): void {
+  /** Đặt bản mới và xếp hàng một lần ghi; trả lời hứa của đúng lần ghi đó (lỗi, hoặc undefined). */
+  private commit(next: SaveData, revision: number): Promise<string | undefined> {
     this.current = { ...next, revision, savedAt: this.now() };
-    if (this.readOnly) return;
+    if (this.readOnly) return Promise.resolve(undefined);
     const text = JSON.stringify(this.current);
-    this.chain = this.chain
+    const done = this.chain
       .then(() => this.store.write(text))
       .then(
         () => {
           this.lastError = undefined;
+          return undefined;
         },
         (e: unknown) => {
           this.lastError = `Không ghi được dữ liệu lưu: ${String(e)}`;
+          return this.lastError;
         },
       );
+    this.chain = done.then(() => undefined);
+    return done;
   }
 }

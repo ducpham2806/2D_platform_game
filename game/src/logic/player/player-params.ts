@@ -32,9 +32,33 @@ export interface PlayerParams {
   airDash: boolean;
   wallJump: boolean;
   dashJump: boolean;
+  /** Số lần lướt trên không mỗi lần rời đất (kỹ năng P1); `airDash` của dữ liệu = không giới hạn. */
+  airDashes: number;
+  /** Rời tường chừng này giây vẫn nhảy tường được (P2 bậc 2). */
+  wallJumpGraceSec: number;
+  /** Bất tử thêm chỉ với đạn ở đầu cú lướt (P3), cộng sau phần bất tử gốc. */
+  bulletIFrameExtraSec: number;
 }
 
-export function playerParams(data: PlayerData, tileSize: number, stepSec: number): PlayerParams {
+/** Phần thông số vật lý do build kỹ năng (M8) quyết định. */
+export interface PlayerMods {
+  airDashes: number;
+  wallJumpGraceSec: number;
+  bulletIFrameExtraSec: number;
+}
+
+export const NO_PLAYER_MODS: PlayerMods = {
+  airDashes: 0,
+  wallJumpGraceSec: 0,
+  bulletIFrameExtraSec: 0,
+};
+
+export function playerParams(
+  data: PlayerData,
+  tileSize: number,
+  stepSec: number,
+  mods: PlayerMods = NO_PLAYER_MODS,
+): PlayerParams {
   const maxHeight = data.jump.maxTiles * tileSize;
   const minHeight = data.jump.minTiles * tileSize;
   const t = data.jump.apexSec;
@@ -69,5 +93,8 @@ export function playerParams(data: PlayerData, tileSize: number, stepSec: number
     airDash: data.abilities.airDash,
     wallJump: data.abilities.wallJump,
     dashJump: data.abilities.dashJump,
+    airDashes: data.abilities.airDash ? Infinity : mods.airDashes,
+    wallJumpGraceSec: mods.wallJumpGraceSec,
+    bulletIFrameExtraSec: mods.bulletIFrameExtraSec,
   };
 }

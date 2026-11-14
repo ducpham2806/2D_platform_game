@@ -1,28 +1,41 @@
 [
   {
     "id": "story",
+    "name": "Cốt truyện",
+    "desc": "Để xem truyện: đòn nhẹ, kẻ địch ít máu, thêm checkpoint.",
     "damageTaken": 0.5,
     "enemyHp": 0.8,
     "rewardMul": 0.5,
     "unlock": null,
-    "checkpoints": "more"
+    "checkpoints": "more",
+    "newAttackPatterns": false
   },
   {
     "id": "normal",
+    "name": "Thường",
+    "desc": "Thiết kế gốc của mỗi màn.",
     "damageTaken": 1.0,
     "enemyHp": 1.0,
     "rewardMul": 1,
     "unlock": null,
-    "checkpoints": "normal"
+    "checkpoints": "normal",
+    "newAttackPatterns": false
   },
   {
     "id": "challenge",
+    "name": "Thử thách",
+    "desc": "Kẻ địch và boss có mẫu đòn mới, ít checkpoint hơn.",
     "damageTaken": 1.5,
     "enemyHp": 1.25,
     "rewardMul": 1.5,
-    "unlock": "per stage: clear that stage on normal",
+    "unlock": {
+      "clearedOn": [
+        "normal",
+        "challenge"
+      ]
+    },
     "checkpoints": "fewer",
     "newAttackPatterns": true,
-    "note": "Mẫu đòn mới cho kẻ địch và boss (trước thuộc Ác mộng). Các độ khó Ác mộng, Huyền thoại, Overclock đã bỏ từ GDD 0.6; thử thách sâu hơn nằm ở Mức Eclipse (endgame.json)."
+    "note": "Mẫu đòn mới cho kẻ địch và boss: khối `challenge` trong enemies.json, bosses.json (01-GDD/11-Do-kho.md mục 2.6). unlock.clearedOn: mở theo từng màn khi đã hạ boss của màn ở một trong các độ khó này. checkpoints chỉ là chữ mô tả; checkpoint nào có ở độ khó nào ghi trên bản đồ (thuộc tính difficulties). Các độ khó Ác mộng, Huyền thoại, Overclock đã bỏ từ GDD 0.6; thử thách sâu hơn nằm ở Mức Eclipse (endgame.json)."
   }
 ]

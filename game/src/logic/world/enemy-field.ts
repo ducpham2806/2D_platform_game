@@ -6,6 +6,7 @@ import type { PlayerPhysics } from '../player/player-physics';
 import { createRng, type Rng } from '../rng';
 import type { EnemySpawn } from '../stage/layout';
 import type { TileMap } from '../tilemap';
+import { scaleReward } from '../difficulty/difficulty';
 import { PickupPool } from './pickups';
 import type { WorldEvents } from './world-types';
 
@@ -23,6 +24,8 @@ export class EnemyField {
   exp = 0;
   coreBits = 0;
   private readonly rng: Rng;
+  /** Kẻ địch (theo id) đã cho EXP, Core Bit trong lượt vào màn này. */
+  private readonly rewarded = new Set<number>();
 
   constructor(
     private readonly data: EnemiesData,
@@ -31,6 +34,10 @@ export class EnemyField {
     hpMul: number,
     nextId: () => number,
     seed: number,
+    /** Hệ số thưởng của độ khó (EXP, Core Bit mỗi kẻ địch, làm tròn; GDD 11 mục 3.1). */
+    private readonly rewardMul = 1,
+    /** EXP, Core Bit chỉ nhận một lần cho mỗi kẻ địch trong lượt (stages.json → mechanics). */
+    private readonly rewardOnce = false,
   ) {
     const t = map.tileSize;
     this.rng = createRng(seed);
@@ -67,16 +74,26 @@ export class EnemyField {
     }
   }
 
-  /** Kẻ địch vừa bị hạ: cộng EXP, rơi đồ. */
+  /**
+   * Kẻ địch vừa bị hạ: cộng EXP, rơi đồ. Kẻ địch đã cho thưởng trong lượt này (dựng lại sau khi
+   * Kai chết) thì chỉ rơi viên máu, để không cày được bằng cách chết.
+   */
   onKilled(killed: readonly Enemy[], player: PlayerPhysics): void {
     for (const e of killed) {
-      this.exp += e.data.exp;
-      this.pickups.drop(e.centerX, e.centerY, e.data.coreBit, player.hp < player.maxHp, this.rng);
+      const paid = this.rewardOnce && this.rewarded.has(e.id);
+      if (!paid) {
+        this.rewarded.add(e.id);
+        this.exp += scaleReward(e.data.exp, this.rewardMul);
+      }
+      const coreBit = paid ? 0 : scaleReward(e.data.coreBit, this.rewardMul);
+      this.pickups.drop(e.centerX, e.centerY, coreBit, player.hp < player.maxHp, this.rng);
     }
   }
 
   /** Vật phẩm rơi, người chơi nhặt: Core Bit vào túi, viên máu hồi máu (không quá tối đa). */
-  updatePickups(player: PlayerPhysics, dt: number, ev: WorldEvents): void {
+  /** `magnetPx`: tầm hút Core Bit tính từ thân Kai (Upgrade Magnet Range); 0 = không hút. */
+  updatePickups(player: PlayerPhysics, dt: number, ev: WorldEvents, magnetPx = 0): void {
+    if (player.state !== 'dead') this.pickups.attract(player.box, magnetPx, dt);
     this.pickups.update(dt, this.map);
     if (player.state === 'dead') return;
     const got = this.pickups.collect(player.box);

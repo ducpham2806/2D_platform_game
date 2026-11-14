@@ -10,7 +10,10 @@ import { ConfigError, parseGameConfig } from '../core/game-config';
 import { getBus, setConfig, setInput, setSave } from '../core/phaser-services';
 import { LocalStorageStore } from '../input/browser-store';
 import { InputService } from '../input/input-service';
-import { SaveManager } from '../logic/save/save-manager';
+import { buildNormalizer } from '../logic/rpg/normalize-build';
+import { upgradeNormalizer } from '../logic/shop/normalize-upgrades';
+import { difficultyNormalizer } from '../logic/difficulty/normalize-difficulty';
+import { chainNormalizers, SaveManager } from '../logic/save/save-manager';
 import { openBrowserSaveStore } from '../save/browser-save-store';
 import { MUTED_STYLE, TEXT_STYLE } from './ui';
 
@@ -77,7 +80,16 @@ export class PreloadScene extends Phaser.Scene {
       setConfig(this, config);
       setInput(this, new InputService(config.controls, new LocalStorageStore(), getBus(this)));
       getBus(this).emit('config:ready', { config });
-      const save = await SaveManager.open(await openBrowserSaveStore());
+      const save = await SaveManager.open(
+        await openBrowserSaveStore(),
+        Date.now,
+        chainNormalizers(
+          buildNormalizer(config),
+          upgradeNormalizer(config.shop),
+          difficultyNormalizer(config),
+        ),
+      );
+      if (save.notice) console.info(save.notice);
       if (save.lastError) console.warn(save.lastError);
       setSave(this, save);
       this.scene.start(SceneKey.Menu);

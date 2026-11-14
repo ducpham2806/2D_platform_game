@@ -1,22 +1,24 @@
 # Giọng nhân vật (Voice Pillars)
 
-Tài liệu chuẩn để viết và duyệt mọi lời thoại của Cyber Vanguard. Viết thoại mới phải đối chiếu với tài liệu này trước. Bối cảnh và động cơ nhân vật: GDD mục 3.
+Tài liệu chuẩn để viết và duyệt mọi lời thoại của Cyber Vanguard. Viết thoại mới phải đối chiếu với tài liệu này trước. Bối cảnh và động cơ nhân vật: GDD mục 3. Quy tắc biên của hộp chữ (thứ tự hộp, thời gian đọc, bỏ qua thoại): `17-Quy-tac-bien.md` mục 8–9.
+
+**Nguồn lời (mỗi câu chỉ có một chỗ):** hướng dẫn bước S ở `03-Data/tutorial.json`; gợi ý khi chết nhiều ở `03-Data/ui.json → difficultyHint`; thoại Warden sinh từ `04-Dev-Plan/tools/dialogue/` ra `03-Data/dialogue_wardens.json` và `09-Thoai-Warden.md`; các bước hướng dẫn khác ở `07-Kich-ban-huong-dan.md`; lời NPC ở Hub ở đặc tả Hub mục 6 cho tới khi có `03-Data/dialogue_hub.json` (cần Story). Câu chuẩn của Mira là các câu mẫu đã duyệt ở mục 3; nơi khác chép đúng câu đó.
 
 ## 1. Quy tắc chung
 
 - **Thử "người thật có nói câu này không?"**: không có câu thoại kiểu "như cậu đã biết", không giải thích cho nhau những điều cả hai đã biết.
 - **Mỗi đoạn thoại có một chức năng:** hé lộ, xây quan hệ, tạo áp lực, hoặc cho thấy hệ quả. Không có chức năng thì cắt.
 - **Ba lượt sửa:** chức năng (đoạn thoại có làm đúng việc không) → giọng (có đúng nhân vật không) → độ gọn (cắt mọi chữ thừa). Tối đa 2 dòng mỗi lần trong hướng dẫn, 3–4 dòng ở cảnh truyện.
-- **Hướng dẫn có lý do trong truyện:** NOVA đang hiệu chỉnh cơ thể Kai sau khi khởi động lại. Biểu tượng nút (`{NHẢY}`...) đi kèm câu thoại, không thay cho câu thoại.
-- **Không lồng tiếng:** cá tính phải đọc ra được từ chữ, kèm âm thanh biểu cảm ngắn của từng nhân vật. Thử nghiệm: tắt tiếng, đưa cho người chơi thử đọc; ≥ 90% phải nhận ra ai đang nói.
+- **Hướng dẫn có lý do trong truyện:** NOVA đang hiệu chỉnh cơ thể Kai sau khi khởi động lại. Biểu tượng nút (`{NHẢY}`...) đi kèm câu thoại, không thay cho câu thoại. Câu nêu lý do trước, thao tác sau ("Lực bật đang ở mức thấp. Giữ `{NHẢY}` lâu hơn để dồn lực."); không mở câu bằng "Nhấn/Bấm/Chạm `{NÚT}` để…". Đọc lại câu sau khi thay mã nút ở cả ba thiết bị: trên cảm ứng mã nút thành tên dài ("nút đổi vũ khí"), không được lặp tên hành động hay vượt 2 dòng.
+- **Không lồng tiếng:** cá tính phải đọc ra được từ chữ, kèm âm thanh biểu cảm ngắn của từng nhân vật (mỗi câu mới một lần, không phát theo từng chữ; danh sách ở `12-Am-thanh.md` mục 2.10). Thử nghiệm: tắt tiếng, đưa cho người chơi thử đọc; ≥ 90% phải nhận ra ai đang nói.
 
 ## 2. Xưng hô
 
 | Người nói → người nghe | Xưng | Gọi |
 | --- | --- | --- |
 | Kai → mọi người | tôi | tên riêng; gọi Hale là "ông" |
-| NOVA → Kai | tôi | Kai, cậu |
-| Mira → Kai | tôi | cậu |
+| NOVA → Kai | tôi | Kai, cậu (không dùng "bạn") |
+| Mira → Kai | tôi | cậu (không dùng "bạn") |
 | Vex → Kai | tao | mày, Unit-K (chỉ gọi "Kai" ở kết thúc C) |
 | Hale → dân chúng / Kai | chúng tôi / tôi | "người dân Nova Prime" / "cỗ máy", về sau là "cậu" |
 | Warden → Kai | ta | ngươi |
@@ -32,6 +34,7 @@ Tài liệu chuẩn để viết và duyệt mọi lời thoại của Cyber Van
 - **Tránh nói về:** cảm xúc của chính mình (cho tới Hồi 3).
 - **Thói quen:** lặp lại từ khóa thành câu hỏi ("Root Key?"). Về sau có kiểu đùa khô khan, học từ NOVA.
 - **Ẩn ý:** nói đúng điều mình nghĩ; sức nặng nằm ở những gì Kai *không* hỏi.
+- **Âm biểu cảm** (`dlg.emote.kai`): bíp trầm ngắn, mỗi câu mới một lần.
 
 **Kai không bao giờ nói:**
 - "Chúng ta phải cứu thành phố này!" (khẩu hiệu anh hùng; Kai chưa có lý do để tin điều đó)
@@ -51,6 +54,7 @@ Tài liệu chuẩn để viết và duyệt mọi lời thoại của Cyber Van
 - **Tránh nói về:** việc bị tắt, AEGIS ở ngôi thứ nhất. Khi bị hỏi thì đổi chủ đề bằng một câu đùa.
 - **Thói quen:** báo trạng thái ("Hiệu chỉnh... 60%"); ngập ngừng "Tôi..." khi chạm vào thứ mình không được phép biết.
 - **Ẩn ý:** dùng hài hước để che nỗi sợ.
+- **Âm biểu cảm** (`dlg.emote.nova`): điện tử, hai nốt đi lên; phát ở hộp hội thoại, hộp hướng dẫn và hộp gợi ý.
 
 **NOVA không bao giờ nói:**
 - "Nhấn nút A để nhảy." (lời của giao diện, không phải của nhân vật)
@@ -70,6 +74,7 @@ Tài liệu chuẩn để viết và duyệt mọi lời thoại của Cyber Van
 - **Tránh nói về:** gia đình (cho tới sau boss thứ 5).
 - **Thói quen:** "Được rồi." trước khi chuyển việc; gọi máy móc bằng biệt danh.
 - **Ẩn ý:** quan tâm nhưng nói như chê ("Cậu lại về với cái chân cháy xém.").
+- **Âm biểu cảm** (`dlg.emote.mira`): tiếng cơ khí vui, như cờ lê gõ nhẹ.
 
 **Mira không bao giờ nói:**
 - "Ôi, tôi rất vui được gặp cậu!" (quá ngọt so với giọng của Mira)
@@ -89,6 +94,7 @@ Tài liệu chuẩn để viết và duyệt mọi lời thoại của Cyber Van
 - **Tránh nói về:** quá trình thử nghiệm của chính mình.
 - **Thói quen:** gọi "Unit-K"; hỏi ngược thay vì trả lời.
 - **Ẩn ý:** ghen tị với Kai, thể hiện bằng khinh bỉ.
+- **Âm biểu cảm** (`dlg.emote.vex`, làm cùng cảnh Prologue): nhiễu tĩnh điện ngắn, cắt cụt `[PLACEHOLDER]`.
 
 **Vex không bao giờ nói:**
 - "Ta sẽ hủy diệt cả thế giới!" (phản diện một chiều)
@@ -124,6 +130,7 @@ Tài liệu chuẩn để viết và duyệt mọi lời thoại của Cyber Van
 Mỗi Warden có 3 biến thể thoại theo số boss đã hạ (GDD mục 3.3). Giọng riêng và toàn bộ thoại của 8 Warden ở `09-Thoai-Warden.md`. Khuôn: một câu về khu vực mình bảo vệ + một câu cho thấy động cơ + (biến thể giữa/muộn) một câu về cuộc bỏ phiếu hoặc Root Key.
 
 **Thorna** (luôn là boss đầu, chỉ có biến thể sớm):
+- Âm biểu cảm (`dlg.emote.thorna`): tiếng gỗ trầm. Warden Stage 2–4 chưa có âm riêng thì dùng `dlg.emote.default`.
 - Trước trận: "Vườn của ta đang khát. Ngươi đến để cho nó uống... hay để chặt nó?"
 - Sau trận: "Ngươi... không phải đến để chữa cho ta. Hãy hỏi AEGIS... ai đã ra lệnh."
 
@@ -143,4 +150,8 @@ Mỗi Warden có 3 biến thể thoại theo số boss đã hạ (GDD mục 3.3)
 - [ ] Không có câu nào nằm trong danh sách "không bao giờ nói" hoặc cùng kiểu với chúng.
 - [ ] Không giải thích cho người chơi điều nhân vật đã biết.
 - [ ] Không mâu thuẫn với các tầng lật mở (GDD mục 3.4): trước Citadel 3, NOVA không nói gì xác nhận mình là mảnh của AEGIS.
-- [ ] Đủ ngắn: ≤ 2 dòng trong hướng dẫn, ≤ 4 dòng ở cảnh truyện; tiếng Anh dài hơn tới 30% vẫn vừa khung.
+- [ ] Đủ ngắn: ≤ 2 dòng trong hướng dẫn, ≤ 4 dòng ở cảnh truyện, đo bằng số dòng sau khi thay mã nút; tiếng Anh dài hơn tới 30% (giới hạn en = 1,3 × vi) vẫn vừa khung.
+- [ ] Câu hướng dẫn có lý do trong truyện, không phải lời giao diện ("Nhấn {X} để…").
+- [ ] Câu nhắc màu kèm hình dạng, tư thế hoặc âm thanh (`QB-85`).
+- [ ] Đúng ở mọi thứ tự màn và mọi số boss trong khoảng của biến thể: không đếm số Warden đã tắt, không nhắc hệ thống còn khóa (ví dụ Quầy trước boss 2).
+- [ ] Tiếng Anh của Warden không viết tắt (trừ Aeris và Pyra); script thoại Warden tự kiểm tra (`09-Thoai-Warden.md` mục 4).

@@ -2,6 +2,7 @@
  * Kiểu và kiểm tra enemies.json (logic thuần), kèm quy tắc của đặc tả Prologue & Stage 1
  * mục 4: mọi đòn có telegraph ≥ minTelegraphSec, không đòn nào gây chết ngay.
  */
+import { deepMerge } from './deep-merge';
 import { ConfigError, type Json, num, obj, size, type SizePx, str } from './json-check';
 
 export type EnemyBehavior = 'drone' | 'turret' | 'butterfly' | 'shieldCharger' | 'golem';
@@ -40,6 +41,8 @@ export interface DroneData extends EnemyCommon {
     telegraphSec: number;
     cooldownSec: number;
     projectile: EnemyProjectileData;
+    /** Số viên mỗi loạt (viên sau nhắm lại) và khoảng cách giữa các viên (Thử thách: bắn đôi). */
+    burst: { count: number; gapSec: number };
   };
 }
 
@@ -52,6 +55,10 @@ export interface TurretData extends EnemyCommon {
     count: number;
     spreadDeg: number;
     projectile: EnemyProjectileData;
+    /** Số loạt mỗi nhịp, cách nhau `volleyGapSec`, loạt k lệch k × `volleyOffsetDeg` (Thử thách). */
+    volleys: number;
+    volleyGapSec: number;
+    volleyOffsetDeg: number;
   };
 }
 
@@ -67,6 +74,9 @@ export interface ButterflyData extends EnemyCommon {
     /** Hạt nổ rơi theo trọng lực này (ô/s²). */
     gravityTilesPerSec2: number;
     projectile: EnemyProjectileData;
+    /** Số hạt mỗi nhịp, cách nhau `dropGapSec` (Thử thách: thả kép). */
+    drops: number;
+    dropGapSec: number;
   };
 }
 
@@ -86,6 +96,9 @@ export interface ShieldChargerData extends EnemyCommon {
     cooldownSec: number;
     /** Người chơi ở sau lưng lâu chừng này thì quay lại. */
     turnDelaySec: number;
+    /** Số lần lao nối sau lần lao đầu (quay lại, báo `chainTelegraphSec`, lao) (Thử thách). */
+    chainDashes: number;
+    chainTelegraphSec: number;
   };
 }
 
@@ -119,6 +132,8 @@ export interface GolemData extends EnemyCommon {
       dashTiles: number;
       dashSpeedTilesPerSec: number;
       recoverSec: number;
+      /** Dừng lao thì giậm đất tại chỗ (báo trước như giậm) (Thử thách). */
+      endSlam: boolean;
     };
   };
 }
@@ -134,6 +149,8 @@ export interface PickupRules {
   /** Core Bit của một kẻ địch chia thành tối đa chừng này viên. */
   maxCoreBitPickups: number;
   gravityTilesPerSec2: number;
+  /** Tốc độ viên Core Bit bay tới Kai khi trong tầm hút (Upgrade Magnet Range, M9). */
+  magnetSpeedTilesPerSec: number;
   sizePx: SizePx;
 }
 
@@ -149,6 +166,17 @@ export interface EnemyRules {
 export interface EnemiesData {
   rules: EnemyRules;
   enemies: Record<string, EnemyData>;
+  /**
+   * Bản Thử thách (01-GDD/11-Do-kho.md mục 2.6): khối `challenge` ghép sâu lên bản gốc rồi kiểm
+   * tra lại. Chỉ có ở kẻ địch có khối này; chọn bằng `enemiesFor`.
+   */
+  challenge: Record<string, EnemyData>;
+}
+
+/** Dữ liệu kẻ địch dùng ở một độ khó: Thử thách thì thay bằng bản Thử thách khi có. */
+export function enemiesFor(data: EnemiesData, newAttackPatterns: boolean): EnemiesData {
+  if (!newAttackPatterns || Object.keys(data.challenge).length === 0) return data;
+  return { ...data, enemies: { ...data.enemies, ...data.challenge } };
 }
 
 function projectile(value: unknown, path: string): EnemyProjectileData {
@@ -172,8 +200,18 @@ function common(id: string, e: Json, p: string): EnemyCommon {
   };
 }
 
-function parseEnemy(id: string, value: unknown): EnemyData {
-  const p = `enemies.${id}`;
+/** Số tùy chọn có mặc định (trường hành vi mới của bản Thử thách). */
+function optNum(v: unknown, path: string, fallback: number, min: number): number {
+  return v === undefined ? fallback : num(v, path, { min });
+}
+
+function optInt(v: unknown, path: string, fallback: number, min: number): number {
+  const n = optNum(v, path, fallback, min);
+  if (!Number.isInteger(n)) throw new ConfigError(`${path}: cần số nguyên`);
+  return n;
+}
+
+function parseEnemy(id: string, value: unknown, p = `enemies.${id}`): EnemyData {
   const e = obj(value, p);
   const behavior = str(e.behavior, `${p}.behavior`);
   if (!BEHAVIORS.includes(behavior as EnemyBehavior)) {
@@ -197,6 +235,14 @@ function parseEnemy(id: string, value: unknown): EnemyData {
           telegraphSec: num(a.telegraphSec, `${pa}.telegraphSec`, { min: 0 }),
           cooldownSec: num(a.cooldownSec, `${pa}.cooldownSec`, { min: 0 }),
           projectile: projectile(a.projectile, `${pa}.projectile`),
+          burst: (() => {
+            if (a.burst === undefined) return { count: 1, gapSec: 0 };
+            const b = obj(a.burst, `${pa}.burst`);
+            return {
+              count: optInt(b.count, `${pa}.burst.count`, 1, 1),
+              gapSec: optNum(b.gapSec, `${pa}.burst.gapSec`, 0, 0.05),
+            };
+          })(),
         },
       };
     case 'turret':
@@ -209,6 +255,9 @@ function parseEnemy(id: string, value: unknown): EnemyData {
           count: num(a.count, `${pa}.count`, { min: 1 }),
           spreadDeg: num(a.spreadDeg, `${pa}.spreadDeg`, { min: 0 }),
           projectile: projectile(a.projectile, `${pa}.projectile`),
+          volleys: optInt(a.volleys, `${pa}.volleys`, 1, 1),
+          volleyGapSec: optNum(a.volleyGapSec, `${pa}.volleyGapSec`, 0, 0.05),
+          volleyOffsetDeg: optNum(a.volleyOffsetDeg, `${pa}.volleyOffsetDeg`, 0, 0),
         },
       };
     case 'butterfly': {
@@ -228,6 +277,8 @@ function parseEnemy(id: string, value: unknown): EnemyData {
             min: 1,
           }),
           projectile: projectile(a.projectile, `${pa}.projectile`),
+          drops: optInt(a.drops, `${pa}.drops`, 1, 1),
+          dropGapSec: optNum(a.dropGapSec, `${pa}.dropGapSec`, 0, 0.05),
         },
       };
     }
@@ -282,6 +333,12 @@ function parseEnemy(id: string, value: unknown): EnemyData {
               },
             ),
             recoverSec: num(dash.recoverSec, `${pa}.dash.recoverSec`, { min: 0 }),
+            endSlam: (() => {
+              if (dash.endSlam === undefined) return false;
+              if (typeof dash.endSlam !== 'boolean')
+                throw new ConfigError(`${pa}.dash.endSlam: cần true/false`);
+              return dash.endSlam;
+            })(),
           },
         },
       };
@@ -302,9 +359,23 @@ function parseEnemy(id: string, value: unknown): EnemyData {
           recoverSec: num(a.recoverSec, `${pa}.recoverSec`, { min: 0 }),
           cooldownSec: num(a.cooldownSec, `${pa}.cooldownSec`, { min: 0 }),
           turnDelaySec: num(a.turnDelaySec, `${pa}.turnDelaySec`, { min: 0 }),
+          chainDashes: optInt(a.chainDashes, `${pa}.chainDashes`, 0, 0),
+          chainTelegraphSec: optNum(a.chainTelegraphSec, `${pa}.chainTelegraphSec`, 0, 0),
         },
       };
   }
+}
+
+/** Ghép khối `challenge` lên bản gốc (cấm đổi id, hành vi) rồi kiểm tra như bản gốc. */
+function parseChallenge(id: string, raw: Json): EnemyData | undefined {
+  if (raw.challenge === undefined) return undefined;
+  const p = `enemies.${id}.challenge`;
+  const patch = obj(raw.challenge, p);
+  for (const key of ['id', 'behavior'])
+    if (key in patch) throw new ConfigError(`${p}.${key}: bản Thử thách không được đổi ${key}`);
+  const base: Json = { ...raw };
+  delete base.challenge;
+  return parseEnemy(id, deepMerge(base, patch), p);
 }
 
 export function parseEnemies(value: unknown): EnemiesData {
@@ -334,6 +405,11 @@ export function parseEnemies(value: unknown): EnemiesData {
         'enemies.rules.pickups.gravityTilesPerSec2',
         { min: 1 },
       ),
+      magnetSpeedTilesPerSec: num(
+        pk.magnetSpeedTilesPerSec,
+        'enemies.rules.pickups.magnetSpeedTilesPerSec',
+        { min: 1 },
+      ),
       sizePx: size(pk.sizePx, 'enemies.rules.pickups.sizePx'),
     },
   };
@@ -342,31 +418,51 @@ export function parseEnemies(value: unknown): EnemiesData {
   }
   const list = obj(root.enemies, 'enemies.enemies');
   const enemies: Record<string, EnemyData> = {};
+  const challenge: Record<string, EnemyData> = {};
   for (const [id, e] of Object.entries(list)) {
-    if (!id.startsWith('_')) enemies[id] = parseEnemy(id, e);
+    if (id.startsWith('_')) continue;
+    enemies[id] = parseEnemy(id, e);
+    const c = parseChallenge(id, obj(e, `enemies.${id}`));
+    if (c) challenge[id] = c;
   }
-  return { rules, enemies };
+  return { rules, enemies, challenge };
 }
 
-/** Telegraph và nhịp đòn của một kẻ địch (để kiểm tra quy tắc). */
-function attackTiming(e: EnemyData): { telegraphSec: number; cycleSec: number } {
+/**
+ * Telegraph và nhịp đòn của một kẻ địch (để kiểm tra quy tắc). Báo trước tính cho cả loạt: các
+ * nhịp sau (viên 2, loạt 2, hạt 2) nằm trong `busySec`, phải xong trước nhịp kế (GDD 11 mục 2.6).
+ */
+function attackTiming(e: EnemyData): { telegraphSec: number; busySec: number; cycleSec: number } {
   switch (e.behavior) {
-    case 'drone':
-      return { telegraphSec: e.attack.telegraphSec, cycleSec: Infinity };
-    case 'turret':
-    case 'butterfly':
-      return { telegraphSec: e.attack.telegraphSec, cycleSec: e.attack.intervalSec };
-    case 'shieldCharger':
-      return { telegraphSec: e.attack.telegraphSec, cycleSec: Infinity };
-    case 'golem':
-      return {
-        telegraphSec: Math.min(
-          e.attack.slam.telegraphSec,
-          e.attack.bombs.telegraphSec,
-          e.attack.dash.telegraphSec,
-        ),
-        cycleSec: Infinity,
-      };
+    case 'drone': {
+      const b = e.attack.burst;
+      const busySec = e.attack.telegraphSec + (b.count - 1) * b.gapSec;
+      return { telegraphSec: e.attack.telegraphSec, busySec, cycleSec: Infinity };
+    }
+    case 'turret': {
+      const a = e.attack;
+      const busySec = a.telegraphSec + (a.volleys - 1) * a.volleyGapSec;
+      return { telegraphSec: a.telegraphSec, busySec, cycleSec: a.intervalSec };
+    }
+    case 'butterfly': {
+      const a = e.attack;
+      const busySec = a.telegraphSec + (a.drops - 1) * a.dropGapSec;
+      return { telegraphSec: a.telegraphSec, busySec, cycleSec: a.intervalSec };
+    }
+    case 'shieldCharger': {
+      const a = e.attack;
+      const telegraphSec =
+        a.chainDashes > 0 ? Math.min(a.telegraphSec, a.chainTelegraphSec) : a.telegraphSec;
+      return { telegraphSec, busySec: telegraphSec, cycleSec: Infinity };
+    }
+    case 'golem': {
+      const telegraphSec = Math.min(
+        e.attack.slam.telegraphSec,
+        e.attack.bombs.telegraphSec,
+        e.attack.dash.telegraphSec,
+      );
+      return { telegraphSec, busySec: telegraphSec, cycleSec: Infinity };
+    }
   }
 }
 
@@ -382,21 +478,26 @@ function attackDamage(e: EnemyData): number {
 }
 
 /**
- * Quy tắc chung (đặc tả mục 4, GDD 9): mọi đòn có telegraph ≥ minTelegraphSec; nhịp bắn dài
- * hơn telegraph; không đòn nào (kể cả va chạm) gây ≥ máu người chơi cấp 1.
+ * Quy tắc chung (đặc tả mục 4, GDD 9; GDD 11 mục 3.1): mọi đòn có telegraph ≥ minTelegraphSec;
+ * cả loạt xong trước nhịp kế; không đòn nào (kể cả va chạm), nhân `damageMul` (hệ số sát thương
+ * nhận lớn nhất của các độ khó), gây ≥ máu người chơi cấp 1. Kiểm cả bản Thử thách.
  */
-export function checkEnemyRules(data: EnemiesData, playerBaseHp: number): string[] {
+export function checkEnemyRules(data: EnemiesData, playerBaseHp: number, damageMul = 1): string[] {
   const errors: string[] = [];
-  for (const e of Object.values(data.enemies)) {
-    const { telegraphSec, cycleSec } = attackTiming(e);
+  const all = [
+    ...Object.values(data.enemies).map((e) => ({ e, p: `enemies.${e.id}` })),
+    ...Object.values(data.challenge).map((e) => ({ e, p: `enemies.${e.id}.challenge` })),
+  ];
+  for (const { e, p } of all) {
+    const { telegraphSec, busySec, cycleSec } = attackTiming(e);
     if (telegraphSec + 1e-9 < data.rules.minTelegraphSec) {
-      errors.push(`enemies.${e.id}: telegraph ${telegraphSec} s < ${data.rules.minTelegraphSec} s`);
+      errors.push(`${p}: telegraph ${telegraphSec} s < ${data.rules.minTelegraphSec} s`);
     }
-    if (telegraphSec >= cycleSec) {
-      errors.push(`enemies.${e.id}: telegraph phải ngắn hơn nhịp bắn ${cycleSec} s`);
+    if (busySec >= cycleSec) {
+      errors.push(`${p}: telegraph và cả loạt (${busySec} s) phải ngắn hơn nhịp bắn ${cycleSec} s`);
     }
-    if (Math.max(e.contactDamage, attackDamage(e)) >= playerBaseHp) {
-      errors.push(`enemies.${e.id}: có đòn gây ≥ ${playerBaseHp} sát thương (chết ngay một đòn)`);
+    if (Math.max(e.contactDamage, attackDamage(e)) * damageMul >= playerBaseHp) {
+      errors.push(`${p}: có đòn gây ≥ ${playerBaseHp} sát thương (chết ngay một đòn)`);
     }
   }
   return errors;

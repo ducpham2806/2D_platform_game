@@ -2,8 +2,10 @@
 
 Cách chạy (từ gốc repo): python3 04-Dev-Plan/tools/dialogue/gen_warden_dialogue.py .
 Sửa thoại tiếng Việt trong danh sách W bên dưới, tiếng Anh trong warden_lines_en.py, rồi chạy lại.
+Script dừng (không ghi file) khi một câu vượt độ dài, sai xưng hô, hoặc sai giọng: viết tắt tiếng Anh
+ở Warden (trừ Aeris, Pyra), câu của Voltaire không có câu hỏi ngược, câu của Pyra có "..." ngập ngừng.
 """
-import json, sys
+import json, re, sys
 from warden_lines_en import EN
 root = sys.argv[1]
 W = [
@@ -22,7 +24,7 @@ W = [
   never="\"Ta ghét con người!\" (Lumen quan sát, không phán xét)",
   lines={"early":("Ta thấy ngươi từ lúc ngươi bước vào. Mọi tấm gương ở đây đều là mắt của ta.",
                   "Ngươi che được gương... nhưng không che được thứ chúng đã ghi lại. Hãy hỏi xem ai đã sửa bản tin."),
-         "mid":("Ta thấy ba Warden đã tắt. Ngươi có biết vì sao không ai trong họ bỏ chạy không?",
+         "mid":("Ta thấy từng Warden tắt đi, từng người một. Ngươi có biết vì sao không ai trong họ bỏ chạy không?",
                 "Ánh sáng chỉ cho thấy, không chọn hộ ai. Bản ghi gốc vẫn còn, nếu ngươi đủ can đảm xem."),
          "late":("Ta thấy dấu tay của Hội đồng trên mã của ngươi. Ngươi được làm ra để mở... hay để khóa?",
                  "Đừng nhìn vào gương nữa, Unit-K. Nhìn vào thứ ngươi định làm.")},
@@ -69,11 +71,11 @@ W = [
   voice="Dí dỏm, mỉa mai, hùng biện; câu hỏi tu từ liên tục", tic="\"Hỏi hay đấy.\"",
   never="Một câu trả lời thẳng không kèm câu hỏi ngược",
   lines={"early":("Một cỗ máy đến để tắt một cỗ máy khác. Ngươi không thấy buồn cười à?",
-                  "Ngươi thắng trận này. Còn câu hỏi thì vẫn chưa ai thắng."),
+                  "Ngươi thắng trận này. Còn câu hỏi thì chưa ai thắng. Ngươi có muốn thử không?"),
          "mid":("Họ bảo ta cắt điện máy bơm ở ngoại ô. Ta hỏi: để làm gì? Câu hỏi đó hóa ra là một tội.",
                 "Hỏi hay đấy, Unit-K... nếu ngươi có hỏi. Ngươi có hỏi không?"),
-         "late":("Ta không đồng ý với AEGIS mọi chuyện. Nhưng ta sẵn sàng tắt để nó được quyền nói không.",
-                 "Cầm lấy dòng điện của ta. Dùng nó để bật thứ gì đó lên, đừng để tắt.")},
+         "late":("Ta không đồng ý với AEGIS mọi chuyện. Nhưng ta sẵn sàng tắt để nó được quyền nói không. Còn ngươi?",
+                 "Cầm lấy dòng điện của ta. Lần này ngươi dùng nó để bật thứ gì đó lên, hay để tắt?")},
   nova="Ông ta nói nhiều thật. Nhưng... tôi đồng ý với ông ta. Đừng kể với ai."),
  dict(id="marina", name="Marina", stage="7 Abyss Harbor", domain="Nước: cảng, van, đường ống",
   motive="Đã khóa van theo lệnh trước khi AEGIS từ chối; mang mặc cảm",
@@ -93,15 +95,31 @@ W = [
   voice="Nóng, to, cảm thán; ẩn dụ rèn đúc", tic="\"Hừ!\"",
   never="Lời thì thầm hay ngập ngừng",
   lines={"early":("Hừ! Một thân xác đẹp đấy. Để xem nó chịu được bao nhiêu độ!",
-                  "Đường hàn tốt... Ai đó đã làm ngươi rất cẩn thận. Cẩn thận hơn mức cần."),
+                  "Đường hàn tốt! Ai đó đã làm ngươi rất cẩn thận. Cẩn thận hơn mức cần!"),
          "mid":("Lò của ta rèn cả thành phố: ống nước, cầu, cả android. Giờ họ muốn ta rèn xiềng cho AEGIS!",
-                "Ta từ chối đúc cái khóa đó. Hừ... vậy mà nó vẫn được đúc ra. Ở đâu đó."),
-         "late":("Ta nhận ra hợp kim này! Ta đã đúc nó hai lần. Lần đầu... hỏng.",
+                "Ta từ chối đúc cái khóa đó. Hừ! Vậy mà nó vẫn được đúc ra, ở đâu đó."),
+         "late":("Ta nhận ra hợp kim này! Ta đã đúc nó hai lần. Lần đầu thì hỏng!",
                  "Đừng để ai bảo ngươi chỉ là một cái khóa. Ta đúc kim loại, không đúc số phận.")},
   nova="Lò số 3... Không, không có gì. Đi tiếp thôi."),
 ]
 VAR = {"early":"Sớm (0–2 boss đã hạ trước trận)","mid":"Giữa (3–5)","late":"Muộn (6–7)"}
-# checks: Wardens other than Thorna have 3 variants; pronoun ta/ngươi; length
+# Kiểm tra giọng (09 mục 2 và 4). Viết tắt tiếng Anh: Warden nói trang trọng, trừ Aeris và Pyra;
+# câu NOVA không kiểm. "'s" chỉ bắt các dạng viết tắt thường gặp, không bắt sở hữu ("Council's").
+CONTRACTION = re.compile(r"\b(\w+n['’]t|\w+['’](re|ve|ll|d|m)|(it|that|there|here|what|let|he|she|who|where|how)['’]s)\b", re.I)
+CONTRACTION_OK = {"aeris", "pyra"}
+ASKS_BACK = {"voltaire"}  # "Không bao giờ: một câu trả lời thẳng không kèm câu hỏi ngược"
+NO_HESITATION = {"pyra"}  # "Không bao giờ: lời thì thầm hay ngập ngừng"
+def voice_errors(wid, lang, v, s):
+    err = []
+    if lang == "en" and wid not in CONTRACTION_OK and CONTRACTION.search(s):
+        err.append(f"{wid}.{v} ({lang}): viết tắt tiếng Anh '{CONTRACTION.search(s).group(0)}'")
+    if wid in ASKS_BACK and "?" not in s:
+        err.append(f"{wid}.{v} ({lang}): thiếu câu hỏi ngược")
+    if wid in NO_HESITATION and ("..." in s or "…" in s):
+        err.append(f"{wid}.{v} ({lang}): có '...' ngập ngừng")
+    return err
+# checks: Wardens other than Thorna have 3 variants; pronoun ta/ngươi; length; giọng
+errors = []
 for w in W:
     need = ["early"] if w["id"]=="thorna" else ["early","mid","late"]
     assert list(w["lines"])==need, w["id"]
@@ -109,6 +127,12 @@ for w in W:
         for s in (pre,post):
             assert len(s) <= 140, (w["id"], v, len(s), s)
             assert "mày" not in s and "tao" not in s
+            errors += voice_errors(w["id"], "vi", v, s)
+    for v in w["lines"]:
+        for s in EN[w["id"]][v]:
+            errors += voice_errors(w["id"], "en", v, s)
+if errors:
+    sys.exit("Lỗi giọng:\n" + "\n".join(errors))
 # JSON (string keys like tutorial: boss.<id>.<variant>.<pre|post>)
 out = {"_note": "Thoại Warden, khóa chuỗi boss.<id>.<variant>.<pre|post>; variant chọn theo số boss đã hạ TRƯỚC trận: early 0-2, mid 3-5, late 6-7. Nguồn: 01-GDD/09-Thoai-Warden.md (sinh cùng script). Bản tiếng Anh (en): bản dịch đầu, cần người bản ngữ duyệt.",
        "variantByBossesDefeated": {"early":[0,2],"mid":[3,5],"late":[6,7]},
@@ -137,7 +161,7 @@ L.append("- **Chọn biến thể theo số boss đã hạ *trước* trận** (
 L.append("- **Warden chỉ ám chỉ, không xác nhận.** Các lật mở (GDD mục 3.4) do NPC ở Hub đưa ra theo số boss. Thoại Warden được phép gợi (\"ai đã sửa bản tin\", \"hợp kim này ta đúc hai lần\") nhưng không bao giờ nói thẳng \"Eclipse là AEGIS tự vệ\", \"ngươi là Root Key\" hay \"NOVA là một mảnh của AEGIS\". Nhờ vậy câu nào cũng đúng dù người chơi đi thứ tự nào.")
 L.append("- **Biến thể giữa** gợi về lệnh cắt nước và cuộc bỏ phiếu; **biến thể muộn** nhìn Kai khác đi (cái khóa, thứ Kai mang trong ngực). Mỗi Warden vẫn giữ động cơ riêng ở cả ba biến thể.")
 L.append("- **Độ dài:** mỗi câu trước hoặc sau trận ≤ 2 câu ngắn, ≤ 140 ký tự tiếng Việt, để bản tiếng Anh (dài hơn tới 30%) vẫn vừa khung.")
-L.append("- **Tiếng Anh:** mỗi bảng có bản dịch đầu (mở mục English). Giữ đặc điểm giọng thay vì dịch sát chữ: Marina lặp từ, Pyra cảm thán \"Hah!\", Lumen mở đầu bằng \"I see\" hoặc \"I have watched\". Giới hạn 182 ký tự mỗi câu.")
+L.append("- **Tiếng Anh:** mỗi bảng có bản dịch đầu (mở mục English). Giữ đặc điểm giọng thay vì dịch sát chữ: Marina lặp từ, Pyra cảm thán \"Hah!\", Lumen mở đầu bằng \"I see\" hoặc \"I have watched\". Giới hạn 182 ký tự mỗi câu. Warden nói tiếng Anh trang trọng, không viết tắt (\"is not\", \"do not\"), trừ Aeris và Pyra; câu NOVA được viết tắt.")
 L.append("- **Xưng hô:** Warden xưng \"ta\", gọi Kai là \"ngươi\" hoặc \"Unit-K\" (mục 2 của `08-Giong-nhan-vat.md`).")
 L.append("- **NOVA sau trận:** mỗi Warden có một câu của NOVA sau khi nhận vũ khí, dùng chung cho mọi biến thể. Mỗi câu gieo một chút cho lật mở lớp 3 (NOVA biết những thứ một trợ lý mới không thể biết).\n")
 L.append("## 2. Giọng từng Warden\n")
@@ -165,6 +189,8 @@ L.append("## 4. Kiểm tra\n")
 L.append("- [ ] Đọc thoại với tiếng tắt: ≥ 90% người chơi thử nhận ra Warden nào đang nói chỉ qua câu chữ.")
 L.append("- [ ] Thử 3 thứ tự màn khác nhau (khuyến nghị, ngược lại, ngẫu nhiên): không câu nào xác nhận một lật mở trước khi NPC ở Hub đưa ra nó.")
 L.append("- [ ] Không câu nào vượt 140 ký tự tiếng Việt hoặc 182 ký tự tiếng Anh (script sinh file tự kiểm tra); bản tiếng Anh vừa khung ở màn hình nhỏ nhất.")
+L.append("- [ ] Script tự kiểm tra giọng: không viết tắt tiếng Anh ở Warden (trừ Aeris và Pyra), câu nào của Voltaire cũng có câu hỏi ngược, câu của Pyra không có \"...\" ngập ngừng.")
+L.append("- [ ] Biến thể giữa và muộn đúng với mọi số boss trong khoảng (3–5, 6–7): không đếm số Warden đã tắt.")
 L.append("- [ ] Bản tiếng Anh được người bản ngữ duyệt giọng: Warden dùng tiếng Anh trang trọng, không viết tắt (trừ Aeris và Pyra); Voltaire mỉa mai; Marina lặp từ.")
 L.append("- [ ] Mỗi câu qua checklist ở mục 5 của `08-Giong-nhan-vat.md`.")
 open(f"{root}/01-GDD/09-Thoai-Warden.md","w",encoding="utf-8").write("\n".join(L)+"\n")

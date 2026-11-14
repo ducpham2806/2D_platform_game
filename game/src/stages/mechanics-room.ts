@@ -14,4 +14,5 @@ export const MECHANICS_ROOM: TiledStageDef = {
   map,
   playtest: false,
   tutorial: 'stage1',
+  campaign: 'verdant_gardens',
 };

@@ -20,25 +20,25 @@ Nhật ký chỉ tính phiên dài ít nhất 10 giây. Các ngưỡng "hỏng" 
 
 ## 2. Kết quả đo tự động
 
-Chạy ngày 2026-11-02 bằng `npm run build && npm run gate-check` (Chromium không giao diện, khung 960 × 540).
+Chạy lại ngày 2026-11-14 (sau M8: cây kỹ năng, Xưởng, khiên...) bằng `npm run build && npm run gate-check` (Chromium không giao diện, khung 960 × 540). Lần đo 02/11 cho kết quả tương tự (tải 1,35 MB, vào game 2,28 s ở CPU chậm 4×).
 
 | Hạng mục | Kết quả | Ngưỡng | Đánh giá |
 |---|---|---|---|
-| Tải đầu (`dist/`) | 1,35 MB (nén gzip 0,37 MB) | ≤ 30 MB | Đạt |
-| Vào game: máy tính | 0,51 s | ≤ 3 s | Đạt |
-| Vào game: CPU chậm 4× + mạng 4G ước tính | 2,28 s (1,30 s chạy + 0,98 s tải bản nén qua 4 Mbps) | ≤ 3 s | Đạt |
-| FPS phòng boss (pha cuối, có Mưa đạn): máy tính | 60,0; khung > 22 ms: 0%; một bước logic 0,06 ms | ≥ 55 | Đạt |
-| FPS phòng boss: CPU chậm 4× | 60,1; khung > 22 ms: 0%; bước logic 0,21 ms | ≥ 55 | Đạt |
-| FPS phòng boss: CPU chậm 6× (máy yếu) | 60,0; khung > 22 ms: 0,2%; bước logic 0,28 ms | ≥ 55 | Đạt |
-| Độ trễ phím: trang nhận sự kiện → khung hình có phản hồi | trung vị 10,0 ms, p95 13,9 ms (15 lần) | p95 ≤ 50 ms | Đạt |
-| Độ trễ chạm (CPU chậm 4×): trang nhận sự kiện → khung hình | trung vị 11,2 ms, p95 13,8 ms (15 lần) | p95 ≤ 50 ms | Đạt |
+| Tải đầu (`dist/`) | 1,50 MB (nén gzip 0,42 MB) | ≤ 30 MB | Đạt |
+| Vào game: máy tính | 0,81 s | ≤ 3 s | Đạt |
+| Vào game: CPU chậm 4× + mạng 4G ước tính | 2,51 s (1,44 s chạy + 1,07 s tải bản nén qua 4 Mbps) | ≤ 3 s | Đạt |
+| FPS phòng boss (pha cuối, có Mưa đạn): máy tính | 60,0; khung > 22 ms: 0,2%; một bước logic 0,08 ms | ≥ 55 | Đạt |
+| FPS phòng boss: CPU chậm 4× | 60,1; khung > 22 ms: 0%; bước logic 0,32 ms | ≥ 55 | Đạt |
+| FPS phòng boss: CPU chậm 6× (máy yếu) | 59,5; khung > 22 ms: 1,0%; bước logic 0,52 ms | ≥ 55 | Đạt |
+| Độ trễ phím: trang nhận sự kiện → khung hình có phản hồi | trung vị 6,3 ms, p95 13,0 ms (15 lần) | p95 ≤ 50 ms | Đạt |
+| Độ trễ chạm (CPU chậm 4×): trang nhận sự kiện → khung hình | trung vị 10,5 ms, p95 23,0 ms (15 lần) | p95 ≤ 50 ms | Đạt |
 
 Hai giới hạn của bài đo, cần xác nhận trên máy thật ở buổi chơi thử:
 
-- **Độ trễ chạm tính cả trình duyệt** là trung vị 43 ms, p95 56 ms. Khoảng 30 ms trong đó nằm trước khi trang nhận được sự kiện: đó là đường đi sự kiện chạm của Chromium không giao diện, game không kiểm soát được (phím chỉ mất dưới 1 ms ở chặng này). Phần của game là khoảng 11 ms (một khung hình). Trên điện thoại thật còn thêm độ trễ của màn hình cảm ứng; cần người thử nói có thấy "trễ" không.
+- **Độ trễ chạm tính cả trình duyệt** là trung vị 50 ms, p95 74 ms (02/11: 43 ms, 56 ms). Khoảng 30 ms trong đó nằm trước khi trang nhận được sự kiện: đó là đường đi sự kiện chạm của Chromium không giao diện, game không kiểm soát được (phím chỉ mất dưới 1 ms ở chặng này). Phần của game là khoảng 11 ms (một khung hình). Trên điện thoại thật còn thêm độ trễ của màn hình cảm ứng; cần người thử nói có thấy "trễ" không.
 - **FPS:** chế độ CPU chậm chỉ làm chậm phần JavaScript; phần vẽ chạy bằng WebGL phần mềm (SwiftShader) không bị làm chậm theo. Vì vậy phải xem FPS thật trên điện thoại: mở link với `?debug=1`, số FPS hiện ở góc dưới trái màn thử.
 
-Phần logic còn rất dư: một bước logic tốn 0,3 ms ở CPU chậm 6×, so với 16,7 ms của một khung hình.
+Phần logic còn rất dư: một bước logic tốn 0,5 ms ở CPU chậm 6×, so với 16,7 ms của một khung hình.
 
 **Lưu ý bản build (02/11/2026, Sprint 6):** các bản trước Sprint 6 có lỗi chết lặp: sau lần chết đầu tiên, Kai hồi sinh rồi chết lại liên tục. Chỉ dùng bản build từ Sprint 6 trở đi cho đợt chơi thử. Từ Sprint 6, rơi hố theo đặc tả Stage 1 (mất 20 máu, về checkpoint, không chết nếu còn máu); nhật ký vẫn tính rơi hố là một lần hỏng ở đoạn đó.
 
@@ -48,9 +48,12 @@ Workflow `.github/workflows/pages.yml` build và đăng `game/dist` lên GitHub 
 
 **Bật một lần:** trên GitHub, vào Settings → Pages → Build and deployment → Source chọn **GitHub Actions**. Sau đó chạy workflow "Pages" (tab Actions → Pages → Run workflow) hoặc merge một PR vào `main`.
 
+**Trước đợt 1:** bản cần thử đang ở nhánh `ccr-9de01342-2046rb`; phải merge vào `main` thì link mới có `?gate=1` và các sửa lỗi của Sprint 8. Sau khi workflow chạy xong, mở link `?gate=1` trên một điện thoại để chắc chắn trang đã cập nhật (menu chỉ còn 3 nút).
+
 | Link | Dùng cho |
 |---|---|
-| `https://ducpham2806.github.io/2D_platform_game/` | Người thử (bản gốc, không có công cụ) |
+| `https://ducpham2806.github.io/2D_platform_game/?gate=1` | **Gửi người thử.** Menu chỉ còn Chơi (màn xám), Điều khiển, Kết quả chơi thử, để người thử không vào nhầm phòng thử khác (chỉ màn xám ghi nhật ký). Nút menu và menu tạm dừng cao ≥ 48 dp trên điện thoại |
+| `https://ducpham2806.github.io/2D_platform_game/` | Người làm game (menu đầy đủ, không có công cụ) |
 | `…/?debug=1` | Xem FPS và trạng thái trên máy thật |
 | `…/?tune=1` | Người làm game chỉnh cảm giác (mục 5) |
 
@@ -60,11 +63,31 @@ Workflow `.github/workflows/pages.yml` build và đăng `game/dist` lên GitHub 
 
 **Trong buổi thử:**
 
-1. Gửi link bản gốc. Không giải thích cách chơi; chỉ nói "chơi tới khi hạ được boss, tối đa 15 phút".
+1. Gửi link `?gate=1` (mẫu tin nhắn bên dưới). Không giải thích cách chơi; chỉ nói "chơi tới khi hạ được boss, tối đa 15 phút".
 2. Quan sát hoặc quay màn hình. Ghi lại chỗ người thử dừng lại lâu, chỗ chết nhiều, câu họ tự nói ra.
 3. Sau lần thắng boss đầu tiên, game tự hỏi phiếu chấm Nhảy / Lướt / Bắn (1 tệ – 5 rất sướng). Người thử chấm theo cảm giác, không cần nghĩ lâu.
 4. Hỏi thêm 3 câu: Có lúc nào bấm mà nhân vật không làm theo không? Nút cảm ứng có chỗ nào khó với tới không? Muốn chơi tiếp màn thật không?
 5. Người thử về màn hình chính (Esc hoặc nút II), chọn **Kết quả chơi thử → Sao chép JSON** và gửi đoạn chữ đó cho người tổng hợp (Zalo, email…). Nhật ký chỉ nằm trên máy người thử, game không tự gửi đi đâu.
+
+**Mẫu tin nhắn mời** (chép nguyên, đổi link nếu cần):
+
+> Chào bạn, mình đang làm một game hành động 2D trên trình duyệt và cần người chơi thử khoảng 15 phút.
+> Mở link này (điện thoại thì cầm ngang): https://ducpham2806.github.io/2D_platform_game/?gate=1
+> Bấm **Chơi**, chơi tới khi hạ được boss ở cuối màn (tối đa 15 phút; chưa hạ được cũng không sao).
+> Hạ boss xong game sẽ hỏi chấm điểm 3 câu, bạn chấm theo cảm giác.
+> Xong thì bấm nút **II** (hoặc Esc) → Thoát về menu (bấm 2 lần) → **Kết quả chơi thử** → **Sao chép JSON** → **Sao chép**, rồi dán đoạn chữ đó gửi lại cho mình. Cảm ơn bạn!
+
+**Phiếu quan sát cho người tổ chức** (mỗi người thử một phiếu):
+
+| Mục | Ghi |
+|---|---|
+| Người thử, thiết bị (máy, trình duyệt, cảm ứng/bàn phím/tay cầm) | |
+| Chỗ dừng lâu hoặc chết nhiều (đoạn nào, làm gì) | |
+| Câu người thử tự nói ra | |
+| Có lúc bấm mà nhân vật không làm theo? | |
+| Nút cảm ứng có chỗ khó với tới? | |
+| Muốn chơi tiếp màn thật không? | |
+| Đã gửi JSON chưa | |
 
 **Tổng hợp:**
 
@@ -82,6 +105,8 @@ Mở link có `?tune=1` (bản dev `npm run dev` luôn bật), vào màn thử r
 - **Sao chép JSON:** chỉ xuất phần đã đổi, gom theo file (`player`, `weapons`, `boss` = boss `gray` trong `bosses.json`). Dán giá trị vào `03-Data` qua một PR; test sẽ báo nếu giá trị phá ràng buộc thiết kế.
 - **Đặt lại:** về dữ liệu gốc.
 
+**Thorna (đã chỉnh ngày 14/11/2026, không thuộc đợt thử màn xám):** mô phỏng `game/tests/power-cap.test.ts` cho thấy bot không né, chỉ bắn liên tục (7,5 phát/giây), thắng Thorna 100 máu sau khoảng 15 s; đặc tả Stage 1 mục 5 dự kiến 60–90 s. Đã nâng máu lên 250: bot không né thua ở cấp 4 sau 22–30 s, kể cả build Core đủ bậc; người chơi né được (bắn 50–75% thời gian) cần khoảng 45–65 s. Khi có người chơi thật đánh Thorna (Vertical slice), xem thời gian thắng và số lần thua (đặc tả: 1–3 lần thử đầu) rồi chỉnh tiếp.
+
 ## 6. Quy tắc quyết định
 
 - **Qua cổng** khi mọi tiêu chí ở mục 1 đạt ở cùng một bản build, với một đợt 5 người mới. Khi đó tiếp tục Vertical slice với thông số đã chốt.
@@ -96,7 +121,15 @@ Mở link có `?tune=1` (bản dev `npm run dev` luôn bật), vào màn thử r
 
 | Đợt | Ngày | Bản build (commit) | Người thử (cảm ứng / PC) | Điểm N / L / B cảm ứng | Điểm N / L / B PC | Dấu hiệu hỏng | Quyết định |
 |---|---|---|---|---|---|---|---|
-| 1 | | | | | | | |
+| 1 | Chuẩn bị xong 14/11/2026 | nhánh `ccr-9de01342-2046rb` (cần merge vào `main` để đăng) | | | | | Chờ người thử |
+
+**Chạy thử trọn luồng trước đợt 1 (14/11/2026, Chromium máy tính và Pixel 7 giả lập, link `?gate=1`; chạy lại bằng `npm run gate-flow`, mục 8):**
+
+- Đạt trên cả hai thiết bị, không lỗi console: vào màn xám từ menu, di chuyển bằng phím và cần ảo, hạ boss bằng phím và nút Bắn, phiếu chấm hiện và lưu điểm, thoát về menu qua menu tạm dừng, Kết quả chơi thử xuất JSON (phiên ghi đúng thiết bị `keyboard`/`touch`).
+- Phía người tổng hợp: gộp hai gói thì bảng hiện đủ hai thiết bị; dán trùng một gói không bị tính hai lần.
+- Đã sửa trước khi gửi người thử: menu có nhiều phòng thử khác (người thử dễ vào nhầm, phiên không được ghi), nên thêm `?gate=1`. Nút menu và mục menu tạm dừng chỉ cao 28–30 dp trên điện thoại, nay ≥ 48 dp.
+- Nhấn nhả phím tức thì (trong cùng một khung hình) vẫn bắn và nhảy đủ 10/10 lần.
+- Ảnh ở `04-Dev-Plan/qa/cong-prototype/`.
 
 ## 8. Chạy lại bài đo
 
@@ -105,6 +138,10 @@ cd game
 npm run build
 npm run gate-check              # in bảng kết quả, mã thoát 1 nếu có hạng mục chưa đạt
 npm run gate-check -- --json gate.json
+npm run gate-flow               # chạy thử trọn luồng người thử (máy tính + Pixel 7), mã thoát 1 nếu hỏng
+npm run gate-flow -- --shots ../04-Dev-Plan/qa/cong-prototype
 ```
+
+Chạy `gate-flow` trước mỗi đợt thử: nó mở bản build với `?gate=1&debug=1`, đi từ menu tới phiếu chấm, xuất JSON trên máy tính và điện thoại, rồi gộp hai gói như người tổng hợp.
 
 Cần Playwright và Chromium (`npm i -g playwright && npx playwright install chromium`, hoặc đặt `CHROMIUM_PATH` tới một Chrome có sẵn). Script tự chạy `vite preview` ở cổng 4179 rồi tắt khi xong.

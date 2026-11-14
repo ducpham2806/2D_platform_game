@@ -19,9 +19,29 @@ export interface PlayerData {
   iFramesAfterHitSec: number;
   hurt: { stunSec: number; knockbackTilesPerSec: { x: number; y: number } };
   abilities: { airDash: boolean; wallJump: boolean; dashJump: boolean };
-  level: { max: number; expFormula: string; hp: string; atk: string };
+  level: LevelData;
   inPlaceRevivePerStage: { max: number };
   moduleSlots: { start: number; at10: number; at20: number };
+}
+
+/** Cấp và chỉ số (GDD 6.1, 6.2): công thức theo biến L, SP mỗi cấp/boss, trần sức mạnh cốt truyện. */
+export interface LevelData {
+  max: number;
+  /** EXP cần để lên từ cấp L lên L+1. */
+  expFormula: string;
+  hp: string;
+  atk: string;
+  spPerLevelFrom2: number;
+  spPerBoss: number;
+  /** Trần so với cấp 1 của cấp + upgrade + module trong cốt truyện (GDD 6.1). */
+  storyPowerCap: {
+    damageMul: number;
+    hpMul: number;
+    /** Thường trực × hiệu ứng có điều kiện (Last Stand). */
+    conditionalDamageMul: number;
+    /** Máu tối đa / hệ số giảm sát thương tốt nhất của build. */
+    effectiveHpMul: number;
+  };
 }
 
 export function parsePlayer(value: unknown): PlayerData {
@@ -29,6 +49,7 @@ export function parsePlayer(value: unknown): PlayerData {
   const jump = obj(p.jump, 'player.jump');
   const dash = obj(p.dash, 'player.dash');
   const level = obj(p.level, 'player.level');
+  const cap = obj(level.storyPowerCap, 'player.level.storyPowerCap');
   const revive = obj(p.inPlaceRevivePerStage, 'player.inPlaceRevivePerStage');
   const slots = obj(p.moduleSlots, 'player.moduleSlots');
   const hitbox = obj(p.hitboxPx, 'player.hitboxPx');
@@ -89,6 +110,20 @@ export function parsePlayer(value: unknown): PlayerData {
       expFormula: str(level.expFormula, 'player.level.expFormula'),
       hp: str(level.hp, 'player.level.hp'),
       atk: str(level.atk, 'player.level.atk'),
+      spPerLevelFrom2: num(level.spPerLevelFrom2, 'player.level.spPerLevelFrom2', { min: 0 }),
+      spPerBoss: num(level.spPerBoss, 'player.level.spPerBoss', { min: 0 }),
+      storyPowerCap: {
+        damageMul: num(cap.damageMul, 'player.level.storyPowerCap.damageMul', { min: 1 }),
+        hpMul: num(cap.hpMul, 'player.level.storyPowerCap.hpMul', { min: 1 }),
+        conditionalDamageMul: num(
+          cap.conditionalDamageMul,
+          'player.level.storyPowerCap.conditionalDamageMul',
+          { min: 1 },
+        ),
+        effectiveHpMul: num(cap.effectiveHpMul, 'player.level.storyPowerCap.effectiveHpMul', {
+          min: 1,
+        }),
+      },
     },
     inPlaceRevivePerStage: { max: num(revive.max, 'player.inPlaceRevivePerStage.max', { min: 0 }) },
     moduleSlots: {

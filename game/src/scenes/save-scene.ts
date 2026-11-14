@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { LOGIC_WIDTH, SceneKey } from '../core/constants';
-import { getBus, getSave } from '../core/phaser-services';
+import { getBus, getConfig, getSave } from '../core/phaser-services';
+import { characterProgress } from '../logic/rpg/progression';
 import { showSavePanel } from '../save/save-panel';
 import { TEXT_STYLE } from './ui';
 
@@ -18,7 +19,19 @@ export class SaveScene extends Phaser.Scene {
     // Chạm và gõ phím trong bảng HTML không được lọt xuống canvas.
     this.input.enabled = false;
     if (this.input.keyboard) this.input.keyboard.enabled = false;
-    const close = showSavePanel(getSave(this), () => this.scene.start(SceneKey.Menu));
+    const config = getConfig(this);
+    const storyBosses = new Set(config.stages.stages.map((st) => st.boss));
+    const close = showSavePanel(
+      getSave(this),
+      () => this.scene.start(SceneKey.Menu),
+      (data) =>
+        characterProgress(
+          data.character.exp,
+          data.progress.bossesDefeated,
+          storyBosses,
+          config.player.level,
+        ),
+    );
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, close);
   }
 }

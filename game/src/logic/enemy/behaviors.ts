@@ -20,27 +20,49 @@ export class Drone extends Enemy {
   declare readonly data: DroneData;
   private cooldown = 0;
   private windup = 0;
+  /** Bắn đôi (Thử thách): số viên còn lại của loạt và thời gian tới viên kế. */
+  private burstLeft = 0;
+  private burstTimer = 0;
+
+  /** Bắn một viên nhắm vào người chơi lúc này. */
+  private shoot(ctx: EnemyContext): void {
+    const dx = ctx.playerX - this.centerX;
+    const dy = ctx.playerY - this.centerY;
+    const len = Math.hypot(dx, dy) || 1;
+    this.fire(ctx, this.data.attack.projectile, dx / len, dy / len);
+  }
 
   protected override behave(ctx: EnemyContext, dt: number): void {
     const a = this.data.attack;
     const t = this.tileSize;
     this.cooldown = Math.max(0, this.cooldown - dt);
+    if (this.burstLeft > 0) {
+      // Các viên sau của loạt: nhắm lại, không báo trước riêng (báo trước tính cho cả loạt).
+      this.faceToward(ctx.playerX);
+      this.burstTimer -= dt;
+      if (this.burstTimer <= 1e-9) {
+        this.shoot(ctx);
+        this.burstLeft -= 1;
+        this.burstTimer = a.burst.gapSec;
+      }
+      return;
+    }
     if (this.telegraphing) {
       this.faceToward(ctx.playerX);
       this.windup -= dt;
       if (this.windup <= 1e-9) {
-        const dx = ctx.playerX - this.centerX;
-        const dy = ctx.playerY - this.centerY;
-        const len = Math.hypot(dx, dy) || 1;
-        this.fire(ctx, a.projectile, dx / len, dy / len);
+        this.shoot(ctx);
         this.telegraphing = false;
         this.cooldown = a.cooldownSec;
+        this.burstLeft = a.burst.count - 1;
+        this.burstTimer = a.burst.gapSec;
       }
       return;
     }
     const dist = Math.hypot(ctx.playerX - this.centerX, ctx.playerY - this.centerY);
     if (this.cooldown <= 0 && dist <= a.rangeTiles * t) {
       this.telegraphing = true;
+      this.beats = a.burst.count;
       this.windup = a.telegraphSec;
       this.faceToward(ctx.playerX);
       return;
@@ -51,6 +73,8 @@ export class Drone extends Enemy {
   protected override resetBehavior(): void {
     this.cooldown = 0;
     this.windup = 0;
+    this.burstLeft = 0;
+    this.burstTimer = 0;
   }
 }
 
@@ -62,29 +86,51 @@ export class Turret extends Enemy {
   declare readonly data: TurretData;
   /** Giây còn lại tới phát bắn kế tiếp. */
   private timer = 0;
+  /** Loạt kế của nhịp (Thử thách: hai loạt so le) và thời gian tới loạt đó. */
+  private volley = 0;
+  private volleyTimer = 0;
 
   constructor(...args: ConstructorParameters<typeof Enemy>) {
     super(...args);
     this.resetBehavior();
   }
 
+  /** Một loạt `count` viên xòe quạt `spreadDeg`, lệch thêm `offsetDeg` (độ, chiều kim đồng hồ khi nhìn phải). */
+  private volleyAt(ctx: EnemyContext, offsetDeg: number): void {
+    const a = this.data.attack;
+    for (let i = 0; i < a.count; i += 1) {
+      const deg = a.count === 1 ? 0 : -a.spreadDeg / 2 + (a.spreadDeg * i) / (a.count - 1);
+      const angle = (deg + offsetDeg) * DEG;
+      this.fire(ctx, a.projectile, this.facing * Math.cos(angle), Math.sin(angle));
+    }
+  }
+
   protected override behave(ctx: EnemyContext, dt: number): void {
     const a = this.data.attack;
     this.faceToward(ctx.playerX);
+    if (this.volley > 0 && this.volley < a.volleys) {
+      this.volleyTimer -= dt;
+      if (this.volleyTimer <= 1e-9) {
+        this.volleyAt(ctx, this.volley * a.volleyOffsetDeg);
+        this.volley += 1;
+        this.volleyTimer = a.volleyGapSec;
+      }
+    }
     this.timer -= dt;
     this.telegraphing = this.timer <= a.telegraphSec + 1e-9;
+    if (this.telegraphing) this.beats = a.volleys;
     if (this.timer > 1e-9) return;
-    for (let i = 0; i < a.count; i += 1) {
-      const angle =
-        a.count === 1 ? 0 : (-a.spreadDeg / 2 + (a.spreadDeg * i) / (a.count - 1)) * DEG;
-      this.fire(ctx, a.projectile, this.facing * Math.cos(angle), Math.sin(angle));
-    }
+    this.volleyAt(ctx, 0);
+    this.volley = 1;
+    this.volleyTimer = a.volleyGapSec;
     this.timer = a.intervalSec;
     this.telegraphing = false;
   }
 
   protected override resetBehavior(): void {
     this.timer = this.data.attack.intervalSec;
+    this.volley = 0;
+    this.volleyTimer = 0;
   }
 }
 
@@ -96,6 +142,9 @@ export class Butterfly extends Enemy {
   declare readonly data: ButterflyData;
   private time = 0;
   private timer = 0;
+  /** Hạt còn lại của nhịp (Thử thách: thả kép) và thời gian tới hạt kế. */
+  private dropsLeft = 0;
+  private dropTimer = 0;
 
   constructor(...args: ConstructorParameters<typeof Enemy>) {
     super(...args);
@@ -109,10 +158,21 @@ export class Butterfly extends Enemy {
     this.patrol(ctx.map, this.data.moveSpeedTilesPerSec, this.data.patrolRangeTiles, dt);
     this.box.y =
       this.home.y + wave.amplitudeTiles * t * Math.sin((2 * Math.PI * this.time) / wave.periodSec);
+    if (this.dropsLeft > 0) {
+      this.dropTimer -= dt;
+      if (this.dropTimer <= 1e-9) {
+        this.fire(ctx, attack.projectile, 0, 1, 'bomb', attack.gravityTilesPerSec2 * t);
+        this.dropsLeft -= 1;
+        this.dropTimer = attack.dropGapSec;
+      }
+    }
     this.timer -= dt;
     this.telegraphing = this.timer <= attack.telegraphSec + 1e-9;
+    if (this.telegraphing) this.beats = attack.drops;
     if (this.timer > 1e-9) return;
     this.fire(ctx, attack.projectile, 0, 1, 'bomb', attack.gravityTilesPerSec2 * t);
+    this.dropsLeft = attack.drops - 1;
+    this.dropTimer = attack.dropGapSec;
     this.timer = attack.intervalSec;
     this.telegraphing = false;
   }
@@ -120,6 +180,8 @@ export class Butterfly extends Enemy {
   protected override resetBehavior(): void {
     this.time = 0;
     this.timer = this.data.attack.intervalSec;
+    this.dropsLeft = 0;
+    this.dropTimer = 0;
   }
 }
 
@@ -138,6 +200,8 @@ export class ShieldCharger extends Enemy {
   private cooldown = 0;
   private dashed = 0;
   private behindFor = 0;
+  /** Số lần lao nối còn lại (Thử thách: lao nối). */
+  private chainLeft = 0;
 
   constructor(...args: ConstructorParameters<typeof Enemy>) {
     super(...args);
@@ -178,7 +242,9 @@ export class ShieldCharger extends Enemy {
           this.behindFor = 0;
         }
         if (inRange && inFront && this.cooldown <= 0) {
+          this.chainLeft = a.chainDashes;
           this.enter('telegraph', a.telegraphSec);
+          this.beats = 1 + a.chainDashes;
           return;
         }
         this.patrol(ctx.map, this.data.moveSpeedTilesPerSec, this.data.patrolRangeTiles, dt);
@@ -195,6 +261,14 @@ export class ShieldCharger extends Enemy {
         const step = a.dashSpeedTilesPerSec * t * dt;
         const nextX = this.box.x + this.facing * step;
         if (this.blocked(ctx.map, nextX) || this.dashed >= a.dashTiles * t) {
+          if (this.chainLeft > 0) {
+            // Lao nối: quay về phía người chơi, báo trước ngắn rồi lao tiếp.
+            this.chainLeft -= 1;
+            this.faceToward(ctx.playerX);
+            this.enter('telegraph', a.chainTelegraphSec);
+            this.beats = 1 + this.chainLeft;
+            return;
+          }
           this.enter('recover', a.recoverSec);
           return;
         }
@@ -225,6 +299,7 @@ export class ShieldCharger extends Enemy {
     this.cooldown = 0;
     this.dashed = 0;
     this.behindFor = 0;
+    this.chainLeft = 0;
   }
 }
 
@@ -250,6 +325,11 @@ export class Golem extends Enemy {
     this.resetBehavior();
   }
 
+  /** Hở sau cú giậm hoặc cú lao (Đòn Trừng Phạt). */
+  override get exposed(): boolean {
+    return this.state === 'recover';
+  }
+
   get phase(): 1 | 2 {
     return this.hp / this.maxHp <= this.data.phase2HpPct / 100 ? 2 : 1;
   }
@@ -264,7 +344,11 @@ export class Golem extends Enemy {
         const next = this.box.x + this.facing * this.data.moveSpeedTilesPerSec * t * dt;
         if (Math.abs(ctx.playerX - this.centerX) > 3 * t && !this.blocked(ctx.map, next))
           this.box.x = next;
-        if (this.cooldown <= 0) this.enter(this.phase === 1 ? 'slamTelegraph' : 'bombTelegraph');
+        if (this.cooldown <= 0) {
+          this.enter(this.phase === 1 ? 'slamTelegraph' : 'bombTelegraph');
+          // Pha 2: bom rồi lao (thêm cú giậm cuối ở Thử thách).
+          this.beats = this.phase === 1 ? 1 : a.dash.endSlam ? 3 : 2;
+        }
         return;
       }
       case 'slamTelegraph':
@@ -284,7 +368,9 @@ export class Golem extends Enemy {
         const step = a.dash.dashSpeedTilesPerSec * t * dt;
         const nextX = this.box.x + this.facing * step;
         if (this.blocked(ctx.map, nextX) || this.dashed >= a.dash.dashTiles * t) {
-          this.enter('recover', a.dash.recoverSec);
+          // Thử thách: dừng lao là giậm đất tại chỗ (báo trước như cú giậm thường).
+          if (a.dash.endSlam) this.enter('slamTelegraph');
+          else this.enter('recover', a.dash.recoverSec);
           return;
         }
         this.box.x = nextX;

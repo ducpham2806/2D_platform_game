@@ -38,6 +38,10 @@ export interface PlayerEvents {
   hurt: boolean;
   died: boolean;
   fellOut: boolean;
+  /** Vừa lướt trên không, tốn một lượt (P1). */
+  airDashed: boolean;
+  /** Lượt lướt trên không vừa hồi (chạm đất hoặc bám tường). */
+  airDashRestored: boolean;
 }
 
 export function noEvents(): PlayerEvents {
@@ -49,5 +53,7 @@ export function noEvents(): PlayerEvents {
     hurt: false,
     died: false,
     fellOut: false,
+    airDashed: false,
+    airDashRestored: false,
   };
 }

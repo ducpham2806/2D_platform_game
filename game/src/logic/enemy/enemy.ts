@@ -35,6 +35,11 @@ export abstract class Enemy {
   flash = 0;
   /** Đang báo trước đòn (telegraph): scene vẽ nhấp nháy/phình/co theo loại. */
   telegraphing = false;
+  /**
+   * Số nhịp của đòn đang báo trước (viên, loạt, hạt, cú lao); > 1 thì scene vẽ một chấm mỗi nhịp
+   * (bản Thử thách, GDD 11 mục 2.6).
+   */
+  beats = 1;
   /** Vị trí góc trên trái lúc xuất hiện. */
   protected readonly home: { x: number; y: number };
 
@@ -79,6 +84,7 @@ export abstract class Enemy {
     this.hp = this.maxHp;
     this.flash = 0;
     this.telegraphing = false;
+    this.beats = 1;
     this.facing = -1;
     this.resetBehavior();
   }
@@ -87,6 +93,18 @@ export abstract class Enemy {
   takeHit(p: Projectile, amount: number): EnemyHitResult {
     const shield = this.shieldCheck(p);
     if (shield) return shield;
+    this.hp = Math.max(0, this.hp - amount);
+    this.flash = HIT_FLASH_SEC;
+    return this.hp <= 0 ? 'killed' : 'hit';
+  }
+
+  /** Đang hở cho Đòn Trừng Phạt (V3): chỉ mini-boss (Golem ghi đè); kẻ địch thường không. */
+  get exposed(): boolean {
+    return false;
+  }
+
+  /** Sát thương nổ lan (V2): bỏ qua khiên, không làm vỡ khiên. */
+  applyBlast(amount: number): 'hit' | 'killed' {
     this.hp = Math.max(0, this.hp - amount);
     this.flash = HIT_FLASH_SEC;
     return this.hp <= 0 ? 'killed' : 'hit';

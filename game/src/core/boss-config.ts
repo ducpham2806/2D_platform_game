@@ -2,10 +2,11 @@
  * Kiểu và kiểm tra bosses.json (logic thuần), kèm các nguyên tắc của GDD 9:
  * telegraph ≥ minTelegraphSec kể cả khi pha cuối tăng tốc, và không đòn nào gây chết ngay.
  */
+import { deepMerge } from './deep-merge';
 import { arr, ConfigError, type Json, num, obj, size, type SizePx, str } from './json-check';
 
 export type BossAttackId =
-  'shot' | 'charge' | 'slam' | 'rain' | 'thorns' | 'lash' | 'roots' | 'bloom';
+  'shot' | 'charge' | 'slam' | 'rain' | 'thorns' | 'lash' | 'roots' | 'bloom' | 'stalk';
 const ATTACK_IDS: readonly BossAttackId[] = [
   'shot',
   'charge',
@@ -15,6 +16,7 @@ const ATTACK_IDS: readonly BossAttackId[] = [
   'lash',
   'roots',
   'bloom',
+  'stalk',
 ];
 
 export interface BossPhaseData {
@@ -93,6 +95,22 @@ export interface RootsAttack {
   sizePx: SizePx;
 }
 
+/**
+ * Thorna — Rễ Đuổi (chỉ bản Thử thách, 01-GDD/11-Do-kho.md mục 3.3): sau báo trước, cứ
+ * `markIntervalSec` đánh dấu mặt Kai đang đứng (kể cả bục), `eruptDelaySec` sau thì rễ trồi ở đó.
+ * Cả hai khoảng chia tốc độ pha; thời gian từ đánh dấu tới khi trồi không dưới minTelegraphSec.
+ */
+export interface StalkAttack {
+  telegraphSec: number;
+  count: number;
+  markIntervalSec: number;
+  eruptDelaySec: number;
+  activeSec: number;
+  damage: number;
+  recoverSec: number;
+  sizePx: SizePx;
+}
+
 /** Thorna — Hoa Nở (đòn đỉnh): `seeds` hạt rơi từ trần, chừa `safeGaps` khe an toàn, rồi choáng. */
 export interface BloomAttack {
   telegraphSec: number;
@@ -115,6 +133,7 @@ export interface BossAttacks {
   lash?: LashAttack;
   roots?: RootsAttack;
   bloom?: BloomAttack;
+  stalk?: StalkAttack;
 }
 
 export interface BossData {
@@ -247,8 +266,20 @@ function parseBloom(v: Json, p: string): BloomAttack {
   };
 }
 
-function parseBoss(id: string, value: unknown): BossData {
-  const p = `bosses.${id}`;
+function parseStalk(v: Json, p: string): StalkAttack {
+  return {
+    telegraphSec: num(v.telegraphSec, `${p}.telegraphSec`, { min: 0 }),
+    count: num(v.count, `${p}.count`, { min: 1 }),
+    markIntervalSec: num(v.markIntervalSec, `${p}.markIntervalSec`, { min: 0.1 }),
+    eruptDelaySec: num(v.eruptDelaySec, `${p}.eruptDelaySec`, { min: 0 }),
+    activeSec: num(v.activeSec, `${p}.activeSec`, { min: 0.1 }),
+    damage: num(v.damage, `${p}.damage`, { min: 0 }),
+    recoverSec: num(v.recoverSec, `${p}.recoverSec`, { min: 0 }),
+    sizePx: size(v.sizePx, `${p}.sizePx`),
+  };
+}
+
+function parseBoss(id: string, value: unknown, p = `bosses.${id}`): BossData {
   const b = obj(value, p);
   const raw = obj(b.attacks, `${p}.attacks`);
   const attacks: BossAttacks = {};
@@ -268,6 +299,7 @@ function parseBoss(id: string, value: unknown): BossData {
   const lash = take('lash', parseLash);
   const roots = take('roots', parseRoots);
   const bloom = take('bloom', parseBloom);
+  const stalk = take('stalk', parseStalk);
   if (shot) attacks.shot = shot;
   if (charge) attacks.charge = charge;
   if (slam) attacks.slam = slam;
@@ -276,6 +308,7 @@ function parseBoss(id: string, value: unknown): BossData {
   if (lash) attacks.lash = lash;
   if (roots) attacks.roots = roots;
   if (bloom) attacks.bloom = bloom;
+  if (stalk) attacks.stalk = stalk;
   const phases = arr(b.phases, `${p}.phases`).map((item, i) => {
     const ph = obj(item, `${p}.phases[${i}]`);
     const list = arr(ph.attacks, `${p}.phases[${i}].attacks`).map((x, j) => {
@@ -321,6 +354,27 @@ function parseBoss(id: string, value: unknown): BossData {
   return out;
 }
 
+/**
+ * Bản Thử thách của boss (khối `challenge`, 01-GDD/11-Do-kho.md mục 2.6): ghép sâu lên bản gốc
+ * (mảng như `phases` thay cả), cấm đổi `id`, kiểm tra như bản gốc. Chỉ boss có khối này.
+ */
+export function parseBossChallenges(value: unknown): Record<string, BossData> {
+  const root = obj(value, 'bosses');
+  const out: Record<string, BossData> = {};
+  for (const [id, boss] of Object.entries(root)) {
+    if (id.startsWith('_')) continue;
+    const raw = obj(boss, `bosses.${id}`);
+    if (raw.challenge === undefined) continue;
+    const p = `bosses.${id}.challenge`;
+    const patch = obj(raw.challenge, p);
+    if ('id' in patch) throw new ConfigError(`${p}.id: bản Thử thách không được đổi id`);
+    const base: Json = { ...raw };
+    delete base.challenge;
+    out[id] = parseBoss(id, deepMerge(base, patch), p);
+  }
+  return out;
+}
+
 export function parseBosses(value: unknown): Record<string, BossData> {
   const root = obj(value, 'bosses');
   const out: Record<string, BossData> = {};
@@ -344,6 +398,7 @@ function attackDamages(boss: BossData): number[] {
     a.lash?.damage,
     a.roots?.damage,
     a.bloom?.damage,
+    a.stalk?.damage,
   ].filter((d): d is number => d !== undefined);
 }
 
@@ -352,9 +407,15 @@ function attackDamages(boss: BossData): number[] {
  * không đòn nào (kể cả va chạm) gây ≥ máu người chơi cấp 1 ở độ khó Thường; đòn đỉnh có khe né
  * và Thorna (đặc tả mục 5) không có đòn nào quá 18 sát thương.
  */
-export function checkBossRules(boss: BossData, playerBaseHp: number): string[] {
+export function checkBossRules(boss: BossData, playerBaseHp: number, damageMul = 1): string[] {
   const errors: string[] = [];
   const maxSpeed = Math.max(...boss.phases.map((ph) => ph.speedMul));
+  // Rễ Đuổi: thời gian từ đánh dấu tới khi trồi cũng là báo trước (GDD 11 mục 3.3).
+  const stalk = boss.attacks.stalk;
+  if (stalk && stalk.eruptDelaySec / maxSpeed + 1e-9 < boss.minTelegraphSec)
+    errors.push(
+      `${boss.id}.stalk: đánh dấu tới khi trồi ${(stalk.eruptDelaySec / maxSpeed).toFixed(2)} s sau tăng tốc < ${boss.minTelegraphSec} s`,
+    );
   for (const id of ATTACK_IDS) {
     const attack = boss.attacks[id];
     if (!attack) continue;
@@ -365,7 +426,7 @@ export function checkBossRules(boss: BossData, playerBaseHp: number): string[] {
       );
     }
   }
-  if (Math.max(boss.contactDamage, ...attackDamages(boss)) >= playerBaseHp) {
+  if (Math.max(boss.contactDamage, ...attackDamages(boss)) * damageMul >= playerBaseHp) {
     errors.push(`${boss.id}: có đòn gây ≥ ${playerBaseHp} sát thương (chết ngay một đòn)`);
   }
   for (const id of ['rain', 'bloom'] as const) {

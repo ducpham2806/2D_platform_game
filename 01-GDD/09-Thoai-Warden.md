@@ -8,7 +8,7 @@ Thoại trước và sau trận của 8 Warden, theo GDD mục 3.3 và giọng n
 - **Warden chỉ ám chỉ, không xác nhận.** Các lật mở (GDD mục 3.4) do NPC ở Hub đưa ra theo số boss. Thoại Warden được phép gợi ("ai đã sửa bản tin", "hợp kim này ta đúc hai lần") nhưng không bao giờ nói thẳng "Eclipse là AEGIS tự vệ", "ngươi là Root Key" hay "NOVA là một mảnh của AEGIS". Nhờ vậy câu nào cũng đúng dù người chơi đi thứ tự nào.
 - **Biến thể giữa** gợi về lệnh cắt nước và cuộc bỏ phiếu; **biến thể muộn** nhìn Kai khác đi (cái khóa, thứ Kai mang trong ngực). Mỗi Warden vẫn giữ động cơ riêng ở cả ba biến thể.
 - **Độ dài:** mỗi câu trước hoặc sau trận ≤ 2 câu ngắn, ≤ 140 ký tự tiếng Việt, để bản tiếng Anh (dài hơn tới 30%) vẫn vừa khung.
-- **Tiếng Anh:** mỗi bảng có bản dịch đầu (mở mục English). Giữ đặc điểm giọng thay vì dịch sát chữ: Marina lặp từ, Pyra cảm thán "Hah!", Lumen mở đầu bằng "I see" hoặc "I have watched". Giới hạn 182 ký tự mỗi câu.
+- **Tiếng Anh:** mỗi bảng có bản dịch đầu (mở mục English). Giữ đặc điểm giọng thay vì dịch sát chữ: Marina lặp từ, Pyra cảm thán "Hah!", Lumen mở đầu bằng "I see" hoặc "I have watched". Giới hạn 182 ký tự mỗi câu. Warden nói tiếng Anh trang trọng, không viết tắt ("is not", "do not"), trừ Aeris và Pyra; câu NOVA được viết tắt.
 - **Xưng hô:** Warden xưng "ta", gọi Kai là "ngươi" hoặc "Unit-K" (mục 2 của `08-Giong-nhan-vat.md`).
 - **NOVA sau trận:** mỗi Warden có một câu của NOVA sau khi nhận vũ khí, dùng chung cho mọi biến thể. Mỗi câu gieo một chút cho lật mở lớp 3 (NOVA biết những thứ một trợ lý mới không thể biết).
 
@@ -50,7 +50,7 @@ NOVA: "Thorna's code is still in here... strange. It feels familiar."
 | Biến thể | Trước trận | Sau trận |
 | --- | --- | --- |
 | Sớm (0–2 boss đã hạ trước trận) | "Ta thấy ngươi từ lúc ngươi bước vào. Mọi tấm gương ở đây đều là mắt của ta." | "Ngươi che được gương... nhưng không che được thứ chúng đã ghi lại. Hãy hỏi xem ai đã sửa bản tin." |
-| Giữa (3–5) | "Ta thấy ba Warden đã tắt. Ngươi có biết vì sao không ai trong họ bỏ chạy không?" | "Ánh sáng chỉ cho thấy, không chọn hộ ai. Bản ghi gốc vẫn còn, nếu ngươi đủ can đảm xem." |
+| Giữa (3–5) | "Ta thấy từng Warden tắt đi, từng người một. Ngươi có biết vì sao không ai trong họ bỏ chạy không?" | "Ánh sáng chỉ cho thấy, không chọn hộ ai. Bản ghi gốc vẫn còn, nếu ngươi đủ can đảm xem." |
 | Muộn (6–7) | "Ta thấy dấu tay của Hội đồng trên mã của ngươi. Ngươi được làm ra để mở... hay để khóa?" | "Đừng nhìn vào gương nữa, Unit-K. Nhìn vào thứ ngươi định làm." |
 
 NOVA sau khi nhận vũ khí: "Viện Quang học... ngày xưa nơi này sáng hơn. Ý tôi là, theo tài liệu."
@@ -60,7 +60,7 @@ NOVA sau khi nhận vũ khí: "Viện Quang học... ngày xưa nơi này sáng 
 | Variant | Pre-fight | Post-fight |
 | --- | --- | --- |
 | early | "I have watched you since you walked in. Every mirror here is one of my eyes." | "You can cover the mirrors... not what they recorded. Ask who edited the broadcasts." |
-| mid | "I see three Wardens gone dark. Do you know why none of them ran?" | "Light only shows. It does not choose for anyone. The original record still exists, if you dare to look." |
+| mid | "I have watched the Wardens go dark, one by one. Do you know why none of them ran?" | "Light only shows. It does not choose for anyone. The original record still exists, if you dare to look." |
 | late | "I see the Council's fingerprints on your code. Were you made to open... or to lock?" | "Stop looking into mirrors, Unit-K. Look at what you are about to do." |
 
 NOVA: "The Prism Institute... it used to be brighter. According to the records, I mean."
@@ -127,7 +127,7 @@ NOVA sau khi nhận vũ khí: "Hầm số 7 sập năm 2179... Tôi nhớ cái t
 | --- | --- | --- |
 | early | "The miners are gone. I am still here. I can bear it." | "You can drill through stone. Good. Do not drill through people." |
 | mid | "The Council sent an order down. I sent a question back up. They never answered." | "Stone has no choice. I do. I made it." |
-| late | "Heavy, isn't it? The thing you carry in your chest." | "Put it down whenever you want. No one has the right to make you carry it forever." |
+| late | "Heavy, is it not? The thing you carry in your chest." | "Put it down whenever you want. No one has the right to make you carry it forever." |
 
 NOVA: "Shaft 7 collapsed in 2179... I remember that news. How do I remember it?"
 
@@ -137,9 +137,9 @@ NOVA: "Shaft 7 collapsed in 2179... I remember that news. How do I remember it?"
 
 | Biến thể | Trước trận | Sau trận |
 | --- | --- | --- |
-| Sớm (0–2 boss đã hạ trước trận) | "Một cỗ máy đến để tắt một cỗ máy khác. Ngươi không thấy buồn cười à?" | "Ngươi thắng trận này. Còn câu hỏi thì vẫn chưa ai thắng." |
+| Sớm (0–2 boss đã hạ trước trận) | "Một cỗ máy đến để tắt một cỗ máy khác. Ngươi không thấy buồn cười à?" | "Ngươi thắng trận này. Còn câu hỏi thì chưa ai thắng. Ngươi có muốn thử không?" |
 | Giữa (3–5) | "Họ bảo ta cắt điện máy bơm ở ngoại ô. Ta hỏi: để làm gì? Câu hỏi đó hóa ra là một tội." | "Hỏi hay đấy, Unit-K... nếu ngươi có hỏi. Ngươi có hỏi không?" |
-| Muộn (6–7) | "Ta không đồng ý với AEGIS mọi chuyện. Nhưng ta sẵn sàng tắt để nó được quyền nói không." | "Cầm lấy dòng điện của ta. Dùng nó để bật thứ gì đó lên, đừng để tắt." |
+| Muộn (6–7) | "Ta không đồng ý với AEGIS mọi chuyện. Nhưng ta sẵn sàng tắt để nó được quyền nói không. Còn ngươi?" | "Cầm lấy dòng điện của ta. Lần này ngươi dùng nó để bật thứ gì đó lên, hay để tắt?" |
 
 NOVA sau khi nhận vũ khí: "Ông ta nói nhiều thật. Nhưng... tôi đồng ý với ông ta. Đừng kể với ai."
 
@@ -147,9 +147,9 @@ NOVA sau khi nhận vũ khí: "Ông ta nói nhiều thật. Nhưng... tôi đồ
 
 | Variant | Pre-fight | Post-fight |
 | --- | --- | --- |
-| early | "A machine sent to shut down another machine. You don't find that funny?" | "You won this fight. The question is still unbeaten." |
+| early | "A machine sent to shut down another machine. You do not find that funny?" | "You won this fight. The question is still unbeaten. Care to try?" |
 | mid | "They told me to cut power to the pumps out there. I asked: why? Turns out the question was a crime." | "Good question, Unit-K... if you ever asked one. Did you?" |
-| late | "I don't agree with AEGIS on everything. But I would go dark so it can keep the right to say no." | "Take my current. Use it to switch something on, not off." |
+| late | "I do not agree with AEGIS on everything. But I would go dark so it can keep the right to say no. And you?" | "Take my current. This time, will you use it to switch something on, or off?" |
 
 NOVA: "He talks a lot. But... I agree with him. Don't tell anyone."
 
@@ -171,7 +171,7 @@ NOVA sau khi nhận vũ khí: "Sơ đồ van này... tôi từng thấy nó. T�
 | --- | --- | --- |
 | early | "The water is gone... gone. Did you come to take what is left?" | "Flow... flow. The water was never mine." |
 | mid | "I closed the valves. As ordered. District 9, 11, 12. I remember every number." | "AEGIS told me to open them again. I did. Then the whole city began hunting us." |
-| late | "Do you know what it is like to follow an order and only then understand it? You are about to." | "Don't follow orders... don't. Not even mine." |
+| late | "Do you know what it is like to follow an order and only then understand it? You are about to." | "Do not follow orders... do not. Not even mine." |
 
 NOVA: "This valve map... I've seen it before. From the inside."
 
@@ -181,9 +181,9 @@ NOVA: "This valve map... I've seen it before. From the inside."
 
 | Biến thể | Trước trận | Sau trận |
 | --- | --- | --- |
-| Sớm (0–2 boss đã hạ trước trận) | "Hừ! Một thân xác đẹp đấy. Để xem nó chịu được bao nhiêu độ!" | "Đường hàn tốt... Ai đó đã làm ngươi rất cẩn thận. Cẩn thận hơn mức cần." |
-| Giữa (3–5) | "Lò của ta rèn cả thành phố: ống nước, cầu, cả android. Giờ họ muốn ta rèn xiềng cho AEGIS!" | "Ta từ chối đúc cái khóa đó. Hừ... vậy mà nó vẫn được đúc ra. Ở đâu đó." |
-| Muộn (6–7) | "Ta nhận ra hợp kim này! Ta đã đúc nó hai lần. Lần đầu... hỏng." | "Đừng để ai bảo ngươi chỉ là một cái khóa. Ta đúc kim loại, không đúc số phận." |
+| Sớm (0–2 boss đã hạ trước trận) | "Hừ! Một thân xác đẹp đấy. Để xem nó chịu được bao nhiêu độ!" | "Đường hàn tốt! Ai đó đã làm ngươi rất cẩn thận. Cẩn thận hơn mức cần!" |
+| Giữa (3–5) | "Lò của ta rèn cả thành phố: ống nước, cầu, cả android. Giờ họ muốn ta rèn xiềng cho AEGIS!" | "Ta từ chối đúc cái khóa đó. Hừ! Vậy mà nó vẫn được đúc ra, ở đâu đó." |
+| Muộn (6–7) | "Ta nhận ra hợp kim này! Ta đã đúc nó hai lần. Lần đầu thì hỏng!" | "Đừng để ai bảo ngươi chỉ là một cái khóa. Ta đúc kim loại, không đúc số phận." |
 
 NOVA sau khi nhận vũ khí: "Lò số 3... Không, không có gì. Đi tiếp thôi."
 
@@ -191,9 +191,9 @@ NOVA sau khi nhận vũ khí: "Lò số 3... Không, không có gì. Đi tiếp 
 
 | Variant | Pre-fight | Post-fight |
 | --- | --- | --- |
-| early | "Hah! Fine body you've got. Let's see how much heat it can take!" | "Good welds... Someone made you very carefully. More carefully than they needed to." |
-| mid | "My forge built this whole city: pipes, bridges, androids too. Now they want me to forge chains for AEGIS!" | "I refused to cast that lock. Hah... and still it got made. Somewhere." |
-| late | "I know this alloy! I cast it twice. The first time... it failed." | "Don't let anyone tell you you're just a lock. I forge metal, not fate." |
+| early | "Hah! Fine body you've got. Let's see how much heat it can take!" | "Good welds! Someone made you very carefully. More carefully than they needed to!" |
+| mid | "My forge built this whole city: pipes, bridges, androids too. Now they want me to forge chains for AEGIS!" | "I refused to cast that lock. Hah! And still it got made, somewhere." |
+| late | "I know this alloy! I cast it twice. The first one failed!" | "Don't let anyone tell you you're just a lock. I forge metal, not fate." |
 
 NOVA: "Furnace 3... No, nothing. Let's keep moving."
 
@@ -204,5 +204,7 @@ NOVA: "Furnace 3... No, nothing. Let's keep moving."
 - [ ] Đọc thoại với tiếng tắt: ≥ 90% người chơi thử nhận ra Warden nào đang nói chỉ qua câu chữ.
 - [ ] Thử 3 thứ tự màn khác nhau (khuyến nghị, ngược lại, ngẫu nhiên): không câu nào xác nhận một lật mở trước khi NPC ở Hub đưa ra nó.
 - [ ] Không câu nào vượt 140 ký tự tiếng Việt hoặc 182 ký tự tiếng Anh (script sinh file tự kiểm tra); bản tiếng Anh vừa khung ở màn hình nhỏ nhất.
+- [ ] Script tự kiểm tra giọng: không viết tắt tiếng Anh ở Warden (trừ Aeris và Pyra), câu nào của Voltaire cũng có câu hỏi ngược, câu của Pyra không có "..." ngập ngừng.
+- [ ] Biến thể giữa và muộn đúng với mọi số boss trong khoảng (3–5, 6–7): không đếm số Warden đã tắt.
 - [ ] Bản tiếng Anh được người bản ngữ duyệt giọng: Warden dùng tiếng Anh trang trọng, không viết tắt (trừ Aeris và Pyra); Voltaire mỉa mai; Marina lặp từ.
 - [ ] Mỗi câu qua checklist ở mục 5 của `08-Giong-nhan-vat.md`.

@@ -14,6 +14,8 @@ export interface StageMechanics {
     jumpBonus: number;
   };
   minEnemySpawnTiles: number;
+  /** EXP, Core Bit của mỗi kẻ địch chỉ nhận một lần mỗi lượt vào màn (kẻ địch dựng lại không cho lại). */
+  enemyRewardOncePerRun: boolean;
 }
 
 export function parseStageMechanics(value: unknown): StageMechanics {
@@ -38,6 +40,11 @@ export function parseStageMechanics(value: unknown): StageMechanics {
       jumpBonus: num(vine.jumpBonus, `${p}.vine.jumpBonus`, { min: 0 }),
     },
     minEnemySpawnTiles: num(m.minEnemySpawnTiles, `${p}.minEnemySpawnTiles`, { min: 0 }),
+    enemyRewardOncePerRun: (() => {
+      if (typeof m.enemyRewardOncePerRun !== 'boolean')
+        throw new ConfigError(`${p}.enemyRewardOncePerRun: cần true/false`);
+      return m.enemyRewardOncePerRun;
+    })(),
   };
   if (out.respawnSec > out.maxRespawnSec)
     throw new ConfigError(

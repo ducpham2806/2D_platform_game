@@ -87,6 +87,13 @@ export function drawEnemies(
         6,
       );
     }
+    // Báo trước đòn nhiều nhịp (bản Thử thách): một chấm sáng mỗi nhịp trên đầu kẻ địch.
+    if (e.telegraphing && e.beats > 1) {
+      const gap = 4;
+      const left = b.x + b.w / 2 - ((e.beats - 1) * gap) / 2;
+      for (let i = 0; i < e.beats; i += 1)
+        g.fillStyle(0xffd166, blink ? 1 : 0.6).fillRect(left + i * gap - 1, b.y - 6, 2, 2);
+    }
     if (e instanceof ShieldCharger && e.shieldUp) {
       const sx = e.facing > 0 ? b.x + b.w : b.x - 3;
       const glow = e.telegraphing && blink;

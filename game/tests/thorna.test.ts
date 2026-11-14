@@ -3,6 +3,7 @@ import { type BossAttackId, checkBossRules, parseBosses } from '@/core/boss-conf
 import { FIXED_STEP_MS, TILE_SIZE } from '@/core/constants';
 import { parseGameConfig } from '@/core/game-config';
 import { Boss } from '@/logic/boss/boss';
+import { enemyProjectile } from '@/logic/boss/enemy-projectile';
 import { planBloom } from '@/logic/boss/rain';
 import { ProjectilePool } from '@/logic/combat/projectiles';
 import { createRng } from '@/logic/rng';
@@ -51,8 +52,10 @@ function finishTelegraph(boss: Boss, pool: ProjectilePool, ctx = PLAYER): void {
 }
 
 describe('Thorna: dữ liệu theo đặc tả mục 5', () => {
-  it('HP 100, 3 pha tại 60% và 30%, tốc độ +20% ở pha cuối', () => {
-    expect(data.hp).toBe(100);
+  it('HP 250, 3 pha tại 60% và 30%, tốc độ +20% ở pha cuối', () => {
+    // Đặc tả ghi 100; nâng lên 250 ngày 14/11/2026 vì 100 máu chỉ là ~15 s bắn (mô phỏng
+    // trong power-cap.test.ts), không khớp thời lượng 60–90 s của đặc tả.
+    expect(data.hp).toBe(250);
     expect(data.phases.map((p) => p.untilHpPct)).toEqual([60, 30, 0]);
     expect(data.phases.map((p) => p.speedMul)).toEqual([1, 1, 1.2]);
   });
@@ -264,5 +267,58 @@ describe('Thorna: trong thế giới màn chơi', () => {
     expect(granted).toBe('Vine Lash');
     expect(world.exp).toBe(120);
     expect(world.coreBits).toBe(80);
+  });
+});
+
+describe('boss và Kai cùng hết máu trong một bước (rà soát 15/11/2026)', () => {
+  it('đạn Kai hạ boss và đòn boss trúng Kai cùng bước: thắng, Kai không chết, boss không dựng lại', () => {
+    const cfg = parseGameConfig(loadData());
+    const t = TILE_SIZE;
+    const w = new StageWorld({
+      rows: THORNA_ROOM_ROWS,
+      tileSize: t,
+      stepSec: FIXED_STEP_MS / 1000,
+      player: cfg.player,
+      weapons: cfg.weapons,
+      boss: cfg.bosses.thorna!,
+      difficulty: cfg.difficulties.find((d) => d.id === 'normal')!,
+      mechanics: cfg.stages.mechanics,
+      seed: 7,
+    });
+    w.player.respawn((w.arena!.first + 3) * t, 11 * t);
+    w.step(IDLE_INPUT);
+    expect(w.phase).toBe('boss');
+    for (let i = 0; i < 70; i += 1) w.step(IDLE_INPUT); // hết bất tử lúc vào
+    const boss = w.boss!;
+    boss.hp = 0.5;
+    w.player.hp = 1;
+    const b = boss.box;
+    w.pool.spawn({
+      owner: 'player',
+      kind: 'charged',
+      x: b.x + 2,
+      y: b.y + 10,
+      w: 16,
+      h: 12,
+      vx: 0,
+      vy: 0,
+      damage: cfg.weapons.arcCannon.damage,
+      kindMul: cfg.weapons.arcCannon.charge.damageMul,
+      pierceLeft: 0,
+      breaksShield: true,
+      weapon: 'Arc Cannon',
+      maxDistance: 999,
+      ttl: 5,
+      attached: false,
+    });
+    const k = w.player.box;
+    w.pool.spawn(enemyProjectile(t, 'enemyShot', k.x + 2, k.y + 6, { w: 8, h: 8 }, 0, 0, 12));
+    const ev = w.step(IDLE_INPUT);
+    expect(ev.bossDefeated).toBe(true);
+    expect(ev.playerDied).toBe(false);
+    expect(w.player.hp).toBe(1);
+    expect(w.phase).toBe('won');
+    for (let i = 0; i < 120; i += 1) expect(w.step(IDLE_INPUT).bossDefeated).toBe(false);
+    expect(w.boss!.state).toBe('dead');
   });
 });

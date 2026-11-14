@@ -20,9 +20,14 @@ export function textButton(
   y: number,
   label: string,
   onSelect: () => void,
+  /** Nút lớn, rộng đều (menu người thử cổng Prototype): cao ≥ 48 dp trên điện thoại cầm ngang. */
+  big = false,
 ): Phaser.GameObjects.Text {
+  const style: Phaser.Types.GameObjects.Text.TextStyle = big
+    ? { fontSize: '12px', padding: { x: 8, y: 9 }, fixedWidth: 128, align: 'center' }
+    : { padding: { x: 6, y: 3 } };
   const text = scene.add
-    .text(x, y, label, { ...TEXT_STYLE, backgroundColor: '#1d2a3b', padding: { x: 6, y: 3 } })
+    .text(x, y, label, { ...TEXT_STYLE, backgroundColor: '#1d2a3b', ...style })
     .setOrigin(0.5)
     .setInteractive({ useHandCursor: true });
   text.on('pointerover', () => text.setBackgroundColor('#2f4766'));

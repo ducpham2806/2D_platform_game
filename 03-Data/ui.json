@@ -1,0 +1,32 @@
+{
+  "_note": "Thông số giao diện M10. dialogue: hộp hội thoại (P-UI-DIALOG, wireframe Dialogue.html; GDD mục 3.6): chữ hiện charsPerSec ký tự/giây, chạm/bấm lần đầu hiện hết câu, lần sau sang câu tiếp; Bỏ qua đóng ngay. Bỏ qua phím bấm trong inputGraceSec giây đầu để bấm dồn lúc hạ boss không lướt mất thoại. maxChars: giới hạn mỗi câu theo 01-GDD/09-Thoai-Warden.md (tiếng Anh dài hơn tới 30%). speakers: tên hiện trên hộp của người nói không phải boss (boss lấy tên trong bosses.json). result: màn Kết quả mở sau delaySec giây kể từ khi hạ boss của màn (và thoại sau trận đã đóng), để kịp thử vũ khí mới. Mọi số là [PLACEHOLDER].",
+  "dialogue": {
+    "charsPerSec": 40,
+    "inputGraceSec": 0.3,
+    "maxChars": { "vi": 140, "en": 182 },
+    "speakers": { "nova": "NOVA" }
+  },
+  "result": {
+    "delaySec": 8
+  },
+  "feedback": {
+    "_note": "Ba bậc phản hồi (01-GDD/10-He-thong-RPG-Xuong.md mục 6), không chồng lên nhau: nhỏ (sượt đạn, Siphon, radar: không rung), vừa (nổ lan V2, khiên vỡ), lớn (Đòn Trừng Phạt; nạp đầy và điểm yếu giữ cách rung hiện có). Dừng hình nằm ở dữ liệu cơ chế (weapons.json hitStopSteps, skills.json shieldBreakHitStopSteps). burstRingSec: thời gian vẽ vòng nổ lan.",
+    "small": { "shakeMs": 0, "shakeIntensity": 0 },
+    "medium": { "shakeMs": 90, "shakeIntensity": 0.003 },
+    "large": { "shakeMs": 150, "shakeIntensity": 0.006 },
+    "burstRingSec": 0.2
+  },
+  "difficultyHint": {
+    "note": "Gợi ý của NOVA khi chết liên tiếp ở một đoạn (01-GDD/11-Do-kho.md mục 2.5; thống nhất với kịch bản hướng dẫn D06, S09). deaths: số lần chết liên tiếp kể từ checkpoint gần nhất. lines theo id độ khó đang chơi; `<id>_early` dùng khi Xưởng chưa mở (chưa hạ boss chiến dịch nào), vì câu thường nhắc tới Xưởng. Câu ghép với tên vũ khí dài nhất không được vượt maxChars.vi (kiểm tra lúc nạp). Thời gian hiện = max(showSec, số ký tự / charsPerSecRead). weapon: câu thêm khi ở phòng boss, đã có vũ khí khắc chế mà lúc chết không cầm nó; {weapon} là tên vũ khí.",
+    "deaths": 3,
+    "showSec": 6,
+    "charsPerSecRead": 15,
+    "lines": {
+      "challenge": "Ba lần rồi. Đòn Thử thách khó đọc thật. Chế độ Thường ở màn Chuẩn bị, checkpoint vẫn giữ.",
+      "normal": "Ba lần rồi. Không chê đâu: thử chế độ Cốt truyện ở màn Chuẩn bị. Checkpoint vẫn giữ.",
+      "story": "Ba lần rồi. Hiệu chỉnh đề xuất: học thêm kỹ năng ở Xưởng rồi quay lại. Checkpoint vẫn giữ.",
+      "story_early": "Ba lần rồi. Mẹo: chờ đòn báo trước tắt hẳn rồi hãy lao lên. Checkpoint vẫn giữ."
+    },
+    "weapon": "Hoặc thử {weapon}: nó khắc chế đối thủ này."
+  }
+}
