@@ -80,7 +80,7 @@ Người tổng hợp: tải bảng (JSON) và/hoặc JSON xuất tay ──▶ 
 | `session_start` | Menu sẵn sàng sau khi mở trang; hoặc quay lại tab sau ≥ 30 phút ẩn | `day` (ngày theo giờ máy, "2026-11-20"), `tzMin`, `platform` (android, ios, windows, mac, linux, other), `browser` (chrome, safari, firefox, edge, samsung, other), `pwa`, `screen` (px CSS làm tròn 50, "900x400"), `dpr` (làm tròn 0,25), `scaleK`, `touchCapable`, `lang`, `staff` | G4; nhóm thiết bị; X1 (mẫu số) | 0 |
 | `boot_timing` | Mỗi phiên khi Menu vẽ xong; lần đầu cài thêm lúc Kai nhận đầu vào đầu tiên | `msToMenu`, `msToControl` (chỉ lần đầu) | X2, X3 | 2 |
 | `consent` | Hiện thông báo, hoặc người chơi đổi lựa chọn | `state` (notice, on, off) | Quyền riêng tư; lọc báo cáo | 0 |
-| `stage_start` | Vào một màn (sau màn Chuẩn bị nếu có) | `stage`, `room` (StageDef), `difficulty`, `difficultyDefault`, `challengeOpen`, `run` (lần vào màn thứ mấy), `clearedBefore` (độ khó đã hạ boss), `fromCheckpoint`, `level`, `effLevel`, `skills` (chữ ký build, "V2P1C0"), `upgrades` ({id: cấp}), `weapons` (số vũ khí boss), `coreBits`, `device`, `gameSpeed`, `autoFire`, `aimAssist` | G1–G3, G7, H1, H3, K4, DK1–DK3, S1 | 0 |
+| `stage_start` | Vào một màn (sau màn Chuẩn bị nếu có) | `stage`, `room` (StageDef), `difficulty`, `difficultyDefault`, `challengeOpen`, `run` (lần vào màn thứ mấy), `clearedBefore` (độ khó đã hạ boss), `fromCheckpoint`, `level`, `effLevel`, `skills` (chữ ký build, "V2P1C0"), `upgrades` ({id: cấp}), `weapons` (số vũ khí boss), `coreBits`, `device`, `gameSpeed`, `autoFire`, `aimAssist`; `audio` (`master`, `sfx`, `alert`, `muted`; `12-Am-thanh.md`) | G1–G3, G7, H1, H3, K4, DK1–DK3, S1 | 0 |
 | `section_enter` | Lần đầu vào một đoạn trong lượt | `stage`, `section` (A, B, C, D, `boss`…), `tRun` | H1; thời gian theo đoạn | 1 |
 | `checkpoint` | Chạm checkpoint mới | `stage`, `index`, `tRun` | Thời gian theo đoạn; H1 | 1 |
 | `death` | Chết thật, hoặc rơi hố (tính như nhật ký Prototype) | `stage`, `section`, `kind` (death, pit), `cause` (`enemy:<id>`, `boss:<đòn>`, `spike`, `pit`), `device`, `tRun`, `streak` | G7, H1; đòn gây chết nhiều nhất | 1 |
@@ -93,7 +93,7 @@ Người tổng hợp: tải bảng (JSON) và/hoặc JSON xuất tay ──▶ 
 | `skill_change` | Học hoặc đặt lại kỹ năng ở Xưởng | `node`, `rank`, `action` (learn, reset), `spLeft` | Build (phụ) | 2 |
 | `tutorial_step_start`, `tutorial_step_complete`, `tutorial_step_fail`, `tutorial_hint_shown`, `tutorial_skip`, `tutorial_phase_complete` | Theo `07` mục 9 | Theo `07` mục 9: `id`, `phase`, `time_sec`, `attempts`, `count`, `level`, `scope`, `total_time_sec` | T1–T4 | 1 |
 | `tutorial_toggle` | Bật/tắt hướng dẫn | `on`, `where` (pause, settings) | T3 | 1 |
-| `survey_answer` | Bấm một câu trả lời trong phiếu (mục 7.2) | `q` (feel_jump, feel_dash, feel_shoot, want_stage5), `a` (1–5; yes, maybe, no, skip), `device` | G5, F1 | 0 |
+| `survey_answer` | Bấm một câu trả lời trong phiếu (mục 7.2) | `q` (feel_jump, feel_dash, feel_shoot, want_stage5, audio_annoy: "Âm thanh có làm khó chịu?" sau lần đầu hạ Thorna), `a` (1–5; yes, maybe, no, skip), `device` | G5, F1 | 0 |
 | `settings_change` | Đổi một tùy chọn (`14` mục 3) | `id`, `value` (enum hoặc số), `where` (menu, pause), `device` | S1; lọc lượt có giảm tốc | 2 |
 | `client_error` | `window.onerror`, `unhandledrejection`, `config:error` | `kind`, `scene`, `fatal`, `msg` (≤ 120 ký tự, đã bỏ URL và chữ số) | X1 | 1 |
 | `save_error` | `SaveManager.lastError` đổi | `op` (open, write, import), `code` | X5 | 1 |

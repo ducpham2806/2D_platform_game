@@ -43,7 +43,7 @@ Cài đặt
 ├─ Âm thanh: theo 12-Am-thanh.md
 ├─ Tiếp cận: Mù màu · Rung màn hình · Giảm nhấp nháy · Cỡ chữ hội thoại · Tự tiến thoại · Tốc độ game
 │            · Hướng dẫn · (lối tắt) Tự bắn và hỗ trợ ngắm → Điều khiển › Cảm ứng
-│            · (lối tắt) Âm cảnh báo đòn boss, Chỉ báo âm thanh bằng hình → Âm thanh
+│            · (lối tắt) Âm cảnh báo đòn boss → Âm thanh
 ├─ Ngôn ngữ: Tiếng Việt · English (sau MVP)
 └─ Dữ liệu: Mã sao lưu (xuất, nhập) · Xóa bản lưu · Nhật ký chơi thử (chỉ bản ?mvp=, 13 mục 4) · Đặt lại mọi cài đặt
 ```
@@ -88,7 +88,7 @@ Rung màn hình nằm ở Tiếp cận (mục 3.4), không lặp ở Hiển th�
 
 ### 3.3 Âm thanh
 
-Chỉ là chỗ đặt. id, giá trị, tác dụng do `12-Am-thanh.md` quy định (theo wireframe Audio: âm lượng tổng, nhạc, hiệu ứng, âm cảnh báo đòn boss, tắt tiếng khi chuyển tab, nhạc theo nhịp pha boss). Lưu ở khóa riêng `cv.audio` (`12` mục 6.5), không nằm trong `cv.settings`. Tab Tiếp cận có lối tắt tới "Âm cảnh báo đòn boss" và "Chỉ báo âm thanh bằng hình" (`12` mục 6.3). Tốc độ game không đổi tempo nhạc (mục 4.6).
+Chỉ là chỗ đặt. id, giá trị, tác dụng do `12-Am-thanh.md` quy định (5 thanh: Tổng, Nhạc, Hiệu ứng, Cảnh báo đòn boss, Giao diện, và công tắc Tắt tiếng; bỏ "Tắt tiếng khi chuyển tab", "Nhạc theo nhịp pha boss" của wireframe Audio). Lưu ở khóa riêng `cv.audio` (`12` mục 6.5), không nằm trong `cv.settings`. Tab Tiếp cận có lối tắt tới "Âm cảnh báo đòn boss" (`12` mục 6.3). Tốc độ game không đổi tempo nhạc (mục 4.6).
 
 ### 3.4 Tiếp cận
 
@@ -101,7 +101,7 @@ Chỉ là chỗ đặt. id, giá trị, tác dụng do `12-Am-thanh.md` quy đ�
 | `a11y.autoAdvance` | tắt, vừa, chậm | tắt | `cv.settings` | câu hiện hết rồi chờ min(10; max(3; số ký tự / 15)) s; chậm × 1,5 (mục 4.5, QB-72) | Từ câu kế | Chưa |
 | `a11y.gameSpeed` | 100%, 90%, 80%, 70% | 100% | `cv.settings` | mọi thứ trong trận chậm đều; lượt không vào bảng xếp hạng (mục 4.6) | Khi bấm Tiếp tục | Chưa |
 | `tutorial.off` | bật, tắt hướng dẫn | bật | **Bản lưu** (`tutorial.off`) | tắt thì không hiện bước hướng dẫn và gợi ý NOVA sau 3 lần chết; hộp thoại boss vẫn hiện | Ngay | Có (menu tạm dừng) |
-| Âm cảnh báo đòn boss; Chỉ báo âm thanh bằng hình | | | `cv.audio` | Lối tắt sang Âm thanh (`12-Am-thanh.md` mục 6.3, 6.5) | | |
+| Âm cảnh báo đòn boss | | | `cv.audio` | Lối tắt sang Âm thanh: công tắc của bus `alert`, cùng trạng thái với thanh Cảnh báo (`12-Am-thanh.md` mục 6.1). Không có "Chỉ báo âm thanh bằng hình" (không cần nhờ QB-23) | | |
 | Tự bắn, hỗ trợ ngắm | | | | Lối tắt sang Điều khiển › Cảm ứng | | |
 
 ### 3.5 Ngôn ngữ

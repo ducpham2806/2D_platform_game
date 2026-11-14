@@ -158,12 +158,26 @@ Mỗi lúc chỉ **một** hộp ở giữa phía trên khung hình.
 | QB-111 | Khoảng cách checkpoint | Cốt truyện ≤ 90 s, Thường ≤ 150 s, Thử thách ≤ 270 s chơi liên tục | Story (khi dựng bản đồ; thêm `stages.json → checkpointMaxGapSec`) |
 | QB-112 | Đổi độ khó giữa màn | Chỉ qua màn Chuẩn bị (thoát màn, hoặc mục QB-84) | Code |
 
-## 13. Camera
+## 13. Camera và âm thanh
 
 | Mã | Tình huống | Luật | Trạng thái |
 | --- | --- | --- | --- |
 | QB-120 | Nhìn trước | Camera lệch 3 ô theo hướng Kai nhìn; vùng chết 2 × 3 ô; chỉ dịch dọc khi Kai đứng đất hoặc lệch quá 4 ô. Hiện code: vùng chết 48 px ngang, bám mượt 0,2 | Sau cổng |
 | QB-121 | Phòng khóa, đấu trường | Camera khóa trong phòng khóa | Code |
+
+### 13.1 Âm thanh
+
+Chi tiết ở `12-Am-thanh.md` mục 5.8. Cue báo đòn của kẻ địch dựa vào QB-23 (chỉ báo đòn khi ở trong màn hình), nên không cần tùy chọn "chỉ báo âm thanh bằng hình".
+
+| Mã | Tình huống | Luật | Trạng thái |
+| --- | --- | --- | --- |
+| QB-140 | Âm chưa được mở khóa (trình duyệt cần một lần chạm, bấm) | Bỏ yêu cầu phát, không xếp hàng; nhạc vào trong 1 s sau khi mở khóa | Story MVP (EP-12) |
+| QB-141 | Nhiều bước logic trong một khung (bù sau giật) | Gộp âm theo id trong khung | Story MVP (EP-12) |
+| QB-142 | Hai sự kiện loại trừ cùng bước | Chỉ phát âm của sự kiện mạnh hơn: `playerHurt` thua `fellInPit`, `spikeHit`, `playerDied`; `hitEnemy` thua `enemyKilled`; `hitBoss` thua `weakHit` | Story MVP (EP-12) |
+| QB-143 | Hạ boss khi cue báo đòn đang phát; Kai chết lúc boss báo đòn | Hạ boss: dừng mọi kênh `alert` (50 ms) rồi phát `boss.defeat`. Kai chết: cue `alert` vẫn phát hết, nhạc giảm | Story MVP (EP-12) |
+| QB-144 | Hồi sinh | Dừng vòng lặp (ù nạp, bám tường); cue của kẻ địch dựng lại dừng theo | Story MVP (EP-12) |
+| QB-145 | Trận đứng yên (tạm dừng, bảng HTML đè, tab ẩn) | Tạm dừng bus `sfx`, `alert`; tab ẩn thì dừng hẳn âm | Story MVP (EP-12) |
+| QB-146 | Tốc độ game < 100% | Không đổi tốc độ, cao độ âm và nhạc | Story MVP (EP-12, ST-14-06) |
 
 ## 14. Hub, Quầy, Xưởng
 
@@ -219,6 +233,7 @@ Mỗi luật nhãn Code phải có (hoặc được thêm) một test Vitest man
 | Hội thoại: bỏ qua giữ 0,6 s; cờ `weaknessKnown`; Đổi độ khó trong menu tạm dừng | QB-80, QB-83, QB-84 | EP-14 |
 | Lưu: dải báo lỗi, chế độ không có kho | QB-100 | EP-14 |
 | Cài đặt: tốc độ game, phím Quay lại, chuyển phiên bản `cv.controls` | QB-95…97 | EP-14 (ST-14-01, 02, 06) |
+| Âm thanh: mở khóa, gộp, loại trừ, hạ boss, hồi sinh, tạm dừng, tốc độ | QB-140…146 | EP-12 |
 | Di chuyển, camera, leo thang | QB-03…06, QB-15, QB-120 | EP-16 (sau cổng) |
 | Test khóa luật đã code nhưng chưa test | QB-01, QB-02, QB-33 | Việc nhỏ, làm cùng Story chạm module |
 
@@ -230,4 +245,4 @@ Mỗi luật nhãn Code phải có (hoặc được thêm) một test Vitest man
 | Ngày | Thay đổi |
 | --- | --- |
 | 14/11/2026 | Bản 1.0: 77 luật từ rà soát; QB-20, QB-30, QB-65, QB-70…72, QB-82 đã code cùng ngày |
-| 14/11/2026 | Bản 1.1: thêm QB-95…98 từ `13-Do-luong-MVP.md`, `14-Cai-dat-Tiep-can.md` (81 luật) |
+| 14/11/2026 | Bản 1.1: thêm QB-95…98 từ `13-Do-luong-MVP.md`, `14-Cai-dat-Tiep-can.md`; QB-140…146 (âm thanh) từ `12-Am-thanh.md` (88 luật) |

@@ -35,7 +35,7 @@
 | Sprint | Điều kiện bắt đầu | Epic | Nội dung chính | Tài liệu nguồn |
 | --- | --- | --- | --- | --- |
 | S9 | Ngay | EP-11 Cổng Prototype đợt 1 | Merge PR, tag `gate-r1`; kiểm `?gate=1` trên máy thật; 5 người (≥ 3 cảm ứng); tổng hợp vào mục 7 file 05 | `05-Cong-Prototype.md` |
-| S9 | Ngay | EP-12 Âm thanh MVP (M12) | AudioService thuần (dừng khi ẩn tab), SFX theo `WorldEvents`, nhạc theo pha boss, 3 thanh âm lượng; chạy được với âm câm khi chưa có file | `01-GDD/12-Am-thanh.md` |
+| S9 | Ngay | EP-12 Âm thanh MVP (M12) | AudioService (dừng khi ẩn tab), SFX theo `WorldEvents`, cue âm cho mọi báo trước (bus `alert`), một bản nhạc boss chung 3 lớp theo pha, 5 thanh âm lượng (Tổng, Nhạc, Hiệu ứng, Cảnh báo, Giao diện) và Tắt tiếng; chạy được với âm câm khi chưa có file (8 Story ST-12-01…08) | `01-GDD/12-Am-thanh.md` |
 | S9 | Ngay; chọn kênh gửi chờ người dùng | EP-13 Đo lường MVP (M16 rút gọn) | Danh sách sự kiện, logger thuần có hàng đợi ngoại tuyến, bảng đồng ý, xuất tệp; kênh gửi theo ADR-002 | `01-GDD/13-Do-luong-MVP.md`, `adr/ADR-002-do-luong-mvp.md` |
 | S9–S10 | Ngay (người làm) | Asset P0 | 10 sheet nhóm P0; nạp atlas (M1) | `05-Assets/01-Huong-dan-asset.md` |
 | S10 | EP-12 có âm lượng | EP-14 Hub menu, Cài đặt, giao diện biên | Menu chiến dịch (Prologue + 4 màn, khóa theo tiến trình, ẩn phòng thử); Cài đặt và tiếp cận; hộp chữ, cỡ chữ ≥ 16 sp, nút ≥ 48 dp, safe-area, tự tạm dừng; lỗi lưu; bỏ qua thoại; i18n nền (`strings.vi/en.json`); R02–R05, H01–H04 | `14-Cai-dat-Tiep-can.md`, `17-Quy-tac-bien.md` mục 8–11, `07-Kich-ban-huong-dan.md` |
@@ -65,7 +65,7 @@
 | Mốc | Module | Asset |
 | --- | --- | --- |
 | Alpha | Stage 5–8, M8 RPG đầy đủ (Loadout, Tủ skin), M9 Shop đầy đủ (Booster, Skin, tác dụng Nano Cell Cap, Dash Coil, Booster Slot), M10 Hub đi bộ | P2b (Hub, NPC), P3 (Stage 5–8) |
-| Beta | Citadel, kết thúc, M11 cloud, bảng xếp hạng cơ bản, khung máy chủ | P3 còn lại |
+| Beta | Citadel, kết thúc, M11 cloud, bảng xếp hạng cơ bản, khung máy chủ, M12 đầy đủ (nhạc riêng từng boss, Stage 5–8, Citadel) | P3 còn lại |
 | Live-ops MVP | M13 Live-ops, M14 Kiếm tiền, M16 Phân tích đầy đủ và Remote Config, M17 Đóng gói | UI Live-ops (P4) |
 | Endgame MVP | M15 Endgame | Chip Lõi (P4) |
 | Soft launch | M18 QA, chỉnh bằng Remote Config | Ảnh cửa hàng (P5) |

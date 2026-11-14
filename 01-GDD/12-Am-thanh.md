@@ -530,12 +530,12 @@ RAM = Σ (thời lượng × sampleRate × số kênh × 4 byte)
 | Hai trường loại trừ cùng bước (`playerHurt` với `fellInPit`, `spikeHit`, `playerDied`; `hitEnemy` với `enemyKilled`; `hitBoss` với `weakHit`) | Chỉ phát âm của trường mạnh hơn (bảng mục 2) |
 | Nhiều bước logic trong một khung (bù sau giật) | Gộp theo id trong khung |
 | Tự bắn (cảm ứng): giữ nút vừa bắn vừa nạp | Tiếng ù vẫn chạy (cho biết đang nạp); tiếng bắn theo `cooldownMs` như bắn tay |
-| Prologue nhịp 1–3 (kẻ địch vô hại) | Cue và tiếng bắn vẫn có; không có `kai.hurt` vì không mất máu |
+| Prologue P01–P09 (kẻ địch vô hại) | Cue và tiếng bắn vẫn có; không có `kai.hurt` vì không mất máu |
 | Bảng HTML đè lên màn | Coi như tạm dừng (mục 4.4) |
 | `cv.audio` hỏng | Từng trường hỏng về mặc định (như `cv.controls`) |
 | Hai tab cùng mở game | Mỗi tab một context; tab bị ẩn tự tạm ngưng |
 
-Các luật riêng của âm thanh ở bảng này đề xuất đưa vào `17-Quy-tac-bien.md` thành nhóm "Âm thanh" (mục 11); Story và test ghi mã luật khi đã có mã.
+Các luật riêng của âm thanh ở bảng này đã đưa vào `17-Quy-tac-bien.md` mục 13.1 (QB-140…146, 14/11/2026); Story và test ghi mã luật.
 
 ## 6. Cài đặt, tiếp cận, rung
 
