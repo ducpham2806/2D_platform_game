@@ -23,7 +23,8 @@ const game = new Phaser.Game({
   scale: {
     // Tự tính hệ số phóng nguyên ở phaser-scale.ts thay vì để Phaser co giãn lẻ.
     mode: Phaser.Scale.NONE,
-    autoCenter: Phaser.Scale.CENTER_BOTH,
+    // Căn giữa ở phaser-scale.ts theo biên px thiết bị.
+    autoCenter: Phaser.Scale.NO_CENTER,
     zoom: currentLayout().zoom,
   },
   fps: { target: 60 },

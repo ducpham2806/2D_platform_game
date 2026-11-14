@@ -27,6 +27,7 @@ describe('computeLayout', () => {
     const layout = computeLayout(1280, 720, 320, 192);
     expect(layout).toEqual({
       zoom: 3,
+      deviceZoom: 3,
       width: 960,
       height: 576,
       offsetX: 160,
@@ -47,6 +48,35 @@ describe('computeLayout', () => {
       expect(layout.width).toBeLessThanOrEqual(w);
       expect(layout.height).toBeLessThanOrEqual(h);
     }
+  });
+
+  it('điện thoại: phóng nguyên theo px thiết bị, to hơn nhiều so với theo px CSS', () => {
+    // Pixel 7 ngang: 863 × 360 px CSS, 2,625 px thật mỗi px CSS (theo px CSS chỉ được ×1).
+    const pixel = computeLayout(863, 360, 320, 192, 2.625);
+    expect(pixel.deviceZoom).toBe(4);
+    expect(pixel.width * 2.625).toBeCloseTo(1280, 9);
+    expect(pixel.height * 2.625).toBeCloseTo(768, 9);
+    expect(pixel.height).toBeLessThanOrEqual(360);
+    // iPhone 13 ngang: 750 × 342 px CSS, tỉ lệ 3.
+    expect(computeLayout(750, 342, 320, 192, 3).deviceZoom).toBe(5);
+    // Laptop Windows phóng 125%.
+    expect(computeLayout(1536, 730, 320, 192, 1.25).deviceZoom).toBe(4);
+  });
+
+  it('viền rơi đúng biên px thiết bị; tỉ lệ px sai thì coi là 1', () => {
+    for (const [w, h, r] of [
+      [863, 360, 2.625],
+      [915, 412, 2.625],
+      [1536, 730, 1.25],
+      [851, 393, 2.75],
+    ] as const) {
+      const l = computeLayout(w, h, 320, 192, r);
+      expect(Number.isInteger(Math.round(l.offsetX * r * 1e6) / 1e6)).toBe(true);
+      expect(Number.isInteger(Math.round(l.offsetY * r * 1e6) / 1e6)).toBe(true);
+      expect(l.offsetX * 2 + l.width).toBeLessThanOrEqual(w + 1e-9);
+    }
+    expect(computeLayout(1280, 720, 320, 192, Number.NaN).deviceZoom).toBe(3);
+    expect(computeLayout(1280, 720, 320, 192, 0).zoom).toBe(3);
   });
 
   it('nhận ra màn hình cầm dọc', () => {

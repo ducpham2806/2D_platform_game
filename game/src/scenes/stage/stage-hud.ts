@@ -10,6 +10,8 @@ const HP_W = 80;
 const ENERGY_W = 56;
 const BOSS_W = 120;
 const DEPTH = 10;
+/** Mép trên của chữ thông báo giữa màn hình (px logic). */
+const MESSAGE_TOP = 72;
 
 const SMALL: Phaser.Types.GameObjects.Text.TextStyle = {
   ...MUTED_STYLE,
@@ -83,14 +85,15 @@ export class StageHud {
     );
     this.message = fixed(
       scene.add
-        .text(LOGIC_WIDTH / 2, 70, '', {
+        // Neo mép trên dưới hộp hướng dẫn (3 dòng chữ 9 px, đáy ≈ y 70) để không chồng lên nhau.
+        .text(LOGIC_WIDTH / 2, MESSAGE_TOP, '', {
           ...TEXT_STYLE,
           fontSize: '12px',
           align: 'center',
           stroke: '#0f1724',
           strokeThickness: 3,
         })
-        .setOrigin(0.5)
+        .setOrigin(0.5, 0)
         .setDepth(DEPTH + 1)
         .setAlpha(0),
     );
