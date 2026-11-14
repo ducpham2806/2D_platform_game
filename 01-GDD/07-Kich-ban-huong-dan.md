@@ -86,7 +86,7 @@ Biểu tượng nút (`{NHẢY}`, `{BẮN}`, `{LƯỚT}`, `{DI_CHUYỂN}`, `{Đ�
 | --- | --- | --- | --- | --- | --- |
 | F01 | Lần mở đầu tiên, ngay sau màn Tải | Không cần làm gì | Ngôn ngữ tự nhận theo máy (Tiếng Việt nếu máy dùng tiếng Việt, còn lại English); chỉ hỏi khi máy dùng ngôn ngữ khác hai thứ tiếng này. Đổi lại được ở Cài đặt (`14-Cai-dat-Tiep-can.md` mục 3.5). Không hiện Menu chính | Tự động | Không cần xử lý |
 | F02 | **Sau Prologue**, trước khi vào Hub | Xác nhận tuổi 13+ và đồng ý quảng cáo | Màn tuổi và đồng ý quảng cáo | Hoàn thành | Dưới 13 tuổi: dừng, giải thích |
-| F03 | Thiết bị cảm ứng, **sau F02** | Chọn cỡ nút (nhỏ/vừa/lớn) và tay thuận | "Chọn cỡ nút cho vừa tay" kèm xem trước; trong Prologue dùng cỡ vừa mặc định. Đây là bước "thử bố cục nút trước khi bắt đầu" của GDD mục 12: trước Stage 1, không trước Prologue | Xác nhận hoặc "Dùng mặc định" | Bỏ qua được; chỉnh lại ở Cài đặt |
+| F03 | Thiết bị cảm ứng, **sau F02** | Chọn cỡ nút (nhỏ/vừa/lớn) và tay thuận | "Chọn cỡ nút cho vừa tay" kèm xem trước; trong Prologue dùng cỡ vừa mặc định. Đây là bước "thử bố cục nút trước khi bắt đầu" của GDD mục 12: trước Stage 1, không trước Prologue | Xác nhận hoặc "Dùng mặc định" | Bỏ qua được; chỉnh lại ở Cài đặt › Điều khiển › Cảm ứng (`14-Cai-dat-Tiep-can.md` mục 2) |
 | F04 | Bắt đầu Prologue (ngay sau F01) | (Tùy chọn) bỏ qua phần hướng dẫn | Nút chữ "Tôi đã biết chơi, bỏ qua hướng dẫn" hiện sau 10 giây; ≥ 48 dp, đặt xa cụm nút bắn (`QB-81`) | Bấm hoặc không | Bỏ qua: tắt hướng dẫn, mở khóa mọi nút, nhảy tới checkpoint P07, Prologue chạy tiếp từ đó; thoại truyện (P12) vẫn giữ |
 
 **Ràng buộc khi dời F02:** Prologue chạy không cần mạng; trước F02 không khởi tạo SDK quảng cáo và không gửi dữ liệu phân tích có định danh. Sự kiện đo lường của Prologue lưu cục bộ, gửi đi sau khi người chơi đồng ý. Cần tư vấn pháp lý xác nhận cách làm này với từng thị trường soft launch `[PLACEHOLDER]`.
@@ -106,7 +106,7 @@ Lời ở bảng này là bản nháp, chốt sau cổng Prototype (P01–P13 th
 | P07 | Checkpoint 1 | Đi qua checkpoint | Cờ sáng. NOVA: "Tôi vừa lưu trạng thái của cậu ở đây. Có chuyện gì thì cậu tỉnh lại từ chỗ này." | Chạm checkpoint | Không cần xử lý |
 | P08 | 2:20 Khối chắn cam | Bắn nạp | NOVA: "Khối này dày quá. Giữ `{BẮN}` cho Arc tích điện, rồi thả." Hiện thanh nạp | Phá khối | Sau 5 giây: hiện thanh nạp minh họa |
 | P09 | 2:50 Hành lang đạn huấn luyện | Lướt qua khe đạn | NOVA: "Hành lang huấn luyện cũ, đạn tập không làm đau. Thử `{LƯỚT}` xuyên qua khe." Mở khóa nút lướt. Đạn huấn luyện chỉ đẩy lùi, **chưa gây sát thương** | Qua hành lang | Thất bại 3 lần: bóng mờ minh họa lướt và nhắc "Đạn tập bay theo nhịp. Đếm nhịp, rồi `{LƯỚT}` đúng lúc khe mở."; thất bại 6 lần: làm chậm đạn 20% (bậc 3, mục 7) |
-| P10 | 3:05 Tháp pháo tập sự, sau một đoạn nghỉ ngắn | Né theo telegraph (dùng lướt vừa học) | NOVA: "Cái tháp này bắn thật đấy. Nó sáng lên trước khi khai hỏa, thấy sáng là né." Từ đây kẻ địch gây sát thương thật | Né 3 phát liên tiếp | Chết: về checkpoint P07, gợi ý "Quan sát ánh sáng báo trước" |
+| P10 | 3:05 Tháp pháo tập sự, sau một đoạn nghỉ ngắn | Né theo telegraph (dùng lướt vừa học) | NOVA: "Cái tháp này bắn thật đấy. Nó sáng lên và rít trước khi khai hỏa. Thấy sáng là né." (báo trước bằng cả ánh sáng và âm, `12-Am-thanh.md`) Từ đây kẻ địch gây sát thương thật | Né 3 phát liên tiếp | Chết: về checkpoint P07, gợi ý "Quan sát ánh sáng báo trước" |
 | P11 | Vật phẩm hồi máu | Nhặt | NOVA: "Gói sửa chữa màu xanh. Nhặt đi, cậu đang rò điện kìa." | Nhặt vật phẩm | Vật phẩm xuất hiện sau khi người chơi mất máu lần đầu |
 | P12 | 3:20 Tiền sảnh | Xem cảnh Vex | Vex: "Unit-K... vậy là chúng vẫn chọn mày." Kai: "Ai vậy?" NOVA (ngập ngừng): "Tôi... không có dữ liệu về người này." | Xem hoặc "Bỏ qua" | Cảnh tối đa 8 giây, bỏ qua được |
 | P13 | 3:50 Thoát ra | Ra khỏi phòng thí nghiệm | Tiêu đề màn; sau đó F02, F03 rồi vào Hub Arkon | Qua cửa | Không cần xử lý |
@@ -167,7 +167,7 @@ Mỗi bước R chỉ chạy ở lần đầu về Hub sau mốc tương ứng; 
 | --- | --- | --- | --- | --- | --- |
 | D01 | Hạ boss thứ nhất | Hiểu thứ tự màn tự do | NOVA: "Từ giờ cậu chọn đi đâu trước. Mỗi Warden sợ mã của một Warden khác." | Xem | Không cần xử lý |
 | D02 | Lần đầu thấy Két giáp khóa | Ghi nhớ quay lại | NOVA: "Két này khóa bằng mã Warden mà cậu chưa có. Tôi ghi lại chỗ này rồi." | Xem | Biểu tượng khóa ngay trên két (MVP chưa có bản đồ nhỏ); có Đầu Mk I thì radar hiện mũi tên "cần [vũ khí X]" |
-| D03 | Vào phòng boss lần đầu khi đang có vũ khí khắc chế | Thử điểm yếu | NOVA: "Lớp vỏ của nó phản ứng lạ với dữ liệu trong Vine Lash. Thử xem." (tên vũ khí đổi theo boss) | Xem | Không cần xử lý |
+| D03 | Vào phòng boss lần đầu khi đang có vũ khí khắc chế | Thử điểm yếu | NOVA: "Lớp vỏ của nó phản ứng lạ với dữ liệu trong Vine Lash. Thử xem." (tên vũ khí đổi theo boss). Câu đã nói tên vũ khí, nên bật cờ `weaknessKnown[boss]` | Xem | Không cần xử lý |
 | D04 | Nhận thưởng nhiệm vụ phụ đầu tiên (module đầu tiên); tab Module mở cùng lúc | Lắp module | Mira: "Có module rồi đấy. Lõi cậu còn ba khe trống, lắp vào đi. Quá tải là tôi gỡ ra." | Lắp 1 module | Bỏ qua được |
 | D05 | Sau boss 5 (Alpha) | Mở Tủ skin | Mira: "Tủ đồ của trạm sửa xong rồi. Thay vỏ thì tùy cậu, đừng đụng vào khớp của tôi." | Xem | Tùy chọn |
 | D06 | Chết 3 lần liên tiếp ở một đoạn | Nhận gợi ý | Lời ở `ui.json → difficultyHint` (luật dưới bảng) | Tự tắt | Tối đa 1 lần mỗi lượt vào màn |
@@ -186,7 +186,7 @@ Mỗi bước R chỉ chạy ở lần đầu về Hub sau mốc tương ứng; 
 - Thời gian hiện = max(`showSec`, số ký tự / `charsPerSecRead`), với `showSec` 6 và `charsPerSecRead` 15.
 - Tắt hướng dẫn ở menu tạm dừng thì không hiện. Sau khi D06 hiện, menu tạm dừng có thêm mục "Đổi độ khó" (`QB-84`).
 
-**Cờ `weaknessKnown[boss]` (`QB-83`, cần Story):** một cờ cho mỗi boss, lưu trong bản lưu. Bật khi D10 chạy (lần chết đầu trong đấu trường boss đó), hoặc khi hạ boss đó (Hồ sơ boss mở). Màn Chuẩn bị (ô "vũ khí khắc chế") và câu vũ khí của D06 chỉ đọc cờ này. D10 không chạy ở Stage 1: Thorna luôn là boss đầu, người chơi chưa thể có vũ khí khắc chế (Ember Burst), và S09/D06 đã lo phần gợi ý.
+**Cờ `weaknessKnown[boss]` (`QB-83`, cần Story):** một cờ cho mỗi boss, lưu trong bản lưu. Bật khi D03 hoặc D10 chạy (hai bước đều nói tên vũ khí khắc chế), hoặc khi hạ boss đó (Hồ sơ boss mở). Màn Chuẩn bị (ô "vũ khí khắc chế") và câu vũ khí của D06 chỉ đọc cờ này. D10 không chạy ở Stage 1: Thorna luôn là boss đầu, người chơi chưa thể có vũ khí khắc chế (Ember Burst), và S09/D06 đã lo phần gợi ý.
 
 ## 6. Giai đoạn 6 và 7: live-ops, quảng cáo, mua hàng và endgame
 
@@ -257,7 +257,7 @@ Biểu tượng cập nhật theo thiết bị được dùng gần nhất; nế
 
 - Mỗi lời thoại tối đa 2 dòng, đo bằng số dòng theo phông thật sau khi thay mã nút, ở thiết bị có tên nút dài nhất (cảm ứng) (`QB-73`). Chữ ≥ 16 sp, độ tương phản cao; chạm để hiện hết dòng.
 - Telegraph và câu gợi ý không chỉ dùng màu: câu nhắc màu phải kèm hình dạng, tư thế hoặc âm thanh (`QB-85`).
-- Tùy chọn: chữ cỡ lớn, giảm hiệu ứng nhấp nháy, giảm rung, tự bắn, giảm tốc độ game 10–30%, hộp thoại tự tiến, cảnh báo âm thanh cho đòn boss.
+- Tùy chọn: chữ cỡ lớn, giảm hiệu ứng nhấp nháy, giảm rung, tự bắn, giảm tốc độ game 10–30%, hộp thoại tự tiến, cảnh báo âm thanh cho đòn boss (thanh Cảnh báo, bus `alert`, `12-Am-thanh.md`).
 - Không lồng tiếng: lời thoại bằng văn bản và âm thanh biểu cảm.
 
 ### 8.3 Bản địa hóa
@@ -331,11 +331,11 @@ Mẫu một bước (dạng đích khi có module bản địa hóa; hiện `tex
 
 ## 12. Việc cần Story (rà soát 14/11/2026)
 
-Các yêu cầu dưới đây chưa có trong code hoặc dữ liệu. Đưa vào EP-14 (Hub, Cài đặt) và module bản địa hóa. Mọi số là `[PLACEHOLDER]`.
+Các yêu cầu dưới đây chưa có trong code hoặc dữ liệu. Đưa vào EP-14 (Hub, Cài đặt) và module bản địa hóa. R05 và D04 thuộc EP-18 (R05 ở ST-18-05, cùng Bảng Nhiệm Vụ), không thuộc EP-14. Mọi số là `[PLACEHOLDER]`.
 
 | Mã rà soát | Yêu cầu | Số cụ thể | Luật |
 | --- | --- | --- | --- |
-| C05 | Cờ `weaknessKnown[boss]` trong bản lưu; màn Chuẩn bị và câu vũ khí của D06 đọc cờ; D10 hiện ở hộp gợi ý chết | Bật ở lần chết đầu trong đấu trường hoặc khi hạ boss; không chạy ở Stage 1 | `QB-83` |
+| C05 | Cờ `weaknessKnown[boss]` trong bản lưu; màn Chuẩn bị và câu vũ khí của D06 đọc cờ; D10 hiện ở hộp gợi ý chết | Bật theo D03 hoặc D10, hoặc khi hạ boss; D10 không chạy ở Stage 1 | `QB-83` |
 | L03 | Hub dạng menu: Cổng Chiến dịch mở danh sách màn MVP rồi màn Chuẩn bị Stage 1 (hiện dẫn vào màn xám); thoát và chọn được bằng chạm, tay cầm, không chỉ phím Esc; chạy H01–H04 | 4 màn; từ Hub vào chơi ≤ 2 chạm sau màn Chuẩn bị | Đặc tả Hub mục 2 |
 | N01 | Chữ vẽ trong canvas ≥ 11 px logic (≈ 16 dp trên Pixel 7), hoặc chuyển hộp hướng dẫn, hộp hội thoại, menu tạm dừng, màn Kết quả sang lớp HTML (ADR-001). Mọi nút ≥ 48 dp; menu tạm dừng chia 2 cột và ẩn mục "chưa có" | Hiện chữ 8–9 px (12–14 dp), nút 27–35 dp | `QB-74` |
 | N02 | Kiểm tra lúc nạp theo **số dòng** (≤ 2 dòng ở hộp hướng dẫn, đo theo phông thật sau khi thay mã nút, ở thiết bị có tên nút dài nhất) thay cho `maxTextChars` 120 | 120 ký tự + "NOVA: " đã ra 3 dòng trong hộp 196 px | `QB-73` |

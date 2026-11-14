@@ -6,18 +6,18 @@ Cấu trúc theo `05-Cong-Prototype.md`: tiêu chí, cách đo, quy trình, quy 
 
 ## 1. Tiêu chí `[PLACEHOLDER]`
 
-| # | Nhóm | Tiêu chí | Nguồn | Đo bằng |
+| # | Nhóm | Tiêu chí | Nguồn | Đo bằng (mã chỉ số ở `13-Do-luong-MVP.md` mục 6) |
 | --- | --- | --- | --- | --- |
-| 1 | Onboarding | Hoàn thành Prologue ≥ 90% người bắt đầu | GDD 16, 17 | Sự kiện vào/qua Prologue (`13-Do-luong-MVP.md`) |
-| 2 | Màn đầu | Hoàn thành Stage 1 ≥ 70% người bắt đầu Stage 1 | GDD 16, 17 | Sự kiện vào/qua màn |
-| 3 | Đi hết | ≥ 50% người bắt đầu chơi xong cả 4 màn | GDD 16 | Sự kiện hạ boss chiến dịch |
-| 4 | Quay lại | Quay lại chơi ngày hôm sau ≥ 35% | GDD 16 | Mã người chơi ẩn danh, ngày của phiên |
-| 5 | Muốn chơi tiếp | ≥ 60% người chơi xong 4 màn trả lời "muốn chơi màn 5" | GDD 16 | Phiếu hỏi trong game sau boss 4 |
-| 6 | Vòng khắc chế | ≥ 70% người chơi xong dùng đúng vũ khí khắc chế ở ít nhất 2 boss | GDD 16 | Sự kiện trúng điểm yếu theo boss |
-| 7 | Cân bằng điều khiển | Tỉ lệ thua trên cảm ứng không cao hơn bàn phím quá 40% ở cùng màn | GDD 17 | Sự kiện chết theo thiết bị chính |
+| 1 | Onboarding | Hoàn thành Prologue ≥ 90% người bắt đầu | GDD 16, 17 | MV1 |
+| 2 | Màn đầu | Hoàn thành Stage 1 ≥ 70% người bắt đầu Stage 1 | GDD 16, 17 | MV2 |
+| 3 | Đi hết | ≥ 50% người bắt đầu chơi xong cả 4 màn | GDD 16 | MV3 |
+| 4 | Quay lại | Quay lại chơi ngày hôm sau ≥ 35% | GDD 16 | MV4 (mã người chơi ẩn danh, ngày của phiên) |
+| 5 | Muốn chơi tiếp | ≥ 60% người chơi xong 4 màn trả lời "muốn chơi màn 5" | GDD 16 | MV5 (phiếu trong game sau boss 4) |
+| 6 | Vòng khắc chế | ≥ 70% người chơi xong dùng đúng vũ khí khắc chế ở ít nhất 2 boss | GDD 16 | MV6 (trúng điểm yếu theo boss) |
+| 7 | Cân bằng điều khiển | Tỉ lệ thua trên cảm ứng không cao hơn bàn phím quá 40% ở cùng màn | GDD 17 | MV7 (chết theo thiết bị chính) |
 | 8 | Bỏ cuộc | Không đoạn nào có > 30% người bỏ cuộc dừng ở đó | GDD 17 ("hỏng") | Đoạn cuối của phiên không quay lại |
-| 9 | Build | Không build nào cho thời gian hạ boss < 10% thời gian thiết kế; thời gian hoàn thành màn không lệch > 2× dự kiến | GDD 17 ("hỏng") | Sự kiện hạ boss kèm thời gian, build |
-| 10 | Kỹ thuật | Crash-free ≥ 99% phiên; vào game ≤ 3 s; ≥ 55 FPS điện thoại tầm trung; lỗi mức Chặn/Cao = 0 | GDD 15, 17; `04-Test-va-Launch.md` | Lỗi JS gửi kèm sự kiện; `gate-check`; báo lỗi người thử |
+| 9 | Build | Trung vị thời gian hạ boss của mỗi nhóm build (n ≥ 5) không dưới 10% thời gian thiết kế; trung vị thời gian hoàn thành màn (`runSec`) không lệch > 2× dự kiến. Dùng trung vị để một người bỏ máy (AFK) hay chơi rất chậm không làm trượt cổng | GDD 17 ("hỏng") | H2, H3 (`13` mục 6.3) |
+| 10 | Kỹ thuật | Crash-free ≥ 99% phiên; p75 thời gian vào game (`boot_timing`) ≤ 3 s theo từng nhóm máy; ≥ 55 FPS điện thoại tầm trung; lỗi mức Chặn/Cao = 0 | GDD 15, 17; `04-Test-va-Launch.md` | Lỗi JS gửi kèm sự kiện; `gate-check`; báo lỗi người thử |
 
 ## 2. Cỡ mẫu và cách đọc số
 
@@ -27,7 +27,11 @@ Cấu trúc theo `05-Cong-Prototype.md`: tiêu chí, cách đo, quy trình, quy 
 - **Cần xem:** ngưỡng nằm trong khoảng tin cậy.
 - **Không đạt:** cả khoảng nằm dưới ngưỡng.
 
-Tiêu chí 9, 10 là cứng: một lần vi phạm là Không đạt.
+Xét theo thứ tự: Không đạt trước, rồi Đạt, còn lại là Cần xem. Với tiêu chí có ngưỡng "≤" (7, 8) thì đảo chiều so sánh.
+
+- Wilson chỉ dùng cho tỉ lệ (1–6). Tiêu chí 7 là tỉ số giữa hai nhóm: dùng khoảng bootstrap 80% (2.000 lần lấy mẫu lại theo người chơi). Tiêu chí 8 so nhiều đoạn: chỉ xét đoạn có ≥ 10 người đi tới.
+- Tiêu chí 9, 10 là cứng: vi phạm (theo cách đo ở bảng mục 1) là Không đạt.
+- Đợt bù 25 người cho tiêu chí "Cần xem" được gộp với đợt trước nếu dữ liệu game (`03-Data`) và bản build không đổi giữa hai đợt.
 
 ## 3. Bản thử và dữ liệu
 
@@ -40,6 +44,8 @@ Tiêu chí 9, 10 là cứng: một lần vi phạm là Không đạt.
 1. **Tuyển:** 2 đợt × 25 người. Mỗi đợt ≥ 50% chơi trên điện thoại cảm ứng; có người chưa từng chơi platformer. Người đã thử cổng Prototype không tính vào đợt đầu.
 2. **Giao:** gửi link, không hướng dẫn thêm ngoài câu "chơi như bình thường, trong 7 ngày". Không ngồi cạnh (khác cổng Prototype).
 3. **Theo dõi:** ngày 1, 3, 7 xem bảng tổng hợp; lỗi Chặn sửa ngay và ghi phiên bản.
+   - Trước mỗi đợt: khôi phục điểm nhận nếu nhà cung cấp đã tạm dừng dự án vì không hoạt động (gói miễn phí Supabase tạm dừng sau khoảng 7 ngày), rồi gửi thử một lô từ máy của người tổ chức.
+   - Hai đợt nối tiếp (đợt 1 → sửa → đợt 2), mỗi đợt 7 ngày + 2 ngày phân tích, nên G3 chiếm khoảng 3 sprint (S17–S19).
 4. **Phân tích:** chạy script tổng hợp (EP-13) trên dữ liệu đợt, ra bảng mục 1 kèm khoảng tin cậy; ghi vào mục 6.
 5. **Quyết định:** theo mục 5; ghi lý do; tag `mvp` nếu qua.
 

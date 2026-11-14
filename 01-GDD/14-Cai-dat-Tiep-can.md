@@ -3,7 +3,7 @@
 - **Trạng thái:** Bản 1, Draft (14/11/2026). Chờ duyệt: Creative Director (tốc độ game và bảng xếp hạng, bảng màu), Technical Director (lưu, tốc độ game, chữ trong canvas).
 - **Quy trình:** Game Studio Agent `/design-system` theo `templates/gdd-system-template.md`; vai UI/UX Lead (`ui-designer`, `game-ui-ux`, `input-systems`) + QA Lead (`game-qa-playtest`).
 - **Nguồn:** GDD chính mục 5.2, 11 (tùy chọn tiếp cận), 13, 15; wireframe `02-Wireframes/boards/{SettingsControls,Gamepad,Touch,LayoutEdit,PSettings,Access,Graphics,Audio,Account,NSettingsNotif,Pause,PMenu,Menu,PRotate}.html`; `03-Data/{controls,ui,weapons}.json`; code `game/src/logic/input/{settings,touch-layout,stick}.ts`, `game/src/input/{touch-editor,touch-overlay}.ts`, `game/src/scenes/controls-scene.ts`, `game/src/scenes/stage/{pause-menu,stage-hud,stage-renderer,enemy-renderer,dialogue-box}.ts`, `game/src/scenes/stage-scene.ts`, `game/src/logic/combat/loadout.ts`.
-- **Phạm vi MVP:** màn Cài đặt cho bản web (PC và điện thoại cầm ngang; dùng được khi cầm dọc). Âm thanh chỉ là chỗ đặt, nội dung ở `12-Am-thanh.md` (đang viết song song). Mọi con số là `[PLACEHOLDER]`.
+- **Phạm vi MVP:** màn Cài đặt cho bản web (PC và điện thoại cầm ngang; chỉ hỗ trợ màn ngang, GDD 5.2, QB-93). Âm thanh chỉ là chỗ đặt, nội dung ở `12-Am-thanh.md` (đang viết song song). Mọi con số là `[PLACEHOLDER]`.
 - **Story:** Epic EP-14 (mục 12). Đo việc dùng tùy chọn: `13-Do-luong-MVP.md` (sự kiện `settings_change`, chỉ số S1).
 
 ## 0. Hiện trạng
@@ -74,7 +74,7 @@ Cột "Lưu": `cv.controls` (localStorage, đã có, nâng lên bản 2), `cv.se
 | `touch.aimAssist` | bật, tắt | tắt | `cv.controls` | đạn thường của Arc Cannon nghiêng về mục tiêu gần nhất phía trước trong dải dọc ±12 px (0,75 ô), độ dốc tối đa 0,25 (≈ 14°); đạn nạp không đổi. Chỉ khi thiết bị gần nhất là cảm ứng | Bước logic kế tiếp | Có (hằng số viết cứng) |
 | `touch.leftHanded` | bật, tắt | tắt | `cv.controls` | lật neo ngang mọi nút và vùng cần (cần sang phải); xóa vị trí đã kéo riêng | Ngay | Có |
 
-**Tự bắn và hỗ trợ ngắm cho bàn phím, tay cầm:** không làm ở MVP. Lý do: mô phỏng lối bắn (`power-cap.test.ts`) cho "nạp vừa + tự bắn" 9,15 so với liên thanh 7,40 (đơn vị như trong test); bật cho bàn phím sẽ làm lệch phép so cảm ứng/bàn phím của cổng MVP (G7, `13` mục 6.2). Xem lại sau cổng.
+**Tự bắn và hỗ trợ ngắm cho bàn phím, tay cầm:** không làm ở MVP. Lý do: mô phỏng lối bắn (`power-cap.test.ts`) cho "nạp vừa + tự bắn" 9,15 so với liên thanh 7,40 (đơn vị như trong test); bật cho bàn phím sẽ làm lệch phép so cảm ứng/bàn phím của cổng MVP (MV7, `13` mục 6.2). Xem lại sau cổng.
 
 ### 3.2 Hiển thị
 
@@ -244,7 +244,7 @@ chờ (s) = m × min(10; max(3; n / r))   n: số ký tự câu (hoặc trang); 
 - **Không đổi:** hộp thoại (chữ hiện dần, tự tiến), HUD, tween, menu, rung camera (theo thời gian thật), nhạc và tempo (`12-Am-thanh.md`).
 - **Hiển thị:** màn Kết quả ghi "Tốc độ 70%" cạnh thời gian lượt (thời gian game). Menu tạm dừng ghi "<màn> · <độ khó> · 70%".
 - **Bảng xếp hạng (Beta):** lượt có lúc nào s < 1 gắn `assisted` và **không nộp** bảng Tiêu chuẩn hay Mở; kỷ lục cá nhân lưu riêng, có nhãn "Hỗ trợ tốc độ". Thưởng, mở Thử thách, tiến trình: nhận đủ.
-- **Đo lường:** `stage_start.gameSpeed`, `stage_end.gameSpeedMin`; lượt có giảm tốc bị loại khỏi G7, H3, H4 (`13` mục 6.1).
+- **Đo lường:** `stage_start.gameSpeed`, `stage_end.gameSpeedMin`; lượt có giảm tốc bị loại khỏi MV7, H3, H4 (`13` mục 6.1).
 - **Vẽ:** StageScene đã nội suy Kai theo `stepper.alpha`. Ở 70% chỉ có 42 bước/giây nên kẻ địch, đạn, boss cũng phải nội suy, không thì giật (kiểm ở ST-14-06).
 
 ## 5. Điều hướng và kích thước
@@ -265,7 +265,7 @@ chờ (s) = m × min(10; max(3; n / r))   n: số ký tự câu (hoặc trang); 
   - mọi chữ ≥ 16 sp (`1rem`, theo cỡ chữ của trình duyệt);
   - tương phản chữ ≥ 4,5:1 (hiện `#e8f1ff` 15:1, `#9fb0c5` 7,7:1 trên `#121c2b`).
 - **Bố cục:** ngang (≥ 640 px CSS): cột tab bên trái rộng 180 dp, nội dung cuộn bên phải. Hẹp hoặc cầm dọc: tab thành hàng chip cuộn ngang (PSettings). Có lề `env(safe-area-inset-*)` (QB-92).
-- **Cầm dọc:** Cài đặt dùng được (PRotate); "Chỉnh bố cục" mờ, ghi "Xoay ngang để chỉnh". Trong trận, cầm dọc thì lớp phủ xoay ngang che và trận tự tạm dừng (QB-93).
+- **Cầm dọc:** chỉ hỗ trợ màn ngang (rà soát C11): lớp phủ "xoay ngang" che mọi scene kể cả Cài đặt; trong trận thì trận tự tạm dừng (QB-93). Bảng PRotate ở wireframe là lưu trữ (`02-Wireframes/LOI-THOI.md`).
 - **Kiểm ở cỡ thật:** Playwright giả lập Pixel 7 (412 × 915 px CSS, dpr 2,625): mọi phần tử bấm có `getBoundingClientRect` ≥ 48 × 48, mọi chữ có `font-size` tính ra ≥ 16 px.
 
 ## 6. Lưu và áp dụng

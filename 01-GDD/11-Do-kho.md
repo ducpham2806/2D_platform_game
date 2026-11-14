@@ -63,7 +63,7 @@ Thống nhất với kịch bản hướng dẫn D06 và S09: **3 lần chết l
 
 - **Đếm:** tăng khi chết thật. Không tính rơi hố còn máu, không tính hồi sinh tại chỗ (khi có). Đặt về 0 khi chạm checkpoint, hoặc khi vào đấu trường boss (cửa đóng đổi điểm hồi sinh nhưng không phát sự kiện checkpoint).
 - **Lần chết thứ 3:** NOVA hiện một câu ở hộp gợi ý riêng (không phụ thuộc màn có hướng dẫn hay không), tự tắt sau 6 s, không dừng game. Mỗi lượt vào màn tối đa một lần. Tắt hướng dẫn ở menu tạm dừng thì không hiện.
-- **Ưu tiên:** hộp hướng dẫn đang có lời thì gợi ý chờ tới khi hộp trống.
+- **Ưu tiên:** gợi ý chết đứng trên hộp hướng dẫn (hướng dẫn tạm ẩn rồi hiện lại), dưới hội thoại và màn Kết quả; hủy khi hạ boss hoặc qua checkpoint (`17-Quy-tac-bien.md` QB-70…72, sửa sau rà soát 14/11/2026: bản cũ chờ hộp trống nên không bao giờ hiện trong trận Thorna). Lời chuẩn của các câu gợi ý nằm ở `ui.json → difficultyHint.lines`; câu ghi trong tài liệu này chỉ là ý.
 - **Câu (giọng NOVA, `ui.json → difficultyHint`):**
   - Thử thách: "Ba lần rồi. Đòn Thử thách khó đọc thật. Chế độ Thường ở màn Chuẩn bị, checkpoint vẫn giữ."
   - Thường: "Ba lần rồi. Tôi không chê đâu, chỉ gợi ý: chế độ Cốt truyện ở màn Chuẩn bị. Checkpoint vẫn giữ."

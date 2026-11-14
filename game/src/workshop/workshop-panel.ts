@@ -225,7 +225,7 @@ export class WorkshopPanel {
     const tabs = document.createElement('div');
     tabs.className = 'cv-ws-tabs';
     tabs.innerHTML =
-      '<span class="on">Kỹ năng</span><span>Module · mở sau boss 3</span><span>Giáp · khi có Két giáp</span><span>Tủ skin · mở sau boss 4</span><span>Loadout · mở sau boss 4</span>';
+      '<span class="on">Kỹ năng</span><span>Module · khi có module đầu tiên</span><span>Giáp · khi có Két giáp</span><span>Tủ skin · mở sau boss 5</span><span>Loadout · mở sau boss 5</span>';
 
     const cols = document.createElement('div');
     cols.className = 'cv-ws-cols';

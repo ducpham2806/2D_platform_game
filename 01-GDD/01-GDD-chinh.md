@@ -53,7 +53,7 @@ Hệ quả thiết kế: không bán ngẫu nhiên bằng tiền, bảng xếp h
 | --- | --- |
 | Mô hình | A: tiện ích và mỹ phẩm, không bán ngẫu nhiên bằng tiền |
 | Độ tuổi | 13+ (có xác nhận tuổi và đồng ý quảng cáo) |
-| Cyber+ | Tháng 2,99; năm 19,99; Lifetime 24,99 (tùy chọn) `[PLACEHOLDER]` |
+| Cyber+ | Tháng 2,99; năm 19,99 (5 Gem/ngày); Lifetime 24,99 (chỉ tắt quảng cáo ép, nhận rewarded ngay; không Gem/ngày, không skin tháng) `[PLACEHOLDER]` |
 | Gem mua tiện ích Farm | Có, trong giới hạn: Sweep và vé Farm đôi; tối đa 10 lượt thưởng gấp đôi mỗi ngày |
 | Thứ tự phát hành | Android và web PC trước, iOS sau |
 | Soft launch | Việt Nam cộng một thị trường tiếng Anh nhỏ `[PLACEHOLDER]`; ngôn ngữ tiếng Việt và tiếng Anh |
@@ -410,7 +410,7 @@ Mô hình cân bằng kinh tế toàn game (nguồn thu, giá Shop, Data Chip, n
 - Khoảng cách tối đa giữa hai điểm hồi sinh liền nhau: Cốt truyện ≤ 90 s, Thường ≤ 150 s, Thử thách ≤ 270 s chơi `[PLACEHOLDER]`. Cách đặt checkpoint theo độ khó: `11-Do-kho.md` mục 2.4.
 - **Checkpoint là vùng chữ nhật** đặt trên bản đồ Tiled; Kai chạm vùng thì kích hoạt. Checkpoint xét theo thứ tự trong danh sách: chỉ checkpoint đứng sau checkpoint hiện tại mới kích hoạt, nên dùng được cho màn dọc (Cirrus Tower), không chỉ màn chạy ngang. **Cần Story:** code hiện kích hoạt khi tâm Kai vượt qua một cột (`centerX`).
 - Mỗi màn có 3 phòng bí mật, chứa Memory Log, Két giáp (cần vũ khí mới) và một vật phẩm thứ ba (Stage 1: Nano Cell); cộng 1 nhiệm vụ phụ.
-- **Mục tiêu nhiệm vụ phụ** chỉ cần Vine Lash và vũ khí của chính màn đó (`15-Nhiem-vu-phu.md` mục 2.8).
+- **Mục tiêu nhiệm vụ phụ** tới được bằng bộ động tác gốc + Arc Cannon, như mọi vật phẩm được lưu (`15-Nhiem-vu-phu.md` mục 2.8).
 - **Luật duyệt màn (bản 0.7):** mọi vật phẩm được lưu (Két giáp, Memory Log, bí mật, Data Chip, mục tiêu nhiệm vụ phụ) và đường chính đều tới được bằng **bộ động tác gốc** (lướt đất, lướt-nhảy, bám và nhảy tường). Lối chỉ lướt trên không (kỹ năng Phantom) mới tới là đường tắt, thưởng tối đa là Core Bit; cây kỹ năng không bao giờ chặn tiến trình.
 
 ### 8.4 Vùng Eclipse (endgame)
@@ -558,9 +558,9 @@ Chi tiết giá và nội dung ở tab Kế hoạch kiếm tiền và Live-ops (
 | Hạng mục | Nội dung tóm tắt |
 | --- | --- |
 | Gói Gem | 7 bậc từ 0,99 đến 99,99 USD; lần mua đầu của mỗi gói nhân đôi Gem; Gem đã mua không hết hạn |
-| Starter Pack | 1,99 USD, một lần: 300 Gem, bộ skin Rookie, hiệu ứng lướt Rookie, 5 vé Farm đôi (dùng sau cốt truyện); không có booster (trụ cột 5) |
-| Cyber+ | Tháng 2,99; năm 19,99; Lifetime 24,99. Tắt interstitial, rewarded nhận ngay, +10 Gem mỗi ngày, +1 vòng quay, +5 Sweep, 1 skin mỗi tháng; không tăng chỉ số |
-| Season Pass | 4,99 mỗi mùa 30 ngày; làn Premium chỉ có mỹ phẩm và Gem |
+| Starter Pack | 1,99 USD, một lần: 300 Gem, bộ skin Rookie Neon (khác bộ Rookie tặng ở 7 ngày tân thủ), hiệu ứng lướt Rookie Neon, 5 vé Farm đôi (dùng sau cốt truyện); không có booster (trụ cột 5) |
+| Cyber+ | Tháng 2,99; năm 19,99; Lifetime 24,99. Tắt interstitial, rewarded nhận ngay, +10 Gem mỗi ngày (gói năm 5; Lifetime 0), +1 vòng quay (bảng giải riêng chỉ có Core Bit, Gem, mỹ phẩm), +5 Sweep, 1 skin mỗi tháng (không có ở Lifetime); không tăng chỉ số. Chi tiết: `05-Ke-hoach-kiem-tien.md` mục 5 |
+| Season Pass | 4,99 mỗi mùa 28 ngày (trùng mùa Rift); làn Premium chỉ có mỹ phẩm và Gem |
 | Skin Premium | 400–1.200 Gem hoặc bundle 2,99–9,99 USD; không có chỉ số |
 
 ## 11. Độ khó và khả năng tiếp cận
@@ -602,7 +602,7 @@ Phản hồi khi chết nhiều lần: sau 3 lần chết liên tiếp ở một
 - [ ] Kết thúc buổi chơi đầu bằng một điểm treo (xuất hiện bóng dáng Vex).
 - [ ] Người chơi điều khiển Kai trong ≤ 15 giây kể từ lần mở đầu; tuổi, đồng ý quảng cáo và cỡ nút hỏi sau Prologue.
 - [ ] Không có cơ chế mới nào được dạy cùng lúc với lần đầu kẻ địch gây sát thương thật.
-- [ ] Sau mỗi boss, Hub mở tối đa một hệ thống mới (lịch ở `07-Kich-ban-huong-dan.md`, mục 2).
+- [ ] Sau mỗi boss, Hub mở tối đa một hệ thống mới và một nhịp truyện (lịch ở `07-Kich-ban-huong-dan.md`, mục 2).
 
 Mục tiêu: **tỷ lệ hoàn thành Prologue ≥ 90%** không cần hỗ trợ.
 

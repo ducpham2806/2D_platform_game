@@ -6,6 +6,7 @@
 - **Phạm vi:** đợt thử bản web MVP (Prologue + Stage 1–4, Hub dạng menu, Xưởng, Quầy chỉ Upgrade, 3 độ khó) với khoảng 50 người, không quảng cáo, không IAP. Không có Remote Config và analytics thương mại (Firebase để Live-ops). Mọi ngưỡng và giới hạn là `[PLACEHOLDER]`.
 - **Story:** Epic EP-13 (mục 12). Tùy chọn trong Cài đặt: `14-Cai-dat-Tiep-can.md` mục 3.6.
 
+- **Mã chỉ số:** MV1–MV7 (đổi từ G1–G7 ngày 14/11/2026 để không trùng tên ba cổng G1–G3 của `04-Dev-Plan/01-Ke-hoach-lam-viec.md`).
 ## 0. Hiện trạng
 
 | Đã có (cổng Prototype) | Thiếu cho cổng MVP |
@@ -23,13 +24,13 @@ Cổng MVP trả lời một câu: **bản MVP có giữ được người chơi
 
 | Mã | Câu hỏi | Ngưỡng `[PLACEHOLDER]` | Nguồn |
 | --- | --- | --- | --- |
-| G1 | Người mới qua được Prologue không? | Hoàn thành Prologue ≥ 90% | GDD 12, 16; `07` mục 1 |
-| G2 | Stage 1 có vừa sức không? | Hoàn thành Stage 1 ≥ 70% | GDD 16, 17 |
-| G3 | Có đi hết MVP không? | ≥ 50% người bắt đầu chơi xong cả 4 màn | GDD 16 |
-| G4 | Có quay lại không? | Quay lại ngày hôm sau ≥ 35% | GDD 16, 17 |
-| G5 | Có muốn chơi thêm không? | ≥ 60% người chơi xong muốn chơi màn 5 | GDD 16 |
-| G6 | Vòng khắc chế có được hiểu không? | ≥ 70% dùng đúng vũ khí khắc chế ở ≥ 2 boss | GDD 7, 16 |
-| G7 | Cảm ứng có bị thiệt không? | Chênh lệch tỷ lệ thua cảm ứng so với bàn phím ≤ 40% ở mọi màn | GDD 16, 17 |
+| MV1 | Người mới qua được Prologue không? | Hoàn thành Prologue ≥ 90% | GDD 12, 16; `07` mục 1 |
+| MV2 | Stage 1 có vừa sức không? | Hoàn thành Stage 1 ≥ 70% | GDD 16, 17 |
+| MV3 | Có đi hết MVP không? | ≥ 50% người bắt đầu chơi xong cả 4 màn | GDD 16 |
+| MV4 | Có quay lại không? | Quay lại ngày hôm sau ≥ 35% | GDD 16, 17 |
+| MV5 | Có muốn chơi thêm không? | ≥ 60% người chơi xong muốn chơi màn 5 | GDD 16 |
+| MV6 | Vòng khắc chế có được hiểu không? | ≥ 70% dùng đúng vũ khí khắc chế ở ≥ 2 boss | GDD 7, 16 |
+| MV7 | Cảm ứng có bị thiệt không? | Chênh lệch tỷ lệ thua cảm ứng so với bàn phím ≤ 40% ở mọi màn | GDD 16, 17 |
 | H1–H4 | Có dấu hiệu "hỏng" nào không? | Không có dấu hiệu nào (mục 6.3) | GDD 17 |
 
 Câu hỏi phụ (không chặn cổng, dùng để chỉnh): kinh tế (`04` mục 8), độ khó (`11` mục 8), hướng dẫn (`07` mục 9), kỹ thuật (GDD 15, 17), cảm giác (tiếp nối cổng Prototype), dùng tùy chọn tiếp cận (`14` mục 10). **Không đo** các chỉ số `04` mục 15 (Chip Lõi, Gem, Farm, ARPDAU): MVP chưa có endgame và tiền thật.
@@ -39,9 +40,9 @@ Câu hỏi phụ (không chặn cổng, dùng để chỉnh): kinh tế (`04` m�
 | Tiêu chí | A: mở rộng nhật ký cục bộ + xuất/gộp JSON (như cổng Prototype) | B: điểm nhận nhẹ (một bảng chỉ-ghi trên Supabase gói miễn phí); nhật ký cục bộ làm bộ đệm |
 | --- | --- | --- |
 | Cách chạy | Ghi trên máy; người thử bấm Xuất JSON, gửi qua Zalo/email; người tổng hợp dán và gộp | Ghi trên máy, gửi từng lô khi có mạng; người tổng hợp tải bảng về chạy báo cáo |
-| Công làm (ước lượng) | Code: ít. Thu: khoảng 2 phút × 50 người × 2 lần (ngày 2 cho G4, ngày 8), cộng nhắc người chưa gửi; lặp lại mỗi đợt | Code: thêm khoảng 1,5 ngày (1 file SQL: bảng, RLS, hàm xóa; bộ gửi có thử lại; thông báo đồng ý). Thu: 0 |
-| Người bỏ cuộc | Ít gửi JSON nhất, mà chính họ là nhóm cần đo: G1–G3, H1 bị đẹp giả | Có dữ liệu tới lúc dừng chơi |
-| G4 (quay lại ngày sau) | Chỉ có nếu người thử gửi sau ngày 2 | Tự động |
+| Công làm (ước lượng) | Code: ít. Thu: khoảng 2 phút × 50 người × 2 lần (ngày 2 cho MV4, ngày 8), cộng nhắc người chưa gửi; lặp lại mỗi đợt | Code: thêm khoảng 1,5 ngày (1 file SQL: bảng, RLS, hàm xóa; bộ gửi có thử lại; thông báo đồng ý). Thu: 0 |
+| Người bỏ cuộc | Ít gửi JSON nhất, mà chính họ là nhóm cần đo: MV1–MV3, H1 bị đẹp giả | Có dữ liệu tới lúc dừng chơi |
+| MV4 (quay lại ngày sau) | Chỉ có nếu người thử gửi sau ngày 2 | Tự động |
 | Riêng tư | Dữ liệu chỉ rời máy khi người thử tự gửi | Rời máy tự động: cần đồng ý và cách xóa (mục 4) |
 | Rủi ro | Dán sai, tin nhắn bị cắt, mất dữ liệu khi người thử xóa trình duyệt | Khóa ghi công khai có thể bị ghi rác; trình chặn hiếm khi chặn `*.supabase.co`; lệch câu "không làm máy chủ trước cổng" (GDD 16) |
 | Chi phí | 0 | 0 (gói miễn phí 500 MB; cả đợt ước tính < 5 MB) |
@@ -50,7 +51,7 @@ Câu hỏi phụ (không chặn cổng, dùng để chỉnh): kinh tế (`04` m�
 
 Lý do, với một người làm:
 
-1. Mọi chỉ số chặn cổng G1–G4 và H1 là phễu hoặc tỷ lệ quay lại. Với A, người bỏ cuộc ít gửi JSON nhất, nên sai lệch đi đúng chiều làm cổng "đạt" giả.
+1. Mọi chỉ số chặn cổng MV1–MV4 và H1 là phễu hoặc tỷ lệ quay lại. Với A, người bỏ cuộc ít gửi JSON nhất, nên sai lệch đi đúng chiều làm cổng "đạt" giả.
 2. Thu tay 50 người hai lần mất khoảng 4–6 giờ mỗi đợt (kể cả nhắc) và lặp lại ở mỗi đợt; B tốn khoảng 1,5 ngày một lần, hòa vốn sau 2–3 đợt và không có sai lệch ở ý 1.
 3. GDD 15 đã chọn Supabase cho Beta, nên phần học công cụ không bỏ phí.
 
@@ -77,23 +78,23 @@ Người tổng hợp: tải bảng (JSON) và/hoặc JSON xuất tay ──▶ 
 
 | Tên | Khi nào ghi | Thuộc tính | Dùng cho chỉ số | Ưu tiên |
 | --- | --- | --- | --- | --- |
-| `session_start` | Menu sẵn sàng sau khi mở trang; hoặc quay lại tab sau ≥ 30 phút ẩn | `day` (ngày theo giờ máy, "2026-11-20"), `tzMin`, `platform` (android, ios, windows, mac, linux, other), `browser` (chrome, safari, firefox, edge, samsung, other), `pwa`, `screen` (px CSS làm tròn 50, "900x400"), `dpr` (làm tròn 0,25), `scaleK`, `touchCapable`, `lang`, `staff` | G4; nhóm thiết bị; X1 (mẫu số) | 0 |
+| `session_start` | Menu sẵn sàng sau khi mở trang; hoặc quay lại tab sau ≥ 30 phút ẩn | `day` (ngày theo giờ máy, "2026-11-20"), `tzMin`, `platform` (android, ios, windows, mac, linux, other), `browser` (chrome, safari, firefox, edge, samsung, other), `pwa`, `screen` (px CSS làm tròn 50, "900x400"), `dpr` (làm tròn 0,25), `scaleK`, `touchCapable`, `lang`, `staff` | MV4; nhóm thiết bị; X1 (mẫu số) | 0 |
 | `boot_timing` | Mỗi phiên khi Menu vẽ xong; lần đầu cài thêm lúc Kai nhận đầu vào đầu tiên | `msToMenu`, `msToControl` (chỉ lần đầu) | X2, X3 | 2 |
 | `consent` | Hiện thông báo, hoặc người chơi đổi lựa chọn | `state` (notice, on, off) | Quyền riêng tư; lọc báo cáo | 0 |
-| `stage_start` | Vào một màn (sau màn Chuẩn bị nếu có) | `stage`, `room` (StageDef), `difficulty`, `difficultyDefault`, `challengeOpen`, `run` (lần vào màn thứ mấy), `clearedBefore` (độ khó đã hạ boss), `fromCheckpoint`, `level`, `effLevel`, `skills` (chữ ký build, "V2P1C0"), `upgrades` ({id: cấp}), `weapons` (số vũ khí boss), `coreBits`, `device`, `gameSpeed`, `autoFire`, `aimAssist`; `audio` (`master`, `sfx`, `alert`, `muted`; `12-Am-thanh.md`) | G1–G3, G7, H1, H3, K4, DK1–DK3, S1 | 0 |
+| `stage_start` | Vào một màn (sau màn Chuẩn bị nếu có) | `stage`, `room` (StageDef), `difficulty`, `difficultyDefault`, `challengeOpen`, `run` (lần vào màn thứ mấy), `clearedBefore` (độ khó đã hạ boss), `fromCheckpoint`, `level`, `effLevel`, `skills` (chữ ký build, "V2P1C0"), `upgrades` ({id: cấp}), `weapons` (số vũ khí boss), `coreBits`, `device`, `gameSpeed`, `autoFire`, `aimAssist`; `audio` (`master`, `sfx`, `alert`, `muted`; `12-Am-thanh.md`) | MV1–MV3, MV7, H1, H3, K4, DK1–DK3, S1 | 0 |
 | `section_enter` | Lần đầu vào một đoạn trong lượt | `stage`, `section` (A, B, C, D, `boss`…), `tRun` | H1; thời gian theo đoạn | 1 |
 | `checkpoint` | Chạm checkpoint mới | `stage`, `index`, `tRun` | Thời gian theo đoạn; H1 | 1 |
-| `death` | Chết thật, hoặc rơi hố (tính như nhật ký Prototype) | `stage`, `section`, `kind` (death, pit), `cause` (`enemy:<id>`, `boss:<đòn>`, `spike`, `pit`), `device`, `tRun`, `streak` | G7, H1; đòn gây chết nhiều nhất | 1 |
+| `death` | Chết thật, hoặc rơi hố (tính như nhật ký Prototype) | `stage`, `section`, `kind` (death, pit), `cause` (`enemy:<id>`, `boss:<đòn>`, `spike`, `pit`), `device`, `tRun`, `streak` | MV7, H1; đòn gây chết nhiều nhất | 1 |
 | `difficulty_hint` | Gợi ý NOVA sau 3 lần chết hiện (`11` mục 2.5) | `stage`, `difficulty`, `section` | DK; hiệu quả gợi ý | 1 |
-| `boss_start` | Cửa đấu trường đóng, hoặc hồi sinh trong phòng boss | `stage`, `boss`, `attempt`, `weaknessOwned`, `weaponsOwned` | G6, H4 | 1 |
-| `boss_end` | Lượt đánh boss kết thúc | `boss`, `outcome` (win, death, exit), `fightSec`, `dmg` ({vũ khí: sát thương tính bằng phát Arc}), `weakHits`, `swaps`, `bossHpPct`, `device`, `gameSpeed` | G6, H4; thời gian thắng boss | 0 |
-| `stage_end` | Rời màn sau khi hạ boss chiến dịch; thoát về menu; bấm Chơi lại (hết một lượt, QB-47) | `stage`, `outcome` (clear, quit; `abandon` do báo cáo suy ra), `runSec` (giây game), `realSec`, `deaths`, `pits`, `furthest`, `last` (đoạn), `coreBitsEarned`, `expEarned`, `balance`, `secrets`, `deviceSec` ({keyboard, gamepad, touch}), `gameSpeedMin`, `fpsMedian`, `slowFramePct` (% khung > 22 ms) | G1–G3, G7, H1, H3, K1, K2, K6, DK2, DK3, X4 | 0 |
+| `boss_start` | Cửa đấu trường đóng, hoặc hồi sinh trong phòng boss | `stage`, `boss`, `attempt`, `weaknessOwned`, `weaponsOwned` | MV6, H4 | 1 |
+| `boss_end` | Lượt đánh boss kết thúc | `boss`, `outcome` (win, death, exit), `fightSec`, `dmg` ({vũ khí: sát thương tính bằng phát Arc}), `weakHits`, `swaps`, `bossHpPct`, `device`, `gameSpeed` | MV6, H4; thời gian thắng boss | 0 |
+| `stage_end` | Rời màn sau khi hạ boss chiến dịch; thoát về menu; bấm Chơi lại (hết một lượt, QB-47) | `stage`, `outcome` (clear, quit; `abandon` do báo cáo suy ra), `runSec` (giây game), `realSec`, `deaths`, `pits`, `furthest`, `last` (đoạn), `coreBitsEarned`, `expEarned`, `balance`, `secrets`, `deviceSec` ({keyboard, gamepad, touch}), `gameSpeedMin`, `fpsMedian`, `slowFramePct` (% khung > 22 ms) | MV1–MV3, MV7, H1, H3, K1, K2, K6, DK2, DK3, X4 | 0 |
 | `stage_progress` | Trang ẩn (game tự tạm dừng, QB-90), và mỗi 120 s chơi | Như `stage_end`, không có `outcome` | Lượt bỏ dở: báo cáo lấy bản cuối làm trạng thái `abandon` | 1 |
 | `shop_buy`, `shop_refund` | Giao dịch đã ghi xong (sau `SaveManager.transact`) | `item`, `level`, `price`, `before`, `after`, `bosses`, `playSec` | K1, K3, K5 | 0 |
 | `skill_change` | Học hoặc đặt lại kỹ năng ở Xưởng | `node`, `rank`, `action` (learn, reset), `spLeft` | Build (phụ) | 2 |
 | `tutorial_step_start`, `tutorial_step_complete`, `tutorial_step_fail`, `tutorial_hint_shown`, `tutorial_skip`, `tutorial_phase_complete` | Theo `07` mục 9 | Theo `07` mục 9: `id`, `phase`, `time_sec`, `attempts`, `count`, `level`, `scope`, `total_time_sec` | T1–T4 | 1 |
 | `tutorial_toggle` | Bật/tắt hướng dẫn | `on`, `where` (pause, settings) | T3 | 1 |
-| `survey_answer` | Bấm một câu trả lời trong phiếu (mục 7.2) | `q` (feel_jump, feel_dash, feel_shoot, want_stage5, audio_annoy: "Âm thanh có làm khó chịu?" sau lần đầu hạ Thorna), `a` (1–5; yes, maybe, no, skip), `device` | G5, F1 | 0 |
+| `survey_answer` | Bấm một câu trả lời trong phiếu (mục 7.2) | `q` (feel_jump, feel_dash, feel_shoot, want_stage5, audio_annoy: "Âm thanh có làm khó chịu?" sau lần đầu hạ Thorna), `a` (1–5; yes, maybe, no, skip), `device` | MV5, F1 | 0 |
 | `settings_change` | Đổi một tùy chọn (`14` mục 3) | `id`, `value` (enum hoặc số), `where` (menu, pause), `device` | S1; lọc lượt có giảm tốc | 2 |
 | `client_error` | `window.onerror`, `unhandledrejection`, `config:error` | `kind`, `scene`, `fatal`, `msg` (≤ 120 ký tự, đã bỏ URL và chữ số) | X1 | 1 |
 | `save_error` | `SaveManager.lastError` đổi | `op` (open, write, import), `code` | X5 | 1 |
@@ -158,7 +159,7 @@ Số liệu phải thêm vào logic thuần (mục 11): sát thương lên boss 
 - **Loại khỏi báo cáo:** `staff`; `install` chỉ có phiên < 10 s; `build` ngoài danh sách của đợt.
 - **Lượt** = lượt vào màn theo QB-47 (`17-Quy-tac-bien.md`): từ màn Chuẩn bị tới khi thoát hoặc bấm Chơi lại.
 - **Thiết bị của lượt** = thiết bị nhiều giây nhất trong `deviceSec` (như `primaryDevice`).
-- **Lượt có giảm tốc** (`gameSpeedMin < 1`, `14` mục 4.6): loại khỏi G7, H3, H4; vẫn tính G1–G3.
+- **Lượt có giảm tốc** (`gameSpeedMin < 1`, `14` mục 4.6): loại khỏi MV7, H3, H4; vẫn tính MV1–MV3.
 - **Bỏ cuộc ở màn S:** đã vào S, tới lúc cắt chưa hạ boss chiến dịch của S. **Đoạn kẹt** = đoạn xa nhất đã tới trong mọi lượt vào S.
 - **Dùng đúng vũ khí khắc chế ở boss B:** có ít nhất một `boss_end` của B với `dmg[điểm yếu] / Σ dmg ≥ 0,25` `[PLACEHOLDER]`. Chỉ tính boss mà người chơi đã có vũ khí khắc chế khi vào đấu trường (`weaknessOwned`). Ở MVP: Lumen (Vine Lash), Cryo (Prism Beam), Aeris (Frost Shard). Thorna không tính: điểm yếu Ember Burst là vũ khí Stage 8.
 
@@ -166,23 +167,23 @@ Số liệu phải thêm vào logic thuần (mục 11): sát thương lên boss 
 
 | Mã | Công thức | Ngưỡng | Mẫu tối thiểu |
 | --- | --- | --- | --- |
-| G1 | người có `stage_end{prologue, clear}` / người có `stage_start{prologue}` | ≥ 0,90 | 30 |
-| G2 | người hạ `thorna` (boss chiến dịch `verdant_gardens`) ở bất kỳ độ khó / người có `stage_start{verdant_gardens}` | ≥ 0,70 | 30 |
-| G3 | người hạ đủ `thorna`, `lumen`, `cryo`, `aeris` / người có `stage_start{prologue}` | ≥ 0,50 | 30 |
-| G4 | người có `session_start` ở ngày đầu + 1 (theo `day`) / người có ngày đầu ≤ ngày 6 | ≥ 0,35 | 30 |
-| G5 | số `want_stage5 = yes` / số người trả lời (trừ `skip`) trong nhóm đã xong 4 màn | ≥ 0,60 | 10; ít hơn 70% nhóm trả lời thì "Thiếu dữ liệu" |
-| G6 | người dùng đúng ở ≥ 2 boss / người đã đánh ≥ 2 boss với `weaknessOwned` | ≥ 0,70 | 10 |
-| G7 | max theo màn S của (chết/phút cảm ứng ÷ chết/phút bàn phím − 1). Chết/phút của nhóm = Σ `death` ÷ (Σ `runSec` / 60), gộp mọi lượt của nhóm trong S | ≤ 0,40 | ≥ 5 người mỗi nhóm trong S; thiếu thì bỏ S và ghi |
+| MV1 | người có `stage_end{prologue, clear}` / người có `stage_start{prologue}` | ≥ 0,90 | 30 |
+| MV2 | người hạ `thorna` (boss chiến dịch `verdant_gardens`) ở bất kỳ độ khó / người có `stage_start{verdant_gardens}` | ≥ 0,70 | 30 |
+| MV3 | người hạ đủ `thorna`, `lumen`, `cryo`, `aeris` / người có `stage_start{prologue}` | ≥ 0,50 | 30 |
+| MV4 | người có `session_start` ở ngày đầu + 1 (theo `day`) / người có ngày đầu ≤ ngày 6 | ≥ 0,35 | 30 |
+| MV5 | số `want_stage5 = yes` / số người trả lời (trừ `skip`) trong nhóm đã xong 4 màn | ≥ 0,60 | 10; ít hơn 70% nhóm trả lời thì "Thiếu dữ liệu" |
+| MV6 | người dùng đúng ở ≥ 2 boss / người đã đánh ≥ 2 boss với `weaknessOwned` | ≥ 0,70 | 10 |
+| MV7 | max theo màn S của (chết/phút cảm ứng ÷ chết/phút bàn phím − 1). Chết/phút của nhóm = Σ `death` ÷ (Σ `runSec` / 60), gộp mọi lượt của nhóm trong S | ≤ 0,40 | ≥ 5 người mỗi nhóm trong S; thiếu thì bỏ S và ghi |
 
 - Báo cáo thêm, không dùng để chặn: tỷ lệ hạ boss ngay trong lượt đầu vào màn (GDD 17 "lần chơi đầu", `07` "phiên đầu"), và số lần chết trung bình trước khi hạ boss ở Stage 2–4 (GDD 17: ≤ 8).
-- Tay cầm báo cáo riêng, không vào G7 (GDD chỉ so cảm ứng với bàn phím).
+- Tay cầm báo cáo riêng, không vào MV7 (GDD chỉ so cảm ứng với bàn phím).
 
 ### 6.3 Dấu hiệu "hỏng" (GDD 17)
 
 | Mã | GDD 17 | Cách tính | Hỏng khi |
 | --- | --- | --- | --- |
 | H1 | Hơn 30% người thử bỏ cuộc ở cùng một đoạn | Với mỗi màn S: max theo đoạn X của (số người bỏ cuộc ở S có đoạn kẹt X) / (số người đã vào S) | > 0,30 |
-| H2 | Cảm ứng thua nhiều hơn bàn phím trên 40% ở cùng màn | Như G7 | > 0,40 |
+| H2 | Cảm ứng thua nhiều hơn bàn phím trên 40% ở cùng màn | Như MV7 | > 0,40 |
 | H3 | Một build cho thời gian hoàn thành chênh quá 2× dự kiến | Nhóm theo hướng build (nhánh có nhiều bậc nhất: V, P, C; chênh ≤ 1 bậc thì "cân bằng") × tổng cấp Upgrade (0–2, 3–5, ≥ 6). Thời gian hoàn thành = Σ `runSec` các lượt vào S tới lần hạ boss đầu. Tỷ số = trung vị nhóm ÷ (`expectedMin` của S × 60) | Ngoài [0,5; 2] với nhóm ≥ 3 người |
 | H4 | Có chuỗi kỹ năng/module làm boss chết dưới 10% thời gian thiết kế | `boss_end{win}.fightSec` < 0,1 × `designFightSec[0]` của boss (Thorna: 60–90 s, ngưỡng 6 s) | Một lượt là đủ để mở điều tra, ghi kèm build |
 
@@ -228,12 +229,12 @@ nửa   = z × √(p̂(1 − p̂)/n + z²/(4n²)) / (1 + z²/n)
 
 | Ví dụ | n = 50 | n = 30 |
 | --- | --- | --- |
-| p̂ = 0,90 (G1) | [0,79; 0,96] | [0,74; 0,97] |
-| p̂ = 0,70 (G2) | [0,56; 0,81] | [0,52; 0,83] |
-| p̂ = 0,35 (G4) | [0,23; 0,49] | [0,21; 0,53] |
+| p̂ = 0,90 (MV1) | [0,79; 0,96] | [0,74; 0,97] |
+| p̂ = 0,70 (MV2) | [0,56; 0,81] | [0,52; 0,83] |
+| p̂ = 0,35 (MV4) | [0,23; 0,49] | [0,21; 0,53] |
 
 - 50 người chỉ cho sai số khoảng ±12 điểm %. Báo cáo ghi cả khoảng. **Đạt** khi p̂ đạt ngưỡng; **Biên** khi khoảng chứa ngưỡng ở phía không đạt; Producer quyết định trường hợp Biên và ghi lý do.
-- Tuyển ≥ 25 người chơi chủ yếu cảm ứng và ≥ 15 người bàn phím, để G7 còn ≥ 5 người mỗi nhóm ở Stage 4, nơi còn ít người nhất.
+- Tuyển ≥ 25 người chơi chủ yếu cảm ứng và ≥ 15 người bàn phím, để MV7 còn ≥ 5 người mỗi nhóm ở Stage 4, nơi còn ít người nhất.
 
 ## 7. Báo cáo tổng hợp
 
@@ -244,7 +245,7 @@ nửa   = z × √(p̂(1 − p̂)/n + z²/(4n²)) / (1 + z²/n)
 | −7 | `npm run mvp-flow` (Playwright, máy tính + Pixel 7): mở `?mvp=d0&staff=1`, đi Prologue → Stage 1, xác nhận lô tới điểm nhận; xem lô thật bằng mắt (không có dữ liệu thừa); xóa dữ liệu thử |
 | −5…−1 | Tuyển 55–60 người (dự phòng khoảng 15% không chơi): ≥ 25 cảm ứng, ≥ 15 bàn phím; người mới (chưa thử Prototype); phiếu tuyển có ô đồng ý (mục 4) |
 | 0 | Gửi link `?mvp=d1` kèm tin nhắn mẫu; đóng băng bản build |
-| 0–7 | **Không nhắc chơi lại** (nhắc làm sai G4); chỉ trả lời câu hỏi. Chỉ đăng bản vá cho lỗi mức Chặn (`04-Test-va-Launch.md` mục 3), ghi `build` mới |
+| 0–7 | **Không nhắc chơi lại** (nhắc làm sai MV4); chỉ trả lời câu hỏi. Chỉ đăng bản vá cho lỗi mức Chặn (`04-Test-va-Launch.md` mục 3), ghi `build` mới |
 | 8 | Cắt dữ liệu 00:00; gửi khảo sát cuối tùy chọn (form ẩn danh, 3 câu, không hỏi tên) |
 | 8–9 | `npm run mvp-report`; ghi kết quả vào `04-Dev-Plan/08-Cong-MVP.md` (mới); quyết định theo 7.4 |
 
@@ -265,7 +266,7 @@ nửa   = z × √(p̂(1 − p̂)/n + z²/(4n²)) / (1 + z²/n)
 `npm run mvp-report -- <file.json> [...]` đọc bảng tải từ Supabase (JSON) và/hoặc JSON xuất tay, gộp theo (`install`, `batch`) không trùng, rồi in Markdown vào `04-Dev-Plan/playtest/mvp-dot-<n>.md`:
 
 1. **Đầu trang:** đợt, các `build`, số người theo thiết bị, số lô và sự kiện bị bỏ (sai lược đồ), số `install` loại.
-2. **Cổng:** G1–G7: giá trị, n, khoảng Wilson, ngưỡng, Đạt / Không / Biên / Thiếu dữ liệu.
+2. **Cổng:** MV1–MV7: giá trị, n, khoảng Wilson, ngưỡng, Đạt / Không / Biên / Thiếu dữ liệu.
 3. **Hỏng:** H1–H4, kèm màn, đoạn, build. Dòng hỏng tô cam như màn Kết quả chơi thử.
 4. **Phễu:** Prologue → Hub → Stage 1 → Thorna → Stage 2 → Lumen → Stage 3 → Cryo → Stage 4 → Aeris (số người, %).
 5. **Theo màn:** bảng đoạn × (người tới, chết, bỏ cuộc kẹt ở đây %); 5 nguyên nhân chết nhiều nhất.
@@ -277,9 +278,9 @@ Mọi phép tính nằm ở `game/src/logic/telemetry/report.ts` (thuần, có t
 
 ### 7.4 Quy tắc quyết định
 
-- **Qua cổng:** G1–G7 đạt và không có H nào, trên cùng một build. Bản vá lỗi Chặn mà không đổi `data` thì gộp.
+- **Qua cổng:** MV1–MV7 đạt và không có H nào, trên cùng một build. Bản vá lỗi Chặn mà không đổi `data` thì gộp.
 - **Chưa qua** (GDD 16, `05-Cong-Prototype.md` mục 6): sửa theo thứ tự, không thêm hệ thống:
-  1. Điều khiển cảm ứng (G7, H2).
+  1. Điều khiển cảm ứng (MV7, H2).
   2. Thông số cảm giác (F1).
   3. Đoạn có nhiều người bỏ cuộc (H1): nới khe né, thêm checkpoint trước khi chỉnh chỉ số.
   4. Cân bằng build, boss (H3, H4).
@@ -382,21 +383,21 @@ grant execute on function public.delete_my_data(uuid) to anon;
 | Trường hợp | Xử lý |
 | --- | --- |
 | Một người chơi trên hai máy hoặc hai trình duyệt | Thành hai `install`. Báo cáo ghi "người chơi = install"; tin mời dặn chơi một máy |
-| Tab ẩn danh, xóa dữ liệu trang | `install` mới mỗi lần, G4 thấp hơn thật. Tin mời dặn không dùng ẩn danh; báo cáo đếm `install` chỉ có một phiên dưới 2 phút |
+| Tab ẩn danh, xóa dữ liệu trang | `install` mới mỗi lần, MV4 thấp hơn thật. Tin mời dặn không dùng ẩn danh; báo cáo đếm `install` chỉ có một phiên dưới 2 phút |
 | Hai thẻ cùng mở | Mỗi thẻ một `sid` và một hàng đợi `cv.telemetry.q.<sid>`; `batch` theo `sid` nên không trùng |
 | Mất mạng, điểm nhận chết, bị trình chặn | Giữ trong bộ đệm, thử lại. Game không chờ, không lỗi console ngoài một dòng cảnh báo. 3 phiên liền không gửi được: Cài đặt → Dữ liệu hiện "Chưa gửi được N sự kiện" kèm nút Xuất JSON |
 | Gửi trùng (hết giờ chờ nhưng máy chủ đã nhận) | Khóa (`install_id`, `batch`) → 409 → coi như đã nhận |
 | Đóng trình duyệt giữa màn | Lúc trang ẩn: ghi `stage_progress`, gửi bộ đệm bằng keepalive. Không quay lại thì báo cáo coi lượt là `abandon`, lấy `stage_progress` cuối (hoặc sự kiện cuối) làm trạng thái |
 | Ẩn tab rồi quay lại dưới 30 phút | Cùng phiên; `realSec` không cộng lúc ẩn |
-| Đổi giờ máy, đổi múi giờ | `day` lấy theo giờ máy lúc mở. Ngày lùi hoặc nhảy quá 30 ngày thì bỏ G4 của người đó và đếm |
+| Đổi giờ máy, đổi múi giờ | `day` lấy theo giờ máy lúc mở. Ngày lùi hoặc nhảy quá 30 ngày thì bỏ MV4 của người đó và đếm |
 | Bản vá giữa đợt | `build` khác; báo cáo tách theo build; gộp cho G chỉ khi `data` không đổi |
 | Người làm game tự chơi | `staff=1` → loại |
 | Link lan ra ngoài nhóm tuyển | Thông báo trong game vẫn hiện, có nút Tắt gửi. Hơn 60 `install` thì xem lại nguồn |
 | Ghi rác vào bảng | Chỉ ghi, giới hạn kích thước và số lô; báo cáo bỏ lô sai lược đồ và `install` có số sự kiện mỗi giờ > 3 lần trung vị; đợt xong thì thu quyền ghi |
 | Rút đồng ý khi không có mạng | Xóa cục bộ ngay; `install` cũ vào `pendingDelete`, gọi xóa khi có mạng |
-| Lượt có giảm tốc | Loại khỏi G7, H3, H4; vẫn tính phễu |
-| Prologue chưa có bản đồ thật lúc tới đợt thử | Không đo được G1, T1–T4. Đợt thử chờ Prologue, hoặc ghi "không đo" và Producer quyết |
-| Chơi các màn không theo thứ tự | G6 chỉ tính boss mà người chơi đã có vũ khí khắc chế khi vào đấu trường |
+| Lượt có giảm tốc | Loại khỏi MV7, H3, H4; vẫn tính phễu |
+| Prologue chưa có bản đồ thật lúc tới đợt thử | Không đo được MV1, T1–T4. Đợt thử chờ Prologue, hoặc ghi "không đo" và Producer quyết |
+| Chơi các màn không theo thứ tự | MV6 chỉ tính boss mà người chơi đã có vũ khí khắc chế khi vào đấu trường |
 | Phiên < 10 s | Bỏ khỏi báo cáo (như cổng Prototype) |
 | `localStorage` đầy hoặc bị chặn | Ghi trong bộ nhớ của phiên và gửi ngay; không có bộ đệm qua phiên |
 
@@ -408,7 +409,7 @@ grant execute on function public.delete_my_data(uuid) to anon;
 - [ ] Mở không có `?mvp=` thì không tạo `cv.telemetry` và không có request mạng nào (Playwright đếm request).
 - [ ] Tắt gửi: bộ đệm trống, `delete_my_data` được gọi, không còn request ghi; bảng thật không còn dòng của `install` đó.
 - [ ] Gửi lô: thử lại có giãn cách; 409 coi như đã nhận; tắt mạng 10 phút rồi bật không mất sự kiện; bước logic không chậm thêm quá 0,1 ms vì gửi.
-- [ ] `mvp-report` trên bộ dữ liệu mẫu có đáp án (20 `install` giả, gồm các trường hợp ở mục 9) cho đúng G1–G7, H1–H4, K, DK, T, X; khoảng Wilson đúng tới 0,01.
+- [ ] `mvp-report` trên bộ dữ liệu mẫu có đáp án (20 `install` giả, gồm các trường hợp ở mục 9) cho đúng MV1–MV7, H1–H4, K, DK, T, X; khoảng Wilson đúng tới 0,01.
 - [ ] Lô thật không có `userAgent` đầy đủ, tên, IP (xem bằng mắt trước đợt).
 - [ ] `npm run mvp-flow` đạt trên máy tính và Pixel 7 giả lập; ảnh và lô mẫu lưu ở `04-Dev-Plan/qa/<mã Story>/`.
 - [ ] Bot chơi lặp 60 phút sinh ≤ 40 KB dữ liệu.
@@ -433,7 +434,7 @@ grant execute on function public.delete_my_data(uuid) to anon;
 | Code thuần | `StageWorld`: cộng sát thương lên boss theo vũ khí; nhớ nguồn của cú đánh cuối (`enemy:<id>`, `boss:<đòn>`, `spike`, `pit`); chữ ký build từ `character.skills` |
 | `game/CONTEXT.md`, `game/docs/quyet-dinh/` | Dòng trạng thái M16; file quyết định mới `do-luong.md` |
 | `14-Cai-dat-Tiep-can.md` mục 3.6 | Mục Dữ liệu: trạng thái gửi, mã xóa, Tắt gửi và xóa, Xuất JSON (chỉ hiện ở bản `?mvp=`) |
-| `17-Quy-tac-bien.md` | Đã giải quyết 14/11: Epic đo lường là **EP-13** (kế hoạch S9), EP-16 là Vertical slice. Thêm luật biên mới: lượt có giảm tốc không tính G7, H3, H4; trang ẩn ghi `stage_progress` |
+| `17-Quy-tac-bien.md` | Đã giải quyết 14/11: Epic đo lường là **EP-13** (kế hoạch S9), EP-16 là Vertical slice. Thêm luật biên mới: lượt có giảm tốc không tính MV7, H3, H4; trang ẩn ghi `stage_progress` |
 
 ## 12. Story đề xuất (EP-13)
 

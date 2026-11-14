@@ -233,6 +233,8 @@ Cue của Golem ở bus `alert` như boss (mini-boss là "kiểm tra cuối đo�
 
 ### 2.10 Giao diện và hội thoại
 
+Âm biểu cảm theo nhân vật (`08-Giong-nhan-vat.md`, thêm 14/11/2026): `dlg.emote.kai`, `dlg.emote.nova`, `dlg.emote.mira`, `dlg.emote.vex` (làm cùng cảnh Prologue), `dlg.emote.thorna`; Warden khác chưa có âm riêng dùng `dlg.emote.default`.
+
 Phát bằng sự kiện `audio:play` (mới, mục 7.4), không nằm trong `WorldEvents`.
 
 | id | Sự kiện kích hoạt | Bus | Ưu tiên | Biến thể | Chồng | Ghi chú |

@@ -361,7 +361,7 @@ describe('kẻ địch trong màn', () => {
   });
 });
 
-describe('chặn cày bằng cách chết (rà soát 15/11/2026)', () => {
+describe('chặn cày bằng cách chết (rà soát 14/11/2026)', () => {
   it('kẻ địch dựng lại bị hạ lần nữa trong cùng lượt: không cho lại EXP, Core Bit; viên máu vẫn có thể rơi', () => {
     expect(config.stages.mechanics.enemyRewardOncePerRun).toBe(true);
     const rows = [

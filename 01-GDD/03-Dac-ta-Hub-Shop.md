@@ -62,7 +62,7 @@ Mở khi chọn một màn ở Cổng Chiến dịch. Bố cục ngang gồm ba 
 | Phải: chuẩn bị | 2 slot booster (3 sau upgrade), loadout hiện tại (đổi nhanh giữa 3 preset), thanh Sức mạnh so với mức khuyến nghị |
 
 - **Bản MVP (Hub là menu, 14/11/2026):** bảng Chuẩn bị hiện khi vào màn chiến dịch từ menu, chỉ có thông tin màn, cấp và ba thẻ độ khó; ô booster, loadout, thanh Power Score sang Alpha (`01-GDD/11-Do-kho.md` mục 2.1).
-- **Điểm yếu boss (`QB-83`, cần Story):** một cờ `weaknessKnown[boss]` cho mỗi boss, lưu trong bản lưu. Bật khi bước D10 chạy (lần chết đầu trong đấu trường boss đó) hoặc khi hạ boss đó (`07-Kich-ban-huong-dan.md` mục 5.2). Màn Chuẩn bị và câu gợi ý vũ khí khắc chế khi chết nhiều (`ui.json → difficultyHint.weapon`) chỉ đọc cờ này.
+- **Điểm yếu boss (`QB-83`, cần Story):** một cờ `weaknessKnown[boss]` cho mỗi boss, lưu trong bản lưu. Bật khi bước D03 hoặc D10 chạy (NOVA nói tên vũ khí khắc chế) hoặc khi hạ boss đó (`07-Kich-ban-huong-dan.md` mục 5.2). Màn Chuẩn bị và câu gợi ý vũ khí khắc chế khi chết nhiều (`ui.json → difficultyHint.weapon`) chỉ đọc cờ này.
 - Nút **Bắt đầu** lớn ở góc dưới phải; từ lúc chọn màn tới khi vào chơi tối đa 2 chạm.
 - Nếu cấp thấp hơn mức khuyến nghị quá 2 cấp, hiện gợi ý mềm (nâng cấp, dùng booster) nhưng không chặn.
 - Gán booster bằng chạm vào slot rồi chọn; booster tiêu hao khi vào màn, hoàn lại nếu thoát trước checkpoint đầu tiên.
@@ -189,7 +189,7 @@ Lời NPC ở Hub hiện nằm trong file này, `07-Kich-ban-huong-dan.md` và `
 | 7 Abyss | Tín hiệu mất tích | Tìm 3 phao tín hiệu | 1 Data Chip + module Scholar |
 | 8 Foundry | Khuôn đúc kẹt | Phá 4 máy đúc bằng bắn nạp | 1 Data Chip + module Echo Shot |
 
-Module thưởng gắn theo **`index` của màn** trong `stages.json` (ghi ở `quests.json`), không theo chủ đề, để đường sức mạnh giữ nguyên khi thứ tự màn đổi.
+Module thưởng gắn theo **`index` của màn** trong `stages.json` (ghi ở `quests.json`), không theo thứ tự hoàn thành.
 
 **Phòng Hồ Sơ gồm bốn mục:** Nhật ký Dr. Lin (mở theo 8 Memory Log), Hồ sơ boss (mở sau khi hạ), Từ điển kẻ địch (mở khi gặp), Thống kê (thời gian chơi, số lần chết, tỷ lệ hoàn thành).
 

@@ -2,7 +2,7 @@
 
 - **Ngày tạo:** 2026-11-14
 - **Trạng thái:** Proposed. **Chờ người dùng chọn** (dữ liệu chơi rời máy người thử; đây là quyết định của chủ dự án, không ủy quyền được).
-- **Người đề xuất:** Technical Director, Producer, QA Lead (rà soát 14/11/2026, F02)
+- **Người đề xuất:** Technical Director, Producer, QA Lead (rà soát 14/11/2026, F02); đã duyệt kỹ thuật cùng ngày (duyệt kèm sửa, đã sửa ở mục 4–5)
 - **Phân hệ ảnh hưởng:** Meta (M16 bản rút gọn), Persistence, UI (Cài đặt → Dữ liệu)
 - **Tài liệu thiết kế:** `01-GDD/13-Do-luong-MVP.md` (mục tiêu đo, danh sách sự kiện, quyền riêng tư, lược đồ); cổng `04-Dev-Plan/08-Cong-MVP.md`.
 
@@ -42,4 +42,14 @@ Cổng MVP đo khoảng 50 người qua bản web: phễu Prologue → Stage 4, 
   3. Logic ghi sự kiện là thuần (`src/logic/telemetry/`), có test; gửi mạng nằm ngoài vòng khung hình, không cấp phát mỗi khung.
   4. Khóa trong bản build chỉ ghi được, không đọc được; khóa quản trị không vào repo.
   5. Lỗi mạng, bị chặn: game chạy bình thường, không hiện lỗi cho người chơi.
-  6. Không phải tư vấn pháp lý; trước đợt thử, người dùng xác nhận phiếu đồng ý và độ tuổi tối thiểu.
+  6. Mã đợt (`?mvp=<đợt>`) lưu vào localStorage ở lần mở đầu, để người quay lại bằng link gốc hay dấu trang vẫn được ghi (không thì MV4 "quay lại" thấp giả).
+  7. Gửi định kỳ kèm bộ đệm là đường chính; gửi `keepalive` lúc `pagehide` chỉ là cố gắng tối đa (header `apikey` cần preflight).
+  8. URL điểm nhận và khóa chỉ ghi đặt ở biến build (`VITE_*`), không đặt trong `03-Data`.
+  9. Quy tắc ghi ở bảng: chỉ nhận lô có `wave` thuộc các đợt đang mở; giới hạn 500 lô mỗi `install` bằng trigger; `delete_my_data` chỉ nhận UUID đầy đủ.
+  10. Không phải tư vấn pháp lý; trước đợt thử, người dùng xác nhận phiếu đồng ý và độ tuổi tối thiểu.
+
+## 5. Rủi ro để người dùng chọn
+
+- **Mặc định gửi:** người thử đã đồng ý lúc tuyển nên game mặc định gửi, có nút Tắt gửi. Nếu link lan ra ngoài, người chưa đồng ý cũng gửi. Phương án khác: hỏi "Đồng ý gửi nhật ký ẩn danh" một lần, chạm để bật (an toàn hơn, mất một ít dữ liệu).
+- **Địa chỉ IP:** bảng không ghi IP, nhưng nhà cung cấp vẫn ghi IP trong nhật ký hạ tầng ngắn hạn. Câu đồng ý phải nói đúng như vậy và ghi vùng máy chủ (`13-Do-luong-MVP.md` mục 4).
+- **Dự án bị tạm dừng** khi không hoạt động khoảng 7 ngày: khôi phục và gửi thử trước mỗi đợt (`08-Cong-MVP.md` mục 4).

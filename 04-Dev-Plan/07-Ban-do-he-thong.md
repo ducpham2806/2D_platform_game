@@ -54,7 +54,7 @@ Quy ước "Tài liệu":
 | `14-Cai-dat-Tiep-can.md` | Cài đặt, tiếp cận | Draft (14/11) |
 | `15-Nhiem-vu-phu.md` | 4 nhiệm vụ phụ, bản lưu 5 | Draft (14/11) |
 | `16-Dac-ta-Stage2-4-nhap.md` | Stage 2–4 (phần không phụ thuộc cảm giác) | Draft (14/11) |
-| `17-Quy-tac-bien.md` | 88 quy tắc biên, trạng thái code | Approved (ủy quyền) |
+| `17-Quy-tac-bien.md` | 92 quy tắc biên, trạng thái code | Approved (ủy quyền, sau duyệt Director) |
 
 Thứ tự đọc khi bắt đầu một loại việc: `04-Dev-Plan/00-Bat-dau.md`.
 
@@ -79,7 +79,7 @@ Tên dùng chung giữa tài liệu, dữ liệu và mã. Thêm tên mới ở �
 | Booster | `shield_cell`, `repair_kit`, `overcharge`, `magnet_pulse`, `second_chance`, `boss_scanner` | `shop.json` |
 | Độ khó | `story`, `normal`, `challenge` (Cốt truyện, Thường, Thử thách) | `difficulties.json` |
 | Nhiệm vụ phụ (Draft) | `sq_*` (một nhiệm vụ mỗi màn Stage 1–4); vật `seed_1…5`, `mirror_1…6`; class Tiled `questItem`, `questTarget`, `questZone`; bản lưu `sideQuests` | `15-…` mục 3; `quests.json` chưa có |
-| Quy tắc biên | `QB-01` … `QB-146` (88 luật, số có khoảng trống theo nhóm) | `17-Quy-tac-bien.md` |
+| Quy tắc biên | `QB-01` … `QB-146` (92 luật, số có khoảng trống theo nhóm) | `17-Quy-tac-bien.md` |
 | Âm thanh (Draft) | 5 bus `master`, `music`, `sfx`, `alert`, `ui`; id âm dạng `nhóm.tên` (`kai.dash.air`, `thorna.stalk.tele`, `ui.confirm`); cài đặt ở `cv.audio` | `12-Am-thanh.md`; `audio.json` chưa có |
 | Cài đặt (Draft) | `cv.settings` (bản 1), `cv.controls` (bản 2), `cv.audio`; id tùy chọn theo `14-Cai-dat-Tiep-can.md` mục 3 | `ui.json → settings` chưa có |
 | Sự kiện đo lường (Draft) | 24 sự kiện dạng `snake_case` (`stage_start`, `stage_end`, `survey_answer`…); lược đồ 2, khóa `cv.telemetry` | `13-Do-luong-MVP.md` mục 3; `telemetry.json` chưa có |
