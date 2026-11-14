@@ -24,6 +24,7 @@ import {
 import { DialogueRunner } from '../logic/dialogue/dialogue-runner';
 import { buildHud } from '../logic/hud/hud-model';
 import { buildStageResult } from '../logic/result/stage-result';
+import { DEFAULT_DIFFICULTY } from '../logic/difficulty/difficulty';
 import { type BuildStats, computeBuild, EMPTY_BUILD } from '../logic/rpg/build';
 import { spentPoints } from '../logic/rpg/skill-tree';
 import { totalSkillPoints, WorkshopPanel, workshopUnlocked } from '../workshop/workshop-panel';
@@ -101,6 +102,8 @@ export class StageScene extends Phaser.Scene {
   private cameraLock: string | undefined;
   private def: StageDef = STAGE_DEFS.gray;
   private stageKey: StageDefId = 'gray';
+  /** Độ khó của lượt (chọn ở màn Chuẩn bị; GDD 11). Màn chơi thử luôn Thường. */
+  private difficultyId = DEFAULT_DIFFICULTY;
   /** Hội thoại đang mở: trận đứng yên tới khi đóng (người chơi bỏ qua được bất cứ lúc nào). */
   private dialogue: { runner: DialogueRunner; moment: BossDialogueMoment } | undefined;
   private dialogueBox?: DialogueBox;
@@ -137,9 +140,13 @@ export class StageScene extends Phaser.Scene {
     super(SceneKey.Stage);
   }
 
-  /** `scene.start(SceneKey.Stage, { stage: 'enemies' })` chọn màn; mặc định là màn xám. */
-  init(data: { stage?: StageDefId } | undefined): void {
+  /**
+   * `scene.start(SceneKey.Stage, { stage: 'enemies', difficulty: 'story' })` chọn màn và độ khó;
+   * mặc định là màn xám, độ khó Thường.
+   */
+  init(data: { stage?: StageDefId; difficulty?: string } | undefined): void {
     this.stageKey = data?.stage ?? 'gray';
+    this.difficultyId = data?.difficulty ?? DEFAULT_DIFFICULTY;
     this.def = STAGE_DEFS[this.stageKey];
   }
 
@@ -148,7 +155,11 @@ export class StageScene extends Phaser.Scene {
     const config = getConfig(this);
     const bossId = this.def.boss ?? 'gray';
     const boss = config.bosses[bossId];
-    const difficulty = config.difficulties.find((d) => d.id === 'normal') ?? config.difficulties[0];
+    // Màn chơi thử (cổng Prototype) luôn Thường để số liệu các phiên so sánh được.
+    const wanted = this.def.playtest ? DEFAULT_DIFFICULTY : this.difficultyId;
+    const difficulty =
+      config.difficulties.find((d) => d.id === wanted) ??
+      config.difficulties.find((d) => d.id === DEFAULT_DIFFICULTY);
     if (!boss || !difficulty) throw new Error(`Thiếu dữ liệu boss "${bossId}" hoặc độ khó Thường`);
     this.stepper.reset();
     this.cameraLock = undefined;
@@ -200,7 +211,15 @@ export class StageScene extends Phaser.Scene {
         : EMPTY_BUILD,
     });
     this.world = world;
-    this.saver = save ? new StageSave(save, this.def.id, bossId) : undefined;
+    const campaignId = this.def.campaign;
+    this.saver = save
+      ? new StageSave(
+          save,
+          this.def.id,
+          bossId,
+          campaignId ? { campaign: campaignId, id: difficulty.id } : undefined,
+        )
+      : undefined;
     this.save = save;
     if (save) {
       // Thoát màn (về menu) hoặc đóng/ẩn trang: cộng Core Bit, EXP, thời gian chưa ghi.
@@ -263,11 +282,10 @@ export class StageScene extends Phaser.Scene {
       this.workshop?.destroy();
       this.workshop = undefined;
     });
-    // Chưa có chọn độ khó: màn luôn chơi ở Thường.
     const tut = this.tutorial;
     this.pause = new PauseMenu(
       this,
-      `${this.def.name} · Thường`,
+      `${this.def.name} · ${difficulty.name}`,
       (c) => this.onPauseChoice(c),
       tut ? () => tut.manager.isEnabled : undefined,
       save !== undefined && workshopUnlocked(save, config),
@@ -549,7 +567,8 @@ export class StageScene extends Phaser.Scene {
   }
 
   private onResultChoice(choice: ResultChoice): void {
-    if (choice === 'retry') this.scene.restart({ stage: this.stageKey });
+    if (choice === 'retry')
+      this.scene.restart({ stage: this.stageKey, difficulty: this.difficultyId });
     else if (choice === 'workshop') this.scene.start(SceneKey.Workshop);
     else this.scene.start(SceneKey.Menu);
   }

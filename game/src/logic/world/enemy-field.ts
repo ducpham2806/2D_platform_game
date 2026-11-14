@@ -6,6 +6,7 @@ import type { PlayerPhysics } from '../player/player-physics';
 import { createRng, type Rng } from '../rng';
 import type { EnemySpawn } from '../stage/layout';
 import type { TileMap } from '../tilemap';
+import { scaleReward } from '../difficulty/difficulty';
 import { PickupPool } from './pickups';
 import type { WorldEvents } from './world-types';
 
@@ -31,6 +32,8 @@ export class EnemyField {
     hpMul: number,
     nextId: () => number,
     seed: number,
+    /** Hệ số thưởng của độ khó (EXP, Core Bit mỗi kẻ địch, làm tròn; GDD 11 mục 3.1). */
+    private readonly rewardMul = 1,
   ) {
     const t = map.tileSize;
     this.rng = createRng(seed);
@@ -70,8 +73,9 @@ export class EnemyField {
   /** Kẻ địch vừa bị hạ: cộng EXP, rơi đồ. */
   onKilled(killed: readonly Enemy[], player: PlayerPhysics): void {
     for (const e of killed) {
-      this.exp += e.data.exp;
-      this.pickups.drop(e.centerX, e.centerY, e.data.coreBit, player.hp < player.maxHp, this.rng);
+      this.exp += scaleReward(e.data.exp, this.rewardMul);
+      const coreBit = scaleReward(e.data.coreBit, this.rewardMul);
+      this.pickups.drop(e.centerX, e.centerY, coreBit, player.hp < player.maxHp, this.rng);
     }
   }
 

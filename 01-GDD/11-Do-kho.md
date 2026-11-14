@@ -11,7 +11,7 @@
 - Game luôn chạy Thường (`stage-scene.ts`); không có chỗ chọn độ khó.
 - Đã áp: `damageTaken` (đòn kẻ địch, gai, hố), `enemyHp` (kẻ địch thường).
 - **Chưa áp** (lỗi phát hiện khi rà): máu boss và mini-boss không nhân `enemyHp`; thưởng Core Bit và EXP không nhân `rewardMul`.
-- `economy.json → difficultyRewardMul` trùng `difficulties.json → rewardMul`, chưa có gì kiểm tra hai chỗ khớp nhau.
+- `economy.json → difficultyRewardMul` trùng `difficulties.json → rewardMul`; `checkDesignInvariants` đã kiểm tra hai chỗ khớp nhau.
 
 ## 1. Tổng quan và trụ cột
 
@@ -104,7 +104,7 @@ thưởng lần đầu hạ boss          = round(rewardExp × rewardMul), round
 - Thorna 250 máu: Cốt truyện 200, Thử thách 312,5.
 - Gai Quạt 12: Cốt truyện 6, Thử thách 18 (Armor Plating cấp 2 ở Thử thách: round(12 × 1,5 × 0,92) = 17).
 - Thử thách không bao giờ gây chết trong một đòn ở cấp khuyến nghị: đòn mạnh nhất Stage 1 là Hoa Nở 18 × 1,5 = 27, nhỏ hơn máu cấp 2 (104).
-- Kiểm tra lúc nạp dữ liệu: `economy.difficultyRewardMul[id]` phải bằng `difficulties[id].rewardMul`.
+- Kiểm tra lúc nạp dữ liệu (đã có): `economy.difficultyRewardMul[id]` phải bằng `difficulties[id].rewardMul`.
 
 ### 3.2 Dữ liệu mới
 

@@ -55,11 +55,19 @@ export interface StagesData {
   levelSync: LevelSyncData;
 }
 
+/** Một độ khó cốt truyện (difficulties.json, 01-GDD/11-Do-kho.md). */
 export interface DifficultyData {
   id: string;
+  /** Tên và mô tả một dòng ở màn Chuẩn bị. */
+  name: string;
+  desc: string;
   damageTaken: number;
   enemyHp: number;
   rewardMul: number;
+  /** null: có sẵn; danh sách: mở khi đã hạ boss của màn ở một trong các độ khó này. */
+  unlockClearedOn: readonly string[] | null;
+  /** Kẻ địch và boss dùng bản Thử thách (khối `challenge` trong dữ liệu). */
+  newAttackPatterns: boolean;
 }
 
 /** Số màn (tính từ Stage 1) đã có dữ liệu kẻ địch trong enemies.json; tăng dần khi làm các màn sau. */
@@ -143,15 +151,45 @@ export function parseStages(value: unknown): StagesData {
 }
 
 export function parseDifficulties(value: unknown): DifficultyData[] {
-  return arr(value, 'difficulties').map((item, i) => {
-    const d = obj(item, `difficulties[${i}]`);
+  const list = arr(value, 'difficulties').map((item, i): DifficultyData => {
+    const p = `difficulties[${i}]`;
+    const d = obj(item, p);
+    let unlockClearedOn: string[] | null = null;
+    if (d.unlock !== null) {
+      const u = obj(d.unlock, `${p}.unlock`);
+      unlockClearedOn = arr(u.clearedOn, `${p}.unlock.clearedOn`).map((x, j) =>
+        str(x, `${p}.unlock.clearedOn[${j}]`),
+      );
+      if (unlockClearedOn.length === 0)
+        throw new ConfigError(`${p}.unlock.clearedOn: cần ít nhất một độ khó`);
+    }
+    if (d.newAttackPatterns !== undefined && typeof d.newAttackPatterns !== 'boolean')
+      throw new ConfigError(`${p}.newAttackPatterns: cần true/false`);
     return {
-      id: str(d.id, `difficulties[${i}].id`),
-      damageTaken: num(d.damageTaken, `difficulties[${i}].damageTaken`, { min: 0 }),
-      enemyHp: num(d.enemyHp, `difficulties[${i}].enemyHp`, { min: 0 }),
-      rewardMul: num(d.rewardMul, `difficulties[${i}].rewardMul`, { min: 0 }),
+      id: str(d.id, `${p}.id`),
+      name: str(d.name, `${p}.name`),
+      desc: str(d.desc, `${p}.desc`),
+      damageTaken: num(d.damageTaken, `${p}.damageTaken`, { min: 0 }),
+      enemyHp: num(d.enemyHp, `${p}.enemyHp`, { min: 0 }),
+      rewardMul: num(d.rewardMul, `${p}.rewardMul`, { min: 0 }),
+      unlockClearedOn,
+      newAttackPatterns: d.newAttackPatterns === true,
     };
   });
+  const ids = new Set<string>();
+  for (const d of list) {
+    if (ids.has(d.id)) throw new ConfigError(`difficulties: trùng id "${d.id}"`);
+    ids.add(d.id);
+  }
+  if (!ids.has('normal')) throw new ConfigError('difficulties: cần độ khó "normal" (mặc định)');
+  for (const d of list) {
+    if (d.id === 'normal' && d.unlockClearedOn !== null)
+      throw new ConfigError('difficulties: "normal" phải có sẵn (unlock: null)');
+    for (const need of d.unlockClearedOn ?? [])
+      if (!ids.has(need))
+        throw new ConfigError(`difficulties ${d.id}: unlock.clearedOn lạ "${need}"`);
+  }
+  return list;
 }
 
 /** Phân tích "4-7" thành [4, 7]. */

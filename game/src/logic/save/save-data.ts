@@ -10,15 +10,22 @@
 
 /**
  * Bản 2 (M8): thêm kỹ năng, module, loadout. Bản 3 (M9): thêm cấp Upgrade (`inventory.upgrades`).
+ * Bản 4 (độ khó, 01-GDD/11-Do-kho.md): thêm `progress.difficulty` theo màn chiến dịch.
  * Bản cũ đọc lên thành bản mới với các phần chưa có để trống.
  */
-export const SAVE_VERSION = 3;
+export const SAVE_VERSION = 4;
 
 export interface StageProgress {
   /** Checkpoint đã lưu (số thứ tự từ 1; 0 = điểm xuất phát). */
   checkpoint: number;
   /** Vật phẩm bí mật đã nhặt (theo `item` trên bản đồ). */
   secrets: string[];
+}
+
+/** Độ khó của một màn chiến dịch: chọn lần trước ở màn Chuẩn bị, các độ khó đã hạ boss. */
+export interface StageDifficultySave {
+  last: string | null;
+  cleared: string[];
 }
 
 /** Một bộ cấu hình (MVP chỉ dùng bộ 0; Alpha thêm preset không cần nâng bản lưu). */
@@ -39,6 +46,8 @@ export interface SaveData {
   progress: {
     bossesDefeated: string[];
     stages: Record<string, StageProgress>;
+    /** Theo id màn chiến dịch (stages.json), không theo phòng thử. */
+    difficulty: Record<string, StageDifficultySave>;
   };
   character: {
     exp: number;
@@ -73,7 +82,7 @@ export function defaultSave(): SaveData {
     revision: 0,
     savedAt: 0,
     playTimeSec: 0,
-    progress: { bossesDefeated: [], stages: {} },
+    progress: { bossesDefeated: [], stages: {}, difficulty: {} },
     character: {
       exp: 0,
       weapons: [],
@@ -129,6 +138,17 @@ function parseLoadouts(v: unknown): Loadout[] {
   return list.length > 0 ? list : [defaultLoadout()];
 }
 
+function parseDifficulty(v: unknown): Record<string, StageDifficultySave> {
+  const out: Record<string, StageDifficultySave> = {};
+  if (!isRecord(v)) return out;
+  for (const [id, raw] of Object.entries(v)) {
+    if (!isRecord(raw) || id.length === 0) continue;
+    const last = typeof raw.last === 'string' && raw.last.length > 0 ? raw.last : null;
+    out[id] = { last, cleared: names(raw.cleared) };
+  }
+  return out;
+}
+
 function parseStages(v: unknown): Record<string, StageProgress> {
   const out: Record<string, StageProgress> = {};
   if (!isRecord(v)) return out;
@@ -164,6 +184,7 @@ export function parseSave(raw: unknown): SaveData {
     progress: {
       bossesDefeated: names(progress.bossesDefeated),
       stages: parseStages(progress.stages),
+      difficulty: parseDifficulty(progress.difficulty),
     },
     character: {
       exp: count(character.exp),
@@ -207,6 +228,32 @@ export function completeStage(save: SaveData, stageId: string): SaveData {
   const cur = stageProgress(save, stageId);
   if (cur.checkpoint === 0) return save;
   return withStage(save, stageId, { ...cur, checkpoint: 0 });
+}
+
+/** Tiến trình độ khó của màn chiến dịch `campaign`. */
+export function stageDifficulty(save: SaveData, campaign: string): StageDifficultySave {
+  return save.progress.difficulty[campaign] ?? { last: null, cleared: [] };
+}
+
+function withDifficulty(save: SaveData, campaign: string, next: StageDifficultySave): SaveData {
+  return {
+    ...save,
+    progress: { ...save.progress, difficulty: { ...save.progress.difficulty, [campaign]: next } },
+  };
+}
+
+/** Ghi độ khó vừa chọn ở màn Chuẩn bị (mặc định cho lần sau). */
+export function recordDifficultyChosen(save: SaveData, campaign: string, id: string): SaveData {
+  const cur = stageDifficulty(save, campaign);
+  if (cur.last === id) return save;
+  return withDifficulty(save, campaign, { ...cur, last: id });
+}
+
+/** Hạ boss của màn ở độ khó `id` (mở Thử thách theo luật `unlock.clearedOn`). */
+export function recordDifficultyCleared(save: SaveData, campaign: string, id: string): SaveData {
+  const cur = stageDifficulty(save, campaign);
+  if (cur.cleared.includes(id)) return save;
+  return withDifficulty(save, campaign, { ...cur, cleared: [...cur.cleared, id] });
 }
 
 export function recordBossDefeated(save: SaveData, bossId: string): SaveData {

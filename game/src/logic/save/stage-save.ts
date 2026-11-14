@@ -13,6 +13,7 @@ import {
   grantWeapon,
   recordBossDefeated,
   recordCheckpoint,
+  recordDifficultyCleared,
   recordSecret,
   type SaveData,
   stageProgress,
@@ -51,6 +52,8 @@ export class StageSave {
     private readonly manager: SaveManager,
     private readonly stageId: string,
     private readonly bossId: string,
+    /** Màn chiến dịch và độ khó của lượt (hạ boss thì ghi `cleared`); không có: màn thử. */
+    private readonly difficulty?: { campaign: string; id: string },
   ) {}
 
   /** Gọi sau mỗi bước logic. Trả về true nếu đã ghi. */
@@ -72,6 +75,8 @@ export class StageSave {
     }
     if (ev.bossDefeated) {
       changes.push((s) => completeStage(recordBossDefeated(s, bossId), stageId));
+      const d = this.difficulty;
+      if (d) changes.push((s) => recordDifficultyCleared(s, d.campaign, d.id));
     }
     if (changes.length === 0) return false;
     return this.commit(run, changes);

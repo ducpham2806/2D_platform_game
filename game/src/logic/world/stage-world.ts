@@ -18,6 +18,7 @@ import {
   vanguardOf,
 } from '../rpg/build';
 import { BuildRuntime } from '../rpg/build-runtime';
+import { scaleReward } from '../difficulty/difficulty';
 import { playerParams } from '../player/player-params';
 import { PlayerPhysics } from '../player/player-physics';
 import { createRng, type Rng } from '../rng';
@@ -187,6 +188,7 @@ export class StageWorld {
           setup.difficulty.enemyHp,
           () => nextId++,
           setup.seed + 1,
+          setup.difficulty.rewardMul,
         )
       : undefined;
     this.bossSpawn = layout.boss ? standPoint(layout.boss, t) : undefined;
@@ -521,8 +523,11 @@ export class StageWorld {
 
   private makeBoss(): Boss | undefined {
     if (!this.bossSpawn || !this.arena) return undefined;
+    // Máu boss nhân hệ số độ khó như kẻ địch thường (GDD 11 mục 3.1); pha tính theo % nên giữ nguyên.
+    const data = this.setup.boss;
+    const hpMul = this.setup.difficulty.enemyHp;
     return new Boss(
-      this.setup.boss,
+      hpMul === 1 ? data : { ...data, hp: data.hp * hpMul },
       this.map,
       this.bossSpawn.x,
       this.bossSpawn.y,
@@ -574,8 +579,10 @@ export class StageWorld {
       this.everWon = true;
       const reward = this.setup.boss.reward;
       if (this.loadout.grant(reward)) ev.weaponGranted = reward;
-      this.bossExp += this.setup.boss.rewardExp;
-      this.bossCoreBits += this.setup.boss.rewardCoreBit;
+      // Thưởng lần đầu nhân hệ số độ khó (GDD 11 mục 3.1); vũ khí và SP không đổi.
+      const mul = this.setup.difficulty.rewardMul;
+      this.bossExp += scaleReward(this.setup.boss.rewardExp, mul);
+      this.bossCoreBits += scaleReward(this.setup.boss.rewardCoreBit, mul);
     }
     this.checkpoint = this.checkpointPoint();
   }

@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
+import { FIXED_STEP_MS, TILE_SIZE } from '@/core/constants';
 import { deepMerge } from '@/core/deep-merge';
+import { parseDifficulties, parseGameConfig } from '@/core/game-config';
 import {
   checkpointActive,
   defaultDifficulty,
@@ -10,6 +12,20 @@ import {
   startCheckpointFor,
 } from '@/logic/difficulty/difficulty';
 import { buildPrep, difficultyStats, type PrepDifficulty } from '@/logic/difficulty/prep-model';
+import { decodeSaveCode, encodeSaveCode } from '@/logic/save/save-code';
+import {
+  defaultSave,
+  parseSave,
+  recordDifficultyChosen,
+  recordDifficultyCleared,
+  stageDifficulty,
+} from '@/logic/save/save-data';
+import { MemorySaveStore, SaveManager } from '@/logic/save/save-manager';
+import { StageSave } from '@/logic/save/stage-save';
+import { StageWorld } from '@/logic/world/stage-world';
+import { IDLE_INPUT, noWorldEvents, type WorldEvents } from '@/logic/world/world-types';
+import { THORNA_ROOM_ROWS } from '@/stages/thorna-room';
+import { loadData } from './helpers';
 
 const RULES: DifficultyRule[] = [
   { id: 'story', unlockClearedOn: null },
@@ -105,5 +121,109 @@ describe('mô hình màn Chuẩn bị (GDD 11 mục 2.1)', () => {
     expect(prep(1).levelHint).toBeUndefined();
     expect(prep(4, [], [6, 8]).levelHint).toBeUndefined();
     expect(prep(3, [], [6, 8]).levelHint).toMatch(/Cốt truyện/);
+  });
+});
+
+describe('áp độ khó vào trận và bản lưu 4 (ST-10-01)', () => {
+  const config = parseGameConfig(loadData());
+  const t = TILE_SIZE;
+  const DT = FIXED_STEP_MS / 1000;
+  const diff = (id: string) => config.difficulties.find((d) => d.id === id)!;
+
+  function thornaWorld(id: string): StageWorld {
+    return new StageWorld({
+      rows: THORNA_ROOM_ROWS,
+      tileSize: t,
+      stepSec: DT,
+      player: config.player,
+      weapons: config.weapons,
+      boss: config.bosses.thorna!,
+      difficulty: diff(id),
+      mechanics: config.stages.mechanics,
+      seed: 7,
+    });
+  }
+
+  /** Đưa Kai vào đấu trường, để boss còn 1 máu rồi bắn tới khi hạ. */
+  function winBoss(world: StageWorld): WorldEvents | undefined {
+    world.player.respawn((world.arena!.first + 3) * t, 11 * t);
+    world.step(IDLE_INPUT);
+    world.boss!.hp = 1;
+    let out: WorldEvents | undefined;
+    for (let i = 0; i < 600 && !out?.bossDefeated; i += 1) {
+      world.player.hp = world.player.maxHp;
+      const dir = world.boss!.centerX > world.player.centerX ? 1 : -1;
+      out = world.step({
+        ...IDLE_INPUT,
+        moveX: i % 30 === 0 ? dir : 0,
+        shootPressed: i % 8 === 0,
+        shootHeld: i % 8 === 0,
+        shootReleased: i % 8 === 1,
+      });
+    }
+    return out;
+  }
+
+  it('dữ liệu: tên, mô tả, luật mở; Thường có sẵn', () => {
+    expect(config.difficulties.map((d) => [d.id, d.name, d.unlockClearedOn])).toEqual([
+      ['story', 'Cốt truyện', null],
+      ['normal', 'Thường', null],
+      ['challenge', 'Thử thách', ['normal', 'challenge']],
+    ]);
+    expect(config.difficulties.map((d) => d.newAttackPatterns)).toEqual([false, false, true]);
+    const raw = structuredClone(loadData().difficulties) as Record<string, unknown>[];
+    raw[2]!.unlock = { clearedOn: ['hard'] };
+    expect(() => parseDifficulties(raw)).toThrow('unlock.clearedOn lạ "hard"');
+    raw[2]!.unlock = { clearedOn: [] };
+    expect(() => parseDifficulties(raw)).toThrow('ít nhất một');
+    expect(() => parseDifficulties(raw.slice(0, 1))).toThrow('"normal"');
+  });
+
+  it('máu boss nhân enemyHp: Thorna 200 / 250 / 312,5', () => {
+    expect(['story', 'normal', 'challenge'].map((id) => thornaWorld(id).boss!.data.hp)).toEqual([
+      200, 250, 312.5,
+    ]);
+    expect(thornaWorld('story').boss!.hp).toBe(200);
+  });
+
+  it('thưởng lần đầu hạ boss nhân rewardMul: Cốt truyện 60 EXP, 40 Core Bit; Thử thách 180, 120', () => {
+    const story = thornaWorld('story');
+    expect(winBoss(story)?.bossDefeated).toBe(true);
+    expect([story.exp, story.coreBits]).toEqual([60, 40]);
+    const challenge = thornaWorld('challenge');
+    expect(winBoss(challenge)?.bossDefeated).toBe(true);
+    expect([challenge.exp, challenge.coreBits]).toEqual([180, 120]);
+  });
+
+  it('bản lưu 4: đọc bản 3, ghi độ khó chọn và đã hạ; id rỗng hoặc sai kiểu bị bỏ', () => {
+    const old = parseSave({ version: 3, progress: { bossesDefeated: ['thorna'] } });
+    expect(old.version).toBe(4);
+    expect(old.progress.difficulty).toEqual({});
+    let s = recordDifficultyChosen(defaultSave(), 'verdant_gardens', 'story');
+    s = recordDifficultyCleared(s, 'verdant_gardens', 'story');
+    s = recordDifficultyCleared(s, 'verdant_gardens', 'story');
+    expect(stageDifficulty(s, 'verdant_gardens')).toEqual({ last: 'story', cleared: ['story'] });
+    expect(recordDifficultyChosen(s, 'verdant_gardens', 'story')).toBe(s);
+    expect(stageDifficulty(s, 'prism_institute')).toEqual({ last: null, cleared: [] });
+    const parsed = parseSave({
+      version: 4,
+      progress: { difficulty: { a: { last: 3, cleared: ['normal', 1] }, '': {}, b: 'x' } },
+    });
+    expect(parsed.progress.difficulty).toEqual({ a: { last: null, cleared: ['normal'] } });
+    expect(decodeSaveCode(encodeSaveCode(s)).progress.difficulty).toEqual(s.progress.difficulty);
+  });
+
+  it('StageSave: hạ boss ghi độ khó vào cleared của màn chiến dịch; màn thử thì không', async () => {
+    const m = await SaveManager.open(new MemorySaveStore());
+    const run = { exp: 0, coreBits: 0 };
+    const ev = { ...noWorldEvents(), bossDefeated: true };
+    new StageSave(m, 'thorna', 'thorna', { campaign: 'verdant_gardens', id: 'normal' }).step(
+      ev,
+      run,
+      0.016,
+    );
+    expect(stageDifficulty(m.data, 'verdant_gardens').cleared).toEqual(['normal']);
+    new StageSave(m, 'golem', 'gray').step(ev, run, 0.016);
+    expect(Object.keys(m.data.progress.difficulty)).toEqual(['verdant_gardens']);
   });
 });

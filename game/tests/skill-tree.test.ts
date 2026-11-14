@@ -74,8 +74,8 @@ describe('cây kỹ năng (GDD 10 mục 2.1, 2.4)', () => {
 describe('bản lưu 2 và chuẩn hóa build', () => {
   it('bản lưu 1 đọc lên thành bản hiện tại với kỹ năng, module, loadout trống', () => {
     const s = parseSave({ version: 1, character: { exp: 40, weapons: ['Vine Lash'] } });
-    expect(SAVE_VERSION).toBe(3);
-    expect(s.version).toBe(3);
+    expect(SAVE_VERSION).toBe(4);
+    expect(s.version).toBe(4);
     expect(s.character).toEqual({
       exp: 40,
       weapons: ['Vine Lash'],

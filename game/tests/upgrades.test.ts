@@ -11,7 +11,13 @@ import {
   upgradeCost,
 } from '@/logic/shop/upgrades';
 import { decodeSaveCode, encodeSaveCode } from '@/logic/save/save-code';
-import { addRewards, defaultSave, parseSave, setInventory } from '@/logic/save/save-data';
+import {
+  addRewards,
+  defaultSave,
+  parseSave,
+  SAVE_VERSION,
+  setInventory,
+} from '@/logic/save/save-data';
 import {
   chainNormalizers,
   MemorySaveStore,
@@ -157,7 +163,7 @@ describe('mở hàng theo boss, mua, gỡ (ST-09-01)', () => {
 describe('bản lưu 3, chuẩn hóa, giao dịch nguyên tử (ST-09-02)', () => {
   it('bản 2 đọc lên thành bản 3: upgrades trống, giữ Core Bit; cấp sai kiểu bị bỏ', () => {
     const s = parseSave({ version: 2, inventory: { coreBits: 900 } });
-    expect(s.version).toBe(3);
+    expect(s.version).toBe(SAVE_VERSION);
     expect(s.inventory).toEqual({ coreBits: 900, upgrades: {} });
     const bad = parseSave({
       version: 3,
