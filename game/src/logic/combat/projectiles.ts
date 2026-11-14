@@ -32,6 +32,11 @@ export interface Projectile {
   pierceLeft: number;
   breaksShield: boolean;
   weapon: string;
+  /**
+   * Nguồn đòn của đạn địch cho đo lường (`enemy:<id kẻ địch>`); không có thì là đòn boss, tính
+   * theo loại đạn (`boss:<kind>`). GDD 13 mục 3, `death.cause`.
+   */
+  source?: string;
   traveled: number;
   maxDistance: number;
   ttl: number;

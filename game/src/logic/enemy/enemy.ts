@@ -150,7 +150,8 @@ export abstract class Enemy {
       dirY * speed,
       this.harmless ? 0 : data.damage,
     );
-    ctx.pool.spawn(gravity > 0 ? { ...spec, gravity } : spec);
+    const tagged = { ...spec, source: `enemy:${this.data.id}` };
+    ctx.pool.spawn(gravity > 0 ? { ...tagged, gravity } : tagged);
   }
 
   /**

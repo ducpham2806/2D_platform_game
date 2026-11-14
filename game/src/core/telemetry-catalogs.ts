@@ -13,8 +13,9 @@ export function weaponId(name: string): string {
     .replace(/[̀-ͯ]/g, '')
     .split(/[^A-Za-z0-9]+/)
     .filter((w) => w.length > 0);
+  // Chỉ đổi chữ cái đầu mỗi từ, nên id đã ở dạng camelCase ("arcCannon") giữ nguyên.
   return words
-    .map((w, i) => (i === 0 ? w.toLowerCase() : w[0]?.toUpperCase() + w.slice(1).toLowerCase()))
+    .map((w, i) => (i === 0 ? w[0]?.toLowerCase() : w[0]?.toUpperCase()) + w.slice(1))
     .join('');
 }
 

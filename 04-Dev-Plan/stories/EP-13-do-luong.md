@@ -7,7 +7,8 @@
 | Mã | Tên | Phụ thuộc | Cỡ | Trạng thái |
 | --- | --- | --- | --- | --- |
 | ST-13-01 | Lõi `logic/telemetry/`: lược đồ, phong bì, kiểm lược đồ, bộ đệm theo ưu tiên, lô, xuất JSON; `telemetry.json` + `core/telemetry-config.ts` | — | 1 phiên | DONE (14/11/2026) |
-| ST-13-02 | Nối sự kiện: Boot, Menu, StageScene, Chuẩn bị, Quầy, Xưởng, TutorialManager; `StageWorld` thêm sát thương theo vũ khí, nguồn cú đánh cuối, chữ ký build | 01 | 2 phiên | Chưa |
+| ST-13-02a | `StageWorld`: nguồn đòn (`hurtBy`, `deathCause`), sát thương lên boss theo vũ khí, cú trúng điểm yếu; `StageTracker` (sự kiện của một lượt màn), `FrameStats`, `buildSignature`; test chuỗi sự kiện bằng StageWorld | 01 | 1 phiên | DONE (14/11/2026) |
+| ST-13-02b | Nối vào scene: dịch vụ đo lường (tạm bật bằng cờ `?debug=1&telemetry=1`, chỉ bộ nhớ), StageScene gọi `StageTracker`; sự kiện meta (session_start, boot_timing, Quầy, Xưởng, hướng dẫn, lỗi trang, mã lỗi lưu); chạy thử | 01, 02a | 1 phiên | Đang làm |
 | ST-13-03 | Cờ `?mvp=`, `staff`, `install`; thông báo không chặn; Cài đặt → Dữ liệu | 01; khung Cài đặt EP-14; ADR-002 | 1 phiên | Chờ ADR-002 |
 | ST-13-04 | Điểm nhận và Uploader | 01, 03; ADR-002 | 1,5 phiên | Chờ ADR-002 |
 | ST-13-05 | Báo cáo `logic/telemetry/report.ts` + `npm run mvp-report`, bộ dữ liệu mẫu có đáp án | 01 | 1,5 phiên | Chưa |
@@ -51,3 +52,14 @@
 
 - ST-13-02: chữ ký build `skills` = tổng bậc đã học theo nhánh (`V2P1C0`); `SaveManager` cần mã lỗi (`read`, `write`, `corrupt`, `newer`, `import_invalid`); FPS, `slowFramePct` dùng bộ đếm cấp phát sẵn (QB-157); gọi `flushErrorCounts()` khi trang ẩn và lúc ghi `stage_progress`.
 - ST-13-03: kho cần `get/set/remove/keys(prefix)`; gộp hàng đợi mồ côi (`orphanMin`); `TelemetryLocal` có `wave`, `staff`; nối `dataFingerprint` và commit vào build (Vite `define`).
+
+## ST-13-02a: Dữ liệu StageWorld và bộ theo dõi lượt màn
+
+- **Trạng thái:** DONE (14/11/2026) · **Phụ thuộc:** ST-13-01 · **Bằng chứng:** [x] Logic (`tests/telemetry-stage.test.ts`, 5 test) [ ] Visual (chưa nối vào scene)
+- **Bối cảnh:** GDD 13 mục 3 (`death.cause`, `boss_end.dmg`, `stage_end`), mục 10 ý 1 (test chuỗi sự kiện bằng StageWorld); QB-47 (lượt), QB-98 (`stage_progress`), QB-157 (khung dài).
+- **Đã làm:**
+  - Đạn kẻ địch mang `source: enemy:<id>`; đạn boss tính theo loại (`boss:<kind>`); thân kẻ địch `enemy:<id>`, thân boss `boss:touch`, gai `spike`, hố hết máu `pit`. `WorldEvents.hurtBy`, `deathCause`; `StageWorld.lastHitCause`.
+  - `StageWorld.bossDamage` (tên vũ khí → sát thương, đơn vị phát Arc Cannon, kể cả nổ lan V2), `bossWeakHits`.
+  - `logic/telemetry/stage-tracker.ts`: `stage_start`, `section_enter` (lần đầu mỗi đoạn; phase boss → đoạn `boss`), `checkpoint`, `death` (kind death/pit, cause, streak), `boss_start` (cửa đóng hoặc hồi sinh trong phòng boss, `attempt`), `boss_end` (win/death/exit; `dmg` theo id vũ khí, `weakHits`, `swaps`, `bossHpPct`), `difficulty_hint`, `stage_progress` (theo `stageProgressSec`, gọi `flushErrorCounts`), `stage_end` (clear/quit; trận dở thì `boss_end` exit trước).
+  - `frame-stats.ts` (biểu đồ cấp phát sẵn 0,5 ms; bỏ khung > `ignoreMs`), `buildSignature` (tổng bậc theo nhánh, `V2P1C0`).
+- **Tiêu chí:** [x] chuỗi `stage_start → section_enter → death → checkpoint → boss_start → death → boss_end → boss_start → boss_end → stage_end` trên StageWorld thật, chế độ `strict` (mọi sự kiện qua kiểm lược đồ); [x] thoát giữa trận: `boss_end exit` rồi `stage_end quit`, `end` gọi hai lần không ghi đôi; [x] rơi hố còn máu: `death` kind `pit`, không tính `deaths`; [x] `FrameStats`, `buildSignature`.

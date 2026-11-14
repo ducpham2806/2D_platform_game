@@ -113,6 +113,13 @@ export class StageWorld {
   deathStreak = 0;
   /** Thời gian của lượt chơi màn (giây, tính cả lúc hit-stop và chờ hồi sinh; màn Kết quả). */
   elapsedSec = 0;
+  /**
+   * Đo lường (GDD 13): sát thương lên boss theo tên vũ khí (đơn vị phát Arc Cannon) và số cú trúng
+   * điểm yếu, cộng dồn cả lượt; nguồn đòn gần nhất làm Kai mất máu.
+   */
+  readonly bossDamage = new Map<string, number>();
+  bossWeakHits = 0;
+  lastHitCause: string | undefined;
 
   private readonly rng: Rng;
   private attackMul: number;
@@ -402,6 +409,10 @@ export class StageWorld {
       ev,
       killed,
       this.vanguard,
+      (weapon, amount, weak) => {
+        this.bossDamage.set(weapon, (this.bossDamage.get(weapon) ?? 0) + amount);
+        if (weak) this.bossWeakHits += 1;
+      },
     );
     this.field?.onKilled(killed, pl);
     // Boss hết máu vì đạn của Kai trong bước này thì thắng ngay, trước khi xét đòn lên Kai
@@ -422,6 +433,7 @@ export class StageWorld {
     this.field?.updatePickups(pl, dt, ev, this.build.magnetTiles * this.setup.tileSize);
 
     this.updateHazards(ev);
+    if (ev.hurtBy) this.lastHitCause = ev.hurtBy;
     this.updateSecrets(ev);
     this.updateRooms(ev);
     this.updateCheckpoints(ev);
@@ -438,9 +450,11 @@ export class StageWorld {
         return ev;
       }
       pl.state = 'dead';
+      ev.deathCause = 'pit';
     }
     if (pe.died || pl.state === 'dead') {
       ev.playerDied = true;
+      ev.deathCause ??= ev.hurtBy ?? this.lastHitCause;
       this.deaths += 1;
       this.deathStreak += 1;
       this.pitReturn = false;
@@ -469,7 +483,10 @@ export class StageWorld {
     if (!this.setup.spikeGuard && this.map.overlapsHazard(inset)) {
       ev.spikeHit = true;
       const dmg = this.damageTaken(this.setup.mechanics.spikes.damage);
-      if (pl.hitHazard(dmg, this.safe.x, this.safe.y)) ev.playerHurt = true;
+      if (pl.hitHazard(dmg, this.safe.x, this.safe.y)) {
+        ev.playerHurt = true;
+        ev.hurtBy = 'spike';
+      }
       return;
     }
     if (!pl.grounded || pl.onPlatform || pl.state === 'hurt' || this.map.overlapsHazard(b)) return;

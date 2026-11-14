@@ -52,7 +52,11 @@ export interface WorldEvents {
   hitBoss: boolean;
   weakHit: boolean;
   playerHurt: boolean;
+  /** Nguồn đòn làm Kai mất máu trong bước này (`enemy:<id>`, `boss:<đòn>`, `spike`). */
+  hurtBy: string | undefined;
   playerDied: boolean;
+  /** Nguồn cú đánh cuối khi Kai chết (thêm `pit`); GDD 13 `death.cause`. */
+  deathCause: string | undefined;
   respawned: boolean;
   gateClosed: boolean;
   bossPhaseChanged: boolean;
@@ -101,7 +105,9 @@ export function noWorldEvents(): WorldEvents {
     hitBoss: false,
     weakHit: false,
     playerHurt: false,
+    hurtBy: undefined,
     playerDied: false,
+    deathCause: undefined,
     respawned: false,
     gateClosed: false,
     bossPhaseChanged: false,

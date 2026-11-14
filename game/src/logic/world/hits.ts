@@ -67,6 +67,8 @@ export function resolvePlayerHits(
   ev: WorldEvents,
   killed: Enemy[],
   vanguard: VanguardMods = NO_VANGUARD,
+  /** Đo lường: sát thương lên boss theo vũ khí (đơn vị phát Arc Cannon), có trúng điểm yếu. */
+  onBossDamage?: (weapon: string, amount: number, weak: boolean) => void,
 ): number {
   const { targets, enemies, boss } = hitTargets;
   let hitStop = 0;
@@ -94,6 +96,7 @@ export function resolvePlayerHits(
       if (boss.takeHit({ amount, weak: false, stunSec: 0 })) {
         p.hitIds.add(BOSS_ID);
         ev.hitBoss = true;
+        onBossDamage?.(p.weapon, amount, false);
       }
     }
   };
@@ -157,6 +160,7 @@ export function resolvePlayerHits(
     const hit = { ...raw, amount: raw.amount * punish(p, boss.exposed) };
     if (boss.takeHit(hit)) {
       ev.hitBoss = true;
+      onBossDamage?.(p.weapon, hit.amount, hit.weak);
       if (hit.weak) {
         ev.weakHit = true;
         hitStop = Math.max(hitStop, weapons.hitStopSteps.weakness);
@@ -241,6 +245,7 @@ export function resolveEnemyHits(
     }
     if (player.applyHit(amount, p.x + p.w / 2)) {
       ev.playerHurt = true;
+      ev.hurtBy = p.source ?? `boss:${p.kind}`;
       p.alive = false;
     }
   }
@@ -248,11 +253,17 @@ export function resolveEnemyHits(
     if (!e.alive || !overlaps(e.box, player.box)) continue;
     const amount = incomingDamage(e.contactDamage, damageTaken);
     if (absorbed(amount)) continue;
-    if (player.applyHit(amount, e.centerX)) ev.playerHurt = true;
+    if (player.applyHit(amount, e.centerX)) {
+      ev.playerHurt = true;
+      ev.hurtBy = `enemy:${e.data.id}`;
+    }
   }
   if (boss && boss.state !== 'dead' && boss.state !== 'waiting' && overlaps(boss.box, player.box)) {
     const amount = incomingDamage(boss.touchDamage, damageTaken);
     if (absorbed(amount)) return;
-    if (player.applyHit(amount, boss.centerX)) ev.playerHurt = true;
+    if (player.applyHit(amount, boss.centerX)) {
+      ev.playerHurt = true;
+      ev.hurtBy = 'boss:touch';
+    }
   }
 }
