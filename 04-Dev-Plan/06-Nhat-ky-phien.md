@@ -37,7 +37,7 @@ Mẫu:
 - **Kiểm tra:** 425 test (thêm 2 QB-88, đỏ trên code cũ), lint, format, build, docs-check đạt; chạy thử Chromium trước/sau sửa (`qa/ST-21-01/`), 0 lỗi console.
 - **Merge:** người dùng nhờ merge; PR #10 merge (merge commit `eeb8ca1`, CI #50 đạt). Pages #5 trên `main`: test, build đạt, dừng ở `configure-pages` vì repo riêng tư chưa bật Pages. Nhánh làm việc đưa lên ngang `main`. Người dùng chuyển repo sang công khai; Pages #6 (chạy tay) vẫn dừng ở `configure-pages`: chưa chọn Source "GitHub Actions" trong Settings → Pages. Người dùng bật Pages; lần #7 đăng thành công `eeb8ca1`. Môi trường chặn `github.io` nên em không tự mở link thật được.
 - **Tag, merge tài liệu:** người dùng đồng ý tag `gate-r1`; đẩy tag từ môi trường bị proxy chặn (403), GitHub MCP không có lệnh tạo tag, người dùng tạo trên GitHub (`gate-r1` → `eeb8ca1`, đã kiểm). Tài liệu sau merge vào `main` bằng PR #11 (`c458643`); Pages #8 đăng lại đạt, code game không đổi.
-- **Tiếp theo:** người dùng mở link `?gate=1` trên điện thoại rồi phát cho 5 người; không merge vào `main` trong đợt thử; `gate-r1`, chơi thử 5 người, chọn hướng đồ họa. Em: EP-13 lõi đo lường; EP-21 ST-21-02 sau tag.
+- **Tiếp theo:** người dùng mở link `?gate=1` trên điện thoại rồi phát cho 5 người; không merge vào `main` trong đợt thử; chọn hướng đồ họa. Em: EP-13 lõi đo lường; EP-21 ST-21-02 sau tag.
 
 ## 2026-11-14: ST-11-01 vùng an toàn cho nút cảm ứng, canvas, bảng HTML (bước đầu của G1)
 
