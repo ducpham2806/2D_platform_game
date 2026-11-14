@@ -650,3 +650,54 @@ body.portrait #rotate-overlay {
 .cv-ws-detail .hint {
   color: #9fb0c5;
 }
+
+/* Màn Chuẩn bị, bản cắt MVP (src/prep, 01-GDD/11-Do-kho.md mục 2.1). */
+.cv-panel.cv-prep {
+  width: min(640px, calc(100vw - 16px));
+}
+
+.cv-prep-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.cv-panel button.cv-prep-card {
+  min-height: 96px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 3px;
+  padding: 6px 8px;
+  text-align: left;
+}
+
+.cv-prep-card .name {
+  font-weight: 600;
+}
+
+.cv-prep-card .desc,
+.cv-prep-card .stats {
+  font-size: 12px;
+  color: #9fb0c5;
+}
+
+.cv-prep-card .lock {
+  font-size: 12px;
+  color: #ff8787;
+}
+
+.cv-panel button.cv-prep-card.locked {
+  opacity: 0.6;
+}
+
+.cv-panel button.cv-prep-card.selected {
+  background: #2f4766;
+  border-color: #4fd1ff;
+}
+
+.cv-panel button.cv-prep-start {
+  flex: 1 1 auto;
+  min-height: 56px;
+}
