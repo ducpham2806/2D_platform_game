@@ -4,6 +4,35 @@ Các mục cũ chuyển từ `04-Dev-Plan/06-Nhat-ky-phien.md`, mới nhất ở
 
 ---
 
+## 2026-11-14: EP-10 ba độ khó; chốt EP-09 theo duyệt Game Studio Agent
+
+- **Nhánh / commit:** `ccr-9de01342-2046rb`; `8fc56bb` (bản nháp), `a22fd10`, `6677f97`, `6d98fdc`, `b48a892`, `930bdb6` (ST-10-01…05), `36f7499` (EP-09 sửa theo duyệt), commit ST-10-06 và tài liệu.
+- **Mục tiêu:** người dùng giao "làm tiếp 3 độ khó", tự dùng Game Studio Agent bổ sung mọi chỗ còn thiếu, toàn quyền quyết định.
+- **Đã làm:**
+  - GDD `01-GDD/11-Do-kho.md` theo mẫu `/design-system`, qua 2 agent duyệt độc lập (Creative Director; Technical Director + Producer), sửa thành bản 2 Approved. Epic EP-10.
+  - ST-10-01…06: màn Chuẩn bị; hệ số độ khó (cả máu boss); mở Thử thách theo màn; bản lưu 4; checkpoint theo độ khó; gợi ý NOVA sau 3 lần chết; bản Thử thách của 4 kẻ địch Stage 1, Golem và Thorna (đòn Rễ Đuổi).
+  - Chốt 9 quyết định EP-09 theo duyệt: Energy Cell +15%/cấp; hoàn đúng giá đã trả; món chưa có tác dụng không bán; thẻ Quầy hiện số thật.
+- **File chính:** `game/src/logic/difficulty/*`, `game/src/prep/`, `scenes/{prep,stage,menu}-scene.ts`, `core/{enemy,boss,shop}-config.ts`, `core/deep-merge.ts`, `logic/enemy/behaviors.ts`, `logic/boss/boss.ts`, `logic/save/*`, `03-Data/{difficulties,enemies,bosses,ui,shop}.json`.
+- **Quyết định:** xem GDD 11 mục 9 và EP-09 (bảng quyết định). Chính:
+  - thưởng boss một lần mỗi cặp (boss, độ khó);
+  - không mang checkpoint từ độ khó dễ sang khó;
+  - 3 lần chết (thống nhất với kịch bản hướng dẫn);
+  - mẫu đòn Stage 1 là `[PLACEHOLDER]` tới cổng Prototype.
+- **Lỗi tìm thấy / đã sửa:**
+  - Máu boss không nhân hệ số độ khó.
+  - Đã hạ boss xám ở phòng thử mà vẫn mở được Thử thách.
+  - Bản lưu 3 sẽ khóa Thử thách của người đã hạ Thorna.
+  - Tháp Gai lệch 15° trùng gai cũ.
+  - Rễ chỉ mọc ở sàn nên đứng bục là miễn nhiễm.
+  - Quầy trên Pixel 7 bị cắt nút khi hiện gợi ý.
+- **Kiểm tra:**
+  - 412 test, lint, format, build, `gate-flow`, `gate-check` đều đạt.
+  - Chạy thử Chromium PC và Pixel 7; ảnh ở `04-Dev-Plan/qa/ST-10-02…05`, `ST-09-04`.
+- **Còn dở:**
+  - Chơi thử 5 người; PR #10 chưa merge (commit phiên này nằm cùng nhánh).
+  - Đặt checkpoint theo độ khó lên bản đồ thật, chốt số mẫu đòn (sau cổng).
+- **Tiếp theo:** 1. Merge PR #10, chạy đợt chơi thử 1. 2. Tài liệu âm thanh MVP (M12) và đo lường MVP (M16). 3. Sau cổng: đặc tả Stage 2–4 kèm mẫu đòn Thử thách.
+
 ## 2026-11-14: M9 Shop chỉ Upgrade (EP-09, Quầy Mira)
 
 - **Nhánh / commit:** `ccr-9de01342-2046rb`; `8f5e0c2` (Epic + ST-09-01), `4bb7d80` (ST-09-02), `7d42fe6` (ST-09-03), `d4ee4f4` (ST-09-04), commit tài liệu.

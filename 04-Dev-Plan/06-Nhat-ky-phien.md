@@ -25,6 +25,16 @@ Mẫu:
 
 ---
 
+## 2026-11-14: Kế hoạch tiếp theo; kiểm tra CI đỏ trên PR #10
+
+- **Nhánh / commit:** `ccr-9de01342-2046rb`; commit sửa CI.
+- **Mục tiêu:** người dùng hỏi kế hoạch tiếp theo, rồi báo CI đỏ (lần chạy #42) và nhờ kiểm tra.
+- **Đã làm:** trả lời kế hoạch theo `00-Bat-dau.md` (việc của người dùng, việc code khi chờ G1, lộ trình sau G1). Kiểm tra CI: lần #40–#42 đỏ ở `docs-check` vì README trỏ tới `02-Wireframes/LOI-THOI.md` trước khi file đó được commit (commit tạm của agent lúc 20:07). Lần #43–#47 (tới `3fa817e`) đều đạt; PR hiện xanh.
+- **Sửa:** nâng `actions/checkout`, `setup-node` lên v6; `configure-pages` v6, `upload-pages-artifact` v5, `deploy-pages` v5 (đều chạy Node 24, hết cảnh báo Node 20; `dist/` không có file ẩn nên đổi mặc định của upload v5 không ảnh hưởng). Chuyển mục EP-10 (28 dòng, cảnh báo docs-check) sang lưu trữ.
+- **Lỗi tìm thấy:** commit tạm khi agent đang chạy được đẩy mà không chạy docs-check. Từ nay chạy đủ bộ kiểm tra trước cả commit tạm.
+- **Kiểm tra:** test, lint, format, build, docs-check đạt (0 cảnh báo).
+- **Tiếp theo:** như mục ST-11-01 bên dưới: người dùng merge, tag `gate-r1`, chơi thử 5 người; em làm EP-13 lõi đo lường khi người dùng đồng ý. Workflow Pages chỉ chạy được khi merge vào `main`: lần đăng đầu tiên cần xem tab Actions.
+
 ## 2026-11-14: ST-11-01 vùng an toàn cho nút cảm ứng, canvas, bảng HTML (bước đầu của G1)
 
 - **Nhánh / commit:** `ccr-9de01342-2046rb`; commit ST-11-01.
@@ -50,32 +60,3 @@ Mẫu:
 - **Kiểm tra:** 415 test, lint, format, build, docs-check đạt; chạy thử trình duyệt: gợi ý NOVA trong trận boss, gợi ý Quầy, tab Xưởng (ảnh ở `qa/ST-09-04`, `qa/ST-08-05`).
 - **Còn dở:** người dùng chọn kênh đo lường (ADR-002), xem `09-Quyet-dinh-cho-duyet.md`; tài liệu 12–14 còn Draft (duyệt khi mở EP-12/13/14); chưa test nào mang mã QB.
 - **Tiếp theo:** 1. Safe-area (QB-92) rồi đóng băng bản thử G1 (`gate-r1`), chơi thử 5 người. 2. EP-13 lõi đo lường. 3. Test các luật QB đã code. 4. EP-15 ST-15-14, ST-15-01a. 5. EP-12 âm thanh.
-
-## 2026-11-14: EP-10 ba độ khó; chốt EP-09 theo duyệt Game Studio Agent
-
-- **Nhánh / commit:** `ccr-9de01342-2046rb`; `8fc56bb` (bản nháp), `a22fd10`, `6677f97`, `6d98fdc`, `b48a892`, `930bdb6` (ST-10-01…05), `36f7499` (EP-09 sửa theo duyệt), commit ST-10-06 và tài liệu.
-- **Mục tiêu:** người dùng giao "làm tiếp 3 độ khó", tự dùng Game Studio Agent bổ sung mọi chỗ còn thiếu, toàn quyền quyết định.
-- **Đã làm:**
-  - GDD `01-GDD/11-Do-kho.md` theo mẫu `/design-system`, qua 2 agent duyệt độc lập (Creative Director; Technical Director + Producer), sửa thành bản 2 Approved. Epic EP-10.
-  - ST-10-01…06: màn Chuẩn bị; hệ số độ khó (cả máu boss); mở Thử thách theo màn; bản lưu 4; checkpoint theo độ khó; gợi ý NOVA sau 3 lần chết; bản Thử thách của 4 kẻ địch Stage 1, Golem và Thorna (đòn Rễ Đuổi).
-  - Chốt 9 quyết định EP-09 theo duyệt: Energy Cell +15%/cấp; hoàn đúng giá đã trả; món chưa có tác dụng không bán; thẻ Quầy hiện số thật.
-- **File chính:** `game/src/logic/difficulty/*`, `game/src/prep/`, `scenes/{prep,stage,menu}-scene.ts`, `core/{enemy,boss,shop}-config.ts`, `core/deep-merge.ts`, `logic/enemy/behaviors.ts`, `logic/boss/boss.ts`, `logic/save/*`, `03-Data/{difficulties,enemies,bosses,ui,shop}.json`.
-- **Quyết định:** xem GDD 11 mục 9 và EP-09 (bảng quyết định). Chính:
-  - thưởng boss một lần mỗi cặp (boss, độ khó);
-  - không mang checkpoint từ độ khó dễ sang khó;
-  - 3 lần chết (thống nhất với kịch bản hướng dẫn);
-  - mẫu đòn Stage 1 là `[PLACEHOLDER]` tới cổng Prototype.
-- **Lỗi tìm thấy / đã sửa:**
-  - Máu boss không nhân hệ số độ khó.
-  - Đã hạ boss xám ở phòng thử mà vẫn mở được Thử thách.
-  - Bản lưu 3 sẽ khóa Thử thách của người đã hạ Thorna.
-  - Tháp Gai lệch 15° trùng gai cũ.
-  - Rễ chỉ mọc ở sàn nên đứng bục là miễn nhiễm.
-  - Quầy trên Pixel 7 bị cắt nút khi hiện gợi ý.
-- **Kiểm tra:**
-  - 412 test, lint, format, build, `gate-flow`, `gate-check` đều đạt.
-  - Chạy thử Chromium PC và Pixel 7; ảnh ở `04-Dev-Plan/qa/ST-10-02…05`, `ST-09-04`.
-- **Còn dở:**
-  - Chơi thử 5 người; PR #10 chưa merge (commit phiên này nằm cùng nhánh).
-  - Đặt checkpoint theo độ khó lên bản đồ thật, chốt số mẫu đòn (sau cổng).
-- **Tiếp theo:** 1. Merge PR #10, chạy đợt chơi thử 1. 2. Tài liệu âm thanh MVP (M12) và đo lường MVP (M16). 3. Sau cổng: đặc tả Stage 2–4 kèm mẫu đòn Thử thách.
