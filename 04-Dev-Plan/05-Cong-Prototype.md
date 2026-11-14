@@ -46,9 +46,9 @@ Phần logic còn rất dư: một bước logic tốn 0,5 ms ở CPU chậm 6×
 
 Workflow `.github/workflows/pages.yml` build và đăng `game/dist` lên GitHub Pages mỗi khi `main` có thay đổi (hoặc bấm chạy tay ở tab Actions). Nó chạy test trước, nên không đăng bản có dữ liệu `03-Data` lệch nhau.
 
-**Bật một lần:** trên GitHub, vào Settings → Pages → Build and deployment → Source chọn **GitHub Actions**. Sau đó chạy workflow "Pages" (tab Actions → Pages → Run workflow) hoặc merge một PR vào `main`. Repo đang **riêng tư**: GitHub Pages cho repo riêng tư cần gói GitHub Pro trở lên; gói Free thì phải để repo công khai hoặc đăng bản build ở chỗ khác (Vercel, Netlify, Cloudflare Pages, itch.io có mật khẩu).
+**Bật một lần:** trên GitHub, vào Settings → Pages → Build and deployment → Source chọn **GitHub Actions**. Sau đó chạy workflow "Pages" (tab Actions → Pages → Run workflow) hoặc merge một PR vào `main`. Repo chuyển **công khai** ngày 14/11/2026 (gói Free chỉ có Pages cho repo công khai); chuyển công khai không tự bật Pages, vẫn phải chọn Source như trên.
 
-**Trước đợt 1:** PR #10 đã merge vào `main` (`eeb8ca1`, 14/11/2026). Workflow Pages lần #5 trên `main`: test, build đạt; dừng ở `configure-pages` vì repo chưa bật Pages (lần #4 ngày 3/11 cũng vậy). Bật Pages (đoạn trên) rồi chạy lại workflow; xong thì mở link `?gate=1` trên một điện thoại để chắc chắn trang đã cập nhật (menu chỉ còn 3 nút). Trong lúc người thử đang chơi, không merge gì vào `main` (Pages đăng lại mỗi lần `main` đổi).
+**Trước đợt 1:** PR #10 đã merge vào `main` (`eeb8ca1`, 14/11/2026). Workflow Pages lần #5 trên `main`: test, build đạt; dừng ở `configure-pages` vì repo chưa bật Pages (lần #4 ngày 3/11 và lần #6 sau khi chuyển công khai cũng vậy). Bật Pages (đoạn trên) rồi chạy lại workflow; xong thì mở link `?gate=1` trên một điện thoại để chắc chắn trang đã cập nhật (menu chỉ còn 3 nút). Trong lúc người thử đang chơi, không merge gì vào `main` (Pages đăng lại mỗi lần `main` đổi).
 
 | Link | Dùng cho |
 |---|---|

@@ -10,7 +10,7 @@
 
 ## Chờ người dùng (đường găng)
 
-1. ~~Merge PR #10~~ xong (14/11, `main` = `eeb8ca1`). Còn: **bật GitHub Pages** (repo riêng tư: cần gói Pro, hoặc để công khai, hoặc đăng chỗ khác; `05-Cong-Prototype.md` mục 3), tag `gate-r1` lên `eeb8ca1`. Code mới tiếp tục trên nhánh này, chỉ merge vào `main` sau đợt thử. **Không merge PR #9** (nhánh của phiên 13/11, tách từ `main` song song, xung đột 31 file); người dùng chọn cách A (14/11): chuyển từng phần sau tag (`stories/EP-21-chuyen-PR9.md`), rồi đóng PR #9.
+1. ~~Merge PR #10~~ xong (14/11, `main` = `eeb8ca1`). Repo đã công khai (14/11). Còn: **bật GitHub Pages** (Settings → Pages → Source: GitHub Actions; `05-Cong-Prototype.md` mục 3), em chạy lại workflow, tag `gate-r1` lên `eeb8ca1`. Code mới tiếp tục trên nhánh này, chỉ merge vào `main` sau đợt thử. **Không merge PR #9** (nhánh của phiên 13/11, tách từ `main` song song, xung đột 31 file); người dùng chọn cách A (14/11): chuyển từng phần sau tag (`stories/EP-21-chuyen-PR9.md`), rồi đóng PR #9.
 2. Chơi thử cổng Prototype với 5 người, ≥ 3 người cảm ứng: `05-Cong-Prototype.md` mục 3; ghi kết quả vào mục 7.
 3. Chọn kênh gửi dữ liệu đo lường (`adr/ADR-002-do-luong-mvp.md`).
 4. Asset nhóm P0 (10 sheet): `05-Assets/01-Huong-dan-asset.md`, sau khi chọn hướng đồ họa (mục 6).
