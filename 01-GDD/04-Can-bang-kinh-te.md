@@ -1,6 +1,8 @@
 # Cân bằng kinh tế toàn game
 
-Mô hình để kiểm tra Core Bit và Data Chip kiếm được có đủ trả cho Shop (skin, booster, upgrade) mà không bắt người chơi cày màn cũ. Tất cả là giả thuyết `[PLACEHOLDER]`, tính từ thông số đã có trong GDD và hai đặc tả trước. Phạm vi: chỉ phần cốt truyện (Core Bit, Data Chip); Gem, vật liệu và endgame cần mô hình riêng trước Alpha (GDD 0.4).
+Mô hình để kiểm tra Core Bit và Data Chip kiếm được có đủ trả cho Shop (skin, booster, upgrade) mà không bắt người chơi cày màn cũ. Tất cả là giả thuyết `[PLACEHOLDER]`, tính từ thông số đã có trong GDD và hai đặc tả trước. Phạm vi: Phần A (mục 1–8) là cốt truyện (Core Bit, Data Chip); Phần B (mục 9–15) là endgame, Gem và doanh thu.
+
+Cập nhật 14/11/2026 (rà soát `/consistency-check` + `/balance-check`): luật thưởng ở mục 2, trần Core Bit ngoài màn và cột live-ops ở mục 4, Data Chip ở mục 5, Farm Run và Gem ở phần B, doanh thu tính lại ở mục 13. Danh sách ở mục 7 và 14.
 
 ## 1. Mục tiêu và giả định
 
@@ -16,6 +18,7 @@ Mô hình để kiểm tra Core Bit và Data Chip kiếm được có đủ tr�
 | --- | --- |
 | Core Bit lượt chơi đầu (độ khó Thường) | 7.800 (8 màn + 3 màn Citadel + màn cuối) |
 | Thời gian lượt đầu | 8–10 giờ, khoảng 780–975 Core Bit mỗi giờ |
+| Nhịp chơi (để tính live-ops) | Mỗi lượt (Thường, Thử thách) khoảng 12 ngày × 45 phút; lượt Thường thu \~650 Core Bit từ màn mỗi ngày |
 | Hệ số thưởng theo độ khó | Cốt truyện ×0,5, Thường ×1, Thử thách ×1,5 (GDD 0.6 bỏ Ác mộng, Huyền thoại, Overclock) |
 | Cách chi (mô hình) | 70% upgrade, 15% skin, 15% booster (booster và skin chỉ mở sau boss thứ 4); người chơi thật sẽ tự phân bổ khác |
 | Giá upgrade cấp n | Giá cấp 1 × 1,25^(n − 1) |

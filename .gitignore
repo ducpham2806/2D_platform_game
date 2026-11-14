@@ -6,3 +6,7 @@ game/coverage/
 
 # graphify: đồ thị tri thức sinh lại được bằng `graphify update .`
 graphify-out/
+
+# Python
+__pycache__/
+*.pyc

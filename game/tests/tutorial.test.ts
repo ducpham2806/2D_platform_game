@@ -199,7 +199,9 @@ describe('chuỗi bước trận boss (dữ liệu thật)', () => {
         if (r.started) started.push(r.started);
       }
     };
-    run(sig('bossGate'), 60 * 4);
+    // S08 hiện `showSec` (6 s, C14) rồi mới tới S09; đổi pha thật đến muộn hơn nhiều.
+    const s08 = config.tutorial.steps.find((s) => s.id === 'S08');
+    run(sig('bossGate'), Math.ceil(60 * ((s08?.showSec ?? 3) + 1)));
     run(sig('bossPhase'), 60);
     run(sig('bossDefeated', 'weaponGranted'), 60);
     expect(started).toEqual(['S08', 'S09', 'S10', 'S13']);

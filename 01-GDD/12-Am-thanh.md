@@ -28,7 +28,7 @@
 - **`GameEvents`** chỉ có cấu hình, cảnh, khung nhìn, thiết bị nhập, cài đặt điều khiển. Chưa có sự kiện cho âm giao diện.
 - **Tải đầu** đo 14/11: 1,50 MB (nén 0,42 MB); vào game 2,51 s ở CPU chậm 4× + 4G; ngưỡng 3 s (`05-Cong-Prototype.md`). Còn khoảng 0,49 s cho mọi thứ thêm vào đường tải đầu.
 - **Wireframe:** `Audio.html` có Tổng, Nhạc, Hiệu ứng, **Âm cảnh báo đòn boss**, "Tắt tiếng khi chuyển tab", "Nhạc theo nhịp pha boss". `Access.html` có "Cảnh báo bằng âm thanh cho đòn boss: BẬT".
-- **Lịch:** kế hoạch làm việc (bản 14/11) đã đưa EP-12 vào sprint S9 của Giai đoạ 1, trước EP-14 (Cài đặt, S10 cần "EP-12 có âm lượng"). Dòng S9 ghi "3 thanh âm lượng"; tài liệu này có 5 thanh và Tắt tiếng (mục 6.1, lan sang ở mục 11).
+- **Lịch:** kế hoạch làm việc (bản 14/11) đã đưa EP-12 vào sprint S9 của Giai đoạn 1, trước EP-14 (Cài đặt, S10 cần "EP-12 có âm lượng"). Dòng S9 ghi "3 thanh âm lượng"; tài liệu này có 5 thanh và Tắt tiếng (mục 6.1, lan sang ở mục 11).
 
 ## 1. Tổng quan, trụ cột và giới hạn MVP
 
@@ -541,10 +541,10 @@ Các luật riêng của âm thanh ở bảng này đề xuất đưa vào `17-Q
 
 ### 6.1 Thanh âm lượng (tab Âm thanh của màn Cài đặt)
 
-- Màn Cài đặt (HTML theo ADR-001, cây mục, điều hướng, ≥ 48 dp, ≥ 16 sp) do `14-Cai-dat-Tiep-can.md` dựng; tab Âm thanh là "chỗ đặt" (mục 3.3 của 14). Tài liệu này quy định nội dung tab.
+- EP-12 dựng bảng Âm thanh (HTML theo ADR-001, nút ≥ 48 dp, chữ ≥ 16 sp) trước; khi có màn Cài đặt của `14-Cai-dat-Tiep-can.md` (EP-14), bảng thành tab Âm thanh, là "chỗ đặt" ở mục 3.3 của 14. Tài liệu này quy định nội dung.
 - Năm thanh: **Tổng**, **Nhạc**, **Hiệu ứng**, **Cảnh báo đòn boss** (bus `alert`), **Giao diện**. Bước `sliderStep` = 0,1 (11 nấc, số hiện 0–10). Điều khiển bằng phím ←/→, tay cầm, kéo chạm; vùng chạm ≥ 48 dp.
 - Thả thanh thì phát âm mẫu: Hiệu ứng `wpn.arc.shot`, Cảnh báo `thorna.thorns.tele`, Giao diện `ui.confirm`. Nhạc đổi ngay trên bản đang chạy.
-- Mở từ Menu chính (Cài đặt → Âm thanh) và từ menu tạm dừng (Tùy chọn), như mọi tab của 14.
+- Mở từ Menu chính và từ mục Tùy chọn của menu tạm dừng (hiện ghi "chưa có"); sau EP-14 thì qua Cài đặt → Âm thanh.
 - Tab Tiếp cận có dòng "Âm cảnh báo đòn boss" (`Access.html`; 14 ghi là lối tắt sang Âm thanh). Nó điều khiển **cùng** bus `alert` (tắt = thanh 0, bật = trả mức trước đó), không phải cài đặt riêng.
 - Bỏ hai dòng của wireframe: "Tắt tiếng khi chuyển tab", "Nhạc theo nhịp pha boss" (mục 9, quyết định 9, 10).
 
@@ -845,18 +845,18 @@ Mọi thứ nằm trong `audio.json`, chỉnh không cần sửa code:
 
 | File | Sửa gì |
 | --- | --- |
-| `01-GDD/01-GDD-chinh.md` | Mục 14: trỏ tới `12-Am-thanh.md`; "boss có nhạc riêng" thành "MVP: một bản boss chung 3 lớp theo pha; nhạc riêng từng boss từ Alpha". Mục 11: thêm "chỉ báo âm thanh bằng hình" vào tùy chọn tiếp cận. Mục 15: thêm dòng âm thanh (chặn tải đầu ≤ 30 KB, âm riêng mỗi màn ≤ 2,5 MB, RAM âm ≤ 64 MB, −18 LUFS). Mục 20: dòng nhật ký thay đổi |
+| `01-GDD/01-GDD-chinh.md` | Mục 14: trỏ tới `12-Am-thanh.md`; "boss có nhạc riêng" thành "MVP: một bản boss chung 3 lớp theo pha; nhạc riêng từng boss từ Alpha". Mục 11: "cảnh báo âm thanh cho đòn boss" trỏ bus `alert`; ghi "mọi cue có hình tương ứng" (mục 6.3). Mục 15: thêm dòng âm thanh (chặn tải đầu ≤ 30 KB, âm riêng mỗi màn ≤ 2,5 MB, RAM âm ≤ 64 MB, −18 LUFS). Mục 20: dòng nhật ký thay đổi |
 | `01-GDD/02-Dac-ta-Prologue-Stage1.md` | Mục 7, dòng SFX và Nhạc: trỏ mục 2, 3 tài liệu này; "boss Thorna (~140 BPM)" thành bản boss chung 140 BPM. Mục 8: thêm tiêu chí "mọi telegraph có âm báo" |
 | `01-GDD/10-He-thong-RPG-Xuong.md` | Mục 6, dòng "Âm thanh (M12)": ghi id `kai.dash.air`, `kai.graze`, `kai.shield.break`, `kai.shield.ready`, `fx.burst`, `hit.punish`, `ui.learn`, `kai.laststand`, `radar.ping` |
 | `01-GDD/11-Do-kho.md` | Mục 6: "âm cảnh báo đòn boss (M12, chưa làm)" thành `thorna.stalk.tele`, `thorna.stalk.mark`; đòn nhiều nhịp có tiếng tích theo số nhịp |
-| `01-GDD/07-Kich-ban-huong-dan.md` | Mục 8.2: "cảnh báo âm thanh cho đòn boss" là thanh Cảnh báo; thêm "chỉ báo âm thanh bằng hình". P10 có thể đổi thành "Nó sáng lên và rít trước khi khai hỏa" (tùy biên kịch) |
+| `01-GDD/07-Kich-ban-huong-dan.md` | Mục 8.2: "cảnh báo âm thanh cho đòn boss" là thanh Cảnh báo. P10 có thể đổi thành "Nó sáng lên và rít trước khi khai hỏa" (tùy biên kịch) |
 | `01-GDD/08-Giong-nhan-vat.md` | Thêm một dòng âm biểu cảm cho NOVA, Kai, Mira, Thorna, Vex (bảng 2.10) |
 | `02-Wireframes/boards/Audio.html` | Thêm thanh Giao diện, công tắc Tắt tiếng, dòng mẹo iOS, dòng Bluetooth; bỏ "Tắt tiếng khi chuyển tab" và "Nhạc theo nhịp pha boss" |
 | `02-Wireframes/boards/Access.html` | "Cảnh báo bằng âm thanh cho đòn boss" là công tắc của bus `alert` (cùng trạng thái với thanh Cảnh báo) |
 | `02-Wireframes/boards/Pause.html` | Thêm mục "Âm thanh: Bật/Tắt" |
 | `03-Data/audio.json` | Tạo mới (mục 7.1) |
 | `03-Data/ui.json` | `feedback.small/medium/large.vibrateMs` (0, 20, 35); `feedback.haptics` (`hurtMs` 40, `diedPattern` [60, 40, 60], `chargeFullMs` 12, `maxMsPerSec` 300); mẫu rung tay cầm của 14 đặt cạnh; kiểm tra ở `core/ui-config.ts` |
-| `01-GDD/14-Cai-dat-Tiep-can.md` | Mục 3.3, 3.4 (dòng 104): **bỏ** "Chỉ báo âm thanh bằng hình" (không cần nhờ QB-23, quyết định 18); "Âm cảnh báo đòn boss" là công tắc bus `alert`; ghi rõ tab Âm thanh bỏ "Tắt tiếng khi chuyển tab", "Nhạc theo nhịp pha boss", thêm thanh Giao diện và Tắt tiếng. Mục 3: `settings.reset` đặt lại cả `cv.audio` |
+| `01-GDD/14-Cai-dat-Tiep-can.md` | Mục 3.3, 3.4 (dòng 104): **bỏ** "Chỉ báo âm thanh bằng hình" (không cần nhờ QB-23, quyết định 18); "Âm cảnh báo đòn boss" là công tắc bus `alert`; ghi rõ tab Âm thanh bỏ "Tắt tiếng khi chuyển tab", "Nhạc theo nhịp pha boss", thêm thanh Giao diện và Tắt tiếng. Mục 3: `settings.reset` đặt lại cả `cv.audio`. Mục 12: Story EP-14 gộp bảng Âm thanh của ST-12-07 thành tab và thêm dòng Tiếp cận |
 | `01-GDD/13-Do-luong-MVP.md` | `stage_start` thêm `audio` (`master`, `sfx`, `alert`, `muted`) cho H1; `survey_answer` thêm câu `audio_annoy` (1–5) sau lần đầu hạ Thorna cho H4; `settings_change` đã bao các id âm |
 | `01-GDD/17-Quy-tac-bien.md` | Thêm nhóm "Âm thanh" (đề xuất mã QB-140…QB-146): gộp âm theo khung khi bù bước; âm loại trừ cùng bước (mục 5.8); hạ boss khi cue đang phát; hồi sinh dừng vòng lặp; trận đứng yên thì tạm dừng `sfx`, `alert`; chưa mở khóa thì bỏ, không xếp hàng; tốc độ game không đổi tốc độ âm. Ghi chú QB-23: cue kẻ địch dựa vào luật này |
 | `game/src/logic/world/world-types.ts` và nơi phát (`stage-world.ts`, `logic/player`, `logic/enemy`, `logic/boss`, `logic/combat/loadout.ts`) | Trường mới mục 2.11 |
