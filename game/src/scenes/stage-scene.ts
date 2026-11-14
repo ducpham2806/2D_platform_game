@@ -612,7 +612,10 @@ export class StageScene extends Phaser.Scene {
     // Vũ khí khắc chế: đang ở phòng boss, đã có, mà lúc chết không cầm nó.
     const weak = world.boss?.data.weakness;
     const counter =
-      world.phase === 'boss' && weak && world.loadout.has(weak) && world.loadout.current.name !== weak
+      world.phase === 'boss' &&
+      weak &&
+      world.loadout.has(weak) &&
+      world.loadout.current.name !== weak
         ? weak
         : undefined;
     hint.pending = difficultyHintText(data, this.difficultyId, counter);
