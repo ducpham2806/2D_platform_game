@@ -12,7 +12,7 @@
 | ST-13-03 | Cờ `?mvp=`, `install`, kho `cv.telemetry*` (gộp hàng đợi mồ côi), `run` qua phiên; thông báo không chặn; Cài đặt → Dữ liệu; chuyển từ 02: mã lỗi `SaveManager` (`save_error`), phiên mới sau 30 phút ẩn (QB-154), `msToControl`; nối `dataFingerprint` vào build | 01, 02; khung Cài đặt EP-14; ADR-002 | 1,5 phiên | Chờ ADR-002 |
 | ST-13-04 | Điểm nhận và Uploader | 01, 03; ADR-002 | 1,5 phiên | Chờ ADR-002 |
 | ST-13-05a | Báo cáo cổng: MV1–MV7, H1–H4, Wilson, phễu, theo màn, thiết bị, F1; `npm run mvp-report`; bộ dữ liệu mẫu có đáp án | 01 | 1 phiên | DONE (14/11/2026) |
-| ST-13-05b | Chỉ số phụ K1–K6, DK1–DK4, T1–T4, X1–X5, S1 (đáp án thêm vào bộ mẫu) | 05a | 0,5 phiên | Chưa |
+| ST-13-05b | Chỉ số phụ K1–K6, DK1–DK4, T1–T4, X1–X5, F1, S1 (đáp án thêm vào bộ mẫu) | 05a | 0,5 phiên | DONE (14/11/2026) |
 | ST-13-06 | Phiếu trong game, `npm run mvp-flow` | 02–05 | 1 phiên | Chưa |
 
 ## ST-13-01: Lõi đo lường thuần
@@ -85,4 +85,12 @@
 - **Tiêu chí:** [x] bộ mẫu 20 người + 4 install biên cho đúng đáp án MV1–MV7, H1–H4, phễu, bảng đoạn; [x] khoảng Wilson khớp bảng mục 6.5 tới 0,01; [x] phán quyết Đạt / Biên / Không / Thiếu dữ liệu, so x/n không làm tròn; [x] các trường hợp mục 9 (xem `qa/ST-13-05/README.md`); [x] ngưỡng thật với 20 người: MV1–MV6 Thiếu dữ liệu; [x] thiếu `--day0`: MV4 Thiếu dữ liệu; [x] chỉ có Thiếu dữ liệu: Chưa kết luận; [x] script ghi Markdown (test gọi thật).
 - **Cần ở Story khác:** Prologue ghi `stage_end{prologue, clear}` lúc chạm lối ra và có danh sách đoạn (EP Prologue; chưa có thì MV1, T1–T4 là Thiếu dữ liệu). Bản đồ thật Stage 1–4 dùng đúng id đoạn `segments` (`A`–`D`, `boss`), thêm test dữ liệu khi có bản đồ (phòng thử hiện dùng `spikes`, `pit`, `vines`…). `received_at` của điểm nhận giữ lại để phát hiện đồng hồ máy sai (ST-13-04).
 - **Góp ý chưa làm (không bắt buộc):** H4 nhân ngưỡng theo `enemyHp` của độ khó; H1 thêm cột "vào màn trước ngày 7"; MV7 thêm trung vị theo người.
+
+## ST-13-05b: Chỉ số phụ của báo cáo
+
+- **Trạng thái:** DONE (14/11/2026) · **Phụ thuộc:** ST-13-05a · **Bằng chứng:** [x] Logic (`tests/mvp-report.test.ts`, thêm 6 test) [x] Chạy thật (`qa/ST-13-05/`, mục 7 của báo cáo)
+- **Bối cảnh:** GDD 13 mục 6.4 (K1–K6 từ `04-Can-bang-kinh-te.md`, DK1–DK4 từ `11-Do-kho.md`, T1–T4 từ `07-Kich-ban-huong-dan.md`, X1–X5 từ GDD 15, 17, F1 cổng Prototype, S1 từ `14-Cai-dat-Tiep-can.md` mục 10). Không chặn cổng.
+- **Đã làm:** `logic/telemetry/report-extra.ts` (chỉ số, bảng mục 7); `core/mvp-report.ts` thêm `parseTargets`, `secondaryParams` (giá rẻ nhất lúc Quầy mở và tổng giá Upgrade tính từ `shop.json`, thu theo màn từ `economy.incomeFormula`, `rewardMul`, thứ tự độ khó); `telemetry.json → report.targets`. Cách tính chốt ở GDD 13 mục 6.4.
+- **Tiêu chí:** [x] bộ mẫu cho đúng đáp án K1–K6, DK1–DK4, T1–T4, X1–X5, F1, S1; [x] số liệu game khớp `04` (giá rẻ nhất 200, tổng 14.593, thu 225/300/375/450); [x] mục tiêu sai bị chặn.
+- **Cần ở Story khác:** `boot_timing.msToControl` (X3, ST-13-03); EP-14 ghi `settings_change` cho tùy chọn dạng danh sách bằng chỉ số (0 = mặc định); id đổi cỡ nút, tay thuận (`14` mục 10 ý 3) thêm vào `s1Settings` khi EP-14 chốt id.
 

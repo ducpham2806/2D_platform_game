@@ -6,6 +6,12 @@
  */
 import type { Dataset, Device, Ev, Player, Run } from './report-data';
 import { addDays, buildPlayers, median, wilson } from './report-data';
+import {
+  renderSecondary,
+  type SecondaryMetric,
+  type SecondaryParams,
+  secondaryMetrics,
+} from './report-extra';
 
 /** Một màn trong báo cáo (Prologue hoặc màn chiến dịch của đợt). */
 export interface ReportStage {
@@ -44,6 +50,8 @@ export interface ReportParams {
   maxDayJump: number;
   /** Hơn chừng này install thì nhắc xem lại nguồn link (mục 9). */
   maxInstalls: number;
+  /** Chỉ số phụ (mục 6.4); thiếu thì mục 7 của báo cáo bỏ trống. */
+  secondary?: SecondaryParams;
 }
 
 export type Verdict = 'pass' | 'fail' | 'borderline' | 'insufficient';
@@ -143,6 +151,8 @@ export interface MvpReport {
   funnel: FunnelStep[];
   stages: StageTable[];
   devices: DeviceRow[];
+  /** Chỉ số phụ K, DK, T, X, F, S (không chặn cổng). */
+  secondary: SecondaryMetric[];
   /** Ghi chú tính toán (màn bỏ khỏi MV7, nhiều nhóm dữ liệu…). */
   notes: string[];
   recommendations: string[];
@@ -764,6 +774,9 @@ export function buildReport(ds: Dataset, params: ReportParams): MvpReport {
     funnel,
     stages: tables,
     devices,
+    secondary: params.secondary
+      ? secondaryMetrics(ds, players, params.prologue, params.stages, params.secondary)
+      : [],
     notes,
     recommendations: recommend(gate, brokenRows, devices, conclusion),
     conclusion,
@@ -1131,7 +1144,9 @@ export function renderReport(r: MvpReport, title: string): string {
     '',
   );
 
-  L.push('## 7. Chỉ số phụ', '', 'K, DK, T, X, S: chưa tính (ST-13-05b).', '');
+  L.push('## 7. Chỉ số phụ', '');
+  if (r.secondary.length > 0) L.push(...renderSecondary(r.secondary), '');
+  else L.push('Chưa có tham số chỉ số phụ (`telemetry.json → report.targets`).', '');
 
   L.push('## 8. Việc đề xuất', '');
   for (const x of r.recommendations) L.push(`- ${x}`);

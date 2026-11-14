@@ -1,4 +1,4 @@
-# ST-13-05a: báo cáo cổng MVP (chạy thử)
+# ST-13-05a/b: báo cáo cổng MVP (chạy thử)
 
 - **Bản chạy:** `npm run mvp-report` trên bộ dữ liệu mẫu có đáp án (`game/tests/mvp-sample.ts`: 20 người chơi giả và 4 install biên), 14/11/2026. Story không đổi gì người chơi nhìn thấy; bằng chứng là báo cáo Markdown.
 - **Lệnh:** `npm --prefix game run mvp-report -- --day0 2026-11-20 --wave d1 --out <file.md> <gói xuất.json> <bảng tải.json>`, gọi từ gốc repo (đường dẫn tương đối tính từ thư mục gọi).
@@ -10,4 +10,6 @@
 
 **Bộ mẫu có những trường hợp (GDD 13 mục 9):** staff; phiên quá ngắn (đã vào Prologue); ghi rác (400 sự kiện trong 2 phút); bản vá đổi dữ liệu (`data` khác); lô sai phong bì; sự kiện có khóa lạ; lô gửi lại và gói xuất chồng lên bảng (bản trùng); lượt qua hai phiên (QB-154); phiên có `sid` nhỏ hơn phiên trước (sắp theo `t`); đồng hồ máy lùi; phiên ngoài cửa sổ đo; người bắt đầu ngày 7; chơi Stage 3 trước Stage 2; thắng boss xám rồi `stage_end{clear}` (không tính là xong); lượt có giảm tốc; trận boss thiếu `weaknessOwned`; hai trận Lumen, gộp sát thương thì tỷ lệ Vine Lash thấp.
 
-**Chưa có trong bản này:** K, DK, T, X, S (ST-13-05b). Prologue chưa có bản đồ thật, nên ở đợt thật MV1 và H1 của Prologue là Thiếu dữ liệu tới khi Prologue ghi `stage_end{prologue, clear}` và có danh sách đoạn.
+**Chỉ số phụ (ST-13-05b):** mục 7 của hai báo cáo; bộ mẫu thêm số dư, Core Bit, mua và hoàn ở Quầy, lượt Thử thách và Cốt truyện, hướng dẫn, thời gian vào game, lỗi chết game, lỗi lưu, FPS điện thoại, tự bắn, mù màu. `msToControl` chưa ghi nên X3 là Thiếu dữ liệu.
+
+**Lưu ý:** Prologue chưa có bản đồ thật, nên ở đợt thật MV1 và H1 của Prologue là Thiếu dữ liệu tới khi Prologue ghi `stage_end{prologue, clear}` và có danh sách đoạn.

@@ -5,7 +5,7 @@
 - Đợt: d1. Build: abc1234. Dữ liệu: `deadbeef`.
 - Ngày 0: 2026-11-20; cửa sổ đo tới hết 2026-11-27.
 - Người chơi: 20 (bàn phím 9, cảm ứng 10, tay cầm 1; theo thiết bị nhiều giây chơi nhất).
-- Lô: 44 (bỏ 1 lô sai phong bì); sự kiện: 631; bỏ vì sai lược đồ: 1; bản trùng: 98.
+- Lô: 44 (bỏ 1 lô sai phong bì); sự kiện: 668; bỏ vì sai lược đồ: 1; bản trùng: 107.
 - Sự kiện lọc: ngoài đợt 0, ngoài danh sách build 0, ngoài cửa sổ đo 12.
 - Install loại: staff 1; mọi phiên quá ngắn 1 (trong đó 1 đã vào Prologue); ghi rác 1; hết sự kiện sau lọc 1.
 - Install chỉ có một phiên ngắn (có thể là tab ẩn danh, làm MV4 thấp hơn thật): 1.
@@ -111,13 +111,13 @@ Vào 10, xong 7 (70%); xong ngay lượt đầu 70%; chết trung bình trước
 
 | Đoạn | Người tới | Chết | Bỏ cuộc kẹt ở đây |
 | --- | --- | --- | --- |
-| A | 10 | 1 | 1 (10%) |
+| A | 10 | 4 | 1 (10%) |
 | B | 9 | 0 | 0 (0%) |
 | C | 9 | 0 | 0 (0%) |
 | D | 9 | 0 | 0 (0%) |
 | boss | 9 | 9 | 2 (20%) |
 
-Nguyên nhân chết nhiều nhất: `enemy:drone_linh` 10.
+Nguyên nhân chết nhiều nhất: `enemy:drone_linh` 11, `spike` 2.
 
 ### Cirrus Tower (`cirrus_tower`)
 
@@ -137,15 +137,43 @@ Nguyên nhân chết nhiều nhất: `enemy:drone_linh` 7.
 
 | Thiết bị | Người | Lượt | Chết/phút | Hạ boss Stage 1 | Nhảy | Lướt | Bắn |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Bàn phím | 9 | 33 | 0,16 | 78% (n 9) | 5,0 | 5,0 | 4,0 |
-| Cảm ứng | 10 | 38 | 0,17 | 78% (n 9) | 3,0 | 4,0 | 4,0 |
+| Bàn phím | 9 | 34 | 0,17 | 78% (n 9) | 5,0 | 5,0 | 4,0 |
+| Cảm ứng | 10 | 39 | 0,17 | 78% (n 9) | 3,0 | 4,0 | 4,0 |
 | Tay cầm | 1 | 1 | 0,00 | — (n 0) | — | — | — |
 
 Chết/phút gồm cả rơi hố còn máu, bỏ lượt có giảm tốc. Phiếu F1 theo thiết bị lúc trả lời; mục tiêu ≥ 4.
 
 ## 7. Chỉ số phụ
 
-K, DK, T, X, S: chưa tính (ST-13-05b).
+Không chặn cổng; dùng để chọn việc sửa (GDD 13 mục 6.4). Mục tiêu ở `telemetry.json → report.targets`.
+
+| Mã | Chỉ số | Giá trị | n | Mục tiêu | Kết quả | Chi tiết |
+| --- | --- | --- | --- | --- | --- | --- |
+| K1 | Đủ tiền cho món đầu tiên khi Quầy mở (200 Core Bit) | 88% | 8 | ≥ 70% | Đúng mục tiêu | 1 người thiếu số dư |
+| K2 | Số dư cuối màn ÷ thu của màn (lần xong đầu, Thường) | 1,04 | 13 | ≤ 1,5 | Đúng mục tiêu | verdant_gardens 1,2; prism_institute 0,94 |
+| K3 | Mức Upgrade sau cirrus_tower Thường (đã trả ÷ 14593) | 2% | 4 | 6% ± 10 điểm | Đúng mục tiêu |  |
+| K4 | Lặp màn để kiếm tiền | 5% | 20 | < 15% | Đúng mục tiêu |  |
+| K5 | Thời gian chơi tới lần mua đầu (trung vị) | 40 phút | 3 | theo dõi | Theo dõi |  |
+| K6 | Core Bit lượt hạ boss đầu ÷ (thu của màn × hệ số thưởng), trung vị | 1 | 6 | 0,8–1,2 | Đúng mục tiêu |  |
+| DK1 | Chọn Thử thách (người đã mở Thử thách) | 25% | 4 | 10%–20% | 🟧 Lệch |  |
+| DK2 | Bỏ cuộc ở Thử thách ÷ ở Thường (theo lượt) | 3 | 1 | ≤ 2 | 🟧 Lệch | Thử thách 1/1, Thường 17/51 lượt không xong |
+| DK3 | Màn vào ở Cốt truyện mà hạ boss ở Cốt truyện | 50% | 2 | ≥ 90% | 🟧 Lệch |  |
+| DK4 | Quy tắc chỉnh độ khó | 2 | 20 | không có | 🟧 Lệch | verdant_gardens/A: 1/1 người thử Thử thách bỏ cuộc → nới mẫu đòn; cryo_vault/A: 1 người chết > 3 lần ở Cốt truyện → thêm checkpoint story |
+| T1 | Thời lượng Prologue (trung vị lượt xong) | 4 phút | 18 | 3–5 phút | Đúng mục tiêu |  |
+| T2 | Bỏ cuộc tại một bước hướng dẫn (bước tệ nhất) | 17% | 6 | ≤ 3% mỗi bước | 🟧 Lệch | bước S01: 1/6 |
+| T3 | Bỏ qua hoặc tắt hướng dẫn | 10% | 20 | ≤ 15% | Đúng mục tiêu |  |
+| T4.1 | Phễu: xong Prologue (vào Hub) / người vào Prologue | 90% | 20 | ≥ 90% | Đúng mục tiêu |  |
+| T4.2 | Phễu: vào Stage 1 / người vào Prologue | 90% | 20 | ≥ 85% | Đúng mục tiêu |  |
+| T4.3 | Phễu: hạ boss Stage 1 / người vào Prologue | 70% | 20 | ≥ 70% | Đúng mục tiêu |  |
+| X1 | Phiên không có lỗi chết game | 97% | 31 | ≥ 99% | 🟧 Lệch |  |
+| X2 | Vào game: p75 tới menu | 3500 ms | 4 | ≤ 3000 ms | 🟧 Lệch |  |
+| X3 | Điều khiển Kai từ lần mở đầu: p75 | — | 0 | ≤ 15000 ms | Thiếu dữ liệu | chưa ghi msToControl (ST-13-03) |
+| X4 | Lượt trên điện thoại có FPS trung vị ≥ 55 | 75% | 4 | ≥ 90% | 🟧 Lệch |  |
+| X5 | Lỗi lưu (`save_error`) | 1 | 31 | ≤ 0 | 🟧 Lệch |  |
+| F1.cam-ung | Cảm giác Nhảy, Lướt, Bắn (cảm ứng, điểm thấp nhất) | 3 | 2 | ≥ 4 | 🟧 Lệch | jump 3, dash 4, shoot 4 |
+| F1.ban-phim | Cảm giác Nhảy, Lướt, Bắn (bàn phím, điểm thấp nhất) | 4 | 2 | ≥ 4 | Đúng mục tiêu | jump 5, dash 5, shoot 4 |
+| F1.tay-cam | Cảm giác Nhảy, Lướt, Bắn (tay cầm, điểm thấp nhất) | — | 0 | ≥ 4 | Thiếu dữ liệu |  |
+| S1 | Dùng tùy chọn tiếp cận | — | 20 | theo dõi | Theo dõi | tự bắn 2/10 người cảm ứng; hỗ trợ ngắm 1/10; giảm tốc 1/20 người; a11y.colorblind 1/20; a11y.textSize 0/20 |
 
 ## 8. Việc đề xuất
 

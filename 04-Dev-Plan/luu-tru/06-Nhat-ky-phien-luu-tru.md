@@ -4,6 +4,16 @@ Các mục cũ chuyển từ `04-Dev-Plan/06-Nhat-ky-phien.md`, mới nhất ở
 
 ---
 
+## 2026-11-14: EP-13 ST-13-02 nối đo lường vào game
+
+- **Nhánh / commit:** `ccr-9de01342-2046rb` (không merge vào `main` trong đợt thử G1); `8ba4609` (02a), commit 02b.
+- **Mục tiêu:** người dùng giao "làm tiếp": ST-13-02 nối sự kiện đo lường vào game; tách 02a (logic thuần) và 02b (scene).
+- **02a:** đạn kẻ địch mang `source`; `WorldEvents.hurtBy`, `deathCause` (`enemy:<id>`, `boss:<loại đạn>`, `spike`, `pit`); `StageWorld.bossDamage` theo vũ khí, `bossWeakHits`; `StageTracker` (một lượt màn: stage_start…stage_end, boss_end win/death/exit), `FrameStats`, `buildSignature`. Test chuỗi sự kiện trên StageWorld thật (GDD 13 mục 10 ý 1).
+- **02b:** `src/scenes/telemetry/` (dịch vụ: session_start, boot_timing, lỗi trang; một lượt màn: FrameStats, hướng dẫn, gợi ý NOVA, trang ẩn, rời màn); `logic/telemetry/device.ts`; Quầy, Xưởng báo giao dịch qua `onTelemetry`; cờ tạm `?debug=1&telemetry=1` (bộ nhớ), `?staff=1`.
+- **Quyết định:** chỉ màn chiến dịch mới ghi; lớp nối nằm trong `src/scenes/` vì luật lint chỉ cho scene import Phaser; mã lỗi lưu, phiên mới sau 30 phút ẩn, `msToControl` chuyển sang ST-13-03.
+- **Kiểm tra:** 453 test (thêm 7), typecheck, lint, format, build, docs-check đạt; chạy thử Chromium Pixel 7: không cờ thì 0 bộ ghi, 0 request; có cờ thì 17 sự kiện đúng chuỗi, 0 sai lược đồ, 0 lỗi console (`qa/ST-13-02/`); `gate-flow` đạt.
+- **Tiếp theo:** ST-13-05 báo cáo (`report.ts`, `npm run mvp-report`). Người dùng: chơi thử G1, chọn hướng đồ họa, chọn kênh gửi (ADR-002).
+
 ## 2026-11-14: EP-13 ST-13-01 lõi đo lường (duyệt Technical Director GDD 13)
 
 - **Nhánh / commit:** `ccr-9de01342-2046rb` (sau merge PR #10, #11; không merge vào `main` trong đợt thử G1); commit ST-13-01.

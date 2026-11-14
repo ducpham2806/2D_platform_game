@@ -8,6 +8,9 @@ import { arr, ConfigError, num, obj, str } from './json-check';
 import { type GameConfig, parseGameConfig } from './game-config';
 import { EXTRA_STAGE_IDS, telemetryCatalogs, weaponId } from './telemetry-catalogs';
 import { addDays, buildDataset, collectBatches, dayStartMs } from '../logic/telemetry/report-data';
+import type { SecondaryParams, SecondaryTargets } from '../logic/telemetry/report-extra';
+import { evaluateFormula } from '../logic/formula';
+import { levelCap, upgradeCost } from '../logic/shop/upgrades';
 import {
   buildReport,
   type MvpReport,
@@ -29,6 +32,7 @@ export interface ReportSettings {
   spamRateMul: number;
   spamMinHours: number;
   maxInstalls: number;
+  targets: SecondaryTargets;
 }
 
 const PROLOGUE = EXTRA_STAGE_IDS[0];
@@ -67,6 +71,97 @@ export function parseReportSettings(telemetryJson: unknown): ReportSettings {
     spamRateMul: num(r.spamRateMul, `${p}.spamRateMul`, { min: 1 }),
     spamMinHours: num(r.spamMinHours, `${p}.spamMinHours`, { min: 0.01 }),
     maxInstalls: int(r.maxInstalls, `${p}.maxInstalls`, 1),
+    targets: parseTargets(r.targets, `${p}.targets`),
+  };
+}
+
+function frac(value: unknown, path: string): number {
+  const v = num(value, path, { min: 0 });
+  if (v > 1) throw new ConfigError(`${path}: phải trong [0; 1]`);
+  return v;
+}
+
+function range(value: unknown, path: string, unit = false): [number, number] {
+  const r = arr(value, path);
+  if (r.length !== 2) throw new ConfigError(`${path}: cần [thấp, cao]`);
+  const lo = unit ? frac(r[0], `${path}[0]`) : num(r[0], `${path}[0]`, { min: 0 });
+  const hi = unit ? frac(r[1], `${path}[1]`) : num(r[1], `${path}[1]`, { min: lo });
+  if (hi < lo) throw new ConfigError(`${path}: cao phải ≥ thấp`);
+  return [lo, hi];
+}
+
+/** Mục tiêu chỉ số phụ (GDD 13 mục 6.4). */
+export function parseTargets(value: unknown, p: string): SecondaryTargets {
+  const t = obj(value, p);
+  const t4 = arr(t.t4, `${p}.t4`);
+  if (t4.length !== 3) throw new ConfigError(`${p}.t4: cần 3 mốc`);
+  const settings = obj(t.s1Settings, `${p}.s1Settings`);
+  const s1Settings: Record<string, number | boolean> = {};
+  for (const [id, def] of Object.entries(settings)) {
+    if (typeof def !== 'number' && typeof def !== 'boolean')
+      throw new ConfigError(`${p}.s1Settings.${id}: cần số hoặc boolean`);
+    s1Settings[id] = def;
+  }
+  return {
+    k1: frac(t.k1, `${p}.k1`),
+    k2Max: num(t.k2Max, `${p}.k2Max`, { min: 0 }),
+    k3SpendShare: frac(t.k3SpendShare, `${p}.k3SpendShare`),
+    k3MaxGap: frac(t.k3MaxGap, `${p}.k3MaxGap`),
+    k4Max: frac(t.k4Max, `${p}.k4Max`),
+    k6: range(t.k6, `${p}.k6`),
+    dk1: range(t.dk1, `${p}.dk1`, true),
+    dk2Max: num(t.dk2Max, `${p}.dk2Max`, { min: 0 }),
+    dk3: frac(t.dk3, `${p}.dk3`),
+    dk4ChallengeQuit: frac(t.dk4ChallengeQuit, `${p}.dk4ChallengeQuit`),
+    dk4StoryDeaths: int(t.dk4StoryDeaths, `${p}.dk4StoryDeaths`, 1),
+    t1Min: range(t.t1Min, `${p}.t1Min`),
+    t2Max: frac(t.t2Max, `${p}.t2Max`),
+    t3Max: frac(t.t3Max, `${p}.t3Max`),
+    t4: [frac(t4[0], `${p}.t4[0]`), frac(t4[1], `${p}.t4[1]`), frac(t4[2], `${p}.t4[2]`)],
+    x1: frac(t.x1, `${p}.x1`),
+    x2Ms: num(t.x2Ms, `${p}.x2Ms`, { min: 1 }),
+    x3Ms: num(t.x3Ms, `${p}.x3Ms`, { min: 1 }),
+    x4Fps: num(t.x4Fps, `${p}.x4Fps`, { min: 1 }),
+    x4Share: frac(t.x4Share, `${p}.x4Share`),
+    x5Max: int(t.x5Max, `${p}.x5Max`, 0),
+    f1: num(t.f1, `${p}.f1`, { min: 1 }),
+    s1SlowStageMax: frac(t.s1SlowStageMax, `${p}.s1SlowStageMax`),
+    s1Settings,
+  };
+}
+
+/** Số liệu game cho chỉ số phụ: giá rẻ nhất lúc Quầy mở, tổng giá Upgrade, thu theo màn. */
+export function secondaryParams(
+  config: GameConfig,
+  stageIds: readonly string[],
+  targets: SecondaryTargets,
+): SecondaryParams {
+  const shop = config.shop;
+  const first = shop.unlockSchedule[0];
+  if (!first) throw new ConfigError('shop.unlockSchedule: cần ít nhất một mốc');
+  const prices = Object.values(shop.upgrades)
+    .filter((u) => levelCap(shop, u.id, first.afterBosses) >= 1)
+    .map((u) => upgradeCost(u, 1));
+  if (prices.length === 0) throw new ConfigError('shop: không món nào bán được lúc Quầy mở');
+  let total = 0;
+  for (const u of Object.values(shop.upgrades))
+    for (let lv = 1; lv <= u.maxLevel; lv += 1) total += upgradeCost(u, lv);
+  const income: Record<string, number> = {};
+  for (const id of stageIds) {
+    const st = config.stages.stages.find((s) => s.id === id);
+    if (st)
+      income[id] = Math.round(evaluateFormula(config.economy.incomeFormula, { stage: st.index }));
+  }
+  const rewardMul: Record<string, number> = {};
+  for (const d of config.difficulties) rewardMul[d.id] = d.rewardMul;
+  return {
+    targets,
+    shopOpenBosses: first.afterBosses,
+    cheapestPrice: Math.min(...prices),
+    totalUpgradeCost: total,
+    income,
+    rewardMul,
+    difficultyOrder: config.difficulties.map((d) => d.id),
   };
 }
 
@@ -118,6 +213,11 @@ export function mvpReportParams(
     missingWeaknessMax: settings.missingWeaknessMax,
     maxDayJump: settings.maxDayJump,
     maxInstalls: settings.maxInstalls,
+    secondary: secondaryParams(
+      config,
+      stages.map((s) => s.id),
+      settings.targets,
+    ),
   };
 }
 

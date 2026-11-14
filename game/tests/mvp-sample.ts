@@ -40,9 +40,17 @@ export interface RunSpec {
   gameSpeed?: number;
   /** Phần tiếp của lượt mở ở phiên trước (QB-154): không có `stage_start`, `tRun` bắt đầu từ đây. */
   continueFrom?: number;
+  difficulty?: string;
+  /** Thuộc tính thêm vào `stage_start`, `stage_end`/`stage_progress`. */
+  start?: Props;
+  endProps?: Props;
 }
 
-export type Item = { run: RunSpec } | { survey: [string, string] } | { raw: TelemetryEvent['e'] };
+export type Item =
+  | { run: RunSpec }
+  | { survey: [string, string] }
+  | { raw: TelemetryEvent['e'] }
+  | { ev: [TelemetryEvent['e'], Props] };
 
 export interface SessionSpec {
   /** Ngày so với ngày 0 (theo `t`); `dayText` thay chuỗi `day` (đồng hồ máy sai). */
@@ -97,6 +105,10 @@ export function playerEvents(p: PlayerSpec): TelemetryEvent[] {
         ev(item.raw, { id: 'sfx', value: 0.5, where: 'menu' });
         continue;
       }
+      if ('ev' in item) {
+        ev(item.ev[0], item.ev[1]);
+        continue;
+      }
       const r = item.run;
       const t0 = r.continueFrom ?? 0;
       const at = (tRun: number): number => t + (tRun - t0) * 1000;
@@ -105,12 +117,13 @@ export function playerEvents(p: PlayerSpec): TelemetryEvent[] {
         starts.set(r.stage, k);
         ev('stage_start', {
           stage: r.stage,
-          difficulty: 'normal',
+          difficulty: r.difficulty ?? 'normal',
           run: k,
           device: p.device,
           ...(r.skills ? { skills: r.skills } : {}),
           ...(r.upgrades ? { upgrades: r.upgrades } : {}),
           ...(r.gameSpeed !== undefined ? { gameSpeed: r.gameSpeed } : {}),
+          ...r.start,
         });
       }
       const secs = r.sections ?? [];
@@ -185,6 +198,7 @@ export function playerEvents(p: PlayerSpec): TelemetryEvent[] {
         deviceSec: { [p.device]: r.sec },
         gameSpeedMin: r.gameSpeed ?? 1,
         ...(last ? { furthest: last } : {}),
+        ...r.endProps,
       };
       if (end === 'clear' || end === 'quit') ev('stage_end', { ...props, outcome: end }, at(r.sec));
       if (end === 'progress') ev('stage_progress', props, at(r.sec));
@@ -289,6 +303,21 @@ export function sampleCast(): PlayerSpec[] {
       },
     });
   }
+  // K4: P05 chơi lại Stage 1 ở Thường sau khi đã xong (lặp kiếm tiền); P02 chơi lại ở Thử thách
+  // (khó hơn: không tính), bỏ cuộc ở đoạn A (DK2, DK4).
+  add(5, {
+    run: { stage: S1, sec: 0, sections: ['A'], end: 'quit', start: { clearedBefore: ['normal'] } },
+  });
+  add(2, {
+    run: {
+      stage: S1,
+      sec: 0,
+      sections: ['A'],
+      end: 'quit',
+      difficulty: 'challenge',
+      start: { clearedBefore: ['normal'], challengeOpen: true },
+    },
+  });
   for (const i of [4, 5, 7, 8, 9])
     add(i, {
       run: {
@@ -346,6 +375,13 @@ export function sampleCast(): PlayerSpec[] {
       fights: [{ boss: 'cryo', outcome: 'death', owned: 'start', dmg: HIGH('prismBeam') }],
     },
   });
+
+  // Quầy (K3, K5): trước Stage 4. P03 mua rồi hoàn lại.
+  add(1, { ev: ['shop_buy', { item: 'arc_core', level: 1, price: 400, playSec: 1800 }] });
+  add(1, { ev: ['shop_buy', { item: 'magnet_range', level: 1, price: 200, playSec: 1900 }] });
+  add(2, { ev: ['shop_buy', { item: 'arc_core', level: 1, price: 400, playSec: 2400 }] });
+  add(3, { ev: ['shop_buy', { item: 'arc_core', level: 1, price: 400, playSec: 3000 }] });
+  add(3, { ev: ['shop_refund', { item: 'arc_core', level: 1, price: 400 }] });
 
   // Stage 4 (Aeris, khắc chế Frost Shard); P04 thắng sau 5 s (H4).
   const s4 = { stage: S4, sec: 720, kills: 1 };
@@ -408,6 +444,7 @@ export function sampleCast(): PlayerSpec[] {
   });
   // Sự kiện sai lược đồ (bị bỏ, không làm hỏng phần còn lại).
   add(6, { raw: 'settings_change' });
+  secondaryScript(P, add);
   return cast;
 }
 
@@ -470,4 +507,95 @@ export function buildSample(): Sample {
   const broken = [{ ...p1, install: 'not-a-uuid' }];
   const duplicates = p1.events.length + p2.reduce((n, b) => n + b.events.length, 0);
   return { batches, resent, exported, broken, duplicates };
+}
+
+type Adder = (i: number, ...items: Item[]) => void;
+
+/** Lượt thứ `k` ở màn `stage` của người chơi `i` (để gắn thêm thuộc tính). */
+function runOf(p: PlayerSpec, stage: string, k = 0): RunSpec {
+  const runs = p.sessions.flatMap((s) =>
+    s.items.flatMap((x) => ('run' in x && x.run.stage === stage ? [x.run] : [])),
+  );
+  const r = runs[k];
+  if (!r) throw new Error(`thiếu lượt ${stage}#${k} của ${p.install}`);
+  return r;
+}
+
+/**
+ * Sự kiện cho chỉ số phụ (ST-13-05b). Đáp án ở `tests/mvp-report.test.ts`:
+ * K1 7/8, K2 13,5/13, K3 1000/4/14593, K4 1/20, K5 40 phút, K6 trung vị 1; DK1 1/4, DK2 (1/1) ÷
+ * (17/52), DK3 1/2, DK4 2 cờ; T1 4 phút, T2 bước S01 1/6, T3 2/20, T4 18, 18, 14 trên 20; X1
+ * 30/31, X2 3500 ms, X3 thiếu, X4 3/4, X5 1; F1 cảm ứng 3; S1 tự bắn 2/10.
+ */
+function secondaryScript(P: (i: number) => PlayerSpec, add: Adder): void {
+  const merge = (r: RunSpec, key: 'start' | 'endProps', props: Props): void => {
+    r[key] = { ...r[key], ...props };
+  };
+  // K1: số dư sau lượt hạ boss thứ hai (Lumen); P09 không có số dư.
+  for (let i = 1; i <= 8; i += 1) {
+    const r = runOf(P(i), S2, i <= 3 ? 1 : 0);
+    merge(r, 'endProps', { balance: i === 8 ? 150 : 300 });
+  }
+  // K2: số dư ở lần xong Stage 1; K6: Core Bit kiếm được.
+  for (const [i, bal] of [
+    [1, 225],
+    [2, 225],
+    [3, 225],
+    [4, 225],
+    [5, 450],
+  ] as const)
+    merge(runOf(P(i), S1), 'endProps', { balance: bal });
+  for (const [i, bits] of [
+    [1, 225],
+    [2, 225],
+    [3, 225],
+    [4, 225],
+    [6, 180],
+    [7, 270],
+  ] as const)
+    merge(runOf(P(i), S1), 'endProps', { coreBitsEarned: bits });
+  // DK1: đã mở Thử thách; DK3, DK4: Cốt truyện (P06 hạ Cryo, P08 chết 4 lần ở đoạn A).
+  merge(runOf(P(1), S2), 'start', { challengeOpen: true });
+  for (const i of [3, 4]) merge(runOf(P(i), S3), 'start', { challengeOpen: true });
+  runOf(P(6), S3).difficulty = 'story';
+  Object.assign(runOf(P(8), S3), { difficulty: 'story', kills: 4 });
+  // Hướng dẫn (T2, T3).
+  for (const i of [1, 2, 3, 4])
+    add(
+      i,
+      { ev: ['tutorial_step_start', { id: 'S01' }] },
+      { ev: ['tutorial_step_complete', { id: 'S01' }] },
+    );
+  add(5, { ev: ['tutorial_step_start', { id: 'S01' }] });
+  add(
+    6,
+    { ev: ['tutorial_step_start', { id: 'S01' }] },
+    { ev: ['tutorial_skip', { id: 'S01', scope: 'step' }] },
+  );
+  add(
+    7,
+    { ev: ['tutorial_step_start', { id: 'S02' }] },
+    { ev: ['tutorial_skip', { id: 'S02', scope: 'prologue' }] },
+  );
+  add(8, { ev: ['tutorial_toggle', { on: false, where: 'pause' }] });
+  // Kỹ thuật (X1–X5).
+  [1000, 2000, 3000, 5000].forEach((ms, k) =>
+    (P(k + 1).sessions[0] as SessionSpec).items.unshift({ ev: ['boot_timing', { msToMenu: ms }] }),
+  );
+  add(10, { ev: ['client_error', { kind: 'error', fatal: true, msg: 'boom', count: 1 }] });
+  add(10, { ev: ['save_error', { op: 'write', code: 'write' }] });
+  for (const [i, fps] of [
+    [1, 60],
+    [3, 50],
+    [5, 58],
+    [7, 60],
+  ] as const)
+    merge(runOf(P(i), S1), 'endProps', { fpsMedian: fps });
+  // Tiếp cận (S1).
+  for (const i of [1, 3]) merge(runOf(P(i), S1), 'start', { autoFire: true });
+  merge(runOf(P(5), S1), 'start', { aimAssist: true });
+  add(2, { ev: ['settings_change', { id: 'a11y.colorblind', value: 1, where: 'menu' }] });
+  add(4, { ev: ['settings_change', { id: 'a11y.colorblind', value: 0, where: 'menu' }] });
+  // K3: mua sau khi hạ Aeris không tính.
+  add(2, { ev: ['shop_buy', { item: 'arc_core', level: 2, price: 500, playSec: 9000 }] });
 }

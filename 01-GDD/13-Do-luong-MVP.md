@@ -237,6 +237,18 @@ Bản 1.2 theo duyệt QA Lead 14/11/2026; code ở `game/src/logic/telemetry/re
 
 Gợi ý bậc 3 (`07` mục 9) không đo: MVP mới có bậc 1–2.
 
+**Cách tính đã chốt khi code (ST-13-05b, `game/src/logic/telemetry/report-extra.ts`):** chỉ số phụ không chặn cổng, kết quả là Đúng mục tiêu, Lệch, Theo dõi hoặc Thiếu dữ liệu (không có mẫu); mục tiêu ở `telemetry.json → report.targets`.
+
+- K1: số dư lấy ở `stage_end` (hoặc `stage_progress` cuối) của lượt hạ boss chiến dịch thứ `shop.unlockSchedule[0].afterBosses`; giá rẻ nhất = cấp 1 rẻ nhất trong các món mở ở mốc đó (tính từ `shop.json`, hiện 200). Lượt không có `balance` thì bỏ và đếm.
+- K2, K6: lượt xong đầu của từng màn; thu của màn = `economy.incomeFormula` ở Thường. K2 là trung bình mọi cặp người × màn; K6 là trung vị, chia thêm `rewardMul` của độ khó lượt đó.
+- K3: người hạ boss màn cuối của đợt ở Thường; Σ `shop_buy.price` − Σ `shop_refund.price` trước lần thắng đó; tổng giá Upgrade tính từ `shop.json` (14.593); mô hình = `k3SpendShare` × Σ thu các màn của đợt ÷ tổng giá.
+- K4: có `stage_start` ở màn chưa phải màn cuối của đợt, độ khó dễ hơn hoặc bằng độ khó khó nhất trong `clearedBefore`, lúc còn màn của đợt chưa vào.
+- DK2: lượt màn chiến dịch có `outcome` khác `clear` (gồm `abandon`), Thử thách so với Thường. DK4: Thử thách tính đoạn xa nhất của lượt Thử thách cuối; Cốt truyện đếm `death` theo đoạn, cộng mọi lượt Cốt truyện của người đó ở màn.
+- T2: bước đã bắt đầu mà không có `tutorial_step_complete` hay `tutorial_skip` cùng id; `tutorial_skip{scope: prologue}` tính là xong mọi bước. Báo bước tệ nhất.
+- X1: phiên = (`install`, `sid`) có `session_start`. X2, X3: p75 nội suy tuyến tính. X4: điện thoại = `session_start.platform` android hoặc ios của phiên chứa lượt.
+- F1: mỗi thiết bị lấy điểm trung bình thấp nhất trong Nhảy, Lướt, Bắn.
+- S1: tự bắn, hỗ trợ ngắm từ `stage_start` của người cảm ứng; giảm tốc từ lượt có `gameSpeedMin < 1`, kèm màn có > 25% người vào dùng giảm tốc (`14` mục 10); tùy chọn trong `targets.s1Settings` tính là dùng khi `settings_change.value` khác mặc định. `value` chỉ nhận số hoặc boolean, nên tùy chọn dạng danh sách (mù màu, cỡ chữ) ghi chỉ số lựa chọn, 0 là mặc định (EP-14).
+
 ### 6.5 Cỡ mẫu và độ tin cậy
 
 Khoảng tin cậy 95% Wilson cho tỷ lệ p̂ trên n người (z = 1,96):
@@ -423,7 +435,7 @@ grant execute on function public.delete_my_data(uuid) to anon;
 - [ ] Mở không có `?mvp=` thì không tạo `cv.telemetry` và không có request mạng nào (Playwright đếm request).
 - [ ] Tắt gửi: bộ đệm trống, `delete_my_data` được gọi, không còn request ghi; bảng thật không còn dòng của `install` đó.
 - [ ] Gửi lô: thử lại có giãn cách; 409 coi như đã nhận; tắt mạng 10 phút rồi bật không mất sự kiện; bước logic không chậm thêm quá 0,1 ms vì gửi.
-- [ ] `mvp-report` trên bộ dữ liệu mẫu có đáp án (20 `install` giả, gồm các trường hợp ở mục 9) cho đúng MV1–MV7, H1–H4, K, DK, T, X; khoảng Wilson đúng tới 0,01. (ST-13-05a xong phần MV, H, Wilson: `game/tests/mvp-report.test.ts`; K, DK, T, X ở 05b.)
+- [ ] `mvp-report` trên bộ dữ liệu mẫu có đáp án (20 `install` giả, gồm các trường hợp ở mục 9) cho đúng MV1–MV7, H1–H4, K, DK, T, X; khoảng Wilson đúng tới 0,01. (ST-13-05a, 05b xong: `game/tests/mvp-report.test.ts`.)
 - [ ] Lô thật không có `userAgent` đầy đủ, tên, IP (xem bằng mắt trước đợt).
 - [ ] `npm run mvp-flow` đạt trên máy tính và Pixel 7 giả lập; ảnh và lô mẫu lưu ở `04-Dev-Plan/qa/<mã Story>/`.
 - [ ] Bot chơi lặp 60 phút sinh ≤ 40 KB dữ liệu.
@@ -458,7 +470,7 @@ grant execute on function public.delete_my_data(uuid) to anon;
 | ST-13-02 | Nối sự kiện: Boot, Menu, StageScene (`WorldEvents` → sự kiện), màn Chuẩn bị, Quầy, Xưởng, TutorialManager; `StageWorld` thêm sát thương theo vũ khí, nguồn cú đánh cuối, chữ ký build; `stages.json`, `bosses.json` thêm số liệu | 01 | 2 ngày | Mục 10 ý 1; mọi sự kiện ở mục 3 có test; QB-47, QB-90 |
 | ST-13-03 | Cờ `?mvp=`, `staff`; `install`; thông báo không chặn; Cài đặt → Dữ liệu (Tắt gửi và xóa, mã xóa, trạng thái, Xuất JSON) | 01; EP-14 khung Cài đặt | 1 ngày | Mục 10 ý 4–5; thông báo không làm `msToControl` vượt 15 s |
 | ST-13-04 | Điểm nhận: `schema.sql` (bảng, RLS, `delete_my_data`, giới hạn lô), Uploader (lô, thử lại, keepalive, 409), biến build trong Pages workflow | 01, 03 | 1,5 ngày | Mục 10 ý 6, 8 |
-| ST-13-05 | Báo cáo: `logic/telemetry/report.ts` (MV, H, K, DK, T, X, F, S, Wilson) + `npm run mvp-report`; bộ dữ liệu mẫu có đáp án. Tách 05a (MV, H, F1, phễu, theo màn; xong 14/11) và 05b (K, DK, T, X, S) | 01 | 1,5 ngày | Mục 10 ý 7 |
+| ST-13-05 | Báo cáo: `logic/telemetry/report.ts` (MV, H, K, DK, T, X, F, S, Wilson) + `npm run mvp-report`; bộ dữ liệu mẫu có đáp án. Tách 05a (MV, H, F1, phễu, theo màn) và 05b (K, DK, T, X, S); xong 14/11 | 01 | 1,5 ngày | Mục 10 ý 7 |
 | ST-13-06 | Phiếu trong game (cảm giác sau Thorna, "màn 5" sau boss thứ 4); `npm run mvp-flow`; `08-Cong-MVP.md` và cập nhật `04-Test-va-Launch.md` | 02–05 | 1 ngày | Mục 10 ý 9–10; ảnh ở `04-Dev-Plan/qa/ST-13-06/` |
 
 Thứ tự: 01 → 02 → 03 → 04 → 05 → 06, tổng khoảng 8 ngày. ST-13-05 làm song song được sau 01.

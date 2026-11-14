@@ -53,7 +53,7 @@ src/
                           danh sách thông số của bảng chỉnh cảm giác (thuần)
   logic/telemetry/        M16 đo lường MVP (EP-13): lược đồ sự kiện, kiểm lược đồ (id theo danh mục), bộ đệm theo
                           ưu tiên (lô bất biến, cutBatch/ack), lô và gói xuất JSON, bộ ghi Telemetry; báo cáo
-                          cổng MVP (report-data: đọc, khử trùng, dựng lượt; report: MV1–MV7, H1–H4, Markdown) (thuần)
+                          cổng MVP (report-data: đọc, dựng lượt; report: MV, H, Markdown; report-extra: K, DK, T, X, F, S)
   logic/hash.ts           FNV-1a dùng chung (mã sao lưu, dấu vân tay 03-Data cho đo lường)
   core/telemetry-*.ts     kiểm tra 03-Data/telemetry.json (không bắt buộc: lỗi thì tắt đo lường); danh mục id
   core/mvp-report.ts      tham số báo cáo MVP (telemetry.json → report + stages.json), runMvpReport (thuần)
@@ -140,7 +140,7 @@ Mỗi module một dòng; chi tiết ở file quyết định và Epic.
 - **ĐK Ba độ khó:** Xong cho Stage 1 (EP-10). Còn: checkpoint theo độ khó trên bản đồ thật, chốt số mẫu đòn (sau cổng), Stage 2–4.
 - **M11 Lưu:** Xong lưu cục bộ, bản lưu 4, mã sao lưu. Còn: cloud (Beta).
 - **M12 Âm thanh:** Chưa làm; tài liệu Draft (`01-GDD/12-Am-thanh.md`); EP-12 làm được ngay.
-- **M16 Đo lường MVP:** xong lõi (ST-13-01), nối vào game (ST-13-02a/b: nguồn đòn, sát thương boss theo vũ khí, `StageTracker`, sự kiện meta; tạm bật `?debug=1&telemetry=1`, chỉ bộ nhớ), báo cáo MV1–MV7, H1–H4 (ST-13-05a, `npm run mvp-report`). Còn: `?mvp=`, kho, mã lỗi lưu, QB-154 (ST-13-03), gửi (ST-13-04, chờ ADR-002), K, DK, T, X, S (ST-13-05b). Bản thường không ghi gì.
+- **M16 Đo lường MVP:** xong lõi (ST-13-01), nối vào game (ST-13-02a/b: nguồn đòn, sát thương boss theo vũ khí, `StageTracker`, sự kiện meta; tạm bật `?debug=1&telemetry=1`, chỉ bộ nhớ), báo cáo cổng đủ chỉ số (ST-13-05a/b, `npm run mvp-report`). Còn: `?mvp=`, kho, mã lỗi lưu, QB-154 (ST-13-03), gửi (ST-13-04, chờ ADR-002). Bản thường không ghi gì.
 - **M13–M15, M17, M18:** Chưa làm (sau cổng MVP).
 - **Cổng Prototype:** Công cụ xong (`?gate=1`, `gate-check`, `gate-flow`). Còn: chơi thử 5 người thật.
 

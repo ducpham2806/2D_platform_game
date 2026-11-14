@@ -4,7 +4,14 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { parseGameConfig } from '../src/core/game-config';
-import { isDay, mvpReportParams, parseReportSettings, runMvpReport } from '../src/core/mvp-report';
+import {
+  isDay,
+  mvpReportParams,
+  parseReportSettings,
+  runMvpReport,
+  secondaryParams,
+} from '../src/core/mvp-report';
+import { quantile } from '../src/logic/telemetry/report-extra';
 import { weaponId } from '../src/core/telemetry-catalogs';
 import {
   buildDirection,
@@ -245,6 +252,93 @@ describe('báo cáo cổng MVP: tham số và trường hợp khác', () => {
     const config = parseGameConfig(DATA);
     const s = parseReportSettings(DATA.telemetry);
     expect(() => mvpReportParams(config, { ...s, stages: ['prologue', 'nope'] })).toThrow(/nope/);
+  });
+});
+
+describe('báo cáo cổng MVP: chỉ số phụ (ST-13-05b, GDD 13 mục 6.4)', () => {
+  const { report: r, markdown } = runMvpReport(DATA, INPUTS, { day0: DAY0, waves: ['d1'] });
+  const m = (id: string) => {
+    const x = r.secondary.find((y) => y.id === id);
+    if (!x) throw new Error(`thiếu ${id}`);
+    return x;
+  };
+
+  it('số liệu game: giá rẻ nhất lúc Quầy mở, tổng giá Upgrade, thu theo màn (04 mục 2, 4, 8)', () => {
+    const config = parseGameConfig(DATA);
+    const sp = secondaryParams(
+      config,
+      [S1, S2, S3, S4],
+      parseReportSettings(DATA.telemetry).targets,
+    );
+    expect(sp.shopOpenBosses).toBe(2);
+    expect(sp.cheapestPrice).toBe(200);
+    expect(sp.totalUpgradeCost).toBe(14593);
+    expect(sp.income).toEqual({ [S1]: 225, [S2]: 300, [S3]: 375, [S4]: 450 });
+    expect(sp.difficultyOrder).toEqual(['story', 'normal', 'challenge']);
+  });
+
+  it('kinh tế K1–K6', () => {
+    expect(m('K1')).toMatchObject({ n: 8, status: 'ok', detail: '1 người thiếu số dư' });
+    expect(m('K1').value).toBeCloseTo(7 / 8, 9);
+    expect(m('K2')).toMatchObject({ n: 13, status: 'ok' });
+    expect(m('K2').value).toBeCloseTo(13.5 / 13, 9);
+    // Mua sau khi hạ Aeris không tính; hoàn tiền trừ ra.
+    expect(m('K3')).toMatchObject({ n: 4, status: 'ok' });
+    expect(m('K3').value).toBeCloseTo(1000 / 4 / 14593, 9);
+    expect(m('K4')).toMatchObject({ n: 20, status: 'ok' });
+    expect(m('K4').value).toBeCloseTo(1 / 20, 9);
+    expect(m('K5')).toMatchObject({ value: 40, status: 'track', n: 3 });
+    expect(m('K6')).toMatchObject({ value: 1, n: 6, status: 'ok' });
+  });
+
+  it('độ khó DK1–DK4', () => {
+    expect(m('DK1')).toMatchObject({ value: 0.25, n: 4, status: 'off' });
+    expect(m('DK2').detail).toBe('Thử thách 1/1, Thường 17/51 lượt không xong');
+    expect(m('DK2').value).toBeCloseTo(51 / 17, 9);
+    expect(m('DK3')).toMatchObject({ value: 0.5, n: 2, status: 'off' });
+    expect(m('DK4')).toMatchObject({ value: 2, status: 'off' });
+    expect(m('DK4').detail).toContain(`${S1}/A: 1/1 người thử Thử thách`);
+    expect(m('DK4').detail).toContain(`${S3}/A: 1 người chết > 3 lần`);
+  });
+
+  it('hướng dẫn T1–T4', () => {
+    expect(m('T1')).toMatchObject({ value: 4, n: 18, status: 'ok' });
+    expect(m('T2')).toMatchObject({ n: 6, status: 'off', detail: 'bước S01: 1/6' });
+    expect(m('T3')).toMatchObject({ value: 0.1, status: 'ok' });
+    expect([m('T4.1').value, m('T4.2').value, m('T4.3').value]).toEqual([0.9, 0.9, 0.7]);
+    expect([m('T4.1').status, m('T4.2').status, m('T4.3').status]).toEqual(['ok', 'ok', 'ok']);
+  });
+
+  it('kỹ thuật X1–X5, cảm giác F1, tiếp cận S1', () => {
+    expect(m('X1')).toMatchObject({ n: 31, status: 'off' });
+    expect(m('X1').value).toBeCloseTo(30 / 31, 9);
+    expect(m('X2')).toMatchObject({ value: 3500, status: 'off' });
+    expect(m('X3')).toMatchObject({ status: 'insufficient', n: 0 });
+    expect(m('X4')).toMatchObject({ value: 0.75, n: 4, status: 'off' });
+    expect(m('X5')).toMatchObject({ value: 1, status: 'off' });
+    expect(m('F1.cam-ung')).toMatchObject({ value: 3, status: 'off' });
+    expect(m('F1.ban-phim')).toMatchObject({ value: 4, status: 'ok' });
+    expect(m('F1.tay-cam').status).toBe('insufficient');
+    expect(m('S1').detail).toBe(
+      'tự bắn 2/10 người cảm ứng; hỗ trợ ngắm 1/10; giảm tốc 1/20 người; a11y.colorblind 1/20; a11y.textSize 0/20',
+    );
+    expect(markdown).toContain(
+      '| DK1 | Chọn Thử thách (người đã mở Thử thách) | 25% | 4 | 10%–20% | 🟧 Lệch |',
+    );
+  });
+
+  it('phân vị nội suy; mục tiêu sai bị chặn', () => {
+    expect(quantile([1000, 2000, 3000, 5000], 0.75)).toBe(3500);
+    expect(quantile([7], 0.75)).toBe(7);
+    const t = structuredClone(DATA.telemetry) as Record<
+      string,
+      Record<string, Record<string, unknown>>
+    >;
+    (t.report as Record<string, Record<string, unknown>>).targets = {
+      ...(t.report?.targets as Record<string, unknown>),
+      t4: [0.9, 0.8],
+    };
+    expect(() => parseReportSettings(t)).toThrow(/t4/);
   });
 });
 

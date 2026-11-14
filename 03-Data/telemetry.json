@@ -74,6 +74,33 @@
     "shortSessionSec": 120,
     "spamRateMul": 3,
     "spamMinHours": 0.25,
-    "maxInstalls": 60
+    "maxInstalls": 60,
+    "targets": {
+      "_note": "Mục tiêu chỉ số phụ (GDD 13 mục 6.4), không chặn cổng. k3SpendShare: tỷ lệ Core Bit tích lũy dồn vào Upgrade trong mô hình kinh tế (04 mục 4); k3MaxGap: lệch tối đa (điểm %). dk4ChallengeQuit: tỷ lệ người thử Thử thách bỏ cuộc ở một đoạn thì nới mẫu đòn; dk4StoryDeaths: chết quá chừng này lần ở một đoạn (Cốt truyện) thì thêm checkpoint. t4: Prologue xong, vào Stage 1, hạ boss Stage 1 so với người vào Prologue. s1SlowStageMax: tỷ lệ người dùng giảm tốc ở một màn mà quá thì màn quá khó (14 mục 10). s1Settings: id tùy chọn tiếp cận và giá trị mặc định (tùy chọn kiểu danh sách ghi chỉ số, 0 = mặc định).",
+      "k1": 0.7,
+      "k2Max": 1.5,
+      "k3SpendShare": 0.7,
+      "k3MaxGap": 0.1,
+      "k4Max": 0.15,
+      "k6": [0.8, 1.2],
+      "dk1": [0.1, 0.2],
+      "dk2Max": 2,
+      "dk3": 0.9,
+      "dk4ChallengeQuit": 0.5,
+      "dk4StoryDeaths": 3,
+      "t1Min": [3, 5],
+      "t2Max": 0.03,
+      "t3Max": 0.15,
+      "t4": [0.9, 0.85, 0.7],
+      "x1": 0.99,
+      "x2Ms": 3000,
+      "x3Ms": 15000,
+      "x4Fps": 55,
+      "x4Share": 0.9,
+      "x5Max": 0,
+      "f1": 4,
+      "s1SlowStageMax": 0.25,
+      "s1Settings": { "a11y.colorblind": 0, "a11y.textSize": 0 }
+    }
   }
 }
