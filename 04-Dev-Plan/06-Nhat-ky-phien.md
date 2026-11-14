@@ -38,8 +38,8 @@ Mẫu:
 - **Quyết định:** Thorna 250 máu (`[PLACEHOLDER]`): 100 máu thì bot không né thắng sau 15 s; 250 thì bot không né thua ở cấp 4 kể cả build Core đủ bậc; người né được cần khoảng 45–65 s. Tiêu chí GDD 10 "phòng thủ không thay được né" đạt lại.
 - **Lỗi tìm thấy / đã sửa:** người thử dễ vào nhầm phòng thử khác (chỉ màn xám ghi nhật ký); nút menu và menu tạm dừng chỉ cao 28–30 dp trên điện thoại. Không có lỗi mất phím khi nhấn nhả rất nhanh (đã thử).
 - **Kiểm tra:** 348 test, lint, format, build đạt; `gate-check` và `gate-flow` đạt. Ảnh ở `04-Dev-Plan/qa/cong-prototype/`.
-- **Còn dở:** chơi thử 5 người (≥ 3 cảm ứng) chưa làm; cần merge nhánh vào `main` để GitHub Pages đăng bản mới.
-- **Tiếp theo:** 1. Merge vào `main`, kiểm tra link `?gate=1`, gửi người thử, tổng hợp vào mục 7. 2. Theo kết quả: chỉnh cảm giác, hoặc qua cổng rồi chốt bản đồ Prologue/Stage 1. 3. Tài liệu âm thanh và đo lường MVP.
+- **Còn dở:** chơi thử 5 người (≥ 3 cảm ứng) chưa làm. Đã mở PR #10 vào `main` (theo yêu cầu người dùng); merge xong thì GitHub Pages đăng bản mới.
+- **Tiếp theo:** 1. Merge PR #10, kiểm tra link `?gate=1`, gửi người thử, tổng hợp vào mục 7. 2. Theo kết quả: chỉnh cảm giác, hoặc qua cổng rồi chốt bản đồ Prologue/Stage 1. 3. Tài liệu âm thanh và đo lường MVP.
 
 ## 2026-11-14: Sprint 8, EP-08 ST-08-06…08 (Phantom, Vanguard, khiên Core)
 
