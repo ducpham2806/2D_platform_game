@@ -77,6 +77,9 @@ export interface WorldEvents {
   airDashRestored: boolean;
   /** M8: một viên đạn vừa sượt qua trong phần bất tử thêm (P3 bậc 3). */
   graze: boolean;
+  /** M8 Vanguard: vụ nổ lan (tâm, bán kính px) và đạn nạp đầy trúng lúc mục tiêu đang hở. */
+  burst: { x: number; y: number; r: number } | undefined;
+  punishHit: boolean;
 }
 
 export function noWorldEvents(): WorldEvents {
@@ -112,5 +115,7 @@ export function noWorldEvents(): WorldEvents {
     airDash: false,
     airDashRestored: false,
     graze: false,
+    burst: undefined,
+    punishHit: false,
   };
 }

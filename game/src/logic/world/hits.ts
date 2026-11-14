@@ -26,6 +26,28 @@ function weaknessOf(
 /** Boss có id âm để không trùng id bia/kẻ địch trong hitIds của đạn. */
 const BOSS_ID = -1;
 
+/** Hiệu ứng Vanguard của build (M8): nổ lan (V2) và Đòn Trừng Phạt (V3). */
+export interface VanguardMods {
+  /** Sát thương nổ = hệ số × sát thương đạn nạp đầy; 0 = không nổ. */
+  burstDamageMul: number;
+  burstRadiusPx: number;
+  /** Nhân sát thương đạn nạp đầy khi mục tiêu đang hở; 1 = không có. */
+  punishMul: number;
+}
+
+export const NO_VANGUARD: VanguardMods = { burstDamageMul: 0, burstRadiusPx: 0, punishMul: 1 };
+
+/** Khoảng cách từ điểm tới hộp (0 nếu điểm nằm trong hộp). */
+function distToBox(
+  x: number,
+  y: number,
+  b: { x: number; y: number; w: number; h: number },
+): number {
+  const dx = Math.max(b.x - x, 0, x - (b.x + b.w));
+  const dy = Math.max(b.y - y, 0, y - (b.y + b.h));
+  return Math.hypot(dx, dy);
+}
+
 /** Những thứ đạn người chơi có thể trúng. Bia và kẻ địch dùng chung dãy id dương. */
 export interface HitTargets {
   targets: readonly TrainingTarget[];
@@ -44,9 +66,43 @@ export function resolvePlayerHits(
   attackMul: number,
   ev: WorldEvents,
   killed: Enemy[],
+  vanguard: VanguardMods = NO_VANGUARD,
 ): number {
   const { targets, enemies, boss } = hitTargets;
   let hitStop = 0;
+  /**
+   * V2: đạn nạp đầy trúng mục tiêu thì nổ ở tâm đạn, gây sát thương cho mục tiêu khác trong bán
+   * kính. Mỗi mục tiêu nhận tối đa một lần từ mỗi viên (kể cả mục tiêu chính): dùng `hitIds`.
+   */
+  const explode = (p: Projectile, base: number): void => {
+    if (p.kind !== 'charged' || vanguard.burstDamageMul <= 0) return;
+    const x = p.x + p.w / 2;
+    const y = p.y + p.h / 2;
+    const r = vanguard.burstRadiusPx;
+    const amount = base * vanguard.burstDamageMul;
+    ev.burst = { x, y, r };
+    for (const e of enemies) {
+      if (!e.alive || p.hitIds.has(e.id) || distToBox(x, y, e.box) > r) continue;
+      p.hitIds.add(e.id);
+      ev.hitEnemy = true;
+      if (e.applyBlast(amount) === 'killed') {
+        ev.enemyKilled = true;
+        killed.push(e);
+      }
+    }
+    if (boss && !p.hitIds.has(BOSS_ID) && distToBox(x, y, boss.box) <= r) {
+      if (boss.takeHit({ amount, weak: false, stunSec: 0 })) {
+        p.hitIds.add(BOSS_ID);
+        ev.hitBoss = true;
+      }
+    }
+  };
+  /** V3: hệ số Đòn Trừng Phạt cho đạn nạp đầy trúng mục tiêu đang hở. */
+  const punish = (p: Projectile, exposed: boolean): number => {
+    if (p.kind !== 'charged' || !exposed || vanguard.punishMul <= 1) return 1;
+    ev.punishHit = true;
+    return vanguard.punishMul;
+  };
   const amountOf = (p: Projectile): number =>
     outgoingDamage({
       base: p.damage,
@@ -74,7 +130,7 @@ export function resolvePlayerHits(
     }
     for (const e of enemies) {
       if (!p.alive || !e.alive || p.hitIds.has(e.id) || !overlaps(p, e.box)) continue;
-      const result = e.takeHit(p, amountOf(p));
+      const result = e.takeHit(p, amountOf(p) * punish(p, e.exposed));
       if (result === 'blocked' || result === 'shieldHit' || result === 'shieldBroken') {
         p.alive = false;
         ev[result] = true;
@@ -85,11 +141,12 @@ export function resolvePlayerHits(
           ev.enemyKilled = true;
           killed.push(e);
         }
+        explode(p, amountOf(p));
       }
       hitStop = Math.max(hitStop, chargedStop);
     }
     if (!p.alive || !boss || p.hitIds.has(BOSS_ID) || !overlaps(p, boss.box)) continue;
-    const hit = outgoingDamage({
+    const raw = outgoingDamage({
       base: p.damage,
       kindMul: p.kindMul,
       attackMul,
@@ -97,6 +154,7 @@ export function resolvePlayerHits(
       targetWeakness: boss.data.weakness,
       ...weaknessOf(weapons, p.weapon),
     });
+    const hit = { ...raw, amount: raw.amount * punish(p, boss.exposed) };
     if (boss.takeHit(hit)) {
       ev.hitBoss = true;
       if (hit.weak) {
@@ -105,6 +163,7 @@ export function resolvePlayerHits(
       }
       hitStop = Math.max(hitStop, chargedStop);
       consume(p, BOSS_ID);
+      explode(p, amountOf(p));
     }
   }
   return hitStop;

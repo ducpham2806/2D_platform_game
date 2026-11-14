@@ -88,6 +88,11 @@ export class Boss {
     return this.data.contactDamage;
   }
 
+  /** Đang hở (Đòn Trừng Phạt, V3): pha hồi sau đòn hoặc đang choáng. */
+  get exposed(): boolean {
+    return this.state === 'recover' || this.stunned;
+  }
+
   get stunned(): boolean {
     return this.stun > 0 || this.state === 'stunned';
   }

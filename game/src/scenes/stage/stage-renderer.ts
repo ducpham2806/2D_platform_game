@@ -81,7 +81,9 @@ export function drawDynamic(
     g.fillStyle(0x0f1724, 1).fillRect(b.x + 3, b.y + 4, b.w - 6, 2);
     if (target.shieldUp) g.fillStyle(0x7fd1ff, 1).fillRect(b.x - 4, b.y + 2, 3, b.h - 4);
   }
-  if (world.boss) drawBoss(g, world.boss, t, world.map, timeMs);
+  // Lõi sáng khi boss đang hở: chỉ hiện khi đã học Đòn Trừng Phạt (V3).
+  const showCore = (world.build.effects.punishMul ?? 1) > 1;
+  if (world.boss) drawBoss(g, world.boss, t, world.map, timeMs, showCore);
   drawEnemies(g, world.enemies, timeMs);
   if (world.field) drawPickups(g, world.field.pickups.all, timeMs);
   for (const p of world.pool.all) {
@@ -102,6 +104,7 @@ function drawBoss(
   t: number,
   map: TileMap,
   timeMs: number,
+  showCore: boolean,
 ): void {
   const b = boss.box;
   if (boss.state === 'dead') {
@@ -158,6 +161,13 @@ function drawBoss(
   // Mắt chỉ hướng.
   const eyeX = boss.facing > 0 ? b.x + b.w - 8 : b.x + 4;
   g.fillStyle(0x0f1724, 1).fillRect(eyeX, b.y + 7, 4, 4);
+  if (showCore && boss.exposed) {
+    const pulse = Math.floor(timeMs / 90) % 2 === 0;
+    const cx = b.x + b.w / 2;
+    const cy = b.y + b.h / 2;
+    g.fillStyle(pulse ? 0xffffff : 0xffd166, 1).fillRect(cx - 3, cy - 3, 6, 6);
+    g.lineStyle(1, 0xffd166, 0.8).strokeRect(cx - 5, cy - 5, 10, 10);
+  }
   if (boss.stunned && Math.floor(timeMs / 120) % 2 === 0) {
     g.fillStyle(0xffd166, 1)
       .fillRect(b.x + b.w / 2 - 6, b.y - 6, 3, 3)

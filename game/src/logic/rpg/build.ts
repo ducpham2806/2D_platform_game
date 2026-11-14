@@ -114,6 +114,19 @@ export function playerModsOf(build: BuildStats, stepSec: number): PlayerMods {
   };
 }
 
+/** Hiệu ứng Vanguard (V2 nổ lan, V3 Đòn Trừng Phạt) theo px. */
+export function vanguardOf(
+  build: BuildStats,
+  tileSize: number,
+): { burstDamageMul: number; burstRadiusPx: number; punishMul: number } {
+  const e = build.effects;
+  return {
+    burstDamageMul: e.burstDamageMul ?? 0,
+    burstRadiusPx: (e.burstRadiusTiles ?? 0) * tileSize,
+    punishMul: e.punishMul ?? 1,
+  };
+}
+
 /** Máu tối đa và hệ số công ở cấp hiệu dụng `level` với build (dùng chung cho trận và kiểm tra dữ liệu). */
 export function statsFor(
   level: number,

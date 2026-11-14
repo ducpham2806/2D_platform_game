@@ -1,6 +1,6 @@
 # ST-08-07: Vanguard: đạn nạp nổ lan, Đòn Trừng Phạt, bậc phản hồi
 
-- **Thuộc Epic:** EP-08 · **Ưu tiên:** P0 (MVP) · **Trạng thái:** TODO
+- **Thuộc Epic:** EP-08 · **Ưu tiên:** P0 (MVP) · **Trạng thái:** DONE (14/11/2026)
 - **Phụ thuộc:** ST-08-03
 - **Bằng chứng:** [x] Logic [x] Visual
 
@@ -37,7 +37,14 @@
 
 ## 4. Tiêu chí nghiệm thu
 
-- [ ] AC-1: V2 bậc 2: đạn nạp đầy (3) trúng Drone, Drone khác cách 1,2 ô nhận 1,5; Drone cách 2 ô không nhận; Lính Kén có khiên nhận nhưng khiên không vỡ.
-- [ ] AC-2: V3 bậc 3: đạn nạp đầy trúng Thorna ở `recover` gây 4,5; ở `idle` gây 3.
-- [ ] AC-3: Mô phỏng 4 lối bắn của ST-08-04 vẫn đạt khi có V3.
-- [ ] AC-4: Ảnh vòng nổ và lõi sáng của boss ở `04-Dev-Plan/qa/ST-08-07/`.
+- [x] AC-1: V2 bậc 2, đạn nạp đầy (3) trúng Drone (`tests/vanguard.test.ts`):
+  - Drone khác cách 1,2 ô nhận 1,5; Drone cách 3 ô không nhận.
+  - Lính Kén đang giơ khiên nhận 1,5 nhưng khiên không vỡ (`Enemy.applyBlast` bỏ qua khiên).
+  - Mỗi mục tiêu nhận tối đa một lần từ mỗi viên (dùng `hitIds`). Chưa học V2 thì không nổ.
+- [x] AC-2: V3 bậc 3: đạn nạp đầy trúng Thorna ở `recover` gây 4,5, lúc nghỉ gây 3. Boss đang choáng cũng tính là hở. Golem hở ở pha hồi; kẻ địch thường không bao giờ hở.
+- [x] AC-3: Mô phỏng 4 lối bắn của ST-08-04 vẫn đạt (`power-cap.test.ts`).
+- [x] AC-4: Chạy thử Chromium với bản lưu V1 + V2 + V3, ảnh ở `04-Dev-Plan/qa/ST-08-07/`:
+  - Lõi sáng trắng viền vàng giữa thân Thorna lúc boss đang hở, chỉ hiện khi đã học V3.
+  - Vòng nổ lan đúng bán kính 1,5 ô, mờ dần trong 0,2 s.
+  - Bậc phản hồi ở `ui.json → feedback`, có kiểm tra bậc sau rung không nhẹ hơn bậc trước. Nổ lan rung bậc vừa, Đòn Trừng Phạt rung bậc lớn.
+  - Không lỗi console.

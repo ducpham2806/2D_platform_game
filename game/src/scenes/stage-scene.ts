@@ -126,6 +126,8 @@ export class StageScene extends Phaser.Scene {
   private storyBossPending = false;
   /** Hiệu ứng ngắn trên người Kai (thời điểm hết, ms theo đồng hồ scene). */
   private kaiFx = { restoredUntil: 0, grazeUntil: 0 };
+  /** Vòng nổ lan đang vẽ (V2), thời điểm hết theo đồng hồ scene. */
+  private bursts: { x: number; y: number; r: number; until: number }[] = [];
 
   constructor() {
     super(SceneKey.Stage);
@@ -246,6 +248,7 @@ export class StageScene extends Phaser.Scene {
     this.workshop = undefined;
     this.pendingBuild = undefined;
     this.kaiFx = { restoredUntil: 0, grazeUntil: 0 };
+    this.bursts = [];
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       this.workshop?.destroy();
       this.workshop = undefined;
@@ -318,6 +321,11 @@ export class StageScene extends Phaser.Scene {
     if (this.dynamic) {
       drawDynamic(this.dynamic, world, time);
       drawMechanics(this.dynamic, world, time);
+      this.bursts = this.bursts.filter((b) => b.until > time);
+      for (const b of this.bursts) {
+        const left = (b.until - time) / (getConfig(this).ui.feedback.burstRingSec * 1000);
+        this.dynamic.lineStyle(1, 0xffd166, Math.max(0.2, left)).strokeCircle(b.x, b.y, b.r);
+      }
     }
     this.syncSprites(this.stepper.alpha);
     const ctx = input.glyphContext();
@@ -572,6 +580,13 @@ export class StageScene extends Phaser.Scene {
     if (ev.airDashRestored && !world.player.grounded)
       this.kaiFx.restoredUntil = this.time.now + 160;
     if (ev.graze) this.kaiFx.grazeUntil = this.time.now + 140;
+    // M8 Vanguard: bậc phản hồi (ui.json → feedback): nổ lan bậc vừa, Đòn Trừng Phạt bậc lớn.
+    const fb = getConfig(this).ui.feedback;
+    if (ev.burst) {
+      this.bursts.push({ ...ev.burst, until: this.time.now + fb.burstRingSec * 1000 });
+      camera.shake(fb.medium.shakeMs, fb.medium.shakeIntensity);
+    }
+    if (ev.punishHit) camera.shake(fb.large.shakeMs, fb.large.shakeIntensity);
     if (ev.healed > 0) hud?.flash(`+${ev.healed} máu`, 500);
     if (ev.checkpoint !== undefined)
       hud?.flash(`Checkpoint ${ev.checkpoint}${this.saver ? ' · đã lưu' : ''}`, 900);

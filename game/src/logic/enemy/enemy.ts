@@ -92,6 +92,18 @@ export abstract class Enemy {
     return this.hp <= 0 ? 'killed' : 'hit';
   }
 
+  /** Đang hở cho Đòn Trừng Phạt (V3): chỉ mini-boss (Golem ghi đè); kẻ địch thường không. */
+  get exposed(): boolean {
+    return false;
+  }
+
+  /** Sát thương nổ lan (V2): bỏ qua khiên, không làm vỡ khiên. */
+  applyBlast(amount: number): 'hit' | 'killed' {
+    this.hp = Math.max(0, this.hp - amount);
+    this.flash = HIT_FLASH_SEC;
+    return this.hp <= 0 ? 'killed' : 'hit';
+  }
+
   step(ctx: EnemyContext, dt: number): void {
     this.flash = Math.max(0, this.flash - dt);
     if (this.alive) this.behave(ctx, dt);

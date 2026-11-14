@@ -250,6 +250,11 @@ export class Golem extends Enemy {
     this.resetBehavior();
   }
 
+  /** Hở sau cú giậm hoặc cú lao (Đòn Trừng Phạt). */
+  override get exposed(): boolean {
+    return this.state === 'recover';
+  }
+
   get phase(): 1 | 2 {
     return this.hp / this.maxHp <= this.data.phase2HpPct / 100 ? 2 : 1;
   }

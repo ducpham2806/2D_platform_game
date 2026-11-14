@@ -9,14 +9,21 @@ import { WeaponLoadout } from '../combat/loadout';
 import { ProjectilePool } from '../combat/projectiles';
 import { TrainingTarget } from '../combat/targets';
 import type { Enemy } from '../enemy/enemy';
-import { applyBuild, type BuildStats, EMPTY_BUILD, playerModsOf, statsFor } from '../rpg/build';
+import {
+  applyBuild,
+  type BuildStats,
+  EMPTY_BUILD,
+  playerModsOf,
+  statsFor,
+  vanguardOf,
+} from '../rpg/build';
 import { playerParams } from '../player/player-params';
 import { PlayerPhysics } from '../player/player-physics';
 import { createRng, type Rng } from '../rng';
 import { type EnemyMarkers, layoutFromRows, type StageLayout } from '../stage/layout';
 import { Tile, type TileMap } from '../tilemap';
 import { EnemyField } from './enemy-field';
-import { type KaiDefense, resolveEnemyHits, resolvePlayerHits } from './hits';
+import { type KaiDefense, resolveEnemyHits, resolvePlayerHits, type VanguardMods } from './hits';
 import { Barrier, LockedRoom, makeSecret, type Secret, standPoint, Vine } from './stage-mechanics';
 import { noWorldEvents, type WorldEvents, type WorldInput, type WorldPhase } from './world-types';
 
@@ -105,6 +112,8 @@ export class StageWorld {
   private built: { player: PlayerData; weapons: WeaponsData };
   /** Phòng thủ từ build: loại đạn P3 xuyên qua, sượt đạn cộng thời gian nạp. */
   private defense: KaiDefense;
+  /** Nổ lan và Đòn Trừng Phạt từ build. */
+  private vanguard: VanguardMods;
   private readonly start: { x: number; y: number };
   private checkpoint: { x: number; y: number };
   private respawnTimer = 0;
@@ -146,6 +155,7 @@ export class StageWorld {
     );
     this.loadout = new WeaponLoadout(this.built.weapons, t);
     this.defense = this.defenseOf(this.build);
+    this.vanguard = vanguardOf(this.build, t);
     for (const w of setup.ownedWeapons ?? []) this.loadout.grant(w);
     this.everWon = setup.bossDefeated ?? false;
 
@@ -261,6 +271,7 @@ export class StageWorld {
       ),
     );
     this.defense = this.defenseOf(build);
+    this.vanguard = vanguardOf(build, this.setup.tileSize);
     this.loadout.setData(this.built.weapons);
     const stats = statsFor(this.level, this.setup.player.level, build);
     this.attackMul = stats.attackMul;
@@ -357,6 +368,7 @@ export class StageWorld {
       this.attackMul,
       ev,
       killed,
+      this.vanguard,
     );
     this.field?.onKilled(killed, pl);
     resolveEnemyHits(

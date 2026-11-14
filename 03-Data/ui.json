@@ -8,5 +8,12 @@
   },
   "result": {
     "delaySec": 8
+  },
+  "feedback": {
+    "_note": "Ba bậc phản hồi (01-GDD/10-He-thong-RPG-Xuong.md mục 6), không chồng lên nhau: nhỏ (sượt đạn, Siphon, radar: không rung), vừa (nổ lan V2, khiên vỡ), lớn (Đòn Trừng Phạt; nạp đầy và điểm yếu giữ cách rung hiện có). Dừng hình nằm ở dữ liệu cơ chế (weapons.json hitStopSteps, skills.json shieldBreakHitStopSteps). burstRingSec: thời gian vẽ vòng nổ lan.",
+    "small": { "shakeMs": 0, "shakeIntensity": 0 },
+    "medium": { "shakeMs": 90, "shakeIntensity": 0.003 },
+    "large": { "shakeMs": 150, "shakeIntensity": 0.006 },
+    "burstRingSec": 0.2
   }
 }
