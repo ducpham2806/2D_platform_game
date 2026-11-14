@@ -2,20 +2,18 @@
 
 - **Mã hệ thống:** `SYS-08` (module M8 trong `04-Dev-Plan/02-Module.md`)
 - **Phân loại:** Progression
-- **Độ ưu tiên:** MVP (P0). Vertical slice chỉ cần tab Kỹ năng rút gọn.
-- **Trạng thái:** Draft, đề xuất chờ người dùng duyệt (14/11/2026). Mọi số là `[PLACEHOLDER]`, chỉnh sau chơi thử.
+- **Độ ưu tiên:** MVP (P0). Vertical slice chỉ cần tab Kỹ năng.
+- **Trạng thái:** **In Review**, bản 2 (14/11/2026): đã qua duyệt của Creative Director và Technical Director + Producer (cả hai: "duyệt kèm sửa"), đã sửa theo góp ý; chờ người dùng duyệt các quyết định ở mục 10. Phần Module và Két giáp (mục 2.2, 2.3) là **Draft, bị chặn** tới khi có nội dung Stage 2–4. Mọi số là `[PLACEHOLDER]`, chỉnh sau chơi thử.
 - **Phụ thuộc (upstream):** M3 Nhân vật, M4 Chiến đấu, M8 cấp và SP (đã code: `game/src/logic/rpg/progression.ts`), M11 Lưu, M9 Upgrade và Booster (`shop.json`).
-- **Bị ảnh hưởng (downstream):** M10 Xưởng và HUD, M9 Power Score ở màn Chuẩn bị, nhiệm vụ phụ (nguồn module), M7 Két giáp trong màn, M16 đo lường.
-- **Nguồn:** GDD chính mục 6.1–6.4 và 10.1; `03-Dac-ta-Hub-Shop.md` mục 5, 7, 8; `07-Kich-ban-huong-dan.md` mục 2 và R02–R03, D02, D04; wireframe `Workshop.html`, `Module.html`, `Armor.html`, `Loadout.html`; `player.json` (`level`, `moduleSlots`), `modules.json`, `shop.json`, `weapons.json`.
-- **Cách làm:** theo quy trình Game Studio Agent (`game-gdd-architect` `/design-system`, `economy-designer` cho đường cong và trần sức mạnh, `game-production-scrum` cho Story ở `04-Dev-Plan/stories/EP-08-xuong-rpg.md`).
-
-Tài liệu này bổ sung phần còn thiếu của GDD mục 6: danh sách kỹ năng và số liệu, số liệu module và Két giáp, quy tắc cộng dồn, trần sức mạnh, dữ liệu lưu, giao diện Xưởng bản MVP. Không thay GDD chính; chỗ nào GDD cần sửa theo đề xuất được liệt kê ở mục 9.
+- **Bị ảnh hưởng (downstream):** M10 Xưởng, HUD, menu tạm dừng; M9 Power Score ở màn Chuẩn bị; nhiệm vụ phụ (nguồn module); M7 Két giáp và quy tắc duyệt màn; M12 âm thanh; M16 đo lường.
+- **Nguồn:** GDD chính 6.1–6.4, 9, 10.1, 11; `03-Dac-ta-Hub-Shop.md` mục 5, 7, 8; `07-Kich-ban-huong-dan.md` mục 2, R02–R03, D02, D04; wireframe `Workshop.html`, `Module.html`, `Armor.html`; `player.json`, `modules.json`, `shop.json`, `weapons.json`, `bosses.json`.
+- **Quy trình (Game Studio Agent):** Design Lead viết theo `game-gdd-architect` `/design-system` và `economy-designer`; Creative Director và Technical Director + Producer duyệt độc lập; `game-production-scrum` tách Story ở `04-Dev-Plan/stories/EP-08-xuong-rpg.md`; quyết định kỹ thuật ở `04-Dev-Plan/adr/ADR-001-xuong-bang-html.md`.
 
 ## 0. Phương án cây kỹ năng và đề xuất
 
-**Câu hỏi:** cây kỹ năng rút gọn của MVP (Stage 1–4) gồm gì, tốn bao nhiêu SP, để người chơi **phải chọn** (GDD 6.2: tổng SP ít hơn cây) mà không tốn quá nhiều công làm cơ chế mới.
+**Câu hỏi:** cây kỹ năng MVP (Stage 1–4) gồm gì, tốn bao nhiêu SP, để người chơi **phải chọn** (GDD 6.2) mà không tốn quá nhiều công làm cơ chế mới.
 
-**Nguồn SP trong MVP** (công thức đã code: SP = (cấp − 1) + số boss; cấp cuối mỗi màn lấy theo cận trên cấp khuyến nghị, Stage 1 khớp đặc tả là cấp 4):
+**Nguồn SP trong MVP** (SP = (cấp − 1) + số boss; cấp cuối mỗi màn lấy theo cận trên cấp khuyến nghị, Stage 1 khớp đặc tả là cấp 4):
 
 | Mốc | Cấp | Boss | SP có |
 | --- | --- | --- | --- |
@@ -23,209 +21,254 @@ Tài liệu này bổ sung phần còn thiếu của GDD mục 6: danh sách k�
 | Hết Stage 2 | 7 | 2 | 8 |
 | Hết Stage 3 | 8 | 3 | 10 |
 | Hết Stage 4 (cuối MVP) | 10 | 4 | 13 |
-| Cuối cốt truyện (để đối chiếu) | 30 | 8 (+2 sự kiện) | 39 |
+| Cuối cốt truyện (đối chiếu) | 30 | 8 (+2 sự kiện) | 39 |
 
-GDD đặt tỉ lệ "cây cần / SP có" khoảng 50 / 39 ≈ 1,3 để buộc chọn.
-
-| Phương án | Mô tả | Tổng SP cây | Tỉ lệ ở cuối MVP (13 SP) | Công làm | Đánh giá |
+| Phương án | Mô tả | Tổng SP | Tỉ lệ cuối MVP | Công làm | Đánh giá |
 | --- | --- | --- | --- | --- | --- |
-| A | 3 nhánh × 3 nút, mỗi nút 1 SP (đọc đúng nghĩa đen wireframe) | 9 | 0,69: học hết từ cuối Stage 3 | Thấp | Không còn lựa chọn, trái GDD 6.2 |
-| B | 3 × 3 nút, giá theo tầng 1 / 2 / 3 SP | 18 | 1,38 | Thấp | Đủ lựa chọn, nhưng phải sửa wireframe, R03 ("mỗi kỹ năng tốn 1 điểm") và đặc tả Hub |
-| C | 3 nhánh × 5 nút, mỗi nút 1 SP | 15 | 1,15 | Cao: 6 kỹ năng cần cơ chế mới | Nặng cho MVP, lựa chọn yếu |
-| D | Làm module trước, cây sau | không áp dụng | không áp dụng | Bị chặn | Module nhận qua nhiệm vụ phụ, cần nội dung màn (sau cổng Prototype) |
-| **E (đề xuất)** | **3 × 3 nút có bậc: tầng 1 một bậc, tầng 2 hai bậc, tầng 3 ba bậc; mỗi bậc 1 SP; tầng sau mở khi tầng trước đủ bậc** | **18** | **1,38** | **Thấp–vừa** | **Giữ "học tốn 1 SP" của wireframe và R03; đầu tư từng điểm đều thấy hiệu quả; Alpha mở rộng bằng tầng 4–5** |
+| A | 3 nhánh × 3 nút, mỗi nút 1 SP | 9 | 0,69 | Thấp | Học hết từ cuối Stage 3, không còn lựa chọn |
+| B | 3 × 3 nút, giá theo tầng 1 / 2 / 3 SP | 18 | 1,38 | Thấp | Tầng 3 thành một cục 3 SP; phải sửa wireframe và R03 |
+| C | 3 nhánh × 5 nút, 1 SP mỗi nút | 15 | 1,15 | Cao | 6 cơ chế mới, nặng cho MVP, lựa chọn yếu |
+| D | Làm module trước | không áp dụng | không áp dụng | Bị chặn | Module nhận qua nhiệm vụ phụ, cần nội dung màn |
+| **E (chốt)** | **3 × 3 nút có bậc: tầng 1 một bậc, tầng 2 hai bậc, tầng 3 ba bậc; mỗi bậc 1 SP; tầng sau mở khi tầng trước đủ bậc** | **18** | **1,38** | **Vừa** | **Hai Director cùng chọn E** |
 
-**Đề xuất: phương án E.** Lý do:
+**Vì sao E:** cuối MVP có 13/18 SP, đủ khoảng 2 nhánh (tỉ lệ 1,38, gần mức 1,3 của GDD); "học tốn 1 SP" của wireframe vẫn đúng; Alpha mở rộng bằng tầng 4–5. Vì đặt lại miễn phí, **lựa chọn thật** ở cuối MVP là "mang 2 trong 3 nút tầng 3 nào vào trận boss này", nên phải đổi bộ kỹ năng nhanh được (mục 2.5).
 
-1. **Buộc chọn đúng ý GDD:** cuối MVP có 13/18 SP, đủ hoàn thành khoảng 2 nhánh; hết Stage 1 có 4 SP, phải chọn giữa đi sâu một nhánh hay rải tầng 1. Tỉ lệ 1,38 gần mức 1,3 của GDD.
-2. **Ít sửa tài liệu và wireframe:** "chạm nút, học (1 SP)" vẫn đúng; chỉ thêm chấm bậc trên nút.
-3. **Năng lực (SDT, competence):** mỗi SP cho ngay một bước tiến nhỏ đo được, không phải dồn 3 SP mới thấy gì.
-4. **Chi phí:** 6/9 kỹ năng chỉ đổi thông số đã có trong dữ liệu (thời gian nạp, lướt trên không, bám tường, bất tử khi lướt, máu, hồi năng lượng); 3 kỹ năng cần cơ chế nhỏ mới (nổ lan, nhịp chí mạng, khiên).
-5. **Mở rộng cho Alpha:** thêm tầng 4 (4 bậc) và 5 (5 bậc) mỗi nhánh thì cây đạt 18 + 27 = 45 SP so với 39 SP (tỉ lệ 1,15); nếu muốn đúng 1,3 thì thêm 1 nút phụ mỗi nhánh. Quyết định ở Alpha.
+**Luật thiết kế bậc** (kiểm tra lúc nạp ở `core/skills-config.ts`): mỗi bậc sau tăng phần thưởng ≥ 20% so với bậc trước, hoặc thêm một hiệu ứng mới; bậc 1 của nút tầng 3 mang ≥ 60% hiệu lực tối đa (không có bậc "ngõ cụt").
 
-**Phạm vi MVP đề xuất cho Xưởng** (theo `game-production-scrum` `/scope-check`): tab **Kỹ năng** (sau boss 1), **Module** (sau boss 3), **Giáp** (khi mở Két giáp đầu tiên). **Tủ skin và Loadout dời sang Alpha**: chúng mở sau boss 4, tức cuối MVP, nên không đóng góp vào cổng MVP; Shop MVP cũng chỉ có Upgrade (không bán skin).
+**Phạm vi Xưởng trong MVP** (`/scope-check`): tab **Kỹ năng** mở sau boss 1 (làm ngay, không bị chặn). Tab **Module** và **Giáp** làm khi có nội dung Stage 2–4 (nhiệm vụ phụ, Két giáp), tức sau cổng Prototype. **Tủ skin và Loadout dời sang Alpha** (mở sau boss 4, đúng lúc hết MVP; Shop MVP không bán skin).
 
 ## 1. Tổng quan và trụ cột
 
-- **Mục tiêu:** lên cấp cho người chơi **lựa chọn lối chơi** (sát thương, cơ động, sống sót) thay vì chỉ tăng chỉ số; kỹ năng của người chơi vẫn quyết định thắng thua (trụ cột 1, GDD 6.1).
-- **MDA:**
-  - *Mechanics:* SP từ cấp và boss; học theo bậc; đặt lại miễn phí; module có tải; giáp bật/tắt.
-  - *Dynamics:* người chơi thử bộ kỹ năng theo boss (Phantom cho boss đạn dày, Vanguard cho màn nhiều kẻ địch), đổi miễn phí giữa các lần thử.
-  - *Aesthetics:* thử thách (challenge) và thể hiện bản thân (expression); không có cảm giác "chọn sai mất công".
-- **Phản trụ cột (không bao giờ làm):** kỹ năng chặn tiến trình (GDD 6.2); kỹ năng hay module làm một đòn boss không cần né; mất SP khi đặt lại.
+- **Mục tiêu:** lên cấp cho người chơi **chọn lối chơi** (Vanguard: chuyên nạp đầy và trừng phạt lúc boss hở; Phantom: cơ động và né đạn; Core: sống sót), không phải chỉ tăng chỉ số. Kỹ năng người chơi vẫn quyết định thắng thua (trụ cột 1).
+- **MDA:** *Mechanics:* SP từ cấp và boss, học theo bậc, đặt lại miễn phí, chỉnh bộ kỹ năng ngay trong màn. *Dynamics:* thử bộ kỹ năng theo boss, học mẫu đòn để trừng phạt lúc boss hở. *Aesthetics:* thử thách và thể hiện bản thân, không có "chọn sai mất công".
+- **Phản trụ cột:** kỹ năng chặn tiến trình; kỹ năng làm một đòn boss không cần né (kể cả đòn đỉnh); trạng thái sống còn mà người chơi không nhìn thấy; mất SP khi đặt lại.
+- **Luật duyệt màn (thêm vào checklist M7):** mọi vật phẩm được lưu (Két giáp, Memory Log, bí mật, Data Chip, mục tiêu nhiệm vụ phụ) và đường chính đều tới được bằng **bộ động tác gốc** (lướt đất, lướt-nhảy, bám và nhảy tường). Lối chỉ lướt trên không mới tới là đường tắt, thưởng tối đa là Core Bit.
 
 ## 2. Cơ chế cốt lõi
 
-### 2.1 Cây kỹ năng (phương án E)
+### 2.1 Cây kỹ năng
 
-Ký hiệu nút `<nhánh><tầng>`. Tầng 2 mở khi tầng 1 đủ bậc; tầng 3 mở khi tầng 2 đủ bậc. Chỉ học được trong Xưởng (ngoài màn chơi). Hiệu ứng áp dụng từ lần vào màn kế tiếp.
+Thời gian tính theo **bước logic 60 Hz** (1 bước = 1/60 s). Giá trị ghi **tương đối so với số gốc** trong dữ liệu (cổng Prototype còn có thể chỉnh số gốc).
 
 | Nút | Tên | Bậc | Hiệu ứng theo bậc (biến dữ liệu) | Loại việc |
 | --- | --- | --- | --- | --- |
-| V1 | Nạp Nhanh | 1 | `chargeTimeMul = 0.85`: nạp vừa 0,5 → 0,425 s; nạp đầy 1,2 → 1,02 s | Thông số có sẵn |
-| V2 | Đạn Nạp Nổ Lan | 2 | Đạn nạp đầy trúng mục tiêu thì nổ, gây `burstDamageMul` × sát thương đạn nạp cho **mục tiêu khác** trong `burstRadiusTiles`: bậc 1: 0,3 / 1,0 ô; bậc 2: 0,5 / 1,5 ô | Cơ chế mới (nhỏ) |
-| V3 | Nhịp Chí Mạng | 3 | Phát Arc Cannon **thường** (không nạp) trúng đích liên tiếp lần thứ `critEveryHits = 5` gây `critMul`: 1,2 / 1,35 / 1,5. Một phát trượt (chạm tường, hết tầm) đặt lại bộ đếm | Cơ chế mới (nhỏ) |
-| P1 | Lướt Trên Không | 1 | `airDash = true`, `airDashesPerAirborne = 1`, hồi khi chạm đất, bám tường hoặc đứng lên dây leo | Thông số có sẵn (`abilities.airDash`) |
-| P2 | Bám Tường Bền | 2 | `wallSlideMul`: 0,75 / 0,5 (trượt tường 2 → 1,5 → 1 ô/s); bậc 2 thêm `wallJumpPushMul = 1.15` | Thông số có sẵn |
-| P3 | Lướt Xuyên Đạn | 3 | Đầu cú lướt bất tử `dashIFrameSec`: 0,14 / 0,17 / 0,2 s (gốc 0,1 s), nhưng **chỉ một cú lướt mỗi** `longIFrameCooldownSec = 1.0` s được bất tử dài; các cú khác giữ 0,1 s | Thông số có sẵn + 1 đồng hồ |
-| C1 | Khung Gia Cố | 1 | `maxHpMul = 1.1` | Thông số có sẵn |
-| C2 | Tái Nạp | 2 | Năng lượng vũ khí Warden tự hồi `energyRegenMul`: 1,25 / 1,5 (1 → 1,25 → 1,5 đơn vị/giây); bậc 2 thêm `regenDelaySec` 3 → 2 s | Thông số có sẵn |
-| C3 | Khiên Hấp Thụ | 3 | Chặn trọn một đòn của kẻ địch hoặc boss (0 sát thương, không bật lùi, vẫn bất tử 1 s như bị đánh). Hồi sau `shieldRechargeSec`: 30 / 25 / 20 s kể từ lần cuối khiên vỡ hoặc Kai mất máu. Không chặn gai và hố | Cơ chế mới (nhỏ) |
+| V1 | Nạp Nhanh | 1 | Chỉ **nạp đầy**: `fullChargeTimeMul = 0.85` (1,2 → 1,02 s). Nạp vừa giữ nguyên 0,5 s | Thông số có sẵn |
+| V2 | Đạn Nạp Nổ Lan | 2 | Đạn nạp đầy trúng mục tiêu thì nổ, gây `burstDamageMul` × sát thương đạn nạp cho mục tiêu **khác** trong `burstRadiusTiles`: bậc 1: 0,3 / 1,0 ô; bậc 2: 0,5 / 1,5 ô. Không phá khiên Lính Kén | Cơ chế nhỏ mới |
+| V3 | Đòn Trừng Phạt | 3 | Đạn nạp đầy trúng mục tiêu **đang hở** gây × `punishMul`: 1,3 / 1,4 / 1,5. Đang hở: boss ở trạng thái `recover` hoặc bị choáng (điểm yếu 0,5 s, sau Hoa Nở 2 s); mini-boss ở trạng thái hồi tương đương. Kẻ địch thường không tính | Cơ chế nhỏ mới (boss đã có `recover`, `stunned`) |
+| P1 | Lướt Trên Không | 1 | `airDashesPerAirborne = 1`; lượt hồi khi chạm đất (gồm đứng trên dây leo), khi bám tường, khi hồi sinh. Lướt trong thời gian coyote tính là lướt đất (không tốn lượt) | Cơ chế nhỏ mới (hiện cờ `airDash` cho lướt không giới hạn) |
+| P2 | Bám Tường Bền | 2 | Bậc 1: `wallSlideMul = 0.6` (2 → 1,2 ô/s). Bậc 2 thêm **ân hạn nhảy tường** `wallJumpGraceSec = 0.1`: rời tường 0,1 s vẫn nhảy tường được. Không đổi quỹ đạo nhảy tường (giữ trí nhớ tay khi đặt lại) | Thông số có sẵn + cơ chế nhỏ |
+| P3 | Lướt Xuyên Đạn | 3 | Thêm bất tử **chỉ với đạn** ở đầu cú lướt: +3 / +4 / +4 bước (gốc 6 bước = 0,1 s). Bậc 3 thêm **sượt đạn**: đạn đi xuyên trong phần bất tử thêm thì cộng `grazeChargeSec = 0.25` vào thời gian nạp. Phần thêm mất ngay khi cú lướt kết thúc hoặc bị hủy. Không có đồng hồ ẩn | Thông số có sẵn + cơ chế nhỏ |
+| C1 | Khung Gia Cố | 1 | `maxHpMul = 1.15` (cấp 4: 112 → 129, chịu thêm khoảng 1 đòn boss) | Thông số có sẵn |
+| C2 | Tái Nạp | 2 | Năng lượng vũ khí Warden tự hồi `energyRegenMul`: 1,25 / 1,5; bậc 2 thêm `regenDelaySec` 3 → 2 s | Thông số có sẵn |
+| C3 | Khiên Hấp Thụ | 3 | Chặn trọn một đòn của kẻ địch hoặc boss: 0 sát thương, không bật lùi, **bất tử 0,3 s**, không mất mức nạp, không tính là "bị đánh". Hồi sau `shieldRechargeSec` 30 / 25 / 20 s **tính từ lúc khiên vỡ**. Không chặn gai và hố | Cơ chế nhỏ mới |
 
-Tổng: 3 nhánh × (1 + 2 + 3) = 18 bậc = 18 SP.
+Kiểm luật bậc: V2 bậc 2 tăng 67% sát thương; V3 bậc 1 = 60% hiệu lực tối đa (0,3 / 0,5); P3 bậc 1 = 75% (+3 / +4 bước), bậc 3 thêm hiệu ứng sượt đạn; C2 bậc 2 tăng gấp đôi phần thưởng; C3 bậc 1 = 67% tốc độ hồi tối đa (1/30 so với 1/20).
 
-### 2.2 Module (bản MVP)
+### 2.2 Module (Draft, bị chặn: cần nhiệm vụ phụ Stage 1–4)
 
-- **Ô:** `slots(L) = moduleSlots.start + [L ≥ 10] + [L ≥ 20]` = 3 / 4 / 5 (`player.json`). **Tải tối đa** `loadCap = 2 × slots` = 6 / 8 / 10 (GDD 6.4).
-- **Nguồn:** nhiệm vụ phụ theo vị trí màn (`03-Dac-ta-Hub-Shop.md` mục 7). MVP có 4 module của Stage 1–4. Tab Module mở sau boss 3 (D04).
-- Không lắp được module khiến tổng tải vượt `loadCap` (nút lắp mờ, hiện "Vượt tải"); vì vậy không bao giờ lưu được cấu hình vượt tải.
+- **Ô theo cấp:** dữ liệu đổi sang dạng `moduleSlots: [{ fromLevel: 1, slots: 3 }, { fromLevel: 10, slots: 4 }, { fromLevel: 20, slots: 5 }]` (không viết cứng mốc 10, 20 trong mã). **Tải tối đa** `loadCap = moduleLoadPerSlot (2) × slots`.
+- **Nguồn:** nhiệm vụ phụ theo vị trí màn (đặc tả Hub mục 7). Không lắp được module làm tổng tải vượt `loadCap`.
 
-| Module | Tải | Hiệu ứng (biến dữ liệu) | Ghi chú cân bằng |
+| Module | Tải | Hiệu ứng (biến dữ liệu) | Ghi chú |
 | --- | --- | --- | --- |
-| Magnet Core | 1 | Hút Core Bit và viên máu trong `magnetRadiusTiles = 3` ô với `pullTilesPerSec = 8` | Cộng với Upgrade `magnet_range` (+1 ô/cấp, tối đa +3) |
-| Last Stand | 2 | Máu dưới `hpFrac = 0.2` thì mọi sát thương gây ra × `damageMul = 1.3` | Có điều kiện, không tính vào trần (mục 3.3) |
-| Phase Step | 2 | Lướt để lại ảo ảnh tại điểm bắt đầu trong `lifeSec = 0.6` s; kẻ địch thường chạm vào bị choáng `stunSec = 0.3` (mỗi ảo ảnh một lần mỗi kẻ địch) | Boss và mini-boss miễn nhiễm |
-| Energy Siphon | 1 | Hạ một kẻ địch hồi `energyPerKill = 2` đơn vị năng lượng vũ khí Warden (≈ 7% của 28) | **Đề xuất đổi** GDD "2%" (0,56 đơn vị, không cảm nhận được vì Vine Lash tốn 4) |
+| Magnet Core | 1 | Hút Core Bit, viên máu trong `magnetRadiusTiles = 3` ô, `pullTilesPerSec = 8` | Cộng Upgrade `magnet_range` |
+| Last Stand | **3** | Máu dưới `hpFrac = 0.2`: sát thương gây ra × `damageMul = 1.3` | Có điều kiện: `conditional: true` (mục 3.3) |
+| Phase Step | **3** | Lướt để lại ảo ảnh `lifeSec = 0.6` s; kẻ địch thường chạm vào bị choáng `stunSec = 0.3` | Cần thêm trạng thái choáng cho mọi hành vi kẻ địch (hiện chưa có). Boss, mini-boss miễn nhiễm |
+| Energy Siphon | 1 | Hạ một kẻ địch hồi `energyPerKill = 2` đơn vị (≈ 7% của 28) | Thay "2%" của GDD (0,56 đơn vị, không cảm nhận được) |
 
-Hai mốc: trước cấp 10 có 3 ô / 6 tải, lắp được 3 trong 4 module (tổng tải cả 4 là 6 nhưng thiếu ô) nên phải chọn; từ cấp 10 (khoảng cuối MVP) lắp đủ cả 4.
+Tải 4 module = 8 > 6 (3 ô) nên trước cấp 10 phải chọn tổ hợp; từ cấp 10 (4 ô, tải 8) lắp đủ. Đây là lựa chọn mỏng; nếu chơi thử thấy tab Module không ai cân nhắc thì ghi rõ module không thuộc phần đo ở cổng MVP.
 
-### 2.3 Két giáp (bản MVP)
+### 2.3 Két giáp (Draft, bị chặn: cần Két giáp trong màn và vũ khí Stage 2–4)
 
-Két giáp màn k cần vũ khí màn k+1 (GDD 6.3). Trong MVP (Stage 1–4) mở được 3 két:
+`stages.json` đã có `armorCache` và `armorCacheRequiresWeapon` theo màn; `armor.json` chỉ giữ **bộ phận → hiệu ứng**, kèm bất biến "mỗi `armorCache` trong `stages.json` có trong `armor.json`". Két dựng bằng vật chắn `requiresWeapon` + bí mật (M7 đã có), nên **bộ phận đã có suy từ bí mật đã nhặt**, không lưu riêng.
 
-| Két | Màn, vũ khí cần | Bộ phận | Hiệu ứng MVP (biến dữ liệu) |
+| Két | Màn, vũ khí cần | Bộ phận | Hiệu ứng MVP |
 | --- | --- | --- | --- |
-| 1 | Stage 1, Prism Beam | Đầu Mk I | **Radar bí mật:** khi còn bí mật, Memory Log hoặc Két giáp chưa lấy trong `scanRadiusTiles = 12` ô, HUD hiện mũi tên nhấp nháy ở mép màn hình chỉ hướng. GDD ghi "bản đồ nhỏ" nhưng MVP chưa có bản đồ nhỏ |
-| 2 | Stage 2, Frost Shard | Thân Mk I | `damageTakenMul = 0.85` |
-| 3 | Stage 3, Gale Cutter | Tay Mk I | `chargeTimeMul = 0.85` |
+| 1 | Stage 1, Prism Beam | Đầu Mk I | **Radar:** khi vật phẩm được lưu chưa lấy trong `scanRadiusTiles = 12` ô, mép màn hình hiện mũi tên **tĩnh** nhịp thở ≥ 1 s. Hai biểu tượng: "lấy được" và "cần [vũ khí X]". Ẩn trong đấu trường boss và khi có kẻ địch trong 6 ô. Tiếng ping 1 lần khi vào tầm (tối đa 1 lần mỗi 10 s) |
+| 2 | Stage 2, Frost Shard | Thân Mk I | `damageTakenMul = 0.85` (chỉ đòn kẻ địch và boss) |
+| 3 | Stage 3, Gale Cutter | Tay Mk I | **Đạn nạp vừa phá khiên** (`midChargeBreaksShield = true`). Không trùng V1 nữa |
 
-Chân Mk I (Stage 4, cần Quake Drill của Stage 5) và mọi bản Mk II: Alpha. Mở két thì Mira chế tạo ngay (MVP không có thời gian chờ); mỗi bộ phận bật/tắt riêng, mặc định bật.
+Chân Mk I (cần Quake Drill, Stage 5) và mọi bản Mk II: Alpha. Mở két thì Mira chế tạo ngay; mỗi bộ phận bật/tắt riêng, mặc định bật.
 
 ### 2.4 Trạng thái nút kỹ năng
 
 | Trạng thái | Điều kiện | Chạm / bấm |
 | --- | --- | --- |
-| Khóa | Tầng trước chưa đủ bậc | Hiện mô tả và điều kiện mở |
-| Học được | Mở, chưa đủ bậc, SP còn ≥ 1 | Học 1 bậc (1 SP), áp dụng và tự lưu ngay |
-| Thiếu SP | Mở, chưa đủ bậc, SP còn = 0 | Hiện mô tả, nút học mờ |
-| Đủ bậc | Bậc = bậc tối đa | Hiện mô tả |
+| Khóa | Tầng trước chưa đủ bậc | Mô tả và điều kiện mở |
+| Học được | Mở, chưa đủ bậc, SP còn ≥ 1 | Nút "Học (1 SP)" riêng (tránh học nhầm) |
+| Thiếu SP | Mở, chưa đủ bậc, SP còn 0 | Mô tả, nút học mờ |
+| Đủ bậc | Bậc = tối đa | Mô tả |
 
-Đặt lại: một nút "Đặt lại" cho cả cây, có bước xác nhận, hoàn 100% SP, miễn phí, không giới hạn số lần. Không có gỡ từng bậc (giữ giao diện đơn giản, đặt lại đã miễn phí).
+Đặt lại: "Đặt lại nhánh" (từng nhánh) và "Đặt lại tất cả", có bước xác nhận, hoàn 100% SP, miễn phí, không giới hạn.
+
+### 2.5 Chỉnh kỹ năng ngay trong màn
+
+Menu tạm dừng có mục **Kỹ năng** mở cùng bảng tab Kỹ năng (học, đặt lại). Thay đổi **áp dụng ở lần hồi sinh kế tiếp** (checkpoint) hoặc lần vào màn sau, không áp giữa lúc đang sống (không đổi khiên lấy sát thương giữa một đòn boss). Nhờ vậy chết ở boss muốn đổi C3 lấy V3 không phải thoát màn rồi chơi lại 8–15 phút. GDD 6.2 "đổi tại Hub" mở rộng thành "tại Hub hoặc trong menu tạm dừng" (mục 9).
 
 ## 3. Công thức, cộng dồn và trần sức mạnh
 
 ### 3.1 Quy tắc cộng dồn
 
-Mọi hệ số cùng loại **nhân với nhau**, rồi kẹp theo sàn hoặc trần trong dữ liệu:
+Hệ số cùng loại **nhân với nhau**, rồi kẹp theo sàn trong dữ liệu. Sàn chỉ áp lên **tích các hệ số của build** (kỹ năng, giáp, upgrade, booster), **không gồm hệ số độ khó**.
 
 ```text
-chargeTime   = base × V1 × TayMkI × (1 / (1 + overchargeBooster)) ; ≥ base × minChargeTimeMul (0.6)
-damageTaken  = round(raw × difficulty.damageTaken × (1 − 0.04 × armor_plating) × ThânMkI) ; tổng hệ số ≥ minDamageTakenMul (0.5), kết quả ≥ 1
-maxHp        = round(hp(L_hiệu_dụng) × C1)
-damageDealt  = base × atk(L)/atk(1) × (1 + 0.05 × arc_core) × [crit V3] × [Last Stand]
-khiên        : khiên kỹ năng C3 chặn trước, rồi mới tới Booster shield_cell
+fullChargeTime = base × V1 × (1 / (1 + overcharge.chargeSpeed)) ; ≥ minFullChargeSec (0.75 s) ; phải > midCharge.timeSec
+midChargeTime  = base (không kỹ năng nào đổi)
+damageTaken    = round(raw × difficulty.damageTaken × max(minBuildDamageTakenMul, (1 − plating × lvl) × ThânMkI)) ; ≥ 1 ; chỉ đòn kẻ địch và boss
+envDamage      = round(raw × difficulty.damageTaken)   // gai, hố: build không giảm, để duyệt màn đoán trước được
+maxHp          = round(hp(L hiệu dụng) × C1)
+damageDealt    = base × atk(L)/atk(1) × (1 + arc_core.damagePerLevel × lvl) × [V3 khi đang hở] × [Last Stand]
+khiên          : khiên C3 chặn trước, rồi Booster shield_cell
 ```
 
-| Ví dụ thời gian nạp đầy (gốc 1,2 s) | Kết quả |
-| --- | --- |
-| Không gì | 1,2 s |
-| V1 | 1,02 s |
-| V1 + Tay Mk I | 0,867 s |
-| V1 + Tay Mk I + Booster Overcharge (+30% tốc độ) | 0,667 s → kẹp **0,72 s** |
+Các hệ số Upgrade và Booster dùng trong công thức (`arc_core.damagePerLevel = 0.05`, `armor_plating.damageTakenPerLevel = 0.04`, `overcharge.chargeSpeed = 0.3`) thêm thành **trường số** trong `shop.json` và được kiểm tra ở `core/shop-config.ts` (hiện chỉ là chuỗi chữ).
 
-### 3.2 Giá trị biên
+### 3.2 Đo DPS bằng mô phỏng, không tính tay
 
-| Mốc | Máu (không C1 / có C1) | Hệ số sát thương bắn thường tối đa* | Ghi chú |
+Technical Director chạy mô phỏng dùng chính `WeaponLoadout` và `PlayerPhysics` của game (mục tiêu cách 5 ô, phát nào cũng trúng), sát thương mỗi giây (đơn vị: phát Arc Cannon gốc):
+
+| Lối bắn | Gốc | Tăng tốc nạp áp cả nạp vừa (bản 1, sai) | Tăng tốc chỉ áp nạp đầy (bản 2) |
 | --- | --- | --- | --- |
-| Cấp 1 | 100 / 110 | 1 × 1,25 × 1,10 = 1,375 | Upgrade chưa có ở đầu game (mở sau boss 2) |
-| Cấp 10 (cuối MVP) | 136 / 150 | 1,225 × 1,25 × 1,10 = 1,684 | |
-| Cấp hiệu dụng 20 (Stage 8 có đồng bộ, tối đa 18 + 2) | 176 / 194 | 1,475 × 1,25 × 1,10 = **2,028** | Dưới trần 2,2 |
-| Cấp 24 (Citadel và màn cuối, khuyến nghị 22+ cộng 2) | 192 / 211 | 1,575 × 1,25 × 1,10 = **2,166** | Dưới trần 2,2 |
-| Cấp 30 | 216 / 238 | 1,725 × 1,25 × 1,10 = 2,372 | Chỉ khi vượt khuyến nghị nhiều hoặc hậu cốt truyện (mục 3.3) |
+| Bắn thường, bàn phím (giới hạn 0,12 s) | **7,47** | 7,47 | 7,47 |
+| Chu kỳ nạp vừa, bàn phím | 5,77 | 9,42 | 5,77 |
+| Chu kỳ nạp đầy, bàn phím (ở sàn) | | | 4,95 |
+| Tự bắn + nạp vừa, cảm ứng | **9,62** | 12,55 | 9,62 |
+| Tự bắn + nạp đầy, cảm ứng (ở sàn) | | | 8,68 |
 
-\* Upgrade `arc_core` tối đa (+25%), V3 bậc 3 với chính xác tuyệt đối (trung bình +10%: một phát ×1,5 mỗi 5 phát).
+Kết luận: khi tăng tốc nạp **chỉ áp nạp đầy** và sàn nạp đầy lớn hơn nạp vừa, lối nạp đầy luôn thấp hơn lối mạnh nhất (bắn thường trên bàn phím, nạp vừa + tự bắn trên cảm ứng). Vì vậy V1, V3 (chỉ cho đạn nạp đầy) và Overcharge làm lối nạp đầy hấp dẫn hơn mà **không nâng DPS tối đa**. V2 chỉ đánh mục tiêu khác. Phép kiểm tra trần bằng mô phỏng theo bốn lối bắn trên là một test bắt buộc (Story ST-08-04).
 
-### 3.3 Trần sức mạnh cốt truyện: phát hiện mâu thuẫn và cách đo đề xuất
+### 3.3 Trần sức mạnh cốt truyện
 
-GDD 6.1: "cấp, upgrade và module cộng lại không vượt khoảng ×2,2 sát thương và ×2,5 máu so với cấp 1". **Mâu thuẫn:** riêng cấp 30 × Upgrade tối đa đã là 1,725 × 1,25 = 2,156, nên kỹ năng Vanguard (GDD 6.2 có "chí mạng") gần như không còn chỗ.
+GDD 6.1: cấp + upgrade + module ≤ ×2,2 sát thương, ≤ ×2,5 máu so với cấp 1. Bản 1 phát hiện: riêng cấp 30 × Upgrade tối đa đã là 1,725 × 1,25 = 2,156, và Citadel, màn cuối **không đồng bộ cấp**, chưa có cấp khuyến nghị trong dữ liệu, nên người cấp 30 vào Citadel với kỹ năng sẽ vượt trần.
 
-**Đề xuất cách đo** (để code kiểm tra lúc nạp, mở rộng phép kiểm tra đã có ở `game-config.ts`):
+| Cách sửa | Ưu | Nhược |
+| --- | --- | --- |
+| (a) Thêm cấp khuyến nghị cho Citadel, đồng bộ cấp (chỉ kẹp trên) cho Citadel và màn cuối, đo ở mốc suy từ dữ liệu | Giữ công thức công | Thêm luật mới, trái GDD 6.1 ("Citadel không đồng bộ"); phép kiểm tra phức tạp |
+| **(b) Chốt: hạ công theo cấp `atk = "10+0.2*(L-1)"`, giữ phép đo ở cấp tối đa như code hiện có** | Đơn giản, không thêm luật; hợp GDD 6.1 ("phần thưởng chính khi lên cấp là SP và ô module, không phải chỉ số") | Đổi một công thức `[PLACEHOLDER]` của GDD |
 
-1. Đo **ở cấp hiệu dụng cao nhất của nội dung cốt truyện**, không ở cấp 30: cấp 20 (Stage 1–8 có đồng bộ cấp) và cấp 24 (Citadel và màn cuối). Lý do: đồng bộ cấp đã chặn người cấp cao trong Stage 1–8; Citadel cân theo cấp khuyến nghị 22+. Cả hai mốc đều ≤ 2,2 (bảng 3.2).
-2. Đo **sát thương trung bình bền vững** (gồm crit trung bình V3), **không tính hiệu ứng có điều kiện rủi ro cao** (Last Stand dưới 20% máu) và booster dùng một lần.
-3. **Kỹ năng tăng tốc nạp không được nâng DPS tối đa:** DPS của chỉ bắn nạp đầy ở sàn 0,72 s là 3 / 0,72 = 4,17 phát/giây, thấp hơn DPS bắn thường cơ bản khoảng 4,35 phát/giây (boss 100 máu, bắn liên tục khoảng 23 s theo test mô phỏng). Vì vậy V1, Tay Mk I và Overcharge chỉ làm lối bắn nạp dễ chịu hơn, không vượt lối mạnh nhất.
-4. **Máu:** cấp 24 × C1 = 1,92 × 1,1 = 2,11 ≤ 2,5. **Máu hiệu dụng** (tính cả giảm sát thương) cấp 20: 1,936 / (0,8 × 0,85) = 2,85. Đề xuất hướng dẫn ≤ 3,0 cho MVP. Lưu ý cho Alpha: Thân Mk II −25% sẽ đẩy lên 3,23, nên chọn −20% kèm phản đòn hoặc chấp nhận.
+Với (b), hệ số **thường trực** (đo ở cấp 30, đã gồm Upgrade tối đa): sát thương 1,58 × 1,25 = **1,975 ≤ 2,2**; máu 2,16 × 1,15 (C1) = **2,48 ≤ 2,5**. Kỹ năng Vanguard không nâng DPS tối đa (mục 3.2) nên không cộng vào hệ số này.
 
-### 3.4 Biến cấu hình (dữ liệu, không viết cứng)
+**Hai ràng buộc thêm, có trong dữ liệu `player.json` → `storyPowerCap` và kiểm tra lúc nạp:**
 
-`03-Data/skills.json` (mới): `rules.minChargeTimeMul = 0.6`, `rules.minDamageTakenMul = 0.5`, `rules.longIFrameCooldownSec = 1.0`, `rules.critEveryHits = 5`, danh sách nhánh → nút → bậc với hiệu ứng như bảng 2.1. `03-Data/modules.json` (mở rộng): `cost`, tham số từng module, `source` (nhiệm vụ màn nào). `03-Data/armor.json` (mới): bộ phận, Mk, Két giáp ở màn nào, hiệu ứng. `player.json`: dùng `moduleSlots` có sẵn, thêm `moduleLoadPerSlot = 2`.
+- `conditionalDamageMul = 2.6`: trường hợp xấu nhất có hiệu ứng `conditional` (Last Stand): 1,975 × 1,3 = 2,57 ≤ 2,6.
+- `effectiveHpMul = 3.75`: máu hiệu dụng ở cấp 30 với C1, Upgrade `armor_plating` tối đa và Thân Mk I: 2,484 / (0,8 × 0,85) = 3,65 ≤ 3,75. Ghi chú cho Alpha: Thân Mk II −20% sẽ ra 3,88, phải chọn lại số (ví dụ Mk II −15% kèm phản đòn).
+
+Một hàm `statsFor(level, buildStats)` dùng chung cho StageWorld và phép kiểm tra lúc nạp, để số trong trận và số được kiểm tra không lệch.
+
+### 3.4 Giá trị biên (với (b))
+
+| Mốc | Máu (không C1 / có C1) | Công theo cấp | Ghi chú |
+| --- | --- | --- | --- |
+| Cấp 1 | 100 / 115 | 1,000 | |
+| Cấp 4 (hết Stage 1) | 112 / 129 | 1,060 | C1 thêm khoảng 1 đòn boss (12–18) |
+| Cấp 10 (cuối MVP) | 136 / 156 | 1,180 | |
+| Cấp hiệu dụng 20 (Stage 8, đồng bộ) | 176 / 202 | 1,380 | |
+| Cấp 30 | 216 / 248 | 1,580 | Thường trực × Upgrade 1,25 = 1,975 |
 
 ## 4. Giao tiếp hệ thống và dữ liệu
 
-- **Mô hình thuần** `logic/rpg/build.ts`: `computeBuild(save, data) → PlayerModifiers` (mọi hệ số ở mục 3.1 cộng với cờ cơ chế: `airDash`, `burst`, `critRhythm`, `shield`, `magnet`, `lastStand`, `phaseStep`, `siphon`, `scan`). StageWorld nhận `modifiers` trong `WorldSetup`, áp lên thông số Kai, vũ khí, sát thương; không đọc bản lưu.
-- **Sự kiện (event bus, cho HUD, âm thanh, đo lường M16):** `build:changed { modifiers }`, `skill:learned { node, rank }`, `skill:reset { refunded }`, `module:equipped { id }`, `module:unequipped { id }`, `armor:toggled { part, on }`.
-- **WorldEvents mới (trong màn):** `critHit`, `burstHit`, `shieldAbsorbed`, `shieldReady`, `airDash`, `phaseStun`, `scanPing`.
-- **Bản lưu (M11, nâng `SAVE_VERSION` lên 2, bản 1 nâng lên với giá trị trống):**
+- **Build thuần, hai phần** (`logic/rpg/build.ts`):
+  - `stats`: biến đổi dữ liệu thuần `applyBuild(player, weapons, build) → { player, weapons }` (thời gian nạp đầy, trượt tường, máu, hồi năng lượng, bất tử lướt với đạn). Dùng ở **constructor, `setLevel()` và `retune()`** của StageWorld, để lên cấp giữa màn hay bảng `?tune=1` không xóa mất hiệu ứng.
+  - `mechanics`: cờ và thông số cơ chế (lượt lướt trên không, nổ lan, trừng phạt, khiên, sượt đạn, module), chạy trong `BuildRuntime` thuộc StageWorld.
+- **`PlayerPhysics.absorbHit()`** cho khiên C3: bất tử 0,3 s, không bật lùi, không phát sự kiện `hurt` (không mất nạp, không kích tín hiệu `hurt` của hướng dẫn).
+- **WorldEvents mới:** `kaiShieldAbsorbed`, `kaiShieldReady`, `airDash`, `graze`, `burstHit`, `punishHit` (tiền tố `kaiShield` để không lẫn với `shieldBroken`/`shieldHit` của khiên Lính Kén). HUD đọc trạng thái khiên qua `HudModel`, không qua event bus. Sự kiện event bus cho Xưởng (`skill:learned`...) chỉ thêm khi có nơi nghe (M16).
+- **Bản lưu** (nâng `SAVE_VERSION` lên 2; bản 1 nâng lên với giá trị trống; build cũ gặp bản 2 thì chỉ đọc, không ghi đè mất kỹ năng):
 
 ```text
-character.skills   : Record<nodeId, rank>       // bậc đã học
-character.modules  : { owned: string[]; equipped: string[] }
-character.armor    : { owned: string[]; off: string[] }   // bộ phận đã có; bộ phận đang tắt
-SP còn lại = skillPoints(cấp, boss) − Σ rank   // không lưu SP còn lại
+character.skills       : Record<nodeId, rank>
+character.modules      : { owned: string[] }
+character.loadouts     : [{ modules: string[]; armorOff: string[] }]   // MVP chỉ dùng phần tử 0; Alpha thêm preset không cần nâng bản lưu
+character.activeLoadout: number
+Bộ phận giáp đã có     : suy từ bí mật đã nhặt (không lưu)
+SP còn lại             : skillPoints(cấp, boss) − Σ rank (không lưu)
 ```
+
+- **`normalizeBuild(save, config)`** chạy sau `SaveManager.open` và sau khi nhập mã sao lưu (cần dữ liệu cấu hình nên không đặt trong `parseSave`), ghi lại một lần và báo một lần nếu có sửa (mục 5).
 
 ## 5. Trường hợp biên
 
 | Tình huống | Xử lý |
 | --- | --- |
-| Tổng bậc đã học lớn hơn SP có (dữ liệu đổi giá, nhập mã sao lưu cũ) | Tự đặt lại cả cây, hoàn SP, báo "Kỹ năng đã được đặt lại do thay đổi dữ liệu" |
-| Nút trong bản lưu không còn trong dữ liệu | Bỏ nút đó (SP tự hoàn) |
-| Module trong bản lưu không còn, hoặc lắp vượt tải sau khi đổi dữ liệu | Gỡ từ module lắp sau cùng tới khi vừa tải |
-| Bản lưu của phiên bản mới hơn | Không đọc, không ghi (quy tắc M11 hiện có) |
-| Khiên C3 và Booster Khiên cùng có | Khiên kỹ năng chặn trước; booster còn nguyên |
-| Đòn trúng đúng bước khiên hồi | Khiên hồi trước, chặn đòn đó (thứ tự trong bước: hồi khiên → xử lý trúng đòn) |
-| Lướt trên không ngay khi rời dây leo | Được (dây leo tính như chạm đất để hồi lượt lướt trên không) |
-| Nhịp chí mạng khi đổi vũ khí | Đổi vũ khí không đặt lại bộ đếm; chỉ phát trượt mới đặt lại |
-| Nổ lan V2 trúng boss khi mục tiêu chính là kẻ địch thường | Có tính (boss là "mục tiêu khác"); mỗi vụ nổ trúng mỗi mục tiêu tối đa 1 lần |
-| Mở Xưởng giữa màn | Không cho (Xưởng ở Hub; menu tạm dừng chỉ có "Lắp module nhanh" từ Alpha) |
-| Màn chơi thử cổng Prototype | Bỏ qua mọi kỹ năng, module, giáp (giống quy tắc cấp 1 hiện có) |
+| Σ bậc > SP có, bậc vượt tối đa, mất điều kiện tầng trước, nút lạ | `normalizeBuild`: đặt lại phần sai (cả cây nếu Σ bậc > SP), hoàn SP, báo một lần |
+| Module lạ hoặc vượt tải sau khi đổi dữ liệu | Gỡ từ module lắp sau cùng tới khi vừa tải |
+| Bản lưu chỉ đọc (của phiên bản mới hơn) | Xưởng khóa, chỉ xem |
+| **Chết** | Khiên sẵn sàng, lượt lướt trên không hồi (trận boss chơi lại giống nhau). Thay đổi kỹ năng từ menu tạm dừng áp dụng tại đây |
+| **Rơi hố còn máu** | Giữ trạng thái khiên và đồng hồ hồi |
+| **Chạm gai** (về chỗ an toàn) | Không làm mới gì: trạng thái build nằm ở `BuildRuntime`, không trong `PlayerPhysics.respawn` |
+| Hit-stop, chờ hồi sinh | Đồng hồ hồi khiên dừng (đếm sau cổng hit-stop và hồi sinh của `world.step`) |
+| Khiên C3 và Booster Khiên cùng có | Khiên kỹ năng chặn trước |
+| Đòn trúng đúng bước khiên hồi | Thứ tự trong bước: hồi khiên → xử lý trúng đòn |
+| Đạn nạp đầy xuyên 1 mục tiêu nên nổ 2 lần | Vụ nổ bỏ qua mục tiêu trong `p.hitIds` và thêm mục tiêu bị nổ vào đó: mỗi mục tiêu nhận tối đa một lần sát thương từ mỗi viên |
+| Nổ lan trúng Lính Kén có khiên | Không phá khiên (chỉ đạn nạp đầy trực tiếp phá) |
+| Lướt trong thời gian coyote | Tính là lướt đất, không tốn lượt lướt trên không |
+| Màn chơi thử cổng Prototype (màn xám) | Bỏ qua mọi kỹ năng, module, giáp; nhóm "Bộ kỹ năng" của bảng `?tune=1` tắt ở màn này |
 
 ## 6. Giao diện và phản hồi
 
-- **Xưởng (MVP):** 3 tab Kỹ năng, Module, Giáp theo `Workshop.html`, `Module.html`, `Armor.html`; tab chưa mở hiện khóa kèm điều kiện. Thanh trên: Core Bit, **SP còn lại**. Thay đổi áp dụng ngay, tự lưu.
-- **Đề xuất kỹ thuật (cần Technical Director chốt bằng ADR):** dựng Xưởng bằng **bảng HTML** như bảng "Dữ liệu lưu" và "Điều khiển" (nhiều chữ, cần nút ≥ 48 dp và cuộn trên điện thoại), không vẽ trong canvas.
-- **Nút kỹ năng:** biểu tượng, tên, chấm bậc (ví dụ ●●○), viền theo trạng thái (mục 2.4); chạm lần 1 xem mô tả và số liệu bậc kế, nút "Học (1 SP)" riêng để tránh học nhầm.
-- **Lối vào:** menu (Hub dạng menu của MVP) → Xưởng; nút **Mở Xưởng** ở màn Kết quả sáng lên khi còn SP (nay đang mờ); hướng dẫn R02–R03 sau boss 1.
-- **Trong màn:** khiên C3 hiện biểu tượng nhỏ cạnh thanh máu (sáng khi sẵn, mờ khi đang hồi); crit V3 có số sát thương vàng và rung nhẹ; nổ lan V2 có vòng tròn 0,15 s; radar Đầu Mk I là mũi tên ở mép màn hình. Mọi hiệu ứng tôn trọng tùy chọn "giảm rung, giảm nhấp nháy" (GDD 11).
-- **Âm thanh (M12):** tiếng học kỹ năng, tiếng khiên vỡ và khiên hồi khác nhau, tiếng crit.
+- **Xưởng:** bảng HTML (ADR-001), tab Kỹ năng theo `Workshop.html`; tab Module, Giáp hiện khóa kèm điều kiện. Thanh trên: Core Bit, **SP còn lại**. Nút có chấm bậc (●●○). Thay đổi tự lưu. Điều hướng bằng chạm, bàn phím, tay cầm.
+- **Lối vào:** menu (Hub dạng menu của MVP) → Xưởng; nút **Mở Xưởng** ở màn Kết quả sáng khi còn SP; menu tạm dừng → Kỹ năng (mục 2.5); hướng dẫn R02–R03 sau boss 1.
+- **Trạng thái sống còn hiện trên người Kai**, không chỉ ở góc HUD, và không chỉ bằng màu (chế độ mù màu, GDD 11):
+
+| Kỹ năng, module | Tín hiệu |
+| --- | --- |
+| P1 | Đèn đẩy ở chân sáng khi còn lượt lướt trên không; chớp một lần khi hồi lượt |
+| P3 | Bóng mờ màu lục lam suốt phần bất tử thêm; tia sáng và tiếng "sượt" khi đạn đi xuyên |
+| C3 | Viền khiên quanh Kai; biểu tượng HUD dạng vòng đếm hồi; khiên vỡ: hiệu ứng vỡ kính, tiếng riêng, dừng hình 2 bước (người chơi biết mình đã bị trúng) |
+| V3 | Boss lộ lõi sáng khi đang hở |
+| Last Stand | Viền đỏ quanh Kai, đạn ánh đỏ |
+| Energy Siphon | Thanh năng lượng nháy "+2" |
+
+- **Ba bậc phản hồi** (đặt trong `ui.json`, không chồng lên nhau):
+
+| Bậc | Dừng hình | Rung | Dùng cho |
+| --- | --- | --- | --- |
+| Nhỏ | 0 | 0 | Sượt đạn, Siphon, ping radar |
+| Vừa | 1–2 bước | trauma ≤ 0,2 | Nổ lan V2 (vòng tròn đúng bán kính, 0,2 s), khiên vỡ |
+| Lớn | 3 bước (như hiện có) | như hiện có | Nạp đầy, điểm yếu, Đòn Trừng Phạt |
+
+- **Âm thanh (M12):** tiếng lướt trên không khác lướt đất; tiếng sượt đạn; khiên vỡ, khiên sẵn (hạ âm lượng khi boss đang báo đòn); nhịp tim khi Last Stand bật (tắt được); ping radar ≤ 1 lần mỗi 10 s; tiếng học kỹ năng.
+- **Phụ thuộc chưa có:** tùy chọn "giảm rung, giảm nhấp nháy" (mục Tùy chọn của menu tạm dừng còn mờ); khi làm phải áp lên ba bậc phản hồi trên.
 
 ## 7. Nút tinh chỉnh
 
-Toàn bộ số ở mục 2–3 nằm trong `skills.json`, `modules.json`, `armor.json`, `player.json`; bảng chỉnh cảm giác (`?tune=1`) nên có thêm nhóm "Bộ kỹ năng" để bật/tắt từng nút khi chơi thử. Nguồn SP và EXP không đổi ở đây (đã ở `player.json` → `level`).
+Mọi số ở mục 2–3 nằm trong `skills.json`, `modules.json`, `armor.json`, `player.json` (`level`, `moduleSlots`, `storyPowerCap`), `shop.json` (trường số mới), `ui.json` (bậc phản hồi). Bảng chỉnh cảm giác (`?tune=1`) thêm nhóm "Bộ kỹ năng" để bật/tắt từng nút khi chơi thử (tắt ở màn xám).
 
 ## 8. Tiêu chí kiểm thử và giả thuyết
 
 | Giả thuyết | Đo bằng | Đạt khi |
 | --- | --- | --- |
-| Người chơi dùng cây kỹ năng | Sự kiện `skill:learned` (M16) hoặc phiếu chơi thử | ≥ 80% học ít nhất 1 bậc trong lần đầu vào Xưởng sau boss 1 |
-| Có lựa chọn thật | Nhánh được dồn SP nhiều nhất ở cuối MVP | Không nhánh nào chiếm > 60% số người chơi |
-| Đặt lại miễn phí khuyến khích thử | Số lần `skill:reset` | ≥ 25% người chơi đặt lại ít nhất 1 lần trước cuối MVP |
-| Không phá trần | Test logic: hệ số ở cấp 20 và 24 (mục 3.2) | ≤ 2,2 sát thương, ≤ 2,5 máu |
-| Không có bộ kỹ năng làm boss tầm thường | Mô phỏng Thorna với Vanguard đủ + Upgrade tối đa ở cấp hiệu dụng 6 | Thời gian hạ boss ≥ 60% thời gian gốc; mọi đòn vẫn cần né (khiên chỉ chặn 1 đòn mỗi 20 s) |
-| P3 không thành bất tử liên tục | Test logic | Tỉ lệ thời gian bất tử do lướt ≤ 20% khi lướt liên tục |
+| Có lựa chọn thật | Build ghi lại khi vào màn và khi qua cửa boss (M16 hoặc nhật ký chơi thử) | Không nút tầng 3 nào bị bỏ ở hơn 60% người chơi |
+| Người chơi tự quay lại Xưởng | Số lần mở Xưởng không do hướng dẫn nhắc | ≥ 50% người chơi tự mở lại trước cuối MVP |
+| SP được dùng | SP còn lại khi vào Stage 2 | ≥ 70% người chơi tiêu hết SP trước Stage 2 |
+| Không phá trần | Test logic: hệ số thường trực ở cấp tối đa, trường hợp có điều kiện, máu hiệu dụng; mô phỏng 4 lối bắn (mục 3.2) | ≤ `storyPowerCap` trong dữ liệu; lối nạp đầy có build thấp hơn lối mạnh nhất không build |
+| Phòng thủ không thay được né | Mô phỏng: bot không né, build phòng thủ tối đa MVP (nhánh Core đủ bậc, Thân Mk I, Booster Khiên) đấu Thorna ở Thường | Bot vẫn thua |
+| P3 không thành bất tử liên tục | Test logic, mẫu lướt đủ cú liên tục (0,25 s lướt + 0,6 s hồi) | Tỉ lệ thời gian bất tử với đạn ≤ gốc + 8 điểm % (gốc 11,8%; bậc 3: 10/51 = 19,6%) |
+| Khiên không "ăn" được đòn đỉnh | Mô phỏng Hoa Nở với khiên sẵn | Đứng yên vẫn trúng ít nhất 1 hạt sau khi khiên vỡ |
 
-Nghiệm thu: test logic cho `computeBuild`, cộng dồn, sàn và trần, lưu bản 2 và nâng bản 1; chạy thử trên PC và điện thoại (Xưởng, học, đặt lại, vào màn thấy hiệu ứng) theo quy tắc nhìn tận mắt.
+Nghiệm thu: test logic cho `applyBuild`, `BuildRuntime`, cộng dồn, sàn, trần, `normalizeBuild`, bản lưu 2; chạy thử trên PC và điện thoại theo quy tắc nhìn tận mắt.
 
 ## 9. Thay đổi cần lan sang tài liệu khác (`/propagate-design-change`)
 
-Chỉ áp dụng sau khi người dùng duyệt tài liệu này:
+Áp dụng sau khi người dùng duyệt các quyết định ở mục 10:
 
 | Tài liệu | Thay đổi |
 | --- | --- |
-| GDD chính 6.1 | Ghi rõ cách đo trần sức mạnh (mục 3.3): đo ở cấp hiệu dụng 20 và 24, sát thương trung bình bền vững, không tính Last Stand và booster |
-| GDD chính 6.2 | Trỏ tới tài liệu này cho danh sách kỹ năng MVP; "chí mạng" là nhịp chí mạng có quy luật (không ngẫu nhiên) |
-| GDD chính 6.4 | Energy Siphon: 2 đơn vị năng lượng mỗi lần hạ (thay "2%") |
-| `03-Dac-ta-Hub-Shop.md` mục 5 | Bản MVP có 3 tab; Tủ skin và Loadout dời sang Alpha; nút kỹ năng có nhiều bậc, mỗi bậc 1 SP |
-| `07-Kich-ban-huong-dan.md` R03 | Lời giữ nguyên ("Mỗi kỹ năng tốn 1 điểm") đổi thành "Mỗi lần học tốn 1 điểm" |
-| Wireframe `Workshop.html` | Thêm chấm bậc trên nút; tab Tủ skin và Loadout hiện khóa "Alpha" |
+| GDD chính 6.1 | Công: `10 + 0,2 × (L − 1)` (cấp 30 ≈ 15,8, ×1,58); trần đo ở cấp tối đa với hệ số thường trực, thêm hai ràng buộc có điều kiện và máu hiệu dụng |
+| GDD chính 6.2 | Trỏ tài liệu này cho danh sách kỹ năng; Vanguard: "nạp nhanh, nổ lan, trừng phạt lúc boss hở" (thay "chí mạng"); đặt lại "tại Hub hoặc trong menu tạm dừng, áp dụng khi hồi sinh" |
+| GDD chính 6.3 | Tay Mk I MVP: đạn nạp vừa phá khiên (thay "bắn nạp nhanh hơn", trùng V1) |
+| GDD chính 6.4 | Energy Siphon 2 đơn vị năng lượng mỗi lần hạ; Last Stand và Phase Step tải 3 |
+| `player.json` | `level.atk`, `storyPowerCap.conditionalDamageMul`, `storyPowerCap.effectiveHpMul`, `moduleSlots` dạng mốc cấp, `moduleLoadPerSlot` |
+| `shop.json` | Trường số cho `arc_core`, `armor_plating`, `overcharge` |
+| `03-Dac-ta-Hub-Shop.md` mục 5 | MVP: tab Kỹ năng trước, Module và Giáp khi có nội dung Stage 2–4; Tủ skin, Loadout sang Alpha; nút có nhiều bậc, mỗi bậc 1 SP; đặt lại theo nhánh |
+| `07-Kich-ban-huong-dan.md` | R03: "Mỗi lần học tốn 1 điểm"; D02: bỏ "biểu tượng khóa trên bản đồ nhỏ", thay bằng biểu tượng "cần [vũ khí X]" của radar Đầu Mk I |
+| Checklist duyệt màn (M7) | Luật "vật phẩm được lưu tới được bằng bộ động tác gốc" (mục 1) |
+| Wireframe `Workshop.html` | Chấm bậc, nút đặt lại nhánh; Tủ skin, Loadout hiện "Alpha" |
 | `04-Dev-Plan/02-Module.md` M8 | Nguồn thêm tài liệu này |
+
+## 10. Quyết định cần người dùng duyệt
+
+1. **Cây kỹ năng phương án E** và danh sách 9 nút ở mục 2.1 (đã đổi V3 thành Đòn Trừng Phạt, P3 chỉ bất tử với đạn, C3 bất tử 0,3 s, C1 +15% máu).
+2. **Hạ công theo cấp** từ 0,25 xuống 0,2 mỗi cấp (mục 3.3, cách (b)), thay vì thêm đồng bộ cấp cho Citadel.
+3. **Phạm vi:** tab Kỹ năng làm ngay; Module, Giáp làm khi có nội dung Stage 2–4; Tủ skin, Loadout sang Alpha.
+4. **Chỉnh kỹ năng trong menu tạm dừng**, áp dụng khi hồi sinh (mục 2.5).
+5. **Gai và hố không bị build giảm sát thương** (mục 3.1), để giữ phép kiểm tra "gai/hố không giết ngay Kai cấp 1" và để duyệt màn đoán trước được.

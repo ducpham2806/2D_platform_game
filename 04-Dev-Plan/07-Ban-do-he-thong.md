@@ -39,8 +39,8 @@ Quy ước "Tài liệu":
 
 | Thứ tự | Tài liệu | Vì sao lúc này | Trạng thái |
 | --- | --- | --- | --- |
-| 1 | **Hệ thống RPG và Xưởng** (`01-GDD/10-He-thong-RPG-Xuong.md`) | Không phụ thuộc cổng Prototype, code M8 đã bắt đầu, wireframe đã có | **Đã viết (bản nháp đề xuất), chờ duyệt** |
-| 2 | **Story cho EP-08** (`04-Dev-Plan/stories/`) | Để code từng phần ≤ 1–2 ngày, mỗi Story chứa đủ số liệu | **Đã viết**, theo bản nháp mục 1 |
+| 1 | **Hệ thống RPG và Xưởng** (`01-GDD/10-He-thong-RPG-Xuong.md`) + ADR-001 (Xưởng dựng bằng bảng HTML) | Không phụ thuộc cổng Prototype, code M8 đã bắt đầu, wireframe đã có | **Bản 2 đã qua duyệt Creative Director và Technical Director + Producer (duyệt kèm sửa, đã sửa); chờ người dùng duyệt 5 quyết định ở mục 10** |
+| 2 | **Story cho EP-08** (`04-Dev-Plan/stories/`) | Để code từng phần ≤ 1–2 ngày, mỗi Story chứa đủ số liệu | **Đã viết** 9 Story (ST-08-01…09; ST-08-09 bị chặn) theo bản 2 |
 | 3 | Âm thanh MVP (M12): danh sách SFX tối thiểu, nhạc, bus, cảnh báo đòn boss | Không phụ thuộc cổng; đợt thử 50 người mà không có âm thanh thì điểm "vui" bị kéo xuống | Đề xuất làm tiếp |
 | 4 | Đo lường MVP (M16 bản tối thiểu): danh sách sự kiện, cách gom dữ liệu khi chưa có máy chủ | Cổng MVP đo 50 người; cần biết đo gì trước khi làm màn | Đề xuất làm tiếp |
 | 5 | **Đặc tả Stage 2–4** (bố cục, cơ chế môi trường, 12 kẻ địch, 3 mini-boss, boss Lumen, Cryo, Aeris kèm đòn Thử thách, nhiệm vụ phụ) theo mẫu `02-Dac-ta-Prologue-Stage1.md` | Khối lớn nhất của MVP, nhưng **phụ thuộc thông số cảm giác** (nhảy, lướt, nạp) mà cổng Prototype có thể đổi; cổng nói rõ không thêm hệ thống mới khi chưa qua | **Chờ kết quả cổng Prototype**. Trong lúc chờ có thể viết phần không phụ thuộc cảm giác: chủ đề, danh sách kẻ địch với vai trò, ý tưởng đòn boss (chưa có số) |
