@@ -5,12 +5,12 @@
 ## Đang ở đâu
 
 - **Mốc:** Giai đoạn 1. Code Prototype và phần MVP không phụ thuộc cảm giác đã xong (EP-08, 09, 10). **Đang chờ cổng Prototype (G1).**
-- **Nhánh làm việc:** `ccr-9de01342-2046rb`, đi trước `main` khoảng 40 commit. Chưa có tag nào.
+- **Nhánh làm việc:** `ccr-9de01342-2046rb`. PR #10 đã merge vào `main` (`eeb8ca1`, 14/11); nhánh tiếp tục từ đó, chỉ merge lại sau đợt thử G1. Chưa có tag nào.
 - **Kế hoạch:** `01-Ke-hoach-lam-viec.md` (sprint S9–S21, epic EP-11…EP-20, ba cổng G1, G2, G3).
 
 ## Chờ người dùng (đường găng)
 
-1. Merge **PR #10** (nhánh này) vào `main` rồi tag `gate-r1` (bản người thử G1). Sau đó code mới ở nhánh mới, không lẫn vào bản thử. **Không merge PR #9** (nhánh của phiên 13/11, tách từ `main` song song, xung đột 31 file); người dùng chọn cách A (14/11): chuyển từng phần sau tag (`stories/EP-21-chuyen-PR9.md`), rồi đóng PR #9.
+1. ~~Merge PR #10~~ xong (14/11, `main` = `eeb8ca1`). Repo công khai, Pages đã bật; bản `eeb8ca1` đã đăng ở `https://ducpham2806.github.io/2D_platform_game/?gate=1` (14/11). Còn: người dùng mở thử trên điện thoại; **tạo tag `gate-r1` trên GitHub** (Releases → Draft a new release → tag `gate-r1`, Target chọn commit `eeb8ca1`): môi trường của Claude không đẩy được tag (proxy trả 403). Code mới tiếp tục trên nhánh này, chỉ merge vào `main` sau đợt thử. **Không merge PR #9** (nhánh của phiên 13/11, tách từ `main` song song, xung đột 31 file); người dùng chọn cách A (14/11): chuyển từng phần sau tag (`stories/EP-21-chuyen-PR9.md`), rồi đóng PR #9.
 2. Chơi thử cổng Prototype với 5 người, ≥ 3 người cảm ứng: `05-Cong-Prototype.md` mục 3; ghi kết quả vào mục 7.
 3. Chọn kênh gửi dữ liệu đo lường (`adr/ADR-002-do-luong-mvp.md`).
 4. Asset nhóm P0 (10 sheet): `05-Assets/01-Huong-dan-asset.md`, sau khi chọn hướng đồ họa (mục 6).
