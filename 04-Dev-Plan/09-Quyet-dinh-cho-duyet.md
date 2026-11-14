@@ -21,7 +21,7 @@ Người dùng giao toàn quyền quyết định (14/11/2026). Các quyết đ�
 - Khoảng cách checkpoint: Cốt truyện ≤ 90 s, Thường ≤ 150 s, Thử thách ≤ 270 s.
 - Kẻ địch dựng lại sau khi Kai chết không trả EXP, Core Bit lần nữa (đã code).
 - Năng lượng tối đa ở Energy Cell tối đa là 49 (không phải 50); hồi năng lượng sau 2 s.
-- Quy tắc biên: 93 luật ở `01-GDD/17-Quy-tac-bien.md` (ví dụ: boss và Kai hết máu cùng lúc thì thắng; một đòn qua hai ngưỡng pha thì kẹp; vũ khí bắn nhanh không khóa choáng boss mãi).
+- Quy tắc biên: 101 luật ở `01-GDD/17-Quy-tac-bien.md` (ví dụ: boss và Kai hết máu cùng lúc thì thắng; một đòn qua hai ngưỡng pha thì kẹp; vũ khí bắn nhanh không khóa choáng boss mãi).
 
 ## Stage 2–4 và nhiệm vụ phụ (`15`, `16`)
 

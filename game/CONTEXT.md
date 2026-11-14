@@ -51,6 +51,10 @@ src/
   core/*-config.ts        kiểm tra từng file dữ liệu: player, weapons, bosses, enemies, controls (thuần)
   logic/playtest/         nhật ký chơi thử, tổng hợp theo ngưỡng "hỏng" GDD 17, xuất/gộp JSON,
                           danh sách thông số của bảng chỉnh cảm giác (thuần)
+  logic/telemetry/        M16 đo lường MVP (EP-13): lược đồ sự kiện, kiểm lược đồ (id theo danh mục), bộ đệm theo
+                          ưu tiên (lô bất biến, cutBatch/ack), lô và gói xuất JSON, bộ ghi Telemetry (thuần)
+  logic/hash.ts           FNV-1a dùng chung (mã sao lưu, dấu vân tay 03-Data cho đo lường)
+  core/telemetry-*.ts     kiểm tra 03-Data/telemetry.json (không bắt buộc: lỗi thì tắt đo lường); danh mục id
   stages/                 danh sách màn (StageDef: 'ascii' hoặc 'tiled'; `boss` chọn boss trong bosses.json):
                           màn xám Prototype, phòng thử kẻ địch, phòng boss Thorna, phòng Golem (ASCII),
                           phòng thử màn chơi M7 (Tiled)
@@ -108,6 +112,7 @@ scripts/gate-check.mjs    đo cổng Prototype bằng Playwright: dung lượng,
 | `docs/quyet-dinh/shop.md`                                | Quầy Mira, giá, lịch mở, tác dụng Upgrade, giao dịch                                                      |
 | `docs/quyet-dinh/do-kho.md`                              | Ba độ khó, màn Chuẩn bị, checkpoint theo độ khó, bản Thử thách                                            |
 | `docs/quyet-dinh/cong-prototype.md`                      | Nhật ký chơi thử, Pages, bản `?gate=1`                                                                    |
+| `docs/quyet-dinh/do-luong.md`                            | Đo lường MVP (M16): lược đồ, bộ đệm, lô, làm sạch lỗi, dấu vân tay dữ liệu                                |
 
 ## Module và trạng thái
 
@@ -127,7 +132,8 @@ Mỗi module một dòng; chi tiết ở file quyết định và Epic.
 - **TUT Hướng dẫn:** Khung xong, 11 bước Stage 1. Còn: Prologue (sau cổng), giai đoạn Hub (R01–R06), gợi ý bậc 3–4.
 - **ĐK Ba độ khó:** Xong cho Stage 1 (EP-10). Còn: checkpoint theo độ khó trên bản đồ thật, chốt số mẫu đòn (sau cổng), Stage 2–4.
 - **M11 Lưu:** Xong lưu cục bộ, bản lưu 4, mã sao lưu. Còn: cloud (Beta).
-- **M12 Âm thanh, M16 Đo lường MVP:** Chưa làm; tài liệu Draft (`01-GDD/12-Am-thanh.md`, `13-Do-luong-MVP.md`, ADR-002); EP-12, EP-13 làm được ngay.
+- **M12 Âm thanh:** Chưa làm; tài liệu Draft (`01-GDD/12-Am-thanh.md`); EP-12 làm được ngay.
+- **M16 Đo lường MVP:** Lõi xong (ST-13-01, 14/11): `logic/telemetry/`, `telemetry.json`; chưa nối vào game (ST-13-02), chưa có cờ `?mvp=`, kho, gửi (ST-13-03, 04 chờ ADR-002), báo cáo (ST-13-05). Bản thường không ghi gì.
 - **M13–M15, M17, M18:** Chưa làm (sau cổng MVP).
 - **Cổng Prototype:** Công cụ xong (`?gate=1`, `gate-check`, `gate-flow`). Còn: chơi thử 5 người thật.
 

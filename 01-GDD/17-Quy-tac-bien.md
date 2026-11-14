@@ -1,6 +1,6 @@
 # 17. Quy tắc biên (ngóc ngách của trò chơi)
 
-*Bản 1.3 · 14/11/2026 · Trạng thái: Approved (ủy quyền: người dùng giao toàn quyền quyết định; xem mục 19) · Nguồn: rà soát `/review-all-gdds` + `/consistency-check` ngày 14/11/2026 (4 báo cáo: lõi, kinh tế, giao diện và lời thoại, quy trình)*
+*Bản 1.4 · 14/11/2026 · Trạng thái: Approved (ủy quyền: người dùng giao toàn quyền quyết định; xem mục 19) · Nguồn: rà soát `/review-all-gdds` + `/consistency-check` ngày 14/11/2026 (4 báo cáo: lõi, kinh tế, giao diện và lời thoại, quy trình)*
 
 ## 0. Mục đích và cách dùng
 
@@ -147,6 +147,21 @@ Mỗi lúc chỉ **một** hộp ở giữa phía trên khung hình.
 | QB-96 | Phím Quay lại trong bảng HTML | Esc (bàn phím), B/○ (tay cầm) luôn là Quay lại một cấp; ở cấp đầu thì đóng bảng | Story MVP (ST-14-02) |
 | QB-97 | Đổi phiên bản cài đặt điều khiển | Tăng phiên bản `cv.controls` phải có bước chuyển; không làm mất phím người chơi đã đổi | Story MVP (ST-14-01) |
 
+### 10.1 Đo lường (bản `?mvp=`, EP-13)
+
+Nguồn: duyệt Technical Director cho `13-Do-luong-MVP.md` ngày 14/11/2026. Bản thường (không `?mvp=`) không ghi gì.
+
+| Mã | Tình huống | Luật | Trạng thái |
+| --- | --- | --- | --- |
+| QB-150 | Bộ đệm đo lường vượt giới hạn | Bỏ mục đã nhận cũ nhất (mọi ưu tiên), rồi mục chờ ưu tiên 2, rồi 1, cũ trước; xét cả sự kiện mới. Mục đang gửi và mục chờ ưu tiên 0 không bỏ; chỉ còn chúng thì không lưu sự kiện mới, đếm `lost`. Không bao giờ vượt `buffer.maxBytes`, `maxEvents` | Code (ST-13-01, `buffer.ts`, test) |
+| QB-151 | Thử lại một lô | Cùng `batch`, cùng các sự kiện; sự kiện mới vào lô sau. 409 (trùng) coi là đã nhận | Code phần lõi (ST-13-01, `cutBatch`/`ack`); Uploader ở ST-13-04 |
+| QB-152 | Sự kiện trùng (gửi lại, Xuất JSON chồng lên bảng, hai thẻ gộp một hàng đợi) | Báo cáo khử trùng theo (`install`, `sid`, `n`) | Story ST-13-05 |
+| QB-153 | Sự kiện sai lược đồ ở client | Bỏ cả sự kiện (không cắt bớt khóa), đếm `rejected`; bản DEV và test ném lỗi (`strict`) | Code (ST-13-01, `logger.ts`, test) |
+| QB-154 | Quay lại tab sau ≥ `newSessionAfterHiddenMin` (30) phút ẩn | `sid` mới, `n` từ 0, ghi `session_start`, không ghi `boot_timing` | Story ST-13-02/03 |
+| QB-155 | `client_error` lặp | Ghi lần đầu (`count: 1`); các lần sau chỉ đếm, ghi bù `count` khi trang ẩn hoặc lúc ghi `stage_progress`; quá `errorsPerSession` (20) bản ghi thì chỉ đếm | Code (ST-13-01, `clientError`/`flushErrorCounts`, test); gọi lúc trang ẩn ở ST-13-02 |
+| QB-156 | Tắt gửi | Xóa bộ đệm, ngừng ghi, **không** ghi `consent: off`; bật lại thì sinh `install` mới | Code phần lõi (ST-13-01, `disable`); Cài đặt ở ST-13-03 |
+| QB-157 | Khung > `frame.ignoreMs` (250 ms: tab ẩn, dừng để gỡ lỗi) | Không tính vào FPS, `slowFramePct`, `realSec` | Story ST-13-02 |
+
 ## 11. Lưu
 
 | Mã | Tình huống | Luật | Trạng thái |
@@ -242,6 +257,7 @@ Mỗi luật nhãn Code phải có (hoặc được thêm) một test Vitest man
 | Lưu: dải báo lỗi, chế độ không có kho | QB-100 | EP-14 |
 | Cài đặt: tốc độ game, phím Quay lại, chuyển phiên bản `cv.controls` | QB-95…97 | EP-14 (ST-14-01, 02, 06) |
 | Âm thanh: mở khóa, gộp, loại trừ, hạ boss, hồi sinh, tạm dừng, tốc độ | QB-140…146 | EP-12 |
+| Đo lường: bộ đệm, lô, khử trùng, lược đồ, phiên, lỗi lặp, tắt gửi, khung dài | QB-150…157 | EP-13 |
 | Di chuyển, camera, leo thang | QB-03…06, QB-15, QB-120 | EP-16 (sau cổng) |
 | Test khóa luật đã code nhưng chưa test (gắn mã QB vào tên test) | QB-02, 11, 13, 22, 24, 33, 41, 61, 71, 121 | Việc nhỏ ưu tiên, trước EP mới |
 
@@ -256,4 +272,5 @@ Mỗi luật nhãn Code phải có (hoặc được thêm) một test Vitest man
 | 14/11/2026 | QB-92 đã code (ST-11-01) |
 | 14/11/2026 | Bản 1.2 (sau duyệt Creative Director, Technical Director + Producer): sửa nhãn trạng thái theo code thật (QB-01, 11–13, 22, 41, 61, 70–72, 121, 132); sửa QB-12, 40, 70, 83; thêm QB-07, 18, 19, 24 (92 luật) |
 | 14/11/2026 | Bản 1.3: thêm QB-88 (chuỗi hướng dẫn khi chơi lại, lỗi PR #9 tìm ra), đã code ở ST-21-01 (93 luật) |
+| 14/11/2026 | Bản 1.4: thêm mục 10.1 Đo lường, QB-150…157 từ duyệt Technical Director cho GDD 13; QB-150, 153 đã code, QB-151, 155, 156 code phần lõi ở ST-13-01 (101 luật) |
 | 14/11/2026 | Bản 1.1: thêm QB-95…98 từ `13-Do-luong-MVP.md`, `14-Cai-dat-Tiep-can.md`; QB-140…146 (âm thanh) từ `12-Am-thanh.md` (88 luật) |

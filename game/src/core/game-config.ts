@@ -12,6 +12,7 @@ import { parseUi, type UiData } from './ui-config';
 import { parseSkills, type SkillsData } from './skills-config';
 import { type EconomyData, parseEconomy, parseShop, type ShopData } from './shop-config';
 import { parseWardenDialogue, type WardenDialogueData } from './dialogue-config';
+import { parseTelemetryOptional, type TelemetryConfig } from './telemetry-config';
 
 export { ConfigError } from './json-check';
 export { parsePlayer, type PlayerData } from './player-config';
@@ -113,6 +114,12 @@ export interface GameConfig {
   shop: ShopData;
   /** Thu Core Bit theo màn (M9, economy.json; phần còn lại vẫn ở `raw`). */
   economy: EconomyData;
+  /**
+   * Đo lường đợt thử MVP (M16 bản tối thiểu, telemetry.json). Không bắt buộc: thiếu hoặc lỗi thì
+   * undefined (đo lường tắt, lý do ở `telemetryError`), game vẫn chạy.
+   */
+  telemetry: TelemetryConfig | undefined;
+  telemetryError: string | undefined;
   /** Các file chưa có module dùng (shop, economy, modules, endgame…), giữ nguyên dạng thô. */
   raw: Readonly<Record<string, unknown>>;
 }
@@ -468,6 +475,7 @@ export function parseGameConfig(files: Readonly<Record<string, unknown>>): GameC
   }
   const enemies = parseEnemies(files.enemies);
   const ui = parseUi(files.ui);
+  const tel = parseTelemetryOptional(files.telemetry);
   const config: GameConfig = {
     player: parsePlayer(files.player),
     weapons: parseWeapons(files.weapons),
@@ -483,6 +491,8 @@ export function parseGameConfig(files: Readonly<Record<string, unknown>>): GameC
     skills: parseSkills(files.skills),
     shop: parseShop(files.shop),
     economy: parseEconomy(files.economy),
+    telemetry: tel.telemetry,
+    telemetryError: tel.error,
     raw: { ...files },
   };
   const errors = checkDesignInvariants(config);

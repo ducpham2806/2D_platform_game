@@ -1,0 +1,16 @@
+# Quyết định đã chốt: Đo lường MVP (M16 bản tối thiểu, EP-13)
+
+Thiết kế: `01-GDD/13-Do-luong-MVP.md` (bản 1.1; phần lõi duyệt kèm sửa của Technical Director 14/11/2026). Kênh gửi: `04-Dev-Plan/adr/ADR-002-do-luong-mvp.md` (Proposed, chờ người dùng). Luật biên: `01-GDD/17-Quy-tac-bien.md` mục 10.1 (QB-150…157).
+
+- **Lõi thuần (`src/logic/telemetry/`, ST-13-01):** `schema.ts` (26 sự kiện, kiểu từng thuộc tính, khóa bắt buộc), `validate.ts` (kiểm lược đồ, phong bì lô, `makeSid`), `text.ts` (làm sạch `client_error.msg`), `buffer.ts` (bộ đệm theo ưu tiên), `batch.ts` (lô, gói xuất), `logger.ts` (`Telemetry`). Không đọc localStorage, không gửi mạng; đồng hồ, id phiên, danh mục truyền vào.
+- **Không có chuỗi tự do:** chuỗi chỉ là enum, id thuộc danh mục lấy từ dữ liệu game (`core/telemetry-catalogs.ts`: màn + `prologue`, độ khó, boss, vũ khí, Upgrade, nút kỹ năng, kẻ địch, bước hướng dẫn), khuôn (`day`, `screen`, `skills`, `lang`), hoặc `msg` đã làm sạch. Id vũ khí đổi từ tên hiển thị (`weaponId`: "Vine Lash" → `vineLash`), vì bản lưu và dữ liệu gọi vũ khí bằng tên.
+- **Byte = độ dài JSON:** mọi chuỗi chỉ ASCII in được (làm sạch `msg` bỏ dấu, bỏ ký tự ngoài ASCII). `log()` stringify một lần và cất chuỗi; bộ đệm cộng dồn byte; `serialize()` ghép từ chuỗi đã cất.
+- **Bộ đệm (QB-150):** không bao giờ vượt `buffer.maxBytes`/`maxEvents`. Bỏ: đã nhận cũ nhất → chờ ưu tiên 2 → chờ ưu tiên 1 (cũ trước, xét cả sự kiện mới, đếm `dropped`). Đang gửi và chờ ưu tiên 0 không bỏ; chỉ còn chúng thì sự kiện mới không lưu (`lost`). Ưu tiên lấy từ `telemetry.json → priority`.
+- **Lô bất biến (QB-151):** `cutBatch(id, …)` trả lại đúng lô đang gửi tới khi `ack(id)` (2xx, 409) hoặc `discard(id)` (bị từ chối hẳn). Giữ mục đã nhận để Xuất JSON có đủ. Trạng thái lưu: `s` vắng (chờ), id lô (đang gửi), -1 (đã nhận). `restore()` gộp hàng đợi, bỏ trùng theo `sid` + `n`.
+- **Sai lược đồ (QB-153):** bỏ cả sự kiện, đếm `rejected`; `strict` (DEV, test) ném lỗi. `n` gán sau khi qua kiểm, nên sự kiện bị bỏ không làm hở số thứ tự. Sự kiện > `maxEventBytes` cũng bị bỏ.
+- **Làm tròn lúc ghi:** thuộc tính `num` có `unit` (`sec` 0,1; `ratio` 0,001, từ `telemetry.json → round`).
+- **Lỗi trang (QB-155):** lần đầu `count: 1`; lặp chỉ đếm; `flushErrorCounts()` ghi bù; tối đa `errorsPerSession` bản ghi. Làm sạch `msg`: bỏ chuỗi trong nháy (lời lỗi `JSON.parse` có thể chép đoạn người chơi dán), URL, đường dẫn; chữ số → `#`; bỏ dấu (đ → d); bỏ ký tự ngoài ASCII; cắt `errorMsgMaxChars`.
+- **Tắt gửi (QB-156):** `disable()` xóa bộ đệm, ngừng ghi, không ghi `consent: off`. Bật lại do lớp nối tạo `install` mới.
+- **`telemetry.json` không bắt buộc:** thiếu hoặc lỗi thì `GameConfig.telemetry` = undefined, `telemetryError` ghi lý do, game vẫn chạy. Không nằm trong `REQUIRED_DATA_FILES`. Test bắt lỗi dữ liệu.
+- **Dấu vân tay `data`:** `dataFingerprint()` ở `logic/hash.ts` (FNV-1a trên tên + nội dung LF của `03-Data/*.json` sắp theo tên, trừ `telemetry.json`). Nối vào build (Vite `define`) ở ST-13-03.
+- **Chưa làm:** nối sự kiện vào game (ST-13-02), cờ `?mvp=`, kho `cv.telemetry*`, gộp hàng đợi mồ côi, thông báo, Cài đặt → Dữ liệu (ST-13-03), Uploader và điểm nhận (ST-13-04), báo cáo (ST-13-05), phiếu và `mvp-flow` (ST-13-06).
