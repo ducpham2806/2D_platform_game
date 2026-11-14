@@ -4,6 +4,8 @@
  *   ?tune=1   hiện nút mở bảng chỉnh cảm giác (dùng khi chơi thử trên điện thoại).
  *   ?gate=1   bản cho người thử cổng Prototype: menu chỉ còn Chơi (màn xám), Điều khiển và Kết
  *             quả chơi thử, để người thử không vào nhầm phòng thử khác (chỉ màn xám ghi nhật ký).
+ *   ?shop=1   mở Quầy Mira khi chưa đủ boss (tính như đã hạ đủ số boss của mốc mở đầu tiên),
+ *             để chạy thử Shop trước khi có Stage 2. Không đổi bản lưu.
  */
 function hasParam(name: string): boolean {
   try {
@@ -16,3 +18,4 @@ function hasParam(name: string): boolean {
 export const DEBUG = import.meta.env.DEV || hasParam('debug');
 export const TUNE = import.meta.env.DEV || hasParam('tune');
 export const GATE = hasParam('gate');
+export const SHOP = hasParam('shop');

@@ -4,6 +4,7 @@ import { getBus, getConfig, getSave } from '../core/phaser-services';
 import { GATE } from '../debug/flags';
 import { characterProgress } from '../logic/rpg/progression';
 import { spentPoints } from '../logic/rpg/skill-tree';
+import { shopModel } from '../shop/shop-panel';
 import { workshopUnlocked } from '../workshop/workshop-panel';
 import { summarize } from '../logic/save/save-data';
 import { MUTED_STYLE, TEXT_STYLE, textButton } from './ui';
@@ -74,14 +75,24 @@ export class MenuScene extends Phaser.Scene {
     };
     if (workshopUnlocked(manager, config)) textButton(this, cx + 52, 133, 'Xưởng', workshop);
     else this.add.text(cx + 52, 133, 'Xưởng (sau boss 1)', MUTED_STYLE).setOrigin(0.5);
-    textButton(this, cx, 148, 'Điều khiển', () => this.scene.start(SceneKey.Controls));
+    textButton(this, cx - 52, 148, 'Điều khiển', () => this.scene.start(SceneKey.Controls));
+    // Quầy Mira (MVP chỉ quầy Upgrade) mở sau 2 boss chiến dịch (đặc tả Hub mục 4.3).
+    const shop = shopModel(manager, config);
+    const openShop = (): void => {
+      if (shop.open) this.scene.start(SceneKey.Shop);
+    };
+    if (shop.open) textButton(this, cx + 52, 148, 'Quầy Mira', openShop);
+    else
+      this.add
+        .text(cx + 52, 148, `Quầy Mira (sau boss ${shop.openAfterBosses})`, MUTED_STYLE)
+        .setOrigin(0.5);
     textButton(this, cx - 52, 163, 'Kết quả chơi thử', () => this.scene.start(SceneKey.Playtest));
     textButton(this, cx + 52, 163, 'Dữ liệu lưu', () => this.scene.start(SceneKey.Save));
     this.add
       .text(
         cx,
         182,
-        'Enter: màn thử · K: kẻ địch · M: màn chơi · B: Thorna · G: Golem · H: Hub · X: Xưởng · C · R · S',
+        'Phím: Enter màn thử · K · M · B · G · H · X Xưởng · Q Quầy Mira · C · R · S',
         {
           ...MUTED_STYLE,
           fontSize: '8px',
@@ -100,6 +111,7 @@ export class MenuScene extends Phaser.Scene {
     keyboard?.once('keydown-B', thorna);
     keyboard?.once('keydown-G', golem);
     keyboard?.once('keydown-X', workshop);
+    keyboard?.once('keydown-Q', openShop);
   }
 
   /**

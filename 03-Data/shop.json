@@ -2,6 +2,8 @@
   "upgrades": [
     {
       "id": "arc_core",
+      "name": "Arc Core",
+      "desc": "+5% sát thương mỗi cấp (mọi vũ khí).",
       "maxLevel": 5,
       "effectPerLevel": "+5% damage",
       "damagePerLevel": 0.05,
@@ -10,6 +12,8 @@
     },
     {
       "id": "armor_plating",
+      "name": "Armor Plating",
+      "desc": "−4% sát thương nhận từ kẻ địch và boss mỗi cấp (gai, hố không giảm).",
       "maxLevel": 5,
       "effectPerLevel": "-4% damage taken",
       "damageTakenPerLevel": 0.04,
@@ -18,6 +22,8 @@
     },
     {
       "id": "energy_cell",
+      "name": "Energy Cell",
+      "desc": "+10% năng lượng tối đa của vũ khí boss mỗi cấp.",
       "maxLevel": 5,
       "effectPerLevel": "+10% weapon energy",
       "energyMaxPerLevel": 0.1,
@@ -26,6 +32,8 @@
     },
     {
       "id": "nano_cell_cap",
+      "name": "Nano Cell Cap",
+      "desc": "+25% lượng hồi mỗi Nano Cell mỗi cấp.",
       "maxLevel": 4,
       "effectPerLevel": "+25% heal per sub-tank",
       "baseCost": 400,
@@ -33,6 +41,8 @@
     },
     {
       "id": "dash_coil",
+      "name": "Dash Coil",
+      "desc": "−10% thời gian hồi lướt mỗi cấp.",
       "maxLevel": 3,
       "effectPerLevel": "-10% dash cooldown",
       "baseCost": 500,
@@ -40,6 +50,8 @@
     },
     {
       "id": "magnet_range",
+      "name": "Magnet Range",
+      "desc": "Hút Core Bit trong tầm thêm 1 ô quanh Kai mỗi cấp.",
       "maxLevel": 3,
       "effectPerLevel": "+1 tile magnet",
       "magnetTilesPerLevel": 1,
@@ -48,6 +60,8 @@
     },
     {
       "id": "booster_slot",
+      "name": "Booster Slot",
+      "desc": "Mở ô booster thứ 3 ở màn Chuẩn bị.",
       "maxLevel": 1,
       "effectPerLevel": "unlock 3rd booster slot",
       "baseCost": 1000,

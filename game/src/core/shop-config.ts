@@ -8,6 +8,9 @@ import { arr, ConfigError, type Json, num, obj, str } from './json-check';
 
 export interface UpgradeData {
   id: string;
+  /** Tên và mô tả hiện ở Quầy Mira. */
+  name: string;
+  desc: string;
   maxLevel: number;
   baseCost: number;
   costGrowth: number;
@@ -75,6 +78,8 @@ export function parseShop(value: unknown): ShopData {
     if (!Number.isInteger(maxLevel)) throw new ConfigError(`${p}.maxLevel: cần số nguyên`);
     const u: UpgradeData = {
       id,
+      name: str(o.name, `${p}.name`),
+      desc: str(o.desc, `${p}.desc`),
       maxLevel,
       baseCost: num(o.baseCost, `${p}.baseCost`, { min: 0 }),
       costGrowth: num(o.costGrowth, `${p}.costGrowth`, { min: 1 }),

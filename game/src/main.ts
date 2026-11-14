@@ -10,6 +10,7 @@ import { PlaytestScene } from './scenes/playtest-scene';
 import { PreloadScene } from './scenes/preload-scene';
 import { SaveScene } from './scenes/save-scene';
 import { StageScene } from './scenes/stage-scene';
+import { ShopScene } from './scenes/shop-scene';
 import { WorkshopScene } from './scenes/workshop-scene';
 import './style.css';
 
@@ -40,6 +41,7 @@ const game = new Phaser.Game({
     PlaytestScene,
     SaveScene,
     WorkshopScene,
+    ShopScene,
   ],
 });
 
