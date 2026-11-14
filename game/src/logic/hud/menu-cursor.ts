@@ -43,6 +43,17 @@ export interface MenuNavResult {
   activate: boolean;
 }
 
+/**
+ * Bấm chọn trong menu: Nhảy, Bắn, hoặc Tương tác. Phím Tương tác mặc định trùng phím Lên (W / ↑,
+ * `controls.json`), nên lần bấm có cả Lên thì không tính là chọn (nếu không, bấm ↑ vừa di chuyển
+ * vừa kích hoạt mục mới).
+ */
+export function menuActivate(snap: {
+  pressed: Readonly<Record<'up' | 'jump' | 'shoot' | 'interact', boolean>>;
+}): boolean {
+  return snap.pressed.jump || snap.pressed.shoot || (snap.pressed.interact && !snap.pressed.up);
+}
+
 /** Phần đầu vào menu cần đọc (khớp InputSnapshot). */
 export interface MenuNavInput {
   moveX: number;
@@ -89,9 +100,34 @@ export class MenuNavigator {
     this.stickHeld = stick;
     const before = this.cursor.index;
     if (dir !== 0) this.cursor.move(dir);
-    return {
-      moved: this.cursor.index !== before,
-      activate: snap.pressed.jump || snap.pressed.shoot || snap.pressed.interact,
-    };
+    return { moved: this.cursor.index !== before, activate: menuActivate(snap) };
   }
+}
+
+export interface GridPos {
+  row: number;
+  col: number;
+}
+
+/**
+ * Di chuyển con trỏ trên lưới các hàng có độ dài khác nhau (bảng Xưởng): trái/phải trong hàng
+ * (kẹp ở mép), lên/xuống sang hàng kề, giữ cột gần nhất có trong hàng mới. Logic thuần.
+ */
+export function gridMove(
+  rows: readonly number[],
+  pos: GridPos,
+  dir: 'up' | 'down' | 'left' | 'right',
+): GridPos {
+  const clampCol = (row: number, col: number): number =>
+    Math.max(0, Math.min((rows[row] ?? 1) - 1, col));
+  if (dir === 'left' || dir === 'right') {
+    const col = clampCol(pos.row, pos.col + (dir === 'left' ? -1 : 1));
+    return { row: pos.row, col };
+  }
+  const step = dir === 'up' ? -1 : 1;
+  let row = pos.row;
+  do row += step;
+  while (row >= 0 && row < rows.length && (rows[row] ?? 0) === 0);
+  if (row < 0 || row >= rows.length) return pos;
+  return { row, col: clampCol(row, pos.col) };
 }

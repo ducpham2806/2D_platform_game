@@ -3,6 +3,7 @@ import { LOGIC_WIDTH, SceneKey } from '../core/constants';
 import { getBus, getConfig, getSave } from '../core/phaser-services';
 import { characterProgress } from '../logic/rpg/progression';
 import { spentPoints } from '../logic/rpg/skill-tree';
+import { workshopUnlocked } from '../workshop/workshop-panel';
 import { summarize } from '../logic/save/save-data';
 import { MUTED_STYLE, TEXT_STYLE, textButton } from './ui';
 
@@ -61,7 +62,13 @@ export class MenuScene extends Phaser.Scene {
     textButton(this, cx, 88, 'Phòng thử màn chơi', mechanics);
     textButton(this, cx, 103, 'Boss Thorna', thorna);
     textButton(this, cx, 118, 'Mini-boss Bramble Golem', golem);
-    textButton(this, cx, 133, 'Hub Arkon', () => this.scene.start(SceneKey.Hub));
+    textButton(this, cx - 52, 133, 'Hub Arkon', () => this.scene.start(SceneKey.Hub));
+    // Xưởng mở sau boss chiến dịch đầu tiên (đặc tả Hub mục 5).
+    const workshop = (): void => {
+      if (workshopUnlocked(manager, config)) this.scene.start(SceneKey.Workshop);
+    };
+    if (workshopUnlocked(manager, config)) textButton(this, cx + 52, 133, 'Xưởng', workshop);
+    else this.add.text(cx + 52, 133, 'Xưởng (sau boss 1)', MUTED_STYLE).setOrigin(0.5);
     textButton(this, cx, 148, 'Điều khiển', () => this.scene.start(SceneKey.Controls));
     textButton(this, cx - 52, 163, 'Kết quả chơi thử', () => this.scene.start(SceneKey.Playtest));
     textButton(this, cx + 52, 163, 'Dữ liệu lưu', () => this.scene.start(SceneKey.Save));
@@ -69,7 +76,7 @@ export class MenuScene extends Phaser.Scene {
       .text(
         cx,
         182,
-        'Enter: màn thử · K: kẻ địch · M: màn chơi · B: Thorna · G: Golem · H: Hub · C · R · S',
+        'Enter: màn thử · K: kẻ địch · M: màn chơi · B: Thorna · G: Golem · H: Hub · X: Xưởng · C · R · S',
         {
           ...MUTED_STYLE,
           fontSize: '8px',
@@ -87,5 +94,6 @@ export class MenuScene extends Phaser.Scene {
     keyboard?.once('keydown-M', mechanics);
     keyboard?.once('keydown-B', thorna);
     keyboard?.once('keydown-G', golem);
+    keyboard?.once('keydown-X', workshop);
   }
 }

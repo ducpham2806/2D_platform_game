@@ -229,6 +229,20 @@ export class StageWorld {
     this.player.setMaxHp(stats.maxHp);
   }
 
+  /**
+   * Đổi build giữa màn (kỹ năng chỉnh từ menu tạm dừng, áp ở lần hồi sinh kế tiếp): dựng lại dữ
+   * liệu đã áp build, máu tối đa theo build mới (máu hiện tại cộng phần chênh).
+   */
+  setBuild(build: BuildStats): void {
+    this.build = build;
+    this.built = applyBuild(this.setup.player, this.setup.weapons, build);
+    this.player.setParams(playerParams(this.built.player, this.setup.tileSize, this.setup.stepSec));
+    this.loadout.setData(this.built.weapons);
+    const stats = statsFor(this.level, this.setup.player.level, build);
+    this.attackMul = stats.attackMul;
+    this.player.setMaxHp(stats.maxHp);
+  }
+
   get enemies(): readonly Enemy[] {
     return this.field?.enemies ?? [];
   }

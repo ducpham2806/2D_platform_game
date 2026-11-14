@@ -3,7 +3,7 @@ import { FIXED_STEP_MS, TILE_SIZE } from '@/core/constants';
 import { parseControls } from '@/core/controls-config';
 import { parseGameConfig } from '@/core/game-config';
 import { buildHud, LOW_HP_FRACTION } from '@/logic/hud/hud-model';
-import { MenuCursor } from '@/logic/hud/menu-cursor';
+import { gridMove, MenuCursor } from '@/logic/hud/menu-cursor';
 import { defaultTouchSettings } from '@/logic/input/settings';
 import { resolveButtons, swipeAction, stickZone, inRect } from '@/logic/input/touch-layout';
 import { StageWorld } from '@/logic/world/stage-world';
@@ -134,5 +134,20 @@ describe('nút biểu tượng vũ khí (vuốt)', () => {
     raw.touch.buttons[0]!.swipe = true;
     expect(raw.touch.buttons[0]!.action).not.toMatch(/swap/);
     expect(() => parseControls(raw)).toThrow(/swipe/);
+  });
+});
+
+describe('gridMove (bảng Xưởng)', () => {
+  const rows = [3, 3, 3, 3, 3];
+  it('trái/phải kẹp ở mép; lên/xuống giữ cột, không ra ngoài lưới', () => {
+    expect(gridMove(rows, { row: 0, col: 0 }, 'left')).toEqual({ row: 0, col: 0 });
+    expect(gridMove(rows, { row: 0, col: 1 }, 'right')).toEqual({ row: 0, col: 2 });
+    expect(gridMove(rows, { row: 0, col: 2 }, 'up')).toEqual({ row: 0, col: 2 });
+    expect(gridMove(rows, { row: 3, col: 2 }, 'down')).toEqual({ row: 4, col: 2 });
+    expect(gridMove(rows, { row: 4, col: 2 }, 'down')).toEqual({ row: 4, col: 2 });
+  });
+  it('hàng ngắn hơn thì kẹp cột; bỏ qua hàng trống', () => {
+    expect(gridMove([3, 1, 3], { row: 0, col: 2 }, 'down')).toEqual({ row: 1, col: 0 });
+    expect(gridMove([3, 0, 2], { row: 0, col: 2 }, 'down')).toEqual({ row: 2, col: 1 });
   });
 });

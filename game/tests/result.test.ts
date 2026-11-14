@@ -103,6 +103,14 @@ describe('MenuNavigator', () => {
     expect(nav.handle(snap({ up: true })).moved).toBe(false);
   });
 
+  it('phím Tương tác trùng phím Lên (W / ↑): bấm ↑ chỉ di chuyển, không chọn', () => {
+    const nav = new MenuNavigator([true, true, true]);
+    nav.reset(1);
+    const r = nav.handle(snap({ up: true, interact: true }));
+    expect(r).toEqual({ moved: true, activate: false });
+    expect(nav.handle(snap({ interact: true })).activate).toBe(true);
+  });
+
   it('chọn bằng Nhảy, Bắn hoặc Tương tác', () => {
     const nav = new MenuNavigator([true]);
     expect(nav.handle(snap({ jump: true })).activate).toBe(true);

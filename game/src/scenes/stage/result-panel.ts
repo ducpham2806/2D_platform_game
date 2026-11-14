@@ -5,7 +5,7 @@ import type { InputSnapshot } from '../../logic/input/actions';
 import type { StageResultView } from '../../logic/result/stage-result';
 import { MUTED_STYLE, TEXT_STYLE } from '../ui';
 
-export type ResultChoice = 'retry' | 'menu';
+export type ResultChoice = 'retry' | 'workshop' | 'menu';
 
 const DEPTH = 40;
 const PAD = 6;
@@ -19,7 +19,7 @@ const COLOR = { idle: '#1d2a3b', picked: '#2f6d8f', off: '#151d29' };
 /**
  * Màn Kết quả (M10, wireframe Result.html) phủ lên màn chơi: thanh trên (tên màn, tổng Core
  * Bit), cột Kết quả, cột Phần thưởng và thu thập, dòng nhắc hướng dẫn còn dở, ba nút Chơi lại
- * màn / Mở Xưởng (chưa có, hiện mờ) / Về menu. Chọn bằng trái/phải + Nhảy/Bắn hoặc chạm.
+ * màn / Mở Xưởng (mờ khi Xưởng chưa mở hoặc hết SP) / Về menu. Chọn bằng trái/phải + Nhảy/Bắn hoặc chạm.
  */
 export class ResultPanel {
   private readonly root: Phaser.GameObjects.GameObject[] = [];
@@ -31,10 +31,14 @@ export class ResultPanel {
   constructor(
     private readonly scene: Phaser.Scene,
     private readonly onChoice: (choice: ResultChoice) => void,
+    /** Xưởng đã mở và còn SP: nút "Mở Xưởng" bấm được (nếu không thì hiện mờ). */
+    workshop = false,
   ) {
     const defs: { label: string; choice: ResultChoice | undefined }[] = [
       { label: 'Chơi lại màn', choice: 'retry' },
-      { label: 'Mở Xưởng (chưa có)', choice: undefined },
+      workshop
+        ? { label: 'Mở Xưởng', choice: 'workshop' }
+        : { label: 'Mở Xưởng (không có SP)', choice: undefined },
       { label: 'Về menu', choice: 'menu' },
     ];
     this.nav = new MenuNavigator(

@@ -24,7 +24,9 @@ import {
 import { DialogueRunner } from '../logic/dialogue/dialogue-runner';
 import { buildHud } from '../logic/hud/hud-model';
 import { buildStageResult } from '../logic/result/stage-result';
-import { computeBuild, EMPTY_BUILD } from '../logic/rpg/build';
+import { type BuildStats, computeBuild, EMPTY_BUILD } from '../logic/rpg/build';
+import { spentPoints } from '../logic/rpg/skill-tree';
+import { totalSkillPoints, WorkshopPanel, workshopUnlocked } from '../workshop/workshop-panel';
 import { LevelTracker, skillPoints, syncLevel } from '../logic/rpg/progression';
 import { recordTutorialDone, setTutorialOff } from '../logic/save/save-data';
 import type { SaveManager } from '../logic/save/save-manager';
@@ -108,7 +110,11 @@ export class StageScene extends Phaser.Scene {
   private newWeapon: string | undefined;
   /** Giây còn lại tới khi mở màn Kết quả; undefined: chưa hạ boss hoặc màn không có Kết quả. */
   private resultIn: number | undefined;
-  private result?: ResultPanel;
+  private result: ResultPanel | undefined;
+  /** Bảng Kỹ năng mở từ menu tạm dừng (trận đứng yên). */
+  private workshop: WorkshopPanel | undefined;
+  /** Build mới chỉnh trong màn: áp ở lần hồi sinh kế tiếp. */
+  private pendingBuild: BuildStats | undefined;
   /** M8: cấp thật trong lượt (EXP bản lưu + EXP của lượt); màn không lưu thì không có (cấp 1). */
   private levels: LevelTracker | undefined;
   /** Cấp khuyến nghị của màn chiến dịch (đồng bộ cấp); undefined: không đồng bộ. */
@@ -234,7 +240,13 @@ export class StageScene extends Phaser.Scene {
         : undefined;
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => input.setTouchHighlight(undefined));
     this.dialogueBox = new DialogueBox(this);
-    this.result = new ResultPanel(this, (c) => this.onResultChoice(c));
+    this.result = undefined;
+    this.workshop = undefined;
+    this.pendingBuild = undefined;
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      this.workshop?.destroy();
+      this.workshop = undefined;
+    });
     // Chưa có chọn độ khó: màn luôn chơi ở Thường.
     const tut = this.tutorial;
     this.pause = new PauseMenu(
@@ -242,6 +254,7 @@ export class StageScene extends Phaser.Scene {
       `${this.def.name} · Thường`,
       (c) => this.onPauseChoice(c),
       tut ? () => tut.manager.isEnabled : undefined,
+      save !== undefined && workshopUnlocked(save, config),
     );
     if (DEBUG) {
       this.input.keyboard?.on('keydown-T', () =>
@@ -267,6 +280,10 @@ export class StageScene extends Phaser.Scene {
         this.result.handle(snap);
         continue;
       }
+      if (this.workshop) {
+        this.workshop.handle(snap);
+        continue;
+      }
       if (this.pause?.isOpen) {
         // Menu tạm dừng: trận đứng yên, đầu vào chỉ dùng để chọn mục.
         this.pause.handle(snap);
@@ -282,6 +299,10 @@ export class StageScene extends Phaser.Scene {
       }
       this.prev = { x: world.player.box.x, y: world.player.box.y };
       const ev = world.step(this.toWorldInput(snap, input));
+      if (ev.respawned && this.pendingBuild) {
+        world.setBuild(this.pendingBuild);
+        this.pendingBuild = undefined;
+      }
       this.startDialogue(ev, world);
       this.react(ev, world);
       this.checkLevelUp(ev, world);
@@ -340,6 +361,10 @@ export class StageScene extends Phaser.Scene {
   }
 
   private onPauseChoice(choice: PauseChoice): void {
+    if (choice === 'skills') {
+      this.openSkills();
+      return;
+    }
     if (choice === 'tutorial') {
       const tut = this.tutorial;
       if (!tut) return;
@@ -356,6 +381,26 @@ export class StageScene extends Phaser.Scene {
     // Đang có hộp hội thoại thì lớp nút cảm ứng vẫn ẩn để chạm được vào hộp.
     this.controls?.setGameplayActive(!this.dialogue);
     this.stepper.reset();
+  }
+
+  /** Bảng Kỹ năng từ menu tạm dừng: đổi bản lưu ngay, build mới áp ở lần hồi sinh kế tiếp. */
+  private openSkills(): void {
+    const save = this.save;
+    if (!save) return;
+    const config = getConfig(this);
+    this.pause?.hide();
+    // Phaser nghe thả chuột trên cả cửa sổ: tắt để cú chạm trong bảng không xuyên xuống canvas.
+    this.input.enabled = false;
+    this.workshop = new WorkshopPanel(save, config, {
+      note: 'Thay đổi áp dụng ở lần hồi sinh kế tiếp hoặc lần vào màn sau.',
+      onChange: (skills) => (this.pendingBuild = computeBuild(config.skills, skills)),
+      onClose: () => {
+        this.workshop?.destroy();
+        this.workshop = undefined;
+        this.input.enabled = true;
+        this.pause?.show();
+      },
+    });
   }
 
   /** M8: EXP vượt mốc thì lên cấp ngay (máu và công theo cấp hiệu dụng mới), báo kèm SP. */
@@ -440,7 +485,17 @@ export class StageScene extends Phaser.Scene {
       ctx ? formatGlyphs(t, ctx) : t,
     );
     this.controls?.setGameplayActive(false);
-    this.result?.show(
+    const save = this.save;
+    const config = getConfig(this);
+    const spLeft = save
+      ? totalSkillPoints(save, config) - spentPoints(save.data.character.skills)
+      : 0;
+    this.result = new ResultPanel(
+      this,
+      (c) => this.onResultChoice(c),
+      save !== undefined && workshopUnlocked(save, config) && spLeft > 0,
+    );
+    this.result.show(
       buildStageResult(world, {
         stageName: this.def.name,
         savedCoreBits: this.savedCoreBits,
@@ -468,6 +523,7 @@ export class StageScene extends Phaser.Scene {
 
   private onResultChoice(choice: ResultChoice): void {
     if (choice === 'retry') this.scene.restart({ stage: this.stageKey });
+    else if (choice === 'workshop') this.scene.start(SceneKey.Workshop);
     else this.scene.start(SceneKey.Menu);
   }
 

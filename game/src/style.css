@@ -426,3 +426,142 @@ body.portrait #rotate-overlay {
     border-color: #ffd166;
   }
 }
+
+/* Xưởng Lắp Ráp, tab Kỹ năng (src/workshop, ADR-001). */
+.cv-panel.cv-workshop {
+  width: min(760px, calc(100vw - 16px));
+  max-height: calc(100vh - 16px);
+  padding: 10px 12px;
+}
+
+/* Nút cảm ứng ≥ 48 dp (GDD 5.2). */
+.cv-panel.cv-workshop button {
+  min-height: 48px;
+}
+
+.cv-ws-head {
+  /* Dính trên cùng khi cuộn (điện thoại ngang chỉ cao ~360 px CSS). */
+  position: sticky;
+  top: -10px;
+  z-index: 1;
+  padding: 4px 0;
+  background: #121c2b;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+  color: #9fb0c5;
+  margin-bottom: 6px;
+}
+
+.cv-ws-head b {
+  color: #ffd166;
+}
+
+.cv-ws-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+
+.cv-ws-tabs span {
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: #151d29;
+  color: #6f7f95;
+}
+
+.cv-ws-tabs span.on {
+  background: #2f6d8f;
+  color: #e8f1ff;
+}
+
+.cv-ws-cols {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.cv-ws-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cv-ws-branch {
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+}
+
+.cv-ws-branch small,
+.cv-ws-detail small {
+  color: #9fb0c5;
+}
+
+.cv-panel button.cv-ws-node {
+  min-height: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.cv-ws-node .dots {
+  letter-spacing: 2px;
+  color: #ffd166;
+}
+
+.cv-panel button.cv-ws-node.locked {
+  opacity: 0.45;
+}
+
+.cv-panel button.cv-ws-node.maxed {
+  border-color: #ffd166;
+}
+
+.cv-panel button.cv-ws-node.selected {
+  background: #2f4766;
+}
+
+.cv-panel button.cursor {
+  outline: 2px solid #ffd166;
+  outline-offset: 1px;
+}
+
+.cv-panel button.cv-ws-reset {
+  font-size: 12px;
+}
+
+.cv-ws-detail {
+  margin-top: 8px;
+  padding: 8px;
+  border-radius: 8px;
+  background: #0b111b;
+  font-size: 13px;
+  min-height: 72px;
+}
+
+.cv-ws-detail p {
+  margin: 4px 0;
+}
+
+.cv-ws-detail ul {
+  margin: 4px 0;
+  padding-left: 18px;
+}
+
+.cv-ws-detail li.done {
+  color: #7fe0a0;
+}
+
+.cv-ws-detail li.next {
+  color: #ffd166;
+}
+
+.cv-ws-detail .lock {
+  color: #ff8787;
+}

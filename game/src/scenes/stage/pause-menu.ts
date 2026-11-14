@@ -4,7 +4,7 @@ import { MenuNavigator } from '../../logic/hud/menu-cursor';
 import type { InputSnapshot } from '../../logic/input/actions';
 import { MUTED_STYLE, TEXT_STYLE } from '../ui';
 
-export type PauseChoice = 'resume' | 'quit' | 'tutorial';
+export type PauseChoice = 'resume' | 'quit' | 'tutorial' | 'skills';
 
 interface Item {
   label: string;
@@ -35,9 +35,12 @@ export class PauseMenu {
     private readonly onChoice: (choice: PauseChoice) => void,
     /** Màn có hướng dẫn: trả về hướng dẫn đang bật hay tắt (thêm mục Bật/Tắt hướng dẫn). */
     private readonly tutorialOn?: () => boolean,
+    /** Có bản lưu và Xưởng đã mở: thêm mục Kỹ năng (áp dụng ở lần hồi sinh kế tiếp). */
+    skills = false,
   ) {
     this.items = [
       { label: 'Tiếp tục', choice: 'resume' },
+      ...(skills ? [{ label: 'Kỹ năng (áp khi hồi sinh)', choice: 'skills' as const }] : []),
       ...(tutorialOn ? [{ label: '', choice: 'tutorial' as const }] : []),
       { label: 'Lắp module nhanh (chưa có)', choice: undefined },
       { label: 'Tùy chọn (chưa có)', choice: undefined },
