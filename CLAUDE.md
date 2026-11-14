@@ -23,7 +23,7 @@ Phiên chỉ hỏi đáp, không đổi code, vẫn ghi một mục ngắn.
 ## Kiểm tra trước khi commit (trong `game/`)
 
 ```
-npm test && npm run lint && npm run format:check && npm run build
+npm test && npm run lint && npm run format:check && npm run build && npm run docs-check
 ```
 
 ## Nguyên tắc code

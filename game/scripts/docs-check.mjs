@@ -21,11 +21,15 @@ const body = log.slice(log.indexOf('\n---\n') + 1);
 const entries = body.split(/\n(?=## \d{4}-\d{2}-\d{2})/).filter((e) => /^## \d{4}/.test(e));
 if (entries.length > MAX_ENTRIES)
   errors.push(`${LOG}: ${entries.length} mục, tối đa ${MAX_ENTRIES} (chuyển mục cũ vào luu-tru/)`);
-for (const e of entries) {
+const HARD_ENTRY_LINES = 25;
+entries.forEach((e, i) => {
   const n = e.trimEnd().split('\n').length;
-  if (n > SOFT_ENTRY_LINES)
-    warnings.push(`${LOG}: mục "${e.split('\n')[0].slice(3)}" dài ${n} dòng (khoảng 15)`);
-}
+  const title = e.split('\n')[0].slice(3);
+  // Mục mới nhất (phiên vừa ghi) dài quá thì là lỗi; mục cũ chỉ cảnh báo.
+  if (i === 0 && n > HARD_ENTRY_LINES)
+    errors.push(`${LOG}: mục mới nhất "${title}" dài ${n} dòng, tối đa ${HARD_ENTRY_LINES}`);
+  else if (n > SOFT_ENTRY_LINES) warnings.push(`${LOG}: mục "${title}" dài ${n} dòng (khoảng 15)`);
+});
 
 // Ngân sách file đọc đầu phiên.
 const budgets = [
@@ -55,6 +59,7 @@ const INDEX_FILES = [
   '04-Dev-Plan/00-Bat-dau.md',
   '04-Dev-Plan/01-Ke-hoach-lam-viec.md',
   '04-Dev-Plan/07-Ban-do-he-thong.md',
+  'game/CONTEXT.md',
 ];
 const BASES = [
   '',
@@ -62,6 +67,7 @@ const BASES = [
   '03-Data/',
   '04-Dev-Plan/',
   '04-Dev-Plan/stories/',
+  '04-Dev-Plan/stories/xong/',
   '05-Assets/',
   'game/',
 ];
@@ -69,6 +75,10 @@ const BASES = [
 const EXTERNAL = ['templates/story-template.md'];
 const PLANNED = ['armor.json', 'quests.json', 'strings.vi/en.json', 'audio.json', 'telemetry.json'];
 for (const file of INDEX_FILES) {
+  if (!existsSync(join(ROOT, file))) {
+    errors.push(`${file}: không có file chỉ mục`);
+    continue;
+  }
   for (const m of read(file).matchAll(/`([\w./-]+\.(?:md|json))`/g)) {
     const ref = m[1];
     if (EXTERNAL.includes(ref) || PLANNED.includes(ref)) continue;
