@@ -1,7 +1,7 @@
 # ST-09-02: Bản lưu 3 (cấp Upgrade), chuẩn hóa, giao dịch nguyên tử
 
-- **Thuộc Epic:** EP-09 · **Ưu tiên:** P1 · **Trạng thái:** Ready
-- **Phụ thuộc:** ST-09-01 · **Bằng chứng:** [ ] Logic
+- **Thuộc Epic:** EP-09 · **Ưu tiên:** P1 · **Trạng thái:** DONE (14/11/2026)
+- **Phụ thuộc:** ST-09-01 · **Bằng chứng:** [x] Logic
 
 ## 1. User story
 
@@ -16,12 +16,14 @@
 
 ## 3. File
 
-- `[Cập nhật]` `game/src/logic/save/save-data.ts`, `save-manager.ts`, `game/src/main.ts` (ghép chuẩn hóa)
+- `[Cập nhật]` `game/src/logic/save/save-data.ts` (`setInventory`), `save-manager.ts` (`transact`, `chainNormalizers`), `game/src/scenes/preload-scene.ts` (ghép chuẩn hóa)
 - `[Tạo]` `game/src/logic/shop/normalize-upgrades.ts`; test trong `game/tests/upgrades.test.ts`, `save.test.ts`
 
 ## 4. Tiêu chí nghiệm thu
 
-- [ ] AC-1: Bản 2 có Core Bit 900 đọc lên: bản 3, `upgrades` = {}, Core Bit 900. Bản 4 (mới hơn game) thì chỉ đọc như cũ.
-- [ ] AC-2: `{arc_core: 7}` (tối đa 5) thì kẹp về 5, hoàn giá cấp 6 và 7, có thông báo; `{laser: 2}` bị bỏ.
-- [ ] AC-3: Kho ghi hỏng: `transact` trả lỗi, Core Bit và cấp trong bộ nhớ về như trước, `revision` không tăng. Kho ghi được: trả ổn, đọc lại kho thấy cả tiền đã trừ và cấp mới (một lần ghi).
-- [ ] AC-4: Mã sao lưu (save-code) giữ cấp Upgrade qua xuất/nhập.
+- [x] AC-1: Bản 2 có Core Bit 900 đọc lên: bản 3, `upgrades` = {}, Core Bit 900. Bản 4 (mới hơn game) thì chỉ đọc như cũ.
+- [x] AC-2: `{arc_core: 7}` (tối đa 5) thì kẹp về 5, hoàn giá cấp 6 và 7, có thông báo; `{laser: 2}` bị bỏ.
+- [x] AC-3: Kho ghi hỏng: `transact` trả lỗi, Core Bit và cấp trong bộ nhớ về như trước, `revision` không tăng. Kho ghi được: trả ổn, đọc lại kho thấy cả tiền đã trừ và cấp mới (một lần ghi).
+- [x] AC-4: Mã sao lưu (save-code) giữ cấp Upgrade qua xuất/nhập.
+
+- Test: `game/tests/upgrades.test.ts` (6 test cho bản lưu 3 và giao dịch). Giao dịch chỉ hoàn tác khi chưa có thay đổi nào khác chồng lên trong lúc chờ ghi; Quầy Mira khóa nút trong lúc chờ nên không xảy ra.

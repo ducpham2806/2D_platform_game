@@ -11,7 +11,8 @@ import { getBus, setConfig, setInput, setSave } from '../core/phaser-services';
 import { LocalStorageStore } from '../input/browser-store';
 import { InputService } from '../input/input-service';
 import { buildNormalizer } from '../logic/rpg/normalize-build';
-import { SaveManager } from '../logic/save/save-manager';
+import { upgradeNormalizer } from '../logic/shop/normalize-upgrades';
+import { chainNormalizers, SaveManager } from '../logic/save/save-manager';
 import { openBrowserSaveStore } from '../save/browser-save-store';
 import { MUTED_STYLE, TEXT_STYLE } from './ui';
 
@@ -81,7 +82,7 @@ export class PreloadScene extends Phaser.Scene {
       const save = await SaveManager.open(
         await openBrowserSaveStore(),
         Date.now,
-        buildNormalizer(config),
+        chainNormalizers(buildNormalizer(config), upgradeNormalizer(config.shop)),
       );
       if (save.notice) console.info(save.notice);
       if (save.lastError) console.warn(save.lastError);

@@ -8,8 +8,11 @@
  * Logic thuần: hàm nhận bản lưu cũ và trả bản mới, không sửa tại chỗ.
  */
 
-/** Bản 2 (M8): thêm kỹ năng, module, loadout. Bản 1 đọc lên thành bản 2 với các phần này trống. */
-export const SAVE_VERSION = 2;
+/**
+ * Bản 2 (M8): thêm kỹ năng, module, loadout. Bản 3 (M9): thêm cấp Upgrade (`inventory.upgrades`).
+ * Bản cũ đọc lên thành bản mới với các phần chưa có để trống.
+ */
+export const SAVE_VERSION = 3;
 
 export interface StageProgress {
   /** Checkpoint đã lưu (số thứ tự từ 1; 0 = điểm xuất phát). */
@@ -50,6 +53,8 @@ export interface SaveData {
   };
   inventory: {
     coreBits: number;
+    /** Cấp Upgrade đã mua theo id (shop.json); không có = cấp 0. */
+    upgrades: Record<string, number>;
   };
   /** Hướng dẫn: bước đã xong (đổi máy không học lại), và người chơi tắt hướng dẫn. */
   tutorial: {
@@ -77,7 +82,7 @@ export function defaultSave(): SaveData {
       loadouts: [defaultLoadout()],
       activeLoadout: 0,
     },
-    inventory: { coreBits: 0 },
+    inventory: { coreBits: 0, upgrades: {} },
     tutorial: { done: [], off: false },
   };
 }
@@ -103,8 +108,11 @@ function names(v: unknown): string[] {
   return [...new Set(v.filter((x): x is string => typeof x === 'string' && x.length > 0))];
 }
 
-/** Bậc kỹ năng: số nguyên dương; khóa hoặc giá trị sai bị bỏ (kiểm theo dữ liệu ở normalizeBuild). */
-function parseSkills(v: unknown): Record<string, number> {
+/**
+ * Bậc kỹ năng hoặc cấp Upgrade: số nguyên dương; khóa hoặc giá trị sai bị bỏ (kiểm theo dữ liệu
+ * ở normalizeBuild, normalizeUpgrades).
+ */
+function parseLevels(v: unknown): Record<string, number> {
   const out: Record<string, number> = {};
   if (!isRecord(v)) return out;
   for (const [id, rank] of Object.entries(v)) {
@@ -160,12 +168,12 @@ export function parseSave(raw: unknown): SaveData {
     character: {
       exp: count(character.exp),
       weapons: names(character.weapons),
-      skills: parseSkills(character.skills),
+      skills: parseLevels(character.skills),
       modules: { owned: names(isRecord(character.modules) ? character.modules.owned : undefined) },
       loadouts,
       activeLoadout: Math.min(count(character.activeLoadout), loadouts.length - 1),
     },
-    inventory: { coreBits: count(inventory.coreBits) },
+    inventory: { coreBits: count(inventory.coreBits), upgrades: parseLevels(inventory.upgrades) },
     tutorial: { done: names(tutorial.done), off: tutorial.off === true },
   };
 }
@@ -240,6 +248,25 @@ export function setSkills(save: SaveData, skills: Readonly<Record<string, number
   const keys = new Set([...Object.keys(cur), ...Object.keys(skills)]);
   if ([...keys].every((k) => cur[k] === skills[k])) return save;
   return { ...save, character: { ...save.character, skills: { ...skills } } };
+}
+
+/**
+ * Đặt cấp Upgrade và Core Bit cùng lúc (giao dịch Shop: trừ tiền và thêm món trong cùng một bản
+ * lưu, đặc tả Hub mục 8). Không đổi gì thì trả lại đúng bản cũ.
+ */
+export function setInventory(
+  save: SaveData,
+  upgrades: Readonly<Record<string, number>>,
+  coreBits: number,
+): SaveData {
+  const cur = save.inventory;
+  const keys = new Set([...Object.keys(cur.upgrades), ...Object.keys(upgrades)]);
+  if (cur.coreBits === coreBits && [...keys].every((k) => cur.upgrades[k] === upgrades[k]))
+    return save;
+  return {
+    ...save,
+    inventory: { ...cur, coreBits: Math.max(0, Math.floor(coreBits)), upgrades: { ...upgrades } },
+  };
 }
 
 export function recordTutorialDone(save: SaveData, ids: readonly string[]): SaveData {

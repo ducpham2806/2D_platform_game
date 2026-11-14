@@ -10,6 +10,15 @@ import {
   storyBossCount,
   upgradeCost,
 } from '@/logic/shop/upgrades';
+import { decodeSaveCode, encodeSaveCode } from '@/logic/save/save-code';
+import { addRewards, defaultSave, parseSave, setInventory } from '@/logic/save/save-data';
+import {
+  chainNormalizers,
+  MemorySaveStore,
+  SaveManager,
+  type SaveStore,
+} from '@/logic/save/save-manager';
+import { normalizeUpgrades, upgradeNormalizer } from '@/logic/shop/normalize-upgrades';
 import { loadData } from './helpers';
 
 const data = loadData();
@@ -142,5 +151,96 @@ describe('mở hàng theo boss, mua, gỡ (ST-09-01)', () => {
       levels: {},
       coreBits: 777,
     });
+  });
+});
+
+describe('bản lưu 3, chuẩn hóa, giao dịch nguyên tử (ST-09-02)', () => {
+  it('bản 2 đọc lên thành bản 3: upgrades trống, giữ Core Bit; cấp sai kiểu bị bỏ', () => {
+    const s = parseSave({ version: 2, inventory: { coreBits: 900 } });
+    expect(s.version).toBe(3);
+    expect(s.inventory).toEqual({ coreBits: 900, upgrades: {} });
+    const bad = parseSave({
+      version: 3,
+      inventory: { coreBits: 5, upgrades: { arc_core: 2, energy_cell: -1, x: 'a' } },
+    });
+    expect(bad.inventory.upgrades).toEqual({ arc_core: 2 });
+  });
+
+  it('chuẩn hóa: kẹp cấp vượt tối đa và hoàn tiền phần dư; bỏ id lạ; hợp lệ thì giữ nguyên', () => {
+    const save = setInventory(defaultSave(), { arc_core: 7, laser: 2, magnet_range: 1 }, 10);
+    const r = normalizeUpgrades(save, shop);
+    // Cấp 6, 7 theo công thức giá: round(400 × 1,25^5) + round(400 × 1,25^6).
+    expect(r.save.inventory).toEqual({
+      coreBits: 10 + 1221 + 1526,
+      upgrades: { arc_core: 5, magnet_range: 1 },
+    });
+    expect(r.notice).toMatch(/hoàn 2747 Core Bit/);
+    expect(r.notice).toMatch(/không còn trong dữ liệu/);
+    expect(normalizeUpgrades(r.save, shop)).toEqual({ save: r.save, notice: undefined });
+    const combined = chainNormalizers(upgradeNormalizer(shop), (s) => ({ save: s, notice: 'B.' }));
+    expect(combined(save).notice).toMatch(/Core Bit\..* B\.$/);
+  });
+
+  it('mã sao lưu giữ cấp Upgrade', () => {
+    const s = setInventory(defaultSave(), { arc_core: 2, energy_cell: 1 }, 125);
+    expect(decodeSaveCode(encodeSaveCode(s)).inventory).toEqual(s.inventory);
+  });
+
+  it('ghi được: tiền đã trừ và cấp mới nằm trong cùng một lần ghi', async () => {
+    const store = new MemorySaveStore();
+    const m = await SaveManager.open(store, () => 5);
+    m.update((s) => addRewards(s, { coreBits: 525 }));
+    await m.flush();
+    const writes = store.writes;
+    const buy = buyUpgrade(
+      shop,
+      m.data.inventory.upgrades,
+      m.data.inventory.coreBits,
+      'arc_core',
+      2,
+    );
+    if (!buy.ok) throw new Error('phải mua được');
+    const r = await m.transact((s) => setInventory(s, buy.levels, buy.coreBits));
+    expect(r).toEqual({ ok: true, changed: true });
+    expect(store.writes).toBe(writes + 1);
+    expect(JSON.parse(store.text!).inventory).toEqual({ coreBits: 125, upgrades: { arc_core: 1 } });
+    expect(await m.transact((s) => s)).toEqual({ ok: true, changed: false });
+  });
+
+  it('ghi lỗi: báo lỗi, hoàn tác tiền và cấp trong bộ nhớ, revision không tăng', async () => {
+    let fail = false;
+    let text: string | null = null;
+    const store: SaveStore = {
+      read: () => Promise.resolve(text),
+      write: (t) => {
+        if (fail) return Promise.reject(new Error('mất kết nối kho'));
+        text = t;
+        return Promise.resolve();
+      },
+    };
+    const m = await SaveManager.open(store);
+    m.update((s) => addRewards(s, { coreBits: 525 }));
+    await m.flush();
+    const before = m.data;
+    fail = true;
+    const r = await m.transact((s) => setInventory(s, { arc_core: 1 }, 125));
+    expect(r.ok).toBe(false);
+    expect(!r.ok && r.error).toMatch(/mất kết nối kho/);
+    expect(m.data).toBe(before);
+    expect(m.data.inventory).toEqual({ coreBits: 525, upgrades: {} });
+    expect(JSON.parse(text!).inventory.coreBits).toBe(525);
+    // Kho chạy lại: mua lại được, revision tiếp nối bản đã ghi.
+    fail = false;
+    expect(await m.transact((s) => setInventory(s, { arc_core: 1 }, 125))).toEqual({
+      ok: true,
+      changed: true,
+    });
+    expect(m.data.revision).toBe(before.revision + 1);
+  });
+
+  it('bản lưu chỉ đọc: giao dịch bị từ chối', async () => {
+    const m = await SaveManager.open(new MemorySaveStore(JSON.stringify({ version: 99 })));
+    const r = await m.transact((s) => setInventory(s, { arc_core: 1 }, 0));
+    expect(r.ok).toBe(false);
   });
 });

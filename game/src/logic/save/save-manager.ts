@@ -33,6 +33,23 @@ export type SaveNormalizer = (save: SaveData) => { save: SaveData; notice: strin
 
 const IDENTITY: SaveNormalizer = (save) => ({ save, notice: undefined });
 
+/** Chạy lần lượt nhiều bước chuẩn hóa; gộp thông báo. */
+export function chainNormalizers(...steps: SaveNormalizer[]): SaveNormalizer {
+  return (save) => {
+    let cur = save;
+    const notices: string[] = [];
+    for (const step of steps) {
+      const r = step(cur);
+      cur = r.save;
+      if (r.notice) notices.push(r.notice);
+    }
+    return { save: cur, notice: notices.length > 0 ? notices.join(' ') : undefined };
+  };
+}
+
+/** Kết quả giao dịch: đã ghi xuống kho (hoặc không có gì đổi), hoặc lỗi và đã hoàn tác. */
+export type TransactResult = { ok: true; changed: boolean } | { ok: false; error: string };
+
 export class SaveManager {
   /** Lỗi đọc/ghi gần nhất (để hiện cho người chơi); undefined = ổn. */
   lastError: string | undefined;
@@ -60,7 +77,7 @@ export class SaveManager {
     const fixed = normalize(data);
     if (fixed.save !== data) {
       this.notice = fixed.notice;
-      this.commit(fixed.save, data.revision + 1);
+      void this.commit(fixed.save, data.revision + 1);
     }
   }
 
@@ -101,8 +118,26 @@ export class SaveManager {
   update(change: (save: SaveData) => SaveData): boolean {
     const next = change(this.current);
     if (next === this.current) return false;
-    this.commit(next, this.current.revision + 1);
+    void this.commit(next, this.current.revision + 1);
     return true;
+  }
+
+  /**
+   * Giao dịch nguyên tử (Shop, đặc tả Hub mục 4.2, 8): đổi bản lưu bằng một hàm thuần rồi **chờ
+   * ghi xong**. Ghi lỗi thì trả bản trong bộ nhớ về như trước giao dịch (nếu chưa có thay đổi
+   * nào khác chồng lên) và báo lỗi; người gọi chỉ báo "đã mua" khi `ok`.
+   */
+  async transact(change: (save: SaveData) => SaveData): Promise<TransactResult> {
+    if (this.readOnly) return { ok: false, error: 'Bản lưu chỉ đọc (của phiên bản game mới hơn).' };
+    const before = this.current;
+    const next = change(before);
+    if (next === before) return { ok: true, changed: false };
+    const written = this.commit(next, before.revision + 1);
+    const committed = this.current;
+    const error = await written;
+    if (error === undefined) return { ok: true, changed: true };
+    if (this.current === committed) this.current = before;
+    return { ok: false, error };
   }
 
   /** Mã sao lưu của bản hiện tại. */
@@ -115,12 +150,12 @@ export class SaveManager {
     const decoded = decodeSaveCode(code);
     const fixed = this.normalize(decoded);
     this.notice = fixed.notice;
-    this.commit(fixed.save, Math.max(decoded.revision, this.current.revision) + 1);
+    void this.commit(fixed.save, Math.max(decoded.revision, this.current.revision) + 1);
   }
 
   /** Xóa tiến trình, về bản mới (revision vẫn tăng để cloud biết đây là bản mới hơn). */
   reset(): void {
-    this.commit(defaultSave(), this.current.revision + 1);
+    void this.commit(defaultSave(), this.current.revision + 1);
   }
 
   /** Chờ mọi lần ghi đang xếp hàng xong (khi đóng trang, trong test). */
@@ -128,19 +163,24 @@ export class SaveManager {
     return this.chain;
   }
 
-  private commit(next: SaveData, revision: number): void {
+  /** Đặt bản mới và xếp hàng một lần ghi; trả lời hứa của đúng lần ghi đó (lỗi, hoặc undefined). */
+  private commit(next: SaveData, revision: number): Promise<string | undefined> {
     this.current = { ...next, revision, savedAt: this.now() };
-    if (this.readOnly) return;
+    if (this.readOnly) return Promise.resolve(undefined);
     const text = JSON.stringify(this.current);
-    this.chain = this.chain
+    const done = this.chain
       .then(() => this.store.write(text))
       .then(
         () => {
           this.lastError = undefined;
+          return undefined;
         },
         (e: unknown) => {
           this.lastError = `Không ghi được dữ liệu lưu: ${String(e)}`;
+          return this.lastError;
         },
       );
+    this.chain = done.then(() => undefined);
+    return done;
   }
 }
