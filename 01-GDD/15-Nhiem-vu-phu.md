@@ -3,16 +3,16 @@
 - **Mã hệ thống:** `SYS-15`. Chưa có ID module riêng: phần trong màn thuộc M7, Bảng Nhiệm Vụ thuộc M10, bản lưu thuộc M11 (mục 9).
 - **Phân loại:** Gameplay, Meta, Persistence.
 - **Độ ưu tiên:** MVP (P0). Đây là nguồn module duy nhất của MVP, nên ST-08-09 (Module, Két giáp) chờ hệ thống này.
-- **Trạng thái:** **Draft, bản 1 (14/11/2026).** Chờ duyệt độc lập của Creative Director và Technical Director + Producer, sau đó người dùng duyệt các quyết định ở mục 11. Mọi số là `[PLACEHOLDER]`.
+- **Trạng thái:** **Bản 2, Approved (ủy quyền) 14/11/2026 sau duyệt Creative Director và Technical Director + Producer.** Người dùng giao toàn quyền; 8 quyết định ở mục 11 đã chốt, điểm duyệt và chỗ sửa ở mục 12. Mọi số là `[PLACEHOLDER]`.
 - **Phụ thuộc (upstream):** M7 (bí mật, vật chắn, mốc `section`, bản đồ Tiled), M11 bản lưu 4 (`SaveManager.update`, `transact`), M8 (`character.modules.owned` có từ bản lưu 2), EP-10 độ khó, `stages.json → sideQuestId`, `modules.json`, `economy.json → dataChipSources`.
-- **Bị ảnh hưởng (downstream):** ST-08-09 và Xưởng tab Module, HUD, màn Chuẩn bị, màn Kết quả, menu tạm dừng, radar Đầu Mk I, Data Chip, M16 đo lường, đặc tả Stage 2–4 (chưa viết).
+- **Bị ảnh hưởng (downstream):** ST-08-09 và Xưởng tab Module, HUD, màn Chuẩn bị, màn Kết quả, menu tạm dừng, radar Đầu Mk I, Data Chip, M16 đo lường, đặc tả Stage 2–4 (`16-Dac-ta-Stage2-4-nhap.md`).
 - **Nguồn:** đặc tả Hub mục 6–8; GDD chính 4, 6.1, 6.4, 8.3, 10; đặc tả Prologue & Stage 1 mục 3; GDD 10 mục 1, 2.2–2.3; kinh tế mục 5; kịch bản hướng dẫn mục 2, R05, D02, D04; giọng nhân vật; thoại Warden mục 2; `game/src/logic/save/save-data.ts`, `game/src/logic/world/stage-mechanics.ts`, `game/maps/README.md`.
 - **Quy trình (Game Studio Agent):** `/design-system` theo `templates/gdd-system-template.md`, vai Level Designer + Narrative Designer (`level-designer`, `narrative-designer`, `save-systems`).
-- **Cổng Prototype:** quy tắc, dữ liệu, bản lưu, Bảng Nhiệm Vụ và cơ chế trong màn không phụ thuộc thông số cảm giác, nên viết và code được ngay. **Vị trí** vật nhiệm vụ trên bản đồ Stage 1 chỉ ghi thành quy tắc theo đoạn A–D (số là `[PLACEHOLDER]`), chốt sau cổng. Stage 2–4 chờ đặc tả của các màn đó, cũng viết sau cổng (`04-Dev-Plan/07-Ban-do-he-thong.md` mục 2).
+- **Cổng Prototype:** quy tắc, dữ liệu, bản lưu, Bảng Nhiệm Vụ và cơ chế trong màn không phụ thuộc thông số cảm giác, nên viết và code được ngay. **Vị trí** vật nhiệm vụ trên bản đồ Stage 1 chỉ ghi thành quy tắc theo đoạn A–D (số là `[PLACEHOLDER]`), chốt sau cổng. Stage 2–4: quy tắc đặt theo `16-Dac-ta-Stage2-4-nhap.md` mục 3.8, 4.8, 5.8; bản đồ dựng sau cổng (EP-17).
 
 ## 0. Câu hỏi và phương án
 
-**Câu hỏi:** 4 nhiệm vụ phụ của MVP (tên và mục tiêu đã có ở đặc tả Hub mục 7) cần thêm gì để code được: cách đếm, lúc nhận, lúc xong, cách lưu, cách đặt trên bản đồ. Ràng buộc: Hub ở MVP chỉ là menu, chưa có bản đồ nhỏ, chưa có đặc tả Stage 2–4.
+**Câu hỏi:** 4 nhiệm vụ phụ của MVP (tên và mục tiêu đã có ở đặc tả Hub mục 7) cần thêm gì để code được: cách đếm, lúc nhận, lúc xong, cách lưu, cách đặt trên bản đồ. Ràng buộc: Hub ở MVP chỉ là menu, chưa có bản đồ nhỏ; đặc tả Stage 2–4 viết song song (`16-Dac-ta-Stage2-4-nhap.md`).
 
 | # | Câu hỏi | Phương án | Đề xuất |
 | --- | --- | --- | --- |
@@ -44,7 +44,7 @@
 2. Mở Bảng: Mira nói câu giới thiệu một lần (R05). Chọn một nhiệm vụ: Mira giao việc (tối đa 3 câu), bấm **Nhận**.
 3. Vào màn của nhiệm vụ như mọi lần (qua màn Chuẩn bị, chọn độ khó tùy ý). Vật nhiệm vụ xuất hiện, HUD hiện bộ đếm, NOVA nói một câu khi vào màn.
 4. Tiến độ ghi **ngay** khi nhặt hoặc phá một vật, hoặc khi qua mép đích của đoạn thử. Không cần hạ boss. Thoát màn từ menu tạm dừng vẫn giữ.
-5. Xong thì HUD báo "Nhiệm vụ xong" và Bảng có chấm báo. Về Bảng bấm **Nhận thưởng**: một lần ghi gồm module, Data Chip và trạng thái **đã nhận thưởng**. Lần nhận module đầu tiên mở tab Module của Xưởng và chạy D04.
+5. Xong thì hiện Báo ngắn "Nhiệm vụ xong!" (mục 6.1) và Bảng có chấm báo. Về Bảng bấm **Nhận thưởng**: một lần ghi gồm module, Data Chip và trạng thái **đã nhận thưởng**. Lần nhận module đầu tiên mở tab Module của Xưởng và chạy D04.
 
 ### 2.2 Bốn nhiệm vụ
 
@@ -74,7 +74,9 @@ Người giao là **Mira** (đặc tả Hub mục 6). NOVA chỉ bình luận tr
 
 ### 2.4 Máy trạng thái lần thử (đoạn thử `questZone`, chỉ trong lượt chơi)
 
-Đoạn thử là một hình chữ nhật trên bản đồ. Có một **mép vào** và một **mép đích** (thuộc tính `enter`, `exit`). Các mép còn lại phải kín (tường đặc hoặc hố).
+Đoạn thử là một hình chữ nhật trên bản đồ. Có một **mép vào** và một **mép đích** (thuộc tính `enter`, `exit`). Các mép còn lại phải kín (tường đặc hoặc hố). Mép vào không được là mép dưới (test bản đồ, mục 2.8).
+
+"Đang đứng" là đang chạm đất trên mặt đứng được: ô đặc, bục một chiều, bệ di động, dây leo đu. Mọi lúc khác (nhảy, rơi, bám tường) tính là "đang nhảy hoặc rơi".
 
 | Trạng thái | Điều kiện | Kế tiếp | Phản hồi |
 | --- | --- | --- | --- |
@@ -82,7 +84,8 @@ Người giao là **Mira** (đặc tả Hub mục 6). NOVA chỉ bình luận tr
 | `running` | Đang thử | Tâm hộp Kai qua mép đích → `done` (ghi ngay) | Vạch đích chớp, chuông ngắn, NOVA nói câu `done`, HUD báo xong |
 | `running` | Phạm luật trong `failOn`: `pit` (rơi hố), `death` (chết), `ground` (đứng trên ô `Tile.Solid` liên tục ≥ `groundGraceSteps` bước) | → `idle` (hỏng) | Thùng vỡ hoặc máy ghi tắt đèn, tiếng hỏng. NOVA nói câu `fail` ở lần hỏng đầu của lượt; từ lần hỏng thứ `hintAfterFails` nói câu `hint` (một lần) |
 | `running` | Bị đưa ra ngoài vùng không qua mép đích (gai về chỗ an toàn, hố về checkpoint, hồi sinh) hoặc ra qua mép kín | → `idle` (hỏng) | Như trên |
-| `running` | Ra khỏi vùng qua chính mép vào | → `idle` (hủy, không tính là hỏng) | Đồ trên lưng biến mất, không có câu thoại |
+| `running` | Tâm hộp Kai ra qua mép vào khi **đang đứng** | → `idle` (hủy, không tính là hỏng) | Đồ trên lưng biến mất, không có câu thoại |
+| `running` | Tâm hộp Kai ra qua mép vào khi **đang nhảy hoặc rơi** | → `idle` (hỏng) | Như dòng hỏng. Không lách luật hỏng bằng cách nhảy ngược ra |
 
 - "Sàn" (luật `ground`) là mặt trên của ô **đặc**. Bục một chiều (bệ mây tĩnh), bệ di động, dây leo đu và bám tường đều được. Đây là cách đọc đã có trong `StageWorld` khi tìm chỗ đứng an toàn (`firm`), chỉ khác là bục một chiều không tính.
 - Thùng và máy ghi **chỉ là hình vẽ**: không đổi tốc độ, trọng lực hay hộp va chạm của Kai.
@@ -94,7 +97,7 @@ Người giao là **Mira** (đặc tả Hub mục 6). NOVA chỉ bình luận tr
 - **Bảng:** bảng HTML theo ADR-001, giống Xưởng và Quầy Mira. Chi tiết ở mục 6.2.
 - **Nhận:** một chạm vào Nhận ghi `active` (`manager.update`). Nhận nhiều nhiệm vụ cùng lúc được.
 - **Nhận thưởng:** dùng `SaveManager.transact(claimQuest)`, giống mua Upgrade. Một lần ghi gồm: thêm module vào `character.modules.owned` (đã có thì thôi), cộng `inventory.dataChips`, trạng thái `claimed`. Bảng chờ ghi xong mới báo. Ghi lỗi thì hoàn tác, giữ `done` và báo lỗi. Bấm hai lần thì lần hai không đổi gì.
-- **R05** (lần đầu mở Bảng): Mira nói câu giới thiệu. Câu thứ hai đổi theo Két giáp Verdant (mục 6.5). Khi có giai đoạn Hub của TutorialManager thì chuyển sang đó (R02–R04 cũng đang chờ giai đoạn này). Trong lúc chờ, Bảng tự hiện câu và ghi `tutorial.done: R05`.
+- **R05** (lần đầu mở Bảng): Mira nói câu giới thiệu. Câu thứ hai đổi theo Két giáp Verdant (mục 6.5). Khi có giai đoạn Hub của TutorialManager thì chuyển sang đó (R02–R04 cũng đang chờ giai đoạn này). Trong lúc chờ, Bảng tự hiện câu và ghi `tutorial.done: R05`. R05 làm ở ST-18-05, không thuộc EP-14.
 - **D04** (lắp module đầu tiên): kích hoạt khi nhận thưởng nhiệm vụ đầu tiên, không phải "sau boss 3". Phụ thuộc tab Module (ST-08-09).
 
 ### 2.6 Chết, rơi hố, thoát giữa chừng
@@ -124,24 +127,24 @@ Người giao là **Mira** (đặc tả Hub mục 6). NOVA chỉ bình luận tr
 | --- | --- | --- | --- |
 | `questItem` | điểm | `quest` (id nhiệm vụ), `item` (id trong `objective.items`) | Vật nhặt một lần (Hạt Giống). Nhãn hiển thị lấy từ `quests.json`, không lấy tên đối tượng |
 | `questTarget` | điểm | `quest`, `item` | Vật cần phá (Gương Rối), hộp trúng 1 × 1 ô, không chặn đường. Dựng như bia tập bắn (`TrainingTarget`, không khiên, không dựng lại). Máu lấy từ `objective.hp` |
-| `questZone` | chữ nhật | `quest`, `enter`, `exit` (`left`, `right`, `top`, `bottom`; khác nhau) | Đoạn thử. Luật hỏng lấy từ `objective.failOn`. Vạch vào, vạch đích vẽ ở hai mép |
+| `questZone` | chữ nhật | `quest`, `enter` (`left`, `right`, `top`; không `bottom`), `exit` (`left`, `right`, `top`, `bottom`; khác `enter`) | Đoạn thử. Luật hỏng lấy từ `objective.failOn`. Vạch vào, vạch đích vẽ ở hai mép |
 
 **Quy tắc đặt chung** (thêm vào checklist duyệt màn M7; dòng có dấu * được test tự động kiểm):
 
-- \* `quest` của mọi vật bằng `sideQuestId` của màn. Mỗi id trong `items` có đúng một vật, không có id lạ. Nhiệm vụ `reach` có đúng một `questZone`.
+- \* `quest` của mọi vật bằng `sideQuestId` của màn. Mỗi id trong `items` có đúng một vật, không có id lạ. Nhiệm vụ `reach` có đúng một `questZone`, `enter` không phải `bottom`.
 - \* Không vật nào nằm trong đấu trường boss (từ cột cửa `gate` trở đi) hay trong vùng một `barrier`. Không checkpoint, phòng khóa hay cửa boss nằm trong `questZone`. Có checkpoint trước mép vào trong `zoneCheckpointMaxTiles` ô.
-- Tới được bằng **bộ động tác gốc** (GDD 8.3). Chỉ được cần **vũ khí chắc chắn đã có**: Vine Lash (Stage 1 luôn chơi đầu) và vũ khí của chính màn đó (nhiệm vụ chỉ mở sau khi hạ boss của màn).
+- Tới được và hoàn thành được bằng **bộ động tác gốc + Arc Cannon** (GDD chính 8.3, `16-Dac-ta-Stage2-4-nhap.md` mục 0.2). Không vật hay đoạn thử nào cần vũ khí Warden, kể cả Vine Lash và vũ khí của chính màn.
 - Lệch khỏi đường chính ≤ 20 ô `[PLACEHOLDER]` và **nhìn thấy được từ đường chính**: Hạt Giống phát một cột sáng mờ cao ≥ 3 ô, Gương Rối sáng tím. Dùng đường dẫn mắt có sẵn (dây leo, ánh đèn) để dẫn tới. MVP chưa có bản đồ nhỏ nên điều này bắt buộc.
 - Một chuyến thu thập hoặc hạ mục tiêu ≤ thời lượng màn + 2 phút `[PLACEHOLDER]`, không tính boss.
 
-**Theo màn** (vị trí cụ thể chưa chốt; Stage 1 chốt sau cổng Prototype, Stage 2–4 trong đặc tả các màn đó):
+**Theo màn** (vị trí cụ thể chưa chốt; Stage 1 chốt sau cổng Prototype, Stage 2–4 theo `16-Dac-ta-Stage2-4-nhap.md` mục 3.8, 4.8, 5.8, dựng ở EP-17):
 
 | Màn | Quy tắc đặt `[PLACEHOLDER]` |
 | --- | --- |
 | 1 Verdant (đoạn A–D, đặc tả Stage 1 mục 3) | 5 hạt: A 1, B 2, C 1, D 1. **A:** gờ cao của giếng bám tường. **B:** một hạt lấy được khi nhảy từ dây leo đu (rơi xuống là gai, không phải hố); một hạt ở nhánh cao gần phòng Memory Log 1 nhưng **ngoài** phòng (Memory Log vẫn là phần thưởng riêng). **C:** trong hoặc ngay sau phòng khóa, trên lối dẫn tới rễ khô của Két giáp, **không sau** rễ khô (Prism Beam chưa chắc đã có). **D:** trên đường chính trước CP4. Không hạt nào trên ô gai hay trong đấu trường Thorna. Chuyến nhiệm vụ ≤ 10 phút (A–D khoảng 8,5 phút + đường vòng ≤ 1,5 phút) |
-| 2 Prism | 6 gương: mỗi đoạn A–D ≥ 1, đoạn B–C ≥ 2. Hình khác hẳn Gương Quang và gương câu đố (tím, nứt, không xoay được). Không nằm trên đường tia laser của câu đố. Tối đa 1 gương đặt ở chỗ Prism Beam bắn dễ hơn, nhưng Arc Cannon vẫn bắn tới |
-| 3 Cryo | Một đoạn băng trượt có hố bên dưới (sàn trơn và băng vỡ), dài 30–40 ô, một lần thử 20–40 s. Mép vào có "kệ thùng thuốc" làm mốc, nhìn thấy từ checkpoint. Đoạn nằm trên đường chính: lần đầu người chơi đã đi qua, nhiệm vụ đòi đi lại một mạch sạch |
-| 4 Cirrus | Một đoạn gió (gió đổi hướng). Bệ mây phải là **bục một chiều hoặc bệ di động**, không phải ô đặc. Bên dưới phần lớn là sàn đặc an toàn, để hỏng nhiệm vụ không mất máu. Có thể đi dọc (`enter: bottom`, `exit: top`). Không đặt gai trong vùng. Từ chỗ hỏng về vạch vào ≤ 10 s đi bộ |
+| 2 Prism | 6 gương: **A 1, B 2, C 2, D 1**; không gương nào trong phòng mini-boss. Hình khác hẳn Gương Quang và gương câu đố (tím, nứt, không xoay được). Không nằm trên đường tia laser của câu đố. Tối đa 1 gương đặt ở chỗ Prism Beam bắn dễ hơn, nhưng Arc Cannon vẫn bắn tới |
+| 3 Cryo | Một đoạn băng trượt có hố bên dưới (sàn trơn và băng vỡ), dài 30–40 ô, một lần thử 20–40 s. Mép vào có "kệ thùng thuốc" làm mốc, nhìn thấy từ checkpoint. Đoạn nằm trên đường chính, đầu đoạn C ngay sau CP2 (`16-…` mục 4.8): lần đầu người chơi đã đi qua, nhiệm vụ đòi đi lại một mạch sạch |
+| 4 Cirrus | Một đoạn gió (gió đổi hướng), đầu đoạn C ngay sau CP2 (`16-…` mục 5.8). Bệ mây phải là **bục một chiều hoặc bệ di động**, không phải ô đặc. **Vào từ cạnh bên** (`enter: left` hoặc `right`), từ một gờ đặc nằm ngoài vùng; **ra ở mép trên** (`exit: top`). **Sàn đặc an toàn nằm trong vùng**, trải dưới cả đoạn, không hố: rơi xuống sàn là hỏng theo luật `ground`, không mất máu, không thành hủy. Không đặt gai trong vùng. Test bản đồ cấm vào từ mép dưới. Từ chỗ hỏng về vạch vào ≤ 10 s đi bộ |
 
 ## 3. Công thức, giá trị biên và dữ liệu
 
@@ -155,9 +158,10 @@ progress(q)      = |sideQuests[q].items ∩ q.objective.items|            (colle
 done(q)          = progress(q) ≥ q.objective.required                  (collect, destroy)
                  = qua mép đích khi lần thử đang chạy                  (reach)
 spawn(vật v)     = state(q) = active ∧ v.item ∉ sideQuests[q].items
+zoneCancel       = tâm Kai ra qua mép vào ∧ đang đứng                    (mục 2.4)
 zoneFail         = (pit ∈ failOn ∧ rơi hố) ∨ (death ∈ failOn ∧ chết)
                  ∨ (ground ∈ failOn ∧ số bước liên tiếp đứng trên Tile.Solid ≥ groundGraceSteps)
-                 ∨ ra khỏi vùng mà không qua mép đích hoặc mép vào
+                 ∨ (ra khỏi vùng không qua mép đích ∧ ¬zoneCancel)       (gồm nhảy, rơi ra qua mép vào)
 mirrorHitsToBreak = ceil(hp / (damage × atk(L)/atk(1) × upgrade))      ; hp = 2
 dataChips        = Σ reward.dataChips của nhiệm vụ đã claimed (+ nguồn khác khi làm)
 loadCap          = moduleLoadPerSlot (2) × slots(cấp)                   (GDD 10 mục 2.2)
@@ -165,11 +169,11 @@ loadCap          = moduleLoadPerSlot (2) × slots(cấp)                   (GDD 
 
 ### 3.2 Giá trị biên
 
-**Module và Data Chip theo mốc** (cấp theo cận trên cấp khuyến nghị, GDD 10 mục 0; tải module theo GDD 10 mục 2.2):
+**Module và Data Chip theo mốc** (cấp theo `expBudget` GDD 10 mục 0; tải module theo GDD 10 mục 2.2):
 
 | Mốc | Boss | Cấp | Nhiệm vụ mở | Module tối đa | Tải lắp hết / loadCap | Data Chip từ nhiệm vụ |
 | --- | --- | --- | --- | --- | --- | --- |
-| Hết Stage 1 hoặc sau boss 2 | 1–2 | 4–7 | 0 (Bảng khóa) | 0 | 0 / 6 | 0 |
+| Hết Stage 1 hoặc sau boss 2 | 1–2 | 4–6 | 0 (Bảng khóa) | 0 | 0 / 6 | 0 |
 | Sau boss 3 (Bảng vừa mở) | 3 | 8 | 3 | 3 | Theo thứ tự màn: {Magnet, Last Stand, Phase Step} = 7 > 6, **phải chọn**; {Magnet, Last Stand, Siphon} = 5; {Magnet, Phase Step, Siphon} = 5 | 0 → 3 |
 | Cuối MVP (boss 4) | 4 | 10 | 4 | 4 | 8 / 8 (4 ô từ cấp 10): lắp đủ | 4 |
 | Cuối cốt truyện (đối chiếu) | 8 | 30 | 8 | 8 | Chưa có tải của 4 module sau | 8 = `economy.dataChipSources.sideQuests` |
@@ -205,7 +209,6 @@ Nhiệm vụ 2–4 có khối `lines` cùng dạng với nhiệm vụ 1 (chữ �
     "boardUnlockBosses": 3,
     "groundGraceSteps": 2,
     "hintAfterFails": 5,
-    "toastSec": 3,
     "zoneCheckpointMaxTiles": 20
   },
   "board": {
@@ -296,9 +299,9 @@ Nhiệm vụ 2–4 có khối `lines` cùng dạng với nhiệm vụ 1 (chữ �
 
 ### 3.4 Kiểm tra lúc nạp (`game/src/core/quests-config.ts`, thêm `quests` vào `REQUIRED_DATA_FILES`)
 
-1. `rules`: `boardUnlockBosses` nguyên, 0 ≤ x ≤ số màn chiến dịch. `groundGraceSteps` nguyên 0–6. `hintAfterFails` nguyên ≥ 1. `toastSec` > 0. `zoneCheckpointMaxTiles` nguyên > 0.
+1. `rules`: `boardUnlockBosses` nguyên, 0 ≤ x ≤ số màn chiến dịch. `groundGraceSteps` nguyên 0–6. `hintAfterFails` nguyên ≥ 1. `zoneCheckpointMaxTiles` nguyên > 0. Không có trường thời gian hiện chữ: hộp chữ dùng thời gian đọc chung QB-72.
 2. `id` không trùng. `stage` có trong `stages.json` và `stages[stage].sideQuestId === id`. Mỗi màn tối đa một nhiệm vụ. Màn có `index ≤ STAGES_WITH_QUEST_DATA` (hằng số mới = 4, tăng khi làm Alpha, giống `STAGES_WITH_ENEMY_DATA`) bắt buộc có nhiệm vụ.
-3. `giver` có trong `ui.json → dialogue.speakers` (thêm `mira`). Mọi `who` thuộc `mira`, `kai`, `nova`.
+3. `giver` có trong `ui.json → dialogue.speakers` (hiện chỉ có `nova`; thêm `mira` và `kai`). Mọi `who` có trong `dialogue.speakers` và thuộc `mira`, `kai`, `nova`.
 4. `objective.type` ∈ `collect`, `destroy`, `reach`.
    - `collect` và `destroy`: `items` không rỗng, id không trùng trong toàn file, 1 ≤ `required` ≤ số `items`. `destroy` có `hp` > 0.
    - `reach`: `failOn` không rỗng, chỉ gồm `pit`, `death`, `ground`. Không có `items`.
@@ -323,17 +326,18 @@ Sai thì game dừng ở màn tải kèm thông báo lỗi, test báo đỏ (nh�
 - **StageSave:** `questItem` hoặc `questZone = 'done'` thì ghi ngay (như bí mật), kèm phần EXP và Core Bit chênh lệch như mọi lần ghi khác.
 - **HUD:** `HudModel.quest?: { label, have, need, sectionLeft?, zone?: 'idle' | 'running' }`, dựng mỗi khung từ `StageWorld`. Không dùng event bus cho số liệu từng khung (quyết định M10).
 - **Event bus:** chưa thêm sự kiện (`quest:accepted`, `quest:progress`, `quest:zoneFail`, `quest:done`, `quest:claimed`) cho tới khi có nơi nghe ở M16, cùng quy tắc với Xưởng.
-- **TutorialManager:** không cần tín hiệu mới. Câu NOVA trong màn hiện ở hộp gợi ý riêng, như gợi ý độ khó (GDD 11 mục 2.5): chờ hộp hướng dẫn trống, tự tắt, không dừng trận.
+- **TutorialManager:** không cần tín hiệu mới.
+- **Hộp chữ** (QB-70…72, `17-Quy-tac-bien.md` mục 8): câu NOVA của nhiệm vụ là hộp "Câu NOVA nhiệm vụ phụ", xếp **dưới Hướng dẫn, trên Báo ngắn**. "Nhiệm vụ xong!" là một **Báo ngắn** (bậc thấp nhất, cùng Nhận vũ khí, Lên cấp). Hộp cao hơn hiện thì hộp thấp ẩn, rồi hiện lại nếu còn hiệu lực; chờ quá 10 s thì hủy (QB-71). Tự tắt theo thời gian đọc chung QB-72: max(3 s, số ký tự / 15), không đếm khi tạm dừng hay có hội thoại. Không dừng trận.
 - **Radar Đầu Mk I** (ST-08-09): "vật phẩm được lưu chưa lấy" gồm cả vật của nhiệm vụ đang làm.
 
-**Bản lưu 5** (theo `save-systems`: đóng số phiên bản, nâng bằng hàm thuần, kiểm tra lúc đọc, lưu dữ liệu chứ không lưu đối tượng):
+**Bản lưu kế tiếp** (theo `save-systems`: đóng số phiên bản, nâng bằng hàm thuần, kiểm tra lúc đọc, lưu dữ liệu chứ không lưu đối tượng). Số phiên bản theo thứ tự merge: hiện là bản 4, nhưng EP-16 có thể lấy số 5 trước, nên dưới đây gọi là bản N. Gộp cùng các trường MVP khác của đợt đó, như `weaknessKnown` (QB-83), để chỉ nâng một lần (ST-18-02).
 
 ```text
 SaveData thêm:
   sideQuests          : Record<questId, { state: "available" | "active" | "done" | "claimed"; items: string[] }>
   inventory.dataChips : number            // số dư; Data Chip từ nhiệm vụ suy từ claimed
 Không lưu: "khóa" và "chưa xem" (suy từ dữ liệu và boss đã hạ), lần thử đoạn đang dở, số lần hỏng.
-Nâng 4 → 5 trong parseSave: sideQuests = {}, dataChips = 0. Bản 5 gặp build cũ: chỉ đọc (cơ chế readOnly đã có).
+Nâng N−1 → N trong parseSave: sideQuests = {}, dataChips = 0. Bản N gặp build cũ: chỉ đọc (cơ chế readOnly đã có).
 ```
 
 - Nhóm tên `sideQuests` (không phải `quests`) để không trùng nhiệm vụ ngày của Live-ops (M13). Đây là nhóm "Nhiệm vụ và thành tựu" ở đặc tả Hub mục 8.
@@ -354,6 +358,9 @@ Nâng 4 → 5 trong parseSave: sideQuests = {}, dataChips = 0. Bản 5 gặp bui
 | Kai bị đẩy lùi xuống sàn trong đoạn gió | Hỏng (luật `ground`). Sàn an toàn nên không mất máu thêm |
 | Quệt góc ô đặc trong 1 bước | Không hỏng (`groundGraceSteps = 2`) |
 | Rơi vào vùng từ trên xuống, không qua mép vào | Không bắt đầu lần thử. Phải ra rồi vào lại qua vạch vào |
+| Đang thử, đi bộ ngược ra qua vạch vào | Hủy: đồ trên lưng biến mất, không tính hỏng, không câu thoại |
+| Đang thử, nhảy hoặc rơi ngược ra qua vạch vào (sắp rơi hố, sắp chạm sàn) | Hỏng như mọi lần hỏng: không lách luật bằng cách nhảy ra |
+| Đoạn thử đặt `enter: bottom` | Test bản đồ báo lỗi: rơi ra mép dưới phải là hỏng, không thể là lối vào |
 | R05 khi chưa có Prism Beam, hoặc đã lấy Két giáp Verdant | Câu thứ hai đổi theo `introCache` (`locked`, `taken`). Câu gốc của R05 sai với người đi thứ tự 1 → 3 → 4 |
 | Bảng mở khi một màn trong MVP chưa hạ boss | Dòng khóa "Mở khi hạ boss <màn>" |
 | Nhận thưởng mà ghi lỗi, hoặc bấm hai lần | `transact` hoàn tác, giữ `done`, báo lỗi. Lần bấm thứ hai không đổi gì |
@@ -371,10 +378,10 @@ Nâng 4 → 5 trong parseSave: sideQuests = {}, dataChips = 0. Bản 5 gặp bui
 ### 6.1 Trong màn
 
 - **HUD:** bộ đếm nhỏ dưới dòng Cấp · EXP ở góc phải trên. Trên cảm ứng chừa 30 px cho nút II như phần còn lại của HUD.
-  - Thu thập, hạ mục tiêu: biểu tượng (hạt, gương) + "2/5". Khi vào một đoạn (mốc `section`) còn vật chưa lấy thì thêm "· đoạn này còn 1" trong `toastSec` giây. MVP chưa có bản đồ nhỏ nên dòng này thay cho chấm trên bản đồ.
+  - Thu thập, hạ mục tiêu: biểu tượng (hạt, gương) + "2/5". Khi vào một đoạn (mốc `section`) còn vật chưa lấy thì thêm "· đoạn này còn 1" trong thời gian đọc chung QB-72. MVP chưa có bản đồ nhỏ nên dòng này thay cho chấm trên bản đồ.
   - Đoạn thử: biểu tượng (thùng, máy ghi) + "Sẵn sàng" hoặc "Đang mang" / "Đang ghi".
-  - Bộ đếm chớp khi tăng. Xong thì hiện thông báo "Nhiệm vụ xong! Nhận thưởng ở Bảng Nhiệm Vụ" trong `toastSec` giây. Thông báo này hiện cả khi tắt hướng dẫn.
-- **Câu NOVA** (hộp gợi ý, mục 4): `enter` (một lần mỗi lượt), `start` (lần thử đầu của lượt), `fail` (lần hỏng đầu), `hint` (từ lần hỏng thứ `hintAfterFails`, một lần), `done`. Tắt hướng dẫn thì không hiện, nhưng HUD và thông báo xong vẫn hiện.
+  - Bộ đếm chớp khi tăng. Xong thì hiện Báo ngắn "Nhiệm vụ xong! Nhận thưởng ở Bảng Nhiệm Vụ" (bậc thấp nhất của QB-70, thời gian đọc QB-72). Báo ngắn này hiện cả khi tắt hướng dẫn.
+- **Câu NOVA** (hộp "Câu NOVA nhiệm vụ phụ", giữa Hướng dẫn và Báo ngắn, mục 4): `enter` (một lần mỗi lượt), `start` (lần thử đầu của lượt), `fail` (lần hỏng đầu), `hint` (từ lần hỏng thứ `hintAfterFails`, một lần), `done`. Tắt hướng dẫn thì không hiện, nhưng HUD và Báo ngắn xong vẫn hiện.
 - **Không chỉ dùng màu** (GDD 11): Hạt Giống có cột sáng và hình hạt. Gương Rối có vết nứt. Vạch vào và vạch đích có hoa văn sọc khác nhau. Thùng vỡ có mảnh văng, máy ghi tắt có biểu tượng gạch chéo.
 
 ### 6.2 Bảng Nhiệm Vụ (bảng HTML, ADR-001)
@@ -391,7 +398,7 @@ Nâng 4 → 5 trong parseSave: sideQuests = {}, dataChips = 0. Bản 5 gặp bui
 | Xong | **Nhận thưởng** (nổi bật). Bấm thì Mira đọc `claim` (+ `firstChip` ở lần đầu), rồi hiện "+ Magnet Core · + 1 Data Chip" |
 | Đã nhận | "Đã nhận" kèm dấu tích; chọn dòng thì đọc lại `claim` |
 
-- **Điều hướng:** InputService qua `gridMove`, chuột và chạm, giống Xưởng. Nút ≥ 48 px, chữ ≥ 16 sp, nút không giữ focus.
+- **Điều hướng:** InputService qua `gridMove`, chuột và chạm, giống Xưởng. Nút ≥ 48 dp, chữ ≥ 16 sp (QB-74), nút không giữ focus.
 - Bảng là **nhật ký nhiệm vụ** của MVP. Mục "Nhiệm vụ" trong Phòng Hồ Sơ để Alpha (cùng Hub).
 
 ### 6.3 Menu, màn Chuẩn bị, menu tạm dừng, màn Kết quả, Dữ liệu lưu
@@ -446,7 +453,7 @@ Dùng ba bậc phản hồi của `ui.json → feedback`:
 
 ## 7. Nút tinh chỉnh
 
-- `quests.json → rules`: `boardUnlockBosses` (3), `groundGraceSteps` (2), `hintAfterFails` (5), `toastSec` (3), `zoneCheckpointMaxTiles` (20).
+- `quests.json → rules`: `boardUnlockBosses` (3), `groundGraceSteps` (2), `hintAfterFails` (5), `zoneCheckpointMaxTiles` (20). Thời gian hiện chữ không chỉnh riêng: theo QB-72.
 - Theo nhiệm vụ: `objective.items` và `required` (thu 5 trong 6 hạt được bằng cách thêm id), `objective.hp` (Gương Rối), `objective.failOn`, `reward.dataChips`, `reward.module`, `reward.exp` (0), toàn bộ thoại.
 - Trên bản đồ: vị trí vật, độ dài và mép của đoạn thử, checkpoint trước vạch vào.
 - **Quy tắc chỉnh sau chơi thử:**
@@ -461,13 +468,14 @@ Dùng ba bậc phản hồi của `ui.json → feedback`:
 - [ ] Bảng mở đúng khi đủ 3 boss chiến dịch (boss xám không tính). Nhiệm vụ chỉ `available` khi boss của màn đã hạ. Dòng khóa ghi đúng điều kiện.
 - [ ] Vật và đoạn thử chỉ có trong màn khi nhiệm vụ `active`. Không có ở `available`, `done`, `claimed`, phòng thử, màn xám.
 - [ ] Nhặt và phá ghi ngay. Chết, rơi hố, thoát, tải lại trang đều giữ. Không đếm trùng. Đủ `required` thì `done` ngay, không cần hạ boss.
-- [ ] Đoạn thử: hỏng đúng ba luật (hố, chết, sàn đặc ≥ 2 bước); bục một chiều, bệ di động và bám tường không hỏng; ra qua mép vào thì hủy; bị đưa ra ngoài thì hỏng; qua mép đích thì xong và ghi ngay; lần thử dở không lưu.
+- [ ] Đoạn thử: hỏng đúng ba luật (hố, chết, sàn đặc ≥ 2 bước); bục một chiều, bệ di động và bám tường không hỏng; đứng mà ra qua mép vào thì hủy, nhảy hoặc rơi ra qua mép vào thì hỏng; bị đưa ra ngoài thì hỏng; test bản đồ báo lỗi khi `enter: bottom`; qua mép đích thì xong và ghi ngay; lần thử dở không lưu.
 - [ ] Nhận thưởng nguyên tử: module, Data Chip và `claimed` trong một lần ghi. Ghi lỗi thì hoàn tác. Bấm hai lần không nhận hai lần.
-- [ ] Bản lưu 4 đọc lên bản 5 với `sideQuests = {}`, `dataChips = 0`. Bản 5 gặp build cũ thì chỉ đọc. `normalizeQuests` xử lý đủ các trường hợp ở mục 4. Mã sao lưu giữ được nhiệm vụ.
+- [ ] Bản lưu hiện hành đọc lên bản lưu kế tiếp (bản N) với `sideQuests = {}`, `dataChips = 0`. Bản N gặp build cũ thì chỉ đọc. `normalizeQuests` xử lý đủ các trường hợp ở mục 4. Mã sao lưu giữ được nhiệm vụ.
 - [ ] Kiểm tra lúc nạp mục 3.4 bắt đúng từng lỗi (mỗi luật một test). Test bản đồ (dòng có * ở mục 2.8) chạy cho mọi bản đồ có vật nhiệm vụ.
 - [ ] Độ khó không đổi tiến độ, vị trí vật, luật đoạn thử, phần thưởng.
-- [ ] Chạy thử (quy tắc nhìn tận mắt, ảnh lưu ở `04-Dev-Plan/qa/<mã Story>/`) trên PC và điện thoại: HUD, thông báo xong, Bảng (bàn phím, tay cầm, chạm), màn Chuẩn bị, menu tạm dừng, Kết quả.
-- [ ] Duyệt màn: mọi vật và đoạn thử tới được bằng bộ động tác gốc, chỉ cần vũ khí chắc chắn đã có.
+- [ ] Chạy thử (quy tắc nhìn tận mắt, ảnh lưu ở `04-Dev-Plan/qa/<mã Story>/`) trên PC và điện thoại: HUD, Báo ngắn xong, Bảng (bàn phím, tay cầm, chạm), màn Chuẩn bị, menu tạm dừng, Kết quả.
+- [ ] Duyệt màn: mọi vật và đoạn thử tới được và hoàn thành được bằng bộ động tác gốc + Arc Cannon.
+- [ ] Hộp chữ: câu NOVA của nhiệm vụ ẩn khi Hướng dẫn hiện và hiện lại sau đó; Báo ngắn "Nhiệm vụ xong!" chờ câu NOVA; thời gian hiện theo QB-72 (test mang mã QB-70, QB-72).
 
 **Giả thuyết đo ở đợt thử MVP** (sự kiện M16; trước khi có M16 thì nhật ký chơi thử cục bộ) `[PLACEHOLDER]`:
 
@@ -483,53 +491,69 @@ Dùng ba bậc phản hồi của `ui.json → feedback`:
 
 ## 9. Thay đổi cần lan sang tài liệu khác (`/propagate-design-change`)
 
-Chưa áp dụng. Áp sau khi tài liệu này được duyệt.
+Tài liệu đã duyệt (bản 2, 14/11/2026). Bảng dưới theo bản 2; trưởng nhóm lan truyền, dòng đã áp có ghi rõ.
 
 | Tài liệu | Thay đổi |
 | --- | --- |
-| `03-Dac-ta-Hub-Shop.md` | **Mục 2 và 5:** tab Module mở khi nhận module đầu tiên (thay "sau boss 3"). **Mục 6:** sau boss 3 "Mira giao nhiệm vụ của 3 màn đã qua" (thay "màn 1–3", vì thứ tự màn tự do). **Mục 7:** module gắn theo `index` của màn; nhận và nhận thưởng tại Bảng; bản MVP mở Bảng từ menu (phím N); MVP chưa có bản đồ nhỏ nên thay bằng cột sáng, bộ đếm theo đoạn và radar Đầu Mk I; Gương Rối khác kẻ địch Gương Quang; Băng vỡ thêm thùng thuốc, Gió mất hướng thêm máy ghi; trỏ tài liệu này. **Mục 8:** nhóm "Nhiệm vụ và thành tựu" là `sideQuests` ở bản lưu 5 |
+| `03-Dac-ta-Hub-Shop.md` | **Mục 2 và 5:** tab Module mở khi nhận module đầu tiên (thay "sau boss 3"). **Mục 6:** sau boss 3 "Mira giao nhiệm vụ của 3 màn đã qua" (thay "màn 1–3", vì thứ tự màn tự do). **Mục 7:** module gắn theo `index` của màn; nhận và nhận thưởng tại Bảng; bản MVP mở Bảng từ menu (phím N); MVP chưa có bản đồ nhỏ nên thay bằng cột sáng, bộ đếm theo đoạn và radar Đầu Mk I; Gương Rối khác kẻ địch Gương Quang; Băng vỡ thêm thùng thuốc, Gió mất hướng thêm máy ghi; trỏ tài liệu này. **Mục 8:** nhóm "Nhiệm vụ và thành tựu" là `sideQuests` ở bản lưu kế tiếp (số phiên bản theo thứ tự merge) |
 | `02-Dac-ta-Prologue-Stage1.md` mục 3 | Dòng Hạt Giống: "chỉ xuất hiện khi nhiệm vụ đang làm; quy tắc đặt ở `15-Nhiem-vu-phu.md` mục 2.8" (thay "hiện trên bản đồ nhỏ sau khi nhận nhiệm vụ") |
 | `07-Kich-ban-huong-dan.md` | **Mục 2:** "Sau boss 3: Bảng Nhiệm Vụ"; tab Module khi nhận module đầu tiên. **R05:** câu thứ hai theo ba biến thể `introCache`. **D04:** kích hoạt khi nhận thưởng nhiệm vụ đầu tiên. Thêm trỏ tới câu NOVA của nhiệm vụ ở mục 6.5 |
 | `10-He-thong-RPG-Xuong.md` | **Mục 0, 2.2:** nguồn module là `quests.json` theo `index` của màn; tab Module mở khi nhận module đầu tiên. **Mục 2.3:** radar Đầu Mk I tính cả vật của nhiệm vụ đang làm |
-| `01-GDD-chinh.md` | **6.1:** EXP từ nhiệm vụ phụ là gián tiếp (kẻ địch trong lần chơi lại), `reward.exp = 0` ở MVP. **8.3:** thêm vào luật duyệt màn "mục tiêu nhiệm vụ chỉ cần Vine Lash và vũ khí của chính màn" |
-| `04-Can-bang-kinh-te.md` mục 5 | MVP có tối đa 4 Data Chip từ nhiệm vụ nhưng **chưa có chỗ tiêu** (skin Sử thi ở Alpha). Hiện số dư, câu Mira "giữ cho kỹ". Bản lưu 5 có `inventory.dataChips` |
-| `11-Do-kho.md` mục 3.1 | "Không nhân" thêm máu Gương Rối. Bỏ câu "Data Chip chưa có trong bản lưu" (bản 5 có). Tiến độ nhiệm vụ dùng chung mọi độ khó |
-| `03-Data/` | `quests.json` mới (mục 3.3). `ui.json → dialogue.speakers.mira = "Mira"`. `modules.json → name` (cùng `cost` ở ST-08-09). `stages.json` không đổi (`sideQuestId` đã khớp) |
+| `01-GDD-chinh.md` | **6.1** (đã áp): EXP từ nhiệm vụ phụ là gián tiếp (kẻ địch trong lần chơi lại), `reward.exp = 0` ở MVP. **8.3** (đã áp, sửa lại thành bộ động tác gốc + Arc Cannon): luật duyệt màn "mục tiêu nhiệm vụ phụ tới được bằng bộ động tác gốc + Arc Cannon, như mọi vật phẩm được lưu" |
+| `04-Can-bang-kinh-te.md` mục 5 | MVP có tối đa 4 Data Chip từ nhiệm vụ nhưng **chưa có chỗ tiêu** (skin Sử thi ở Alpha). Hiện số dư, câu Mira "giữ cho kỹ". Bản lưu kế tiếp có `inventory.dataChips` |
+| `11-Do-kho.md` mục 3.1 | "Không nhân" thêm máu Gương Rối. Bỏ câu "Data Chip chưa có trong bản lưu" (bản lưu kế tiếp có). Tiến độ nhiệm vụ dùng chung mọi độ khó |
+| `03-Data/` | `quests.json` mới (mục 3.3, không có `rules.toastSec`). `ui.json → dialogue.speakers` thêm `mira = "Mira"` và `kai = "Kai"` (hiện chỉ có `nova`). `modules.json → name` (cùng `cost` ở ST-08-09). `stages.json` không đổi (`sideQuestId` đã khớp) |
 | `game/maps/README.md` | Ba class `questItem`, `questTarget`, `questZone` (mục 2.8) |
-| `04-Dev-Plan/07-Ban-do-he-thong.md` | **Dòng "Nhiệm vụ phụ":** tài liệu "Đủ (trừ vị trí trên bản đồ)", trỏ tài liệu này. **Danh mục tên:** id nhiệm vụ `sq_*`, id vật `seed_1…5`, `mirror_1…6`, class Tiled, `sideQuests`, `inventory.dataChips`. **Sửa lệch tên phát hiện khi đối chiếu:** danh mục ghi `legs_mk1`, `stages.json` ghi `leg_mk1` và `leg_mk2` |
-| `04-Dev-Plan/02-Module.md` | Ghi nhiệm vụ phụ vào M7 (vật trong màn), M10 (Bảng), M11 (bản lưu 5); phân biệt với "nhiệm vụ ngày" của M13 |
-| `04-Dev-Plan/stories/ST-08-09-module-ket-giap.md` | Đổi chặn "Hệ thống nhiệm vụ phụ chưa có" thành "EP-18 (ST-18-01…06 không bị chặn)". Tab Module mở khi có module đầu tiên |
-| Đặc tả Stage 2–4 (chưa viết) | Ràng buộc ở mục 2.8: 6 Gương Rối của Prism; đoạn băng trượt của Cryo; đoạn gió của Cirrus với bệ mây là bục một chiều hoặc bệ di động và sàn an toàn bên dưới; câu `hint` của hai đoạn thử |
+| `04-Dev-Plan/07-Ban-do-he-thong.md` | **Dòng "Nhiệm vụ phụ":** tài liệu "Đủ (trừ vị trí trên bản đồ)", trỏ tài liệu này. **Danh mục tên:** id nhiệm vụ `sq_*`, id vật `seed_1…5`, `mirror_1…6`, class Tiled, `sideQuests`, `inventory.dataChips` |
+| `04-Dev-Plan/02-Module.md` | Ghi nhiệm vụ phụ vào M7 (vật trong màn), M10 (Bảng), M11 (bản lưu kế tiếp); phân biệt với "nhiệm vụ ngày" của M13 |
+| `04-Dev-Plan/stories/ST-08-09-module-ket-giap.md` | Đổi chặn "Hệ thống nhiệm vụ phụ chưa có" thành "EP-18 (ST-18-01…06 không chờ cổng; phụ thuộc ở mục 10)". Tab Module mở khi có module đầu tiên |
+| `16-Dac-ta-Stage2-4-nhap.md` | Ràng buộc ở mục 2.8: 6 Gương Rối của Prism (A 1, B 2, C 2, D 1, không trong phòng mini-boss); đoạn băng trượt của Cryo; đoạn gió của Cirrus vào từ cạnh bên, ra mép trên, bệ mây là bục một chiều hoặc bệ di động, sàn an toàn trong vùng; bộ động tác gốc + Arc Cannon. Câu `hint` của hai đoạn thử viết ở ST-18-08 |
 | `game/CONTEXT.md` | Khi code: quyết định và trạng thái module |
 
 ## 10. Story đề xuất: EP-18 Nhiệm vụ phụ Stage 1–4
 
 - **Quy ước:** như EP-08…10. Mỗi Story ≤ 2 ngày, một commit. Khi tách file Story, nhúng tóm tắt mục 2–4 liên quan vào phần `Bối cảnh & Thông số Kỹ thuật` (`rules/gdd-and-story-rules.md`). Story có hình ảnh phải có ảnh chạy thử.
-- **Cổng Prototype:** ST-18-01…06 không phụ thuộc thông số cảm giác, làm được ngay (thử trên phòng thử bằng `?debug=1&quest=<id>`). ST-18-07 và 08 bị chặn.
+- **Cổng Prototype:** ST-18-01…06 không phụ thuộc thông số cảm giác, không chờ cổng (thử trên phòng thử bằng `?debug=1&quest=<id>`), nhưng 01, 02, 05, 06 có phụ thuộc ở cột "Bị chặn bởi". ST-18-07 và 08 chờ cổng.
 
 | Mã | Tên | Phụ thuộc | Cỡ | Bị chặn bởi |
 | --- | --- | --- | --- | --- |
-| ST-18-01 | Dữ liệu `quests.json`, `core/quests-config.ts` (mục 3.4), `ui.json` thêm Mira, `STAGES_WITH_QUEST_DATA` | | 1 ngày | Không |
-| ST-18-02 | Bản lưu 5 (`sideQuests`, `inventory.dataChips`), nâng 4 → 5, `normalizeQuests`, các hàm thuần của mục 4, `questView` | 01 | 1 ngày | Không |
+| ST-18-01 | Dữ liệu `quests.json`, `core/quests-config.ts` (mục 3.4), `ui.json` thêm `mira` và `kai`, `STAGES_WITH_QUEST_DATA` | | 1 ngày | Danh mục module đã parse: `modules.json` hiện chỉ giữ thô (`raw`, `game/src/core/game-config.ts:116`), nên chưa kiểm được `reward.module` |
+| ST-18-02 | Bản lưu kế tiếp (`sideQuests`, `inventory.dataChips`), nâng N−1 → N, `normalizeQuests`, các hàm thuần của mục 4, `questView` | 01 | 1 ngày | Gộp với các trường MVP khác của cùng lần nâng, như `weaknessKnown` (QB-83); số phiên bản theo thứ tự merge (EP-16 có thể lấy số 5 trước) |
 | ST-18-03 | Vật nhiệm vụ trong màn: class `questItem`, `questTarget` (`tiled.ts`, `StageLayout`), `WorldSetup.quest`, sinh vật theo trạng thái, Gương Rối bằng `TrainingTarget`, `WorldEvents.questItem`, StageSave ghi ngay, test bản đồ (dòng *) | 02 | 1,5 ngày | Không |
-| ST-18-04 | Đoạn thử `questZone`: `QuestZoneRun` (mục 2.4), luật `pit`, `death`, `ground`, hủy và hỏng, ghi `done`, test bản đồ của đoạn thử | 03 | 1,5 ngày | Không |
-| ST-18-05 | Bảng Nhiệm Vụ (HTML, ADR-001) từ menu (phím N, nút, chấm báo): Nhận, Nhận thưởng qua `transact`, thoại Mira, R05 với `introCache`, `tutorial.done` | 02 | 2 ngày | Không. D04 chờ tab Module (ST-08-09) |
-| ST-18-06 | Hiển thị: `HudModel.quest`, bộ đếm theo đoạn, thông báo xong, câu NOVA ở hộp gợi ý, dòng ở màn Chuẩn bị, menu tạm dừng, Kết quả, Dữ liệu lưu | 03, 04 | 1 ngày | Không |
+| ST-18-04 | Đoạn thử `questZone`: `QuestZoneRun` (mục 2.4), luật `pit`, `death`, `ground`, hủy (đứng ra qua mép vào) và hỏng (nhảy, rơi ra), ghi `done`, test bản đồ của đoạn thử (cấm `enter: bottom`) | 03 | 1,5 ngày | Không |
+| ST-18-05 | Bảng Nhiệm Vụ (HTML, ADR-001) từ menu (phím N, nút, chấm báo): Nhận, Nhận thưởng qua `transact`, thoại Mira, R05 với `introCache` (R05 chỉ ở Story này, không ở EP-14), `tutorial.done` | 02 | 2 ngày | Menu và i18n của EP-14. D04 chờ tab Module (ST-08-09) |
+| ST-18-06 | Hiển thị: `HudModel.quest`, bộ đếm theo đoạn, Báo ngắn "Nhiệm vụ xong!", câu NOVA ở hộp "Câu NOVA nhiệm vụ phụ", dòng ở màn Chuẩn bị, menu tạm dừng, Kết quả, Dữ liệu lưu | 03, 04 | 1 ngày | Hàng đợi hộp chữ QB-70…72 (EP-14) |
 | ST-18-07 | Đặt 5 Hạt Giống lên bản đồ Stage 1 thật theo mục 2.8, duyệt màn, đo thời gian chuyến | 03, bản đồ Stage 1 | 0,5 ngày | **Cổng Prototype** (bản đồ Stage 1 chốt sau cổng) |
-| ST-18-08 | Nhiệm vụ Stage 2–4 trên bản đồ: 6 Gương Rối, đoạn băng trượt, đoạn gió; câu `hint`; chỉnh số | 03, 04, đặc tả và bản đồ Stage 2–4, boss Lumen, Cryo, Aeris | 1,5 ngày | **Cổng Prototype và đặc tả Stage 2–4** (cơ chế sàn trơn, băng vỡ, gió, bệ mây chưa có) |
+| ST-18-08 | Nhiệm vụ Stage 2–4 trên bản đồ: 6 Gương Rối, đoạn băng trượt, đoạn gió; câu `hint`; chỉnh số | 03, 04, bản đồ Stage 2–4 (ST-17-02…04 của `16-Dac-ta-Stage2-4-nhap.md`), boss Lumen, Cryo, Aeris | 1,5 ngày | **Cổng Prototype và EP-17** (sàn trơn, gió ở ST-15-08b chờ cổng; băng vỡ, bệ mây ở ST-15-08a) |
 | ST-18-09 | QA: luồng trọn (nhận → làm → chết → thoát → vào lại → xong → nhận thưởng) bằng test mô phỏng; chạy thử PC và điện thoại; ảnh bằng chứng | tất cả | 0,5 ngày | Phần Stage 2–4 chờ ST-18-08 |
 
-Thứ tự: 01 → 02 → 03 → 04 → 05 → 06, rồi 07 (sau cổng) và 08 (sau đặc tả Stage 2–4) → 09. Tổng khoảng 10,5 ngày, trong đó 8 ngày làm được ngay. Sau ST-18-02, ST-08-09 hết chặn vì "chưa có nguồn module". Module vẫn cần ST-08-09 để có tác dụng và được lắp.
+Thứ tự: 01 → 02 → 03 → 04 → 05 → 06, rồi 07 (sau cổng) và 08 (sau bản đồ Stage 2–4) → 09. Tổng khoảng 10,5 ngày, trong đó 8 ngày không chờ cổng (01…06, khi phụ thuộc ở cột "Bị chặn bởi" đã xong). Sau ST-18-02, ST-08-09 hết chặn vì "chưa có nguồn module". Module vẫn cần ST-08-09 để có tác dụng và được lắp.
 
 **Hoãn khỏi MVP:** nhiệm vụ Stage 5–8 (Alpha, cùng nội dung các màn); loại "giải cứu"; mục Nhiệm vụ trong Phòng Hồ Sơ và Bảng đi bộ trong Hub (Alpha); chấm trên bản đồ nhỏ; tiếng Anh; sự kiện đo lường (M16).
 
-## 11. Quyết định cần duyệt
+## 11. Quyết định đã duyệt (14/11/2026, ủy quyền)
 
-1. **Module theo `index` của màn** (Q1-a), ghi trong `quests.json`.
-2. **Vật nhiệm vụ chỉ xuất hiện khi đang làm** (Q2-a).
-3. **Nhận và nhận thưởng tại Bảng Nhiệm Vụ** mở từ menu (phím N) sau boss 3, trao thưởng bằng giao dịch nguyên tử; có thông báo, chấm báo và dòng nhắc (Q3-a).
-4. **Một cơ chế đoạn thử chung** với luật hỏng trong dữ liệu. Thùng thuốc và máy ghi gió là lý do trong truyện, chỉ là hình vẽ (Q4-a). "Sàn" là ô đặc; bục một chiều, bệ di động, bám tường đều được.
-5. **Không thưởng EXP ở MVP** (Q5-a).
-6. **Tab Module mở khi nhận module đầu tiên**; D04 chạy lúc nhận thưởng (Q6-b).
-7. **Tiến độ dùng chung mọi độ khó**, thưởng không nhân hệ số, không có bản Thử thách của nhiệm vụ (mục 2.7).
-8. **Bản lưu 5** với nhóm `sideQuests` và `inventory.dataChips`; vật lưu bằng id cố định (mục 4).
+1. **Duyệt.** Module theo `index` của màn (Q1-a), ghi trong `quests.json`.
+2. **Duyệt.** Vật nhiệm vụ chỉ xuất hiện khi đang làm (Q2-a).
+3. **Duyệt.** Nhận và nhận thưởng tại Bảng Nhiệm Vụ mở từ menu (phím N) sau boss 3, trao thưởng bằng giao dịch nguyên tử; có Báo ngắn, chấm báo và dòng nhắc (Q3-a).
+4. **Duyệt kèm luật hủy/hỏng mới.** Một cơ chế đoạn thử chung với luật hỏng trong dữ liệu. Thùng thuốc và máy ghi gió là lý do trong truyện, chỉ là hình vẽ (Q4-a). "Sàn" là ô đặc; bục một chiều, bệ di động, bám tường đều được. Ra qua mép vào khi đang đứng thì hủy, khi đang nhảy hoặc rơi thì hỏng; không có `enter: bottom` (mục 2.4, 2.8).
+5. **Duyệt: không thưởng EXP ở MVP** (Q5-a). `reward.exp = 0`, giữ đường cấp theo `expBudget` (GDD 10 mục 0).
+6. **Duyệt.** Tab Module mở khi nhận module đầu tiên; D04 chạy lúc nhận thưởng (Q6-b).
+7. **Duyệt.** Tiến độ dùng chung mọi độ khó, thưởng không nhân hệ số, không có bản Thử thách của nhiệm vụ (mục 2.7).
+8. **Duyệt kèm số bản lưu.** Bản lưu kế tiếp, số phiên bản theo thứ tự merge (EP-16 có thể lấy số 5 trước), gộp với `weaknessKnown` (QB-83); nhóm `sideQuests` và `inventory.dataChips`; vật lưu bằng id cố định (mục 4).
+
+## 12. Kết quả duyệt
+
+Duyệt độc lập 14/11/2026, người dùng giao toàn quyền nên trạng thái là "Approved (ủy quyền)".
+
+| Người duyệt | Điểm | Đã sửa |
+| --- | --- | --- |
+| Creative Director | Nhảy hoặc rơi ngược ra qua mép vào thành "hủy", lách được luật hỏng; Cirrus `enter: bottom` cho rơi ra cũng thành hủy | Mục 2.4, 2.8, 3.1, 5, 8: đứng thì hủy, nhảy hoặc rơi thì hỏng; Cirrus vào từ cạnh bên, ra mép trên, sàn an toàn trong vùng; test bản đồ cấm `enter: bottom` |
+| Creative Director | Luật vũ khí "Vine Lash và vũ khí của chính màn" lệch GDD chính 8.3 và `16-…` mục 0.2 | Mục 2.8, 8, 9: bộ động tác gốc + Arc Cannon |
+| Creative Director | Gương Rối "mỗi đoạn ≥ 1, B–C ≥ 2" chưa đủ rõ, có thể rơi vào phòng mini-boss | Mục 2.8: A 1, B 2, C 2, D 1; không gương nào trong phòng mini-boss |
+| Creative Director | Bảng 3.2 dùng cấp cận trên (4–7), lệch `expBudget` | Mục 3.2: cấp 4–6, chú thích theo `expBudget` GDD 10 mục 0 |
+| Technical Director + Producer | Câu NOVA và thông báo xong chưa có chỗ trong thứ tự hộp chữ; `toastSec` trùng thời gian đọc QB-72 | Mục 2.1, 3.3, 3.4, 4, 6.1, 7, 8: xếp theo QB-70, "Nhiệm vụ xong!" là Báo ngắn, bỏ `rules.toastSec` |
+| Technical Director + Producer | Số "bản lưu 5" có thể bị EP-16 lấy trước | Mục 4, 8, 9, 10, 11: bản lưu kế tiếp, số theo thứ tự merge |
+| Technical Director + Producer | `ui.json → dialogue.speakers` chỉ có `nova`, thiếu cả `kai` | Mục 3.4, 9, 10 |
+| Technical Director + Producer | "48 px" sai đơn vị; trỏ "đặc tả Stage 2–4 (chưa viết)"; ý sửa `legs_mk1` đã làm ở bản đồ hệ thống | Mục 6.2 (48 dp, QB-74); đầu file, 2.8, 9 trỏ `16-…`; bỏ ý `legs_mk1` |
+| Technical Director + Producer | Story thiếu phụ thuộc ẩn | Mục 10: ST-18-01 cần danh mục module đã parse; ST-18-02 gộp `weaknessKnown`; ST-18-05 cần menu, i18n EP-14, R05 chỉ ở đây; ST-18-06 cần hàng đợi QB-70…72 |

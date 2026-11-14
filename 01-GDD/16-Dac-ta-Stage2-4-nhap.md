@@ -2,7 +2,7 @@
 
 - **Mã hệ thống:** M5 (12 kẻ địch thường, trong đó 6 loại mới; 3 mini-boss), M6 (boss Lumen, Cryo, Aeris), M7 (màn và cơ chế môi trường Stage 2–4), vũ khí Prism Beam, Frost Shard, Gale Cutter.
 - **Phân loại:** Gameplay. **Ưu tiên:** MVP (P0).
-- **Trạng thái:** **Draft (14/11/2026), chưa duyệt.** Viết theo `04-Dev-Plan/07-Ban-do-he-thong.md` mục 2 dòng 5: cổng Prototype chưa qua nên chỉ viết phần không phụ thuộc cảm giác điều khiển. Cấu trúc theo `02-Dac-ta-Prologue-Stage1.md`, đầu mục theo mẫu `Game_Studio_Agent/templates/gdd-system-template.md`.
+- **Trạng thái:** **Bản 2, Approved (ủy quyền) 14/11/2026 sau duyệt Creative Director và Technical Director + Producer.** Người dùng giao toàn quyền; Q1–Q15 đã chốt ở mục 11, điểm duyệt và chỗ sửa ở mục 12. Phần `[SAU CỔNG]` vẫn chưa chốt số. Viết theo `04-Dev-Plan/07-Ban-do-he-thong.md` mục 2 dòng 5: cổng Prototype chưa qua nên chỉ viết phần không phụ thuộc cảm giác điều khiển. Cấu trúc theo `02-Dac-ta-Prologue-Stage1.md`, đầu mục theo mẫu `Game_Studio_Agent/templates/gdd-system-template.md`.
 - **Vai trò viết:** Level Designer (`level-designer`, `level-design`, `platformer`), Systems/AI lead (`game-ai`), Creative Director giữ trụ cột (`game-designer`).
 - **Phụ thuộc (upstream):** GDD chính mục 5.1, 7, 8, 9, 9.1; `11-Do-kho.md`; `10-He-thong-RPG-Xuong.md` mục 2.2–2.3; `03-Dac-ta-Hub-Shop.md` mục 7; `09-Thoai-Warden.md`; `08-Giong-nhan-vat.md`; `03-Data/{stages,bosses,enemies,weapons,player,difficulties,skills}.json`; wireframe `02-Wireframes/boards/Stage2.html`, `Stage3.html`, `Stage4.html`.
 - **Bị ảnh hưởng (downstream):** `enemies.json`, `bosses.json`, `weapons.json`, `stages.json`, `skills.json`, `tutorial.json`; EP-15 và EP-17 (Story ở mục 10); ST-08-09 (tab Module, Giáp đang bị chặn vì thiếu nội dung Stage 2–4).
@@ -59,10 +59,10 @@ Quy ước đo như Stage 1: 1 ô = 16 px, 1 màn hình = 20 × 12 ô, đấu tr
 | Két giáp (cần) | Thân Mk I `body_mk1` (Frost Shard) | Tay Mk I `arm_mk1` (Gale Cutter) | Chân Mk I `leg_mk1` (Quake Drill, Stage 5, Alpha) |
 | Memory Log | 2 | 3 | 4 |
 | Nhiệm vụ phụ | `sq_prism_institute` Gương rối | `sq_cryo_vault` Băng vỡ | `sq_cirrus_tower` Gió mất hướng |
-| Checkpoint (Thường) | 4 | 4 | 4 |
+| Checkpoint (Thường) | 5 (CP1–CP4, CP3b) | 5 | 5 |
 | Cấp khuyến nghị (đồng bộ cấp kẹp trong) | 4–7 (2–9) | 5–8 (3–10) | 7–10 (5–12) |
 | Core Bit (Thường, `coreBitBase`) | 300 | 375 | 450 |
-| EXP mục tiêu (Thường) | \~650 | \~700 | \~800 |
+| EXP của màn (Thường, `expBudget`) | 660 | 1.101 | 1.602 |
 
 Thứ tự chơi Stage 2–8 tự do. Đi theo khuyến nghị (2 → 3 → 4) thì luôn có vũ khí khắc chế ở lần đánh đầu: Vine Lash cho Lumen, Prism Beam cho Cryo, Frost Shard cho Aeris (GDD 7).
 
@@ -78,40 +78,54 @@ Thứ tự chơi Stage 2–8 tự do. Đi theo khuyến nghị (2 → 3 → 4) t
 | MDA | Stage 2 | Stage 3 | Stage 4 |
 | --- | --- | --- | --- |
 | Mechanics | Tia, gương, cảm biến, nhịp | Ma sát thấp, bục có hạn giờ | Lực ngoài ngang, bục một chiều |
-| Dynamics | Đọc đường tia trước khi đi; tự đổi góc gương để mở đường hoặc dội tia vào kẻ địch | Lên kế hoạch điểm dừng; không đứng yên trên băng nứt | Đi ngược gió theo nhịp; chọn thời điểm nhảy khi gió đổi |
+| Dynamics | Đọc đường tia trước khi đi; tự đổi góc gương để mở đường hoặc dội tia của Prism Sentinel về chính nó | Lên kế hoạch điểm dừng; không đứng yên trên băng nứt | Đi ngược gió theo nhịp; chọn thời điểm nhảy khi gió đổi |
 | Aesthetics | "À, thì ra thế" khi tia đi đúng đường | Căng thẳng có kiểm soát | Tự do, chóng mặt vừa phải |
 
 ## 2. Hệ thống dùng chung cho ba màn
 
 ### 2.1 Thưởng theo màn
 
-EXP mục tiêu chọn để người chơi đi theo khuyến nghị kết thúc mỗi màn ở **cấp khuyến nghị thấp của màn kế** (mốc EXP tích lũy theo `40 × L^1,4`, làm tròn từng cấp: cấp 6 tại 992, cấp 7 tại 1.483, cấp 8 tại 2.093).
+EXP của mỗi màn lấy đúng **`expBudget`** (GDD 10 mục 0, độ khó Thường): mỗi màn +2 cấp, cấp cuối Stage 2 / 3 / 4 là 6 / 8 / 10, nằm trong cấp khuyến nghị của màn kế. Mốc EXP tích lũy theo `40 × L^1,4`, làm tròn từng cấp: cấp 4 tại 332, cấp 6 tại 992, cấp 8 tại 2.093, cấp 10 tại 3.695. Hết MVP có (10 − 1) + 4 boss = 13 SP.
 
-| Sau màn | EXP tích lũy (Thường) | Cấp | Cấp khuyến nghị màn kế |
-| --- | --- | --- | --- |
-| Stage 1 | 348 | 4 | Stage 2: 4–7 |
-| Stage 2 | 997 | 6 | Stage 3: 5–8 |
-| Stage 3 | 1.701 | 7 | Stage 4: 7–10 |
-| Stage 4 | 2.505 | 8 | Stage 5: 8–12 |
+| Sau màn | EXP của màn (`expBudget`) | EXP tích lũy (Thường) | Cấp | Cấp khuyến nghị màn kế |
+| --- | --- | --- | --- | --- |
+| Stage 1 (gồm Prologue) | 332 | 332 | 4 | Stage 2: 4–7 |
+| Stage 2 | 660 | 992 | 6 | Stage 3: 5–8 |
+| Stage 3 | 1.101 | 2.093 | 8 | Stage 4: 7–10 |
+| Stage 4 | 1.602 | 3.695 | 10 | Stage 5: 8–12 |
 
-Tỷ lệ như Stage 1 (boss 34%, mini-boss 17%, kẻ địch thường 48%). Kẻ địch dùng lại giữ dữ liệu Stage 1, nên cần **hệ số thưởng theo màn** (trường mới `stages.json → enemyRewardMul`):
+Mốc tích lũy trùng đúng ngưỡng cấp: bỏ sót vài kẻ địch thì cuối màn thiếu vài EXP so với cấp mục tiêu; đồng bộ cấp (GDD chính 6.1) bù phần chênh.
+
+Kẻ địch dùng lại giữ dữ liệu Stage 1, nên cần **hệ số thưởng theo màn**, tách EXP và Core Bit (trường mới `stages.json → enemyRewardMul: {exp, coreBit}`, Q2):
 
 ```text
-thưởng kẻ địch = round(base × stage.enemyRewardMul × difficulty.rewardMul) ; base > 0 thì tối thiểu 1
-  base           : exp, coreBit trong enemies.json (bảng Stage 1 cùng bậc)
-  enemyRewardMul : round(0,48 × EXP mục tiêu màn / Σ base EXP kẻ địch đặt trên bản đồ, bước 0,05)
-                   Stage 1 = 1 (giữ nguyên); Stage 2 = 1,8; Stage 3 = 1,9; Stage 4 = 2,0
-                   Tính lại khi chốt bản đồ [SAU CỔNG] vì số kẻ địch đổi theo bố cục.
-  Không nhân     : mini-boss, boss (thưởng ghi thẳng trong dữ liệu), rương (bù phần còn lại của coreBitBase)
+thưởng kẻ địch = round(base × stage.enemyRewardMul.exp|coreBit × difficulty.rewardMul) ; base > 0 thì tối thiểu 1
+  base                   : exp, coreBit trong enemies.json (bảng Stage 1 cùng bậc)
+  enemyRewardMul.exp     : (expBudget − EXP mini-boss − EXP boss) / Σ base EXP kẻ địch đặt trên bản đồ, bước 0,05
+                           Stage 1 = 1; Stage 2 = 309 / 172 → 1,8; Stage 3 = 528 / 176 = 3,0; Stage 4 = 768 / 192 = 4,0
+  enemyRewardMul.coreBit : Stage 1 = 1; Stage 2 = 1,8; Stage 3 = 1,9; Stage 4 = 2,0 (như bản 1)
+                           rương bù phần còn lại của coreBitBase
+  Không nhân             : mini-boss, boss (thưởng ghi thẳng trong dữ liệu), rương
+  Tính lại cả hai khi chốt bản đồ [SAU CỔNG] vì số kẻ địch đổi theo bố cục.
 ```
+
+| Màn | Kẻ địch thường (`exp`) | Mini-boss | Boss | Tổng = `expBudget` |
+| --- | --- | --- | --- | --- |
+| Stage 2 | 309 (× 1,8) | Prism Sentinel 110 | Lumen 241 | 660 |
+| Stage 3 | 528 (× 3,0) | Frost Titan 185 | Cryo 388 | 1.101 |
+| Stage 4 | 768 (× 4,0) | Gale Roc 270 | Aeris 564 | 1.602 |
+
+- **Cách tính:** EXP kẻ địch làm tròn **từng con** rồi cộng (bảng 3.4, 4.4, 5.4). Stage 2: 172 × 1,8 = 309,6, nhưng làm tròn từng con (11, 18, 14, 25) ra 309, nên tổng khớp đúng 660. Stage 3, 4 không có số lẻ.
+- Tỷ lệ gần Stage 1: boss khoảng 35–37%, mini-boss khoảng 17%, kẻ địch thường khoảng 47–48%.
+- **Kiểm tra lúc nạp** (`core/`, cho màn đã có bản đồ): Σ EXP Thường của màn (kẻ địch trên bản đồ theo `enemyRewardMul.exp`, cộng mini-boss và boss) = `expBudget` ± 5%. Sai thì dừng ở màn tải như mọi lỗi dữ liệu.
 
 Giá trị biên (Lính Kén, base 14 EXP / 6 Core Bit):
 
-| Kịch bản | Đầu vào | EXP / Core Bit | Ghi chú |
+| Kịch bản | Đầu vào (EXP; Core Bit) | EXP / Core Bit | Ghi chú |
 | --- | --- | --- | --- |
-| Stage 1, Cốt truyện | 14 × 1 × 0,5 | 7 / 3 | Như hiện nay |
-| Stage 2, Thường | 14 × 1,8 × 1 | 25 / 11 | |
-| Stage 4, Thử thách | 14 × 2,0 × 1,5 | 42 / 18 | Lớn nhất trong MVP; không tràn |
+| Stage 1, Cốt truyện | 14 × 1 × 0,5; 6 × 1 × 0,5 | 7 / 3 | Như hiện nay |
+| Stage 2, Thường | 14 × 1,8; 6 × 1,8 | 25 / 11 | |
+| Stage 4, Thử thách | 14 × 4,0 × 1,5; 6 × 2,0 × 1,5 | 84 / 18 | Lớn nhất trong MVP; không tràn |
 
 Bậc base của kẻ địch mới lấy theo kẻ địch Stage 1 cùng vai trò: bay nhỏ = Drone Lính (3 máu, 6 EXP, 2 Core Bit) hoặc Bướm Sắt (2 máu, 8, 3); tháp/bộ binh không khiên = Tháp Gai (6 máu, 10, 4).
 
@@ -120,9 +134,9 @@ Bậc base của kẻ địch mới lấy theo kẻ địch Stage 1 cùng vai tr
 | Thông số | Thorna (đã có) | Lumen | Cryo | Aeris | Quy tắc |
 | --- | --- | --- | --- | --- | --- |
 | `hp` (Thường) | 250 | 280 | 300 | 320 | Nhân `enemyHp`: Lumen 224 / 280 / 350; Cryo 240 / 300 / 375; Aeris 256 / 320 / 400 |
-| Sát thương đòn lớn nhất `maxAttackDamage` | 18 | 20 | 22 | 24 | `18 + 2 × (n − 1)` với n là số màn. Thử thách × 1,5: 30 / 33 / 36 < 100 |
-| Thưởng lần đầu (Thường) | 120 EXP, 80 Core Bit | 230, 110 | 250, 140 | 280, 160 | Nhân `rewardMul` theo cặp (boss, độ khó); thêm 1 SP và vũ khí một lần mỗi boss |
-| Thời gian thắng mục tiêu | 60–90 s | 60–90 s | 60–90 s | 75–105 s | Aeris bay, ít cửa sổ đứng yên hơn |
+| Sát thương đòn lớn nhất `maxAttackDamage` | 18 | 20 | 22 | 24 | `18 + 2 × (n − 1)` với n là số màn (Q5). Thử thách × 1,5: 30 / 33 / 36 < 100 |
+| Thưởng lần đầu (Thường) | 120 EXP, 80 Core Bit | 241, 110 | 388, 140 | 564, 160 | EXP theo `expBudget` (mục 2.1). Nhân `rewardMul` theo cặp (boss, độ khó); thêm 1 SP và vũ khí một lần mỗi boss |
+| Thời gian thắng mục tiêu | 45–65 s (250 máu, `02` mục 5) | 60–90 s | 60–90 s | 75–105 s | Aeris bay, ít cửa sổ đứng yên hơn |
 
 - **Kiểm chứng HP bằng mô phỏng, không tính tay** (như Thorna, `game/tests/power-cap.test.ts`): bot không né, bắn liên tục, **thua** ở cấp khuyến nghị cao (7 / 8 / 10) kể cả build Core đủ bậc; bot bắn 50–75% thời gian thắng trong khoảng mục tiêu. Ước lượng trước mô phỏng: Lumen 280 máu, cấp 5 (công ×1,08), Arc Cannon 7,5 phát/s, bắn 50–75% thời gian → 46–69 s chưa trừ lúc Lumen dịch chuyển.
 - **Không chồng hai đòn ở pha 1.** Mọi đòn dùng ở pha 3 có `telegraphSec ≥ 0,6` để chia 1,2 vẫn ≥ 0,5 s.
@@ -135,30 +149,48 @@ Bậc base của kẻ địch mới lấy theo kẻ địch Stage 1 cùng vai tr
 
 ```text
 ngân sách = floor(energyMax / energyCostOf28) × damageMul × hitsPerUse        mục tiêu 14 ± 15%
-  energyMax = 28 ; vs boss yếu: × damageVsWeak 2,5 (≈ 35 sát thương, 11–12,5% máu boss), mỗi trúng choáng weakStunSec 0,5 s
+  energyMax = 28 ; vs boss yếu: × damageVsWeak 2,5 (≈ 35 sát thương, 11–12,5% máu boss)
+  trúng điểm yếu: choáng weakStunSec 0,5 s, rồi weakStunCooldownSec 1,5 s không choáng lại (QB-14)
+
+sức mạnh khắc chế = damageMul × trúng mỗi lần × damageVsWeak (2,5) / cooldownSec ≥ 12 sát thương/s
+  (≈ 1,6 × Arc Cannon 7,5 phát/s); kiểm lúc nạp cho vũ khí có boss yếu trong các màn đã có dữ liệu boss
 ```
 
-| Vũ khí | `energyCostOf28` | Số lần / thanh | `damageMul` | Trúng / lần | Ngân sách | Vs boss yếu |
-| --- | --- | --- | --- | --- | --- | --- |
-| Vine Lash (đã có) | 4 | 7 | 2 | 1 | 14 | 35 (Lumen 280: 12,5%) |
-| Prism Beam | 3 | 9 | 1,5 | 1 mỗi mục tiêu (xuyên) | 13,5 | 33,75 (Cryo 300: 11,3%) |
-| Frost Shard | 4 | 7 | 2 | 1 | 14 | 35 (Aeris 320: 10,9%) |
-| Gale Cutter | 4 | 7 | 1 | 2 (đi và về) | 14 | Terra (Alpha) |
+| Vũ khí | `energyCostOf28` | Số lần / thanh | `damageMul` | Trúng / lần | Ngân sách | Vs boss yếu | `cooldownSec` → sức mạnh khắc chế |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Vine Lash (đã có) | 4 | 7 | 2 | 1 | 14 | 35 (Lumen 280: 12,5%) | 0,35 → 14,3/s |
+| Prism Beam | 3 | 9 | 1,5 | 1 mỗi mục tiêu (xuyên) | 13,5 | 33,75 (Cryo 300: 11,3%) | **0,3** → 12,5/s (bản 1: 0,45 → 8,3/s, không đạt) |
+| Frost Shard | 4 | 7 | 2 | 1 | 14 | 35 (Aeris 320: 10,9%) | 0,4 → 12,5/s |
+| Gale Cutter | 4 | 7 | 1 | 2 (đi và về) | 14 | Terra (Alpha) | Không có `cooldownSec` (`maxOnScreen = 1`, một lượt ≈ 1,1 s → ≈ 4,6/s); kiểm khi làm Terra (Alpha) |
+
+Thời gian hồi bắn 0,3–0,4 s ngắn hơn `weakStunSec` 0,5 s, nên bắn liên tục sẽ khóa choáng boss. Vì vậy `weakStunCooldownSec` (QB-14, ST-15-14) là điều kiện của mọi vũ khí khắc chế.
 
 Giá trị biên: Weapon Mastery tối đa (endgame, ngoài MVP: +30% sát thương, −20% tiêu hao) → Prism Beam floor(28 / 2,4) × 1,95 = 21,5; không ảnh hưởng cốt truyện. Chi tiết hành vi từng vũ khí ở mục 3.7, 4.7, 5.7.
 
 ### 2.4 Checkpoint theo độ khó
 
-Theo `11-Do-kho.md` mục 2.4: Thường có CP1–CP4 (cuối A, cuối B, trước mini-boss, trước cửa boss); Thử thách bỏ CP1 (`difficulties: "story,normal"`); Cốt truyện thêm 1 checkpoint `difficulties: "story"` giữa mỗi đoạn dài hơn 1,5 phút (90 s; sửa theo `11-Do-kho.md` mục 2.4 sau rà soát 14/11/2026), nên mọi đoạn \~2,5 phút của Stage 2–4 đều có checkpoint Cốt truyện ở giữa. Ràng buộc kiểm bằng test khi có bản đồ:
+Theo `11-Do-kho.md` mục 2.4 và QB-111 (khoảng giữa hai điểm hồi sinh: Cốt truyện ≤ 90 s, Thường ≤ 150 s, Thử thách ≤ 270 s chơi liên tục):
+
+- **Thường:** CP1–CP4 (cuối A, cuối B, trước mini-boss, trước cửa boss) và **CP3b ở cửa ra phòng mini-boss** (`difficulties: "story,normal"`), ở cả ba màn. Không có CP3b thì CP3 → CP4 (mini-boss + D) dài 3,0–4,0 phút, vượt 150 s.
+- **Thử thách:** bỏ CP1 và CP3b (cả hai `difficulties: "story,normal"`).
+- **Cốt truyện:** thêm 1 checkpoint `difficulties: "story"` giữa mỗi đoạn dài > 90 s (sửa theo `11-Do-kho.md` mục 2.4 sau rà soát 14/11/2026): giữa B, C và D ở cả ba màn. Stage 2 thêm CP-S3 giữa D (D dài 2,0 phút).
+
+Ràng buộc kiểm bằng test khi có bản đồ (`stages.json → checkpointMaxGapSec`, QB-111):
 
 ```text
-khoảng Thử thách(i) = Σ thời lượng giữa hai điểm hồi sinh liền nhau ở Thử thách ≤ 4,5 phút
-  Stage 2: xuất phát→CP2 4,0 ; CP2→CP3 2,0 ; CP3→CP4 3,0 (mini-boss 1,0 + D 2,0)
-  Stage 3: 4,0 ; 2,0 ; 3,5
-  Stage 4: 4,0 ; 1,5 ; 4,0
+khoảng(i) = thời lượng giữa hai điểm hồi sinh liền nhau ở độ khó đó (phút)
+Thường ≤ 2,5 :   xuất phát→CP1 ; CP1→CP2 ; CP2→CP3 ; CP3→CP3b ; CP3b→CP4
+  Stage 2:       1,5 ; 2,5 ; 2,0 ; 1,0 ; 2,0
+  Stage 3:       1,5 ; 2,5 ; 2,0 ; 1,0 ; 2,5
+  Stage 4:       1,5 ; 2,5 ; 1,5 ; 1,5 ; 2,5
+Thử thách ≤ 4,5 : xuất phát→CP2 ; CP2→CP3 ; CP3→CP4
+  Stage 2:       4,0 ; 2,0 ; 3,0 (mini-boss 1,0 + D 2,0)
+  Stage 3:       4,0 ; 2,0 ; 3,5
+  Stage 4:       4,0 ; 1,5 ; 4,0
 ```
 
-Thời lượng đoạn là `[SAU CỔNG]`; nếu chơi thử làm A + B vượt 4,5 phút thì rút ngắn A hoặc B, không thêm CP1 vào Thử thách.
+- Đoạn B (cả ba màn) và D (Stage 3, 4) dài 2,5 phút, chạm đúng trần Thường: chơi thử làm dài hơn thì rút ngắn đoạn, không thêm checkpoint Thường giữa đoạn.
+- Thời lượng đoạn là thời gian thiết kế, `[SAU CỔNG]` (Q15). Đợt thử MVP đo **trung vị thời gian thật** giữa hai điểm hồi sinh; khoảng nào vượt trần (Thử thách: 4,5 phút) thì rút ngắn A hoặc B, không thêm CP1 vào Thử thách.
 
 ### 2.5 Dùng lại code có sẵn
 
@@ -174,7 +206,7 @@ Hành vi kẻ địch có: `drone`, `turret`, `butterfly`, `shieldCharger`, `gol
 | Cối Xoáy | nhịp của `turret`, `WindZone` của màn | hành vi `fan` | Vừa |
 | Drone Lính, Bướm Sắt, Lính Kén | nguyên id, nguyên bản Thử thách | Không | — |
 | Frost Titan | `golem` | `bombs.landShockwave` (bản Thử thách) | Nhỏ |
-| Prism Sentinel, Gale Roc | lớp `Boss` (2 pha) nếu chọn phương án ở Câu hỏi mở 1 | `beam`, `dive`, chạy trong phòng khóa | Vừa |
+| Prism Sentinel, Gale Roc | lớp `Boss` (2 pha), Q1 đã chốt | `beam`, `dive`, bộ chuyển để `LockedRoom` đếm được | Vừa |
 | Lumen | `shot`, `roots`, `rain` | `beam`, `focus` (= `stalk` đánh dấu tại tâm Kai), dịch chuyển giữa điểm neo | Vừa |
 | Cryo | `shot`, `charge`, `slam`, `bloom` | `slam.slickFloorSec`, `shatter` | Vừa |
 | Aeris | `shot`, `charge`, `rain` | di chuyển bay, `shot.aim`, `gust`, `twister` (dựa trên sóng đất của `slam`), lực hút | Lớn |
@@ -201,7 +233,7 @@ Viện quang học từng phát bản tin cho cả Nova Prime, nay chìm trong �
 | --- | --- | --- | --- | --- | --- | --- |
 | **A. Lối vào** | \~1,5 phút / 6 màn hình `[SAU CỔNG]` | Tia bị khối đặc chặn: nấp sau khối để qua tháp laser; laser luôn bật là "tường sáng" không đi xuyên. Sàn an toàn, không hố chết | Gương Quang ×2, Bướm Sắt ×2 | Laser luôn bật, khối chắn | 0,3 | CP1 cuối đoạn |
 | **B. Phòng gương** | \~2,5 phút / 10 màn hình | Đổi góc gương bằng đạn nạp vừa để đưa tia vào cảm biến mở cửa; mỗi câu đố ≤ 2 gương, cả đường tia nằm gọn 1 màn hình | Tháp Laser ×3, Gương Quang ×2, Bướm Sắt ×1 | Gương 2 góc, cảm biến quang | 0,5 | CP2 cuối đoạn |
-| **C. Phòng khóa** | \~3 phút (2 phút + mini-boss 1 phút) / 8 màn hình | Chiến đấu trong phòng có laser theo nhịp; mini-boss kiểm tra việc đọc tia phản xạ | Lính Kén ×2, Gương Quang ×2, Tháp Laser ×1, Prism Sentinel | Laser theo nhịp | 0,7 (mini-boss 0,8) | CP3 trước mini-boss |
+| **C. Phòng khóa** | \~3 phút (2 phút + mini-boss 1 phút) / 8 màn hình | Chiến đấu trong phòng có laser theo nhịp; mini-boss kiểm tra việc đọc tia phản xạ | Lính Kén ×2, Gương Quang ×2, Tháp Laser ×1, Prism Sentinel | Laser theo nhịp | 0,7 (mini-boss 0,8) | CP3 trước mini-boss; CP3b ở cửa ra phòng mini-boss |
 | **D. Hành lang tổng hợp** | \~2 phút / 7 màn hình | Gương xoay + laser theo nhịp + kẻ địch; câu đố ≤ 3 gương | Gương Quang ×2, Tháp Laser ×1, Bướm Sắt ×1, Lính Kén ×1 | Không có cơ chế mới | 0,6 | CP4 trước cửa boss |
 | **Phòng boss** | \~2 phút / 24 × 12 ô | Lumen | Lumen | Không | 1,0 | Hồi sinh trong phòng boss, kẻ địch phụ không hồi |
 
@@ -216,7 +248,7 @@ Sau mỗi checkpoint có một khoảng nghỉ 10–15 s không kẻ địch (c�
 | Laser luôn bật | Không bao giờ là lối bắt buộc phải đi xuyên. Dùng làm tường sáng hoặc nguồn cho câu đố gương | `laser.damage = 20`, `laser.beamWidthPx = 4`, `laser.knockbackTilesPerSec = 5` |
 | Laser theo nhịp | Chu kỳ `periodSec`, bật `onSec`; trước khi bật, vạch mảnh 1 px nhấp nháy `warnSec`. `phase` (0–1) ghi trên bản đồ để so le nhiều nguồn | `laser.pulse.periodSec = 3,0`, `onSec = 1,2`, `warnSec = 0,5` (cửa sổ qua = 1,3 s, độ rộng tia cần qua `[SAU CỔNG]`) |
 | Trúng laser | Mất `laser.damage` × `damageTaken`, bất tử 1,0 s như bị đánh. **Tia theo nhịp:** bật lùi vuông góc ra khỏi tia, mỗi lần bật trúng mỗi mục tiêu tối đa 1 lần (`laser.hitsPerActivation = 1`). **Tia luôn bật:** xử lý như gai, đưa về ô an toàn gần nhất (Kai không thể bị kẹt trong tia) | Thường 20, Thử thách 30, Cốt truyện 10 |
-| Laser và kẻ địch | Laser môi trường gây `laser.enemyDamage = 2` mỗi lần bật cho kẻ địch thường (dụ Lính Kén vào tia); không gây cho Tháp Laser và mini-boss, boss | `laser.hurtsEnemies = true` |
+| Laser và kẻ địch | Laser môi trường **không** gây sát thương kẻ địch (Q6, cho đơn giản ở MVP); tia đi xuyên kẻ địch như không có | `laser.hurtsEnemies = false` |
 | Gương | 2 góc (45° "/", 135° "\"), phản xạ cả hai mặt. **Đổi góc bằng đạn nạp vừa trở lên** của Kai (giữ bắn ≥ 0,5 s); đạn thường bị gương hấp thụ, không đổi góc, để tự bắn trên cảm ứng không xoay nhầm. Prism Beam phản xạ, không đổi góc | `mirror.toggleMinCharge = "mid"`, `mirror.rotateSec = 0,25`, `mirror.maxBounces = 4` |
 | Vị trí gương | Đặt ở độ cao Kai bắn tới được khi đứng hoặc nhảy (Arc Cannon bắn ngang) | `[SAU CỔNG]` |
 | Cảm biến quang | Nhận tia liên tục `holdSec` thì mở cửa liên kết **vĩnh viễn trong lượt chơi** (không đóng lại, tránh kẹt). Hồi sinh ở checkpoint: gương về góc ban đầu, cửa đã mở vẫn mở | `sensor.holdSec = 0,3` |
@@ -226,7 +258,7 @@ Tương tác hệ thống: laser môi trường là **mối nguy môi trường*
 
 ### 3.4 Kẻ địch thường
 
-HP tính bằng phát Arc Cannon gốc; sát thương tính bằng máu (100 ở cấp 1). EXP và Core Bit ghi base (bậc Stage 1) và giá trị Thường sau `enemyRewardMul = 1,8`.
+HP tính bằng phát Arc Cannon gốc; sát thương tính bằng máu (100 ở cấp 1). EXP và Core Bit ghi base (bậc Stage 1) và giá trị Thường sau `enemyRewardMul = {exp: 1,8, coreBit: 1,8}`.
 
 | Kẻ địch (`id`) | Vai trò | HP | Sát thương | Hành vi | Telegraph | EXP base → Thường | Core Bit base → Thường | Bản Thử thách |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -268,7 +300,7 @@ Lăng kính hộ vệ lơ lửng cao 3 ô `[SAU CỔNG]` trong phòng khóa 20 �
 | `idleSec` | 0,9 |
 | Điểm yếu | **Vine Lash:** 2,5× sát thương, choáng 0,5 s ("dây leo che gương") |
 | Thắng chỉ bằng Arc Cannon | Có, 60–90 s |
-| Phần thưởng | Prism Beam, 230 EXP, 110 Core Bit, 1 SP |
+| Phần thưởng | Prism Beam, 241 EXP, 110 Core Bit, 1 SP |
 
 | Pha | Ngưỡng | Đòn (`id`) | Dùng lại | Telegraph | Sát thương | Cách né |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -302,9 +334,10 @@ Pha 2 Thử thách: `shot, beam, focus, roots`. Pha 3 Thử thách: `beam, focus
 | Mục | Đề xuất `[PLACEHOLDER]` |
 | --- | --- |
 | `behavior.type` | `beam` (mới): tia tức thời đi theo `LaserPath` |
-| Thông số | `rangeTiles = 12` (tổng chiều dài kể cả đoạn sau gương), `widthPx = 4`, `activeSec = 0,12`, `cooldownSec = 0,45`, `damageMul = 1,5`, xuyên mọi kẻ địch trên đường (mỗi mục tiêu trúng 1 lần mỗi tia), `maxBounces = 3` |
+| Thông số | `rangeTiles = 12` (tổng chiều dài kể cả đoạn sau gương), `widthPx = 4`, `activeSec = 0,12`, `cooldownSec = 0,3`, `damageMul = 1,5`, xuyên mọi kẻ địch trên đường (mỗi mục tiêu trúng 1 lần mỗi tia), `maxBounces = 3` |
+| Gặp khiên | Trúng mặt trước khiên Lính Kén thì tia **dừng** ở khiên, tính 1 lần `shieldHits`, không xuyên (QB-16, QB-18). Trúng từ sau lưng thì xuyên như thường |
 | Năng lượng | `energyCostOf28 = 3` (9 lần mỗi thanh) |
-| Điểm yếu | Cryo (`damageVsWeak = 2,5`, `weakStunSec = 0,5`): "tia sáng nung chảy băng" |
+| Điểm yếu | Cryo (`damageVsWeak = 2,5`, `weakStunSec = 0,5`): "tia sáng nung chảy băng". Sức mạnh khắc chế 1,5 × 1 × 2,5 / 0,3 = 12,5/s ≥ 12 (mục 2.3). Hồi bắn 0,3 s ngắn hơn `weakStunSec`, nên cần `weakStunCooldownSec` (QB-14) |
 | Khám phá | Đốt rễ khô chắn Két giáp Stage 1 (`Barrier` cần nhận tia, không chỉ đạn); dội qua gương Stage 2 vào cảm biến đặt ngoài tầm Arc Cannon (lối tắt Core Bit khi quay lại) |
 | Không làm | Không đổi góc gương; tia không gây sát thương cho Kai khi dội về |
 
@@ -315,7 +348,7 @@ Pha 2 Thử thách: `shot, beam, focus, roots`. Pha 3 Thử thách: `beam, focus
 | Két giáp: Thân Mk I (`body_mk1`, `damageTakenMul = 0,85`) | Phòng máy làm lạnh, đoạn D | Cần **Frost Shard** (Stage 3): bắn vào dòng chất làm mát chảy dọc (`CoolantFlow`, không có va chạm, vô hại) thì đông thành 3 bậc đứng được (`coolant.frozenSteps = 3`) trong lượt chơi đó. Chưa có Frost Shard: biểu tượng khóa trên két, gợi ý D02 |
 | Memory Log 2 | Nhánh phụ đoạn B | Câu đố 2 gương phụ, chỉ cần Arc Cannon |
 | Rương Core Bit (+30, tính trong 30 Core Bit rương của màn) | Đoạn A | Lướt qua khe laser theo nhịp |
-| Nhiệm vụ phụ "Gương rối" (`sq_prism_institute`) | 6 **Gương Rối** (`questTarget`, `hp = 2`): mỗi đoạn A–D ≥ 1, đoạn B–C ≥ 2; tím, nứt, không xoay được, **không nằm trên đường tia của câu đố** | Chỉ tham chiếu `15-Nhiem-vu-phu.md` (Draft, mục 2–3): phá 6 gương → 1 Data Chip + module Last Stand; đếm tích lũy theo id gương đã phá, lưu như bí mật |
+| Nhiệm vụ phụ "Gương rối" (`sq_prism_institute`) | 6 **Gương Rối** (`questTarget`, `hp = 2`): **A 1, B 2, C 2, D 1**, không gương nào trong phòng mini-boss; tím, nứt, không xoay được, **không nằm trên đường tia của câu đố** | Chỉ tham chiếu `15-Nhiem-vu-phu.md` (bản 2, Approved, mục 2–3): phá 6 gương bằng bộ động tác gốc + Arc Cannon → 1 Data Chip + module Last Stand; đếm tích lũy theo id gương đã phá, lưu như bí mật |
 
 ### 3.9 Checkpoint theo độ khó
 
@@ -326,6 +359,8 @@ Pha 2 Thử thách: `shot, beam, focus, roots`. Pha 3 Thử thách: `beam, focus
 | CP2 | Cuối B | Có | Có | Có | (không ghi) |
 | CP-S2 | Giữa C, trước phòng khóa 1 (\~1 phút) | Có | Không | Không | `"story"` |
 | CP3 | Trước mini-boss | Có | Có | Có | (không ghi) |
+| CP3b | Cửa ra phòng mini-boss | Có | Có | Không | `"story,normal"` |
+| CP-S3 | Giữa D (\~1 phút) | Có | Không | Không | `"story"` |
 | CP4 | Trước cửa boss | Có | Có | Có | (không ghi) |
 
 ### 3.10 Lời NOVA dạy cơ chế (nháp, vào `tutorial.json` sau cổng)
@@ -379,7 +414,7 @@ Trạm lạnh chứa hạt giống, thuốc và lương thực dự trữ của 
 | --- | --- | --- | --- | --- | --- | --- |
 | **A. Lối vào** | \~1,5 phút / 6 màn hình `[SAU CỔNG]` | Sàn trơn: tăng tốc và dừng chậm; nhảy từ băng giữ đà ngang. Hố chỉ sâu 1 tầng có sàn đỡ, không hố chết | Người Tuyết Máy ×2, Drone Lính ×2 | Sàn trơn | 0,3 | CP1 cuối đoạn |
 | **B. Kho đông** | \~2,5 phút / 9 màn hình | Băng vỡ sau 1 s đứng: chuỗi bục không được dừng; gai băng dưới chuỗi bục | Tháp Băng ×2, Drone Lính ×2, Người Tuyết Máy ×1 | Băng vỡ, gai băng | 0,5 | CP2 cuối đoạn |
-| **C. Phòng khóa** | \~3 phút (2 + mini-boss 1) / 8 màn hình | Mở đầu bằng đoạn trượt (đoạn thử nhiệm vụ "Băng vỡ", ngay sau CP2); rồi chiến đấu trên nền trơn một phần | Lính Kén ×2, Người Tuyết Máy ×1, Tháp Băng ×1, Frost Titan | Không | 0,7 (0,8) | CP3 trước mini-boss |
+| **C. Phòng khóa** | \~3 phút (2 + mini-boss 1) / 8 màn hình | Mở đầu bằng đoạn trượt (đoạn thử nhiệm vụ "Băng vỡ", ngay sau CP2); rồi chiến đấu trên nền trơn một phần | Lính Kén ×2, Người Tuyết Máy ×1, Tháp Băng ×1, Frost Titan | Không | 0,7 (0,8) | CP3 trước mini-boss; CP3b ở cửa ra phòng mini-boss |
 | **D. Đường trượt** | \~2,5 phút / 9 màn hình | Trơn + băng vỡ + lướt | Người Tuyết Máy ×1, Tháp Băng ×1, Drone Lính ×1, Lính Kén ×2 | Không có cơ chế mới | 0,6 | CP4 trước cửa boss |
 | **Phòng boss** | \~2 phút / 24 × 12 ô | Cryo | Cryo | Không | 1,0 | Trong phòng boss |
 
@@ -396,16 +431,16 @@ Trạm lạnh chứa hạt giống, thuốc và lương thực dự trữ của 
 
 ### 4.4 Kẻ địch thường
 
-`enemyRewardMul = 1,9`.
+`enemyRewardMul = {exp: 3,0, coreBit: 1,9}`.
 
 | Kẻ địch (`id`) | Vai trò | HP | Sát thương | Hành vi | Telegraph | EXP base → Thường | Core Bit base → Thường | Bản Thử thách |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Người Tuyết Máy (`nguoi_tuyet_may`) | Bộ binh, dạy nhảy qua khi không dừng được | 6 | 12 | `shieldCharger` với `shieldHits = 0`: tuần 0,8 ô/s, thấy Kai cùng tầng trong 6 ô thì **trượt bụng** 5 ô với 8 ô/s, hồi 1,2 s, không trượt khỏi mép | Co người, phả hơi 0,5 s | 10 → 19 | 4 → 8 | **Trượt Dội:** `chainDashes = 2`, báo trước mỗi lần dội 0,45 s (3 chấm báo nhịp) |
-| Tháp Băng (`thap_bang`) | Tháp, dạy đứng ngoài điểm rơi | 6 | 10 | `turret` (chu kỳ 2,6 s, 2 mảnh) với đạn `lob`: bắn chếch lên 50°, rơi theo trọng lực 20 ô/s², **nhắm theo khoảng cách** để mảnh 1 rơi đúng chỗ Kai lúc hết báo trước, mảnh 2 xa hơn 2 ô; tầm tối đa 9 ô. Mảnh vỡ khi chạm sàn | Tháp đóng băng, sáng xanh 0,6 s; vệt đổ bóng ở 2 điểm rơi | 10 → 19 | 4 → 8 | **Loạt Nhắm Lại:** `volleys = 2`, `volleyGapSec = 0,4`; loạt 2 nhắm lại chỗ Kai mới (trường có sẵn) |
-| Drone Lính (`drone_linh`) | Bay, bắn nhắm | 3 | 8 | Như Stage 1 | 0,4 s | 6 → 11 | 2 → 4 | Bắn đôi (đã có) |
-| Lính Kén (`linh_ken`) | Tinh nhuệ có khiên | 8 | 12 | Như Stage 1; lao trên băng giữ 3 ô (kẻ địch không bị sàn trơn) | 0,5 s | 14 → 27 | 6 → 11 | Lao nối (đã có) |
+| Người Tuyết Máy (`nguoi_tuyet_may`) | Bộ binh, dạy nhảy qua khi không dừng được | 6 | 12 | `shieldCharger` với `shieldHits = 0`: tuần 0,8 ô/s, thấy Kai cùng tầng trong 6 ô thì **trượt bụng** 5 ô với 8 ô/s, hồi 1,2 s, không trượt khỏi mép | Co người, phả hơi 0,5 s | 10 → 30 | 4 → 8 | **Trượt Dội:** `chainDashes = 2`, báo trước mỗi lần dội 0,45 s (3 chấm báo nhịp) |
+| Tháp Băng (`thap_bang`) | Tháp, dạy đứng ngoài điểm rơi | 6 | 10 | `turret` (chu kỳ 2,6 s, 2 mảnh) với đạn `lob`: bắn chếch lên 50°, rơi theo trọng lực 20 ô/s², **nhắm theo khoảng cách** để mảnh 1 rơi đúng chỗ Kai lúc hết báo trước, mảnh 2 xa hơn 2 ô; tầm tối đa 9 ô. Mảnh vỡ khi chạm sàn | Tháp đóng băng, sáng xanh 0,6 s; vệt đổ bóng ở 2 điểm rơi | 10 → 30 | 4 → 8 | **Loạt Nhắm Lại:** `volleys = 2`, `volleyGapSec = 0,4`; loạt 2 nhắm lại chỗ Kai mới (trường có sẵn) |
+| Drone Lính (`drone_linh`) | Bay, bắn nhắm | 3 | 8 | Như Stage 1 | 0,4 s | 6 → 18 | 2 → 4 | Bắn đôi (đã có) |
+| Lính Kén (`linh_ken`) | Tinh nhuệ có khiên | 8 | 12 | Như Stage 1; lao trên băng giữ 3 ô (kẻ địch không bị sàn trơn) | 0,5 s | 14 → 42 | 6 → 11 | Lao nối (đã có) |
 
-Tổng: 18 kẻ địch (Người Tuyết Máy 5, Tháp Băng 4, Drone Lính 5, Lính Kén 4) → 334 EXP, 136 Core Bit `[SAU CỔNG]`.
+Tổng: 18 kẻ địch (Người Tuyết Máy 5, Tháp Băng 4, Drone Lính 5, Lính Kén 4) → 528 EXP (150 + 120 + 90 + 168), 136 Core Bit `[SAU CỔNG]`.
 
 Lưu ý thiết kế: Người Tuyết Máy và Lính Kén cùng nền `shieldCharger` nên đặt ở hai độ cao hoặc hai phòng khác nhau trong đoạn C và D để người chơi phân biệt được bằng hình dáng và khiên, không chỉ bằng màu.
 
@@ -417,7 +452,7 @@ Người khổng lồ băng, hành vi `golem` (dùng lại toàn bộ: giậm đ
 | --- | --- |
 | HP | 80 (Cốt truyện 64, Thử thách 100) |
 | Va chạm | 12; đi 0,7 ô/s; hồi giữa đòn 1,4 s |
-| Thưởng | 120 EXP, 50 Core Bit |
+| Thưởng | 185 EXP, 50 Core Bit (không nhân `enemyRewardMul`) |
 | Pha 2 | Máu ≤ 50% |
 
 | Pha | Đòn | Telegraph | Sát thương | Cách né |
@@ -439,7 +474,7 @@ Người khổng lồ băng, hành vi `golem` (dùng lại toàn bộ: giậm đ
 | `idleSec` | 1,2 (Thorna 1,0: Cryo nghỉ lâu hơn giữa các đòn, hợp giọng "rất chậm, nhiều dấu lặng") |
 | Điểm yếu | **Prism Beam:** 2,5×, choáng 0,5 s ("tia sáng nung chảy băng") |
 | Thắng chỉ bằng Arc Cannon | Có, 60–90 s |
-| Phần thưởng | Frost Shard, 250 EXP, 140 Core Bit, 1 SP |
+| Phần thưởng | Frost Shard, 388 EXP, 140 Core Bit, 1 SP |
 
 | Pha | Ngưỡng | Đòn | Dùng lại | Telegraph | Sát thương | Cách né |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -476,7 +511,7 @@ Pha 2 Thử thách: `shot, shatter, slam, charge`. Pha 3 Thử thách: `slam, sh
 | Năng lượng | `energyCostOf28 = 4` (7 lần mỗi thanh) |
 | Điểm yếu | Aeris: "mảnh băng làm nặng cánh gió" |
 | Khám phá | Đông dòng chất làm mát thành bậc ở Két giáp Stage 2 |
-| Không làm (MVP) | Kẻ địch đóng băng không thành bục đứng được (Câu hỏi mở 12) |
+| Không làm (MVP) | Kẻ địch đóng băng không thành bục đứng được (Q12) |
 
 ### 4.8 Két giáp, bí mật, nhiệm vụ phụ
 
@@ -485,7 +520,7 @@ Pha 2 Thử thách: `shot, shatter, slam, charge`. Pha 3 Thử thách: `slam, sh
 | Két giáp: Tay Mk I (`arm_mk1`, đạn nạp vừa phá khiên) | Lối vào kho hạt giống, đoạn B | Cần **Gale Cutter** (Stage 4): màn sương lạnh dày chắn lối là `Barrier` với `requiresWeapon: "Gale Cutter"` (dùng lại nguyên vật chắn) |
 | Memory Log 3 | Nhánh phụ đoạn C | Nhảy tường trên tường băng, không cần vũ khí |
 | Nano Cell | Phòng bí mật đoạn D (wireframe Stage 3) | Chuỗi băng vỡ không có chỗ dừng |
-| Nhiệm vụ phụ "Băng vỡ" (`sq_cryo_vault`) | Đoạn thử `questZone` (sàn trơn + băng vỡ, có hố bên dưới) trên đường chính, **ngay sau CP2, đầu đoạn C**: CP2 có ở cả ba độ khó, đúng luật "có checkpoint trước mép vào" của `15-Nhiem-vu-phu.md` | Chỉ tham chiếu `15-Nhiem-vu-phu.md`: mang thùng thuốc lạnh qua đoạn không rơi hố, không chết → 1 Data Chip + module Phase Step |
+| Nhiệm vụ phụ "Băng vỡ" (`sq_cryo_vault`) | Đoạn thử `questZone` (sàn trơn + băng vỡ, có hố bên dưới) trên đường chính, **ngay sau CP2, đầu đoạn C**, vào từ cạnh bên. CP2 có ở cả ba độ khó và cách mép vào **≤ 20 ô** (`zoneCheckpointMaxTiles`, Q9); CP-S2 nằm **sau mép đích** (không checkpoint nào trong vùng, QB-40) | Chỉ tham chiếu `15-Nhiem-vu-phu.md`: mang thùng thuốc lạnh qua đoạn không rơi hố, không chết → 1 Data Chip + module Phase Step |
 
 ### 4.9 Checkpoint theo độ khó
 
@@ -493,9 +528,10 @@ Pha 2 Thử thách: `shot, shatter, slam, charge`. Pha 3 Thử thách: `slam, sh
 | --- | --- | --- | --- | --- | --- |
 | CP1 | Cuối A | Có | Có | Không | `"story,normal"` |
 | CP-S1 | Giữa B | Có | Không | Không | `"story"` |
-| CP2 | Cuối B | Có | Có | Có | |
-| CP-S2 | Giữa C | Có | Không | Không | `"story"` |
+| CP2 | Cuối B, cách mép vào đoạn thử "Băng vỡ" ≤ 20 ô | Có | Có | Có | |
+| CP-S2 | Giữa C, sau mép đích đoạn thử | Có | Không | Không | `"story"` |
 | CP3 | Trước mini-boss | Có | Có | Có | |
+| CP3b | Cửa ra phòng mini-boss | Có | Có | Không | `"story,normal"` |
 | CP-S3 | Giữa D | Có | Không | Không | `"story"` |
 | CP4 | Trước cửa boss | Có | Có | Có | |
 
@@ -542,7 +578,7 @@ Tháp khí tượng cao vượt mây, nền trời sáng, gió có hình (vệt 
 | --- | --- | --- | --- | --- | --- | --- |
 | **A. Chân tháp** | \~1,5 phút / 6 màn hình `[SAU CỔNG]` | Gió đẩy ngang cố định: đi ngược gió, nhảy xuôi gió. Có sàn đỡ dưới mọi khe (lưới an toàn), không hố chết | Chim Cắt Gió ×2, Bướm Sắt ×2 | Gió cố định, bệ mây đứng yên | 0,3 | CP1 cuối đoạn |
 | **B. Trục gió** | \~2,5 phút / 10 màn hình (dọc) | Gió đổi hướng theo chu kỳ có báo trước; bệ mây trôi | Cối Xoáy ×2, Chim Cắt Gió ×2, Bướm Sắt ×1 | Gió đổi hướng, bệ mây trôi | 0,5 | CP2 cuối đoạn |
-| **C. Phòng khóa trên không** | \~3 phút (1,5 + mini-boss 1,5) / 7 màn hình | Mở đầu bằng trục gió ngắn (đoạn thử nhiệm vụ "Gió mất hướng", ngay sau CP2); rồi chiến đấu trên bệ mây; phòng khóa có **sàn mây đặc** ở đáy (không hố chết trong phòng khóa) | Lính Kén ×2, Chim Cắt Gió ×2, Bướm Sắt ×1, Gale Roc | Không | 0,7 (0,8) | CP3 trước mini-boss |
+| **C. Phòng khóa trên không** | \~3 phút (1,5 + mini-boss 1,5) / 7 màn hình | Mở đầu bằng trục gió ngắn (đoạn thử nhiệm vụ "Gió mất hướng", ngay sau CP2); rồi chiến đấu trên bệ mây; phòng khóa có **sàn mây đặc** ở đáy (không hố chết trong phòng khóa) | Lính Kén ×2, Chim Cắt Gió ×2, Bướm Sắt ×1, Gale Roc | Không | 0,7 (0,8) | CP3 trước mini-boss; CP3b ở cửa ra phòng mini-boss |
 | **D. Đỉnh tháp** | \~2,5 phút / 9 màn hình | Gió + bệ mây tan | Chim Cắt Gió ×1, Cối Xoáy ×2, Bướm Sắt ×1, Lính Kén ×2 | Bệ mây tan | 0,6 | CP4 trước cửa boss |
 | **Phòng boss** | \~2,5 phút / 24 × 12 ô | Aeris | Aeris | Không | 1,0 | Trong phòng boss |
 
@@ -553,7 +589,7 @@ Ghi chú: wireframe Stage 4 ghi bệ mây rơi ở D là "cơ chế" của đo�
 | Cơ chế | Quy tắc | Tham số (`stages.json → mechanics`) |
 | --- | --- | --- |
 | Vùng gió (`WindZone`) | Hình chữ nhật trên bản đồ; cộng lực ngang `force` vào vận tốc ngang của Kai; trên mặt đất nhân `groundMul`. Chỉ tác động lên Kai (không lên đạn, kẻ địch, bệ mây) | `wind.forceTilesPerSec = 2,5` (≈ 45% tốc độ chạy), `wind.groundMul = 0,5` `[SAU CỔNG]` |
-| Ngoại lệ | Lướt bỏ qua gió (giữ chuẩn xác); bám tường không bị gió kéo khỏi tường | `wind.dashIgnores = true`, `wind.wallSlideIgnores = true` |
+| Ngoại lệ | Lướt bỏ qua gió (giữ chuẩn xác); bám tường không bị gió kéo khỏi tường; bị đánh thì gió không đẩy Kai trong `hurt.stunSec` (0,3 s), để không rơi hố chỉ vì bị đánh (QB-07) | `wind.dashIgnores = true`, `wind.wallSlideIgnores = true`, `wind.hurtIgnores = true` |
 | Gió đổi hướng | Chu kỳ `cycleSec`; trước khi đổi `warnSec`: cờ quay, mũi tên ở mép màn hình đổi chiều; lực đổi dần trong `rampSec` | `wind.cycleSec = 4`, `wind.warnSec = 1,0`, `wind.rampSec = 0,3` |
 | Bệ mây | Bục một chiều (đứng từ trên, đi xuyên từ dưới, xuống bằng xuống + nhảy như bục một chiều có sẵn) | `cloud.oneWay = true` |
 | Bệ mây trôi | Đi qua lại giữa 2 điểm ghi trên bản đồ, chở Kai bằng `dx`, `dy` như dây leo | `cloud.drift.speedTilesPerSec = 1,5` |
@@ -564,16 +600,16 @@ Kai trên không đi ngược gió còn 5,5 − 2,5 = 3,0 ô/s, xuôi gió 8,0 �
 
 ### 5.4 Kẻ địch thường
 
-`enemyRewardMul = 2,0`.
+`enemyRewardMul = {exp: 4,0, coreBit: 2,0}`.
 
 | Kẻ địch (`id`) | Vai trò | HP | Sát thương | Hành vi | Telegraph | EXP base → Thường | Core Bit base → Thường | Bản Thử thách |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Chim Cắt Gió (`chim_cat_gio`) | Bay, bổ nhào | 3 | 8 (va chạm), 10 (bổ nhào) | `diver` (mới): bay tuần cao 4 ô; Kai trong 7 ô thì khóa hướng tới vị trí Kai lúc bắt đầu báo trước, lao thẳng 10 ô/s tối đa 8 ô, chạm đất/tường thì dừng, hở 0,8 s rồi bay lên 3 ô/s | Dang cánh, kêu, vạch mờ chỉ hướng lao 0,5 s | 8 → 16 | 3 → 6 | **Bổ Nhào Nối:** sau cú lao nhắm lại, báo trước 0,4 s, lao lần nữa (2 chấm báo nhịp) |
-| Cối Xoáy (`coi_xoay`) | Tháp điều khiển vị trí | 6 | 10 (va chạm cánh) | `fan` (mới): gắn tường/sàn, chu kỳ 3,0 s; thổi vùng gió dài 6 ô, cao 3 ô, 4 ô/s trong 1,2 s; gió không gây sát thương, đẩy Kai về phía hố/gai. Phá hủy thì gió tắt hẳn trong lượt | Cánh quay tăng dần, lá gió bay ra 0,6 s | 10 → 20 | 4 → 8 | **Đẩy rồi Hút:** sau 1,2 s thổi là 1,0 s hút về phía cánh (2 chấm báo nhịp) |
-| Bướm Sắt (`buom_sat`) | Bay | 2 | 6 | Như Stage 1; hạt nổ không bị gió | 0,5 s | 8 → 16 | 3 → 6 | Thả kép (đã có) |
-| Lính Kén (`linh_ken`) | Tinh nhuệ | 8 | 12 | Như Stage 1; đặt trên bệ mây đứng yên rộng ≥ 6 ô `[SAU CỔNG]` | 0,5 s | 14 → 28 | 6 → 12 | Lao nối (đã có) |
+| Chim Cắt Gió (`chim_cat_gio`) | Bay, bổ nhào | 3 | 8 (va chạm), 10 (bổ nhào) | `diver` (mới): bay tuần cao 4 ô; Kai trong 7 ô thì khóa hướng tới vị trí Kai lúc bắt đầu báo trước, lao thẳng 10 ô/s tối đa 8 ô, chạm đất/tường thì dừng, hở 0,8 s rồi bay lên 3 ô/s | Dang cánh, kêu, vạch mờ chỉ hướng lao 0,5 s | 8 → 32 | 3 → 6 | **Bổ Nhào Nối:** sau cú lao nhắm lại, báo trước 0,4 s, lao lần nữa (2 chấm báo nhịp) |
+| Cối Xoáy (`coi_xoay`) | Tháp điều khiển vị trí | 6 | 10 (va chạm cánh) | `fan` (mới): gắn tường/sàn, chu kỳ 3,0 s; thổi vùng gió dài 6 ô, cao 3 ô, 4 ô/s trong 1,2 s; gió không gây sát thương, đẩy Kai về phía hố/gai. Phá hủy thì gió tắt hẳn trong lượt | Cánh quay tăng dần, lá gió bay ra 0,6 s | 10 → 40 | 4 → 8 | **Đẩy rồi Hút:** sau 1,2 s thổi là 1,0 s hút về phía cánh (2 chấm báo nhịp) |
+| Bướm Sắt (`buom_sat`) | Bay | 2 | 6 | Như Stage 1; hạt nổ không bị gió | 0,5 s | 8 → 32 | 3 → 6 | Thả kép (đã có) |
+| Lính Kén (`linh_ken`) | Tinh nhuệ | 8 | 12 | Như Stage 1; đặt trên bệ mây đứng yên rộng ≥ 6 ô `[SAU CỔNG]` | 0,5 s | 14 → 56 | 6 → 12 | Lao nối (đã có) |
 
-Tổng: 20 kẻ địch (Chim Cắt Gió 7, Cối Xoáy 4, Bướm Sắt 5, Lính Kén 4) → 384 EXP, 152 Core Bit `[SAU CỔNG]`.
+Tổng: 20 kẻ địch (Chim Cắt Gió 7, Cối Xoáy 4, Bướm Sắt 5, Lính Kén 4) → 768 EXP (224 + 160 + 160 + 224), 152 Core Bit `[SAU CỔNG]`.
 
 Gió đẩy của Cối Xoáy không gây sát thương nhưng có thể đẩy rơi hố (20 máu), nên vẫn tuân luật telegraph ≥ 0,4 s và không đặt Cối Xoáy thổi thẳng vào hố ở đoạn A–B.
 
@@ -585,7 +621,7 @@ Chim máy khổng lồ trong phòng khóa trên không 20 × 12 ô: 4 bệ mây 
 | --- | --- |
 | HP | 90 (Cốt truyện 72, Thử thách 112,5) |
 | Va chạm | 12 |
-| Thưởng | 140 EXP, 60 Core Bit |
+| Thưởng | 270 EXP, 60 Core Bit (không nhân `enemyRewardMul`) |
 | Pha 2 | Máu ≤ 50% |
 
 | Pha | Đòn | Telegraph | Sát thương | Cách né |
@@ -599,7 +635,7 @@ Chim máy khổng lồ trong phòng khóa trên không 20 × 12 ô: 4 bệ mây 
 
 ### 5.6 Boss: Aeris (`aeris`)
 
-**Chủ đề:** Warden Khí tượng, hình dáng nửa chim nửa chong chóng, nói nhanh và cười "Ha!". Đấu trường 24 × 12 ô trên đỉnh tháp: sàn đặc, 3 bệ mây đứng yên (một chiều) cao 3 ô `[SAU CỔNG]`, gió toàn đấu trường tắt ở pha 1. Aeris **bay**: giữa độ cao 3–7 ô so với sàn, trôi ngang 1,5 ô/s, giữ cách 6 ô.
+**Chủ đề:** Warden Khí tượng, hình dáng nửa chim nửa chong chóng, nói nhanh và cười "Ha!". Đấu trường 24 × 12 ô trên đỉnh tháp: sàn đặc, 3 bệ mây đứng yên (một chiều) cao 3 ô `[SAU CỔNG]`, gió toàn đấu trường tắt ở pha 1. Aeris **bay**: giữa độ cao 3–6 ô so với sàn (Q14), trôi ngang 1,5 ô/s, giữ cách 6 ô. Độ cao bay là tham số, chốt sau cổng (ST-17-01).
 
 | Thông số | Giá trị |
 | --- | --- |
@@ -608,7 +644,7 @@ Chim máy khổng lồ trong phòng khóa trên không 20 × 12 ô: 4 bệ mây 
 | `idleSec` | 0,7 (ngắn hơn Thorna 1,0, hợp giọng "nhanh, vui") |
 | Điểm yếu | **Frost Shard:** 2,5×, choáng 0,5 s; khi choáng Aeris rơi 2 ô ("mảnh băng làm nặng cánh gió") |
 | Thắng chỉ bằng Arc Cannon | Có, 75–105 s (Arc Cannon bắn ngang: trúng Aeris khi Aeris ở độ cao Kai đứng hoặc nhảy tới, và trong mọi pha hồi khi Aeris đậu xuống) |
-| Phần thưởng | Gale Cutter, 280 EXP, 160 Core Bit, 1 SP |
+| Phần thưởng | Gale Cutter, 564 EXP, 160 Core Bit, 1 SP |
 
 | Pha | Ngưỡng | Đòn | Dùng lại | Telegraph | Sát thương | Cách né |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -624,7 +660,7 @@ Danh sách pha: pha 1 `shot, charge`; pha 2 `shot, gust, charge`; pha 3 `gust, s
 | Thông số | Giá trị | Ghi chú |
 | --- | --- | --- |
 | Báo trước | 0,8 s (pha 3: 0,67 s) | Phễu gió hình thành ở mép đấu trường phía Aeris, có tiếng hú riêng |
-| Lốc | 16 × 48 px (cao 3 ô), chạy dọc sàn sang mép bên kia 4 ô/s | Cao 3 ô, nhỏ hơn nhảy tối đa 4,5 ô; độ cao phải nhảy qua `[SAU CỔNG]` |
+| Lốc | 16 × 40 px (cao **≤ 2,5 ô**), chạy dọc sàn sang mép bên kia 4 ô/s | Cao ≤ 2,5 ô (Q14), thấp hơn hẳn nhảy tối đa 4,5 ô; độ cao phải nhảy qua `[SAU CỔNG]` |
 | Sát thương | 16 | |
 | Kết hợp | Aeris bắn Lưỡi Gió sau khi lốc đã chạy 0,5 s (không ra đòn cùng lúc báo trước) | |
 | Hồi sau đòn | 0,6 s | |
@@ -641,7 +677,7 @@ Pha 2 Thử thách: `shot, gust, twister, charge`. Pha 3 Thử thách: `gust, tw
 | --- | --- |
 | `behavior.type` | `boomerang` (mới): lưỡi gió bay ra rồi quay về Kai |
 | Thông số | `outTiles = 6`, `speedTilesPerSec = 11`, `sizePx = 12 × 12`, `damageMul = 1` mỗi lượt (đi và về, mỗi mục tiêu tối đa 1 lần mỗi lượt), `maxOnScreen = 1` |
-| Hủy đạn | Lưỡi chạm đạn kẻ địch thường loại `enemyShot`, `bomb` thì hủy, tối đa `maxCancelsPerThrow = 3`. Không hủy tia, sóng, đòn đỉnh và đạn của boss (Câu hỏi mở 4) |
+| Hủy đạn | Lưỡi chạm đạn của **kẻ địch thường** loại `enemyShot`, `bomb` thì hủy, tối đa `maxCancelsPerThrow = 2` mỗi lần ném. Không hủy đạn của mini-boss và boss, tia, sóng, đòn đỉnh (Q4) |
 | Năng lượng | `energyCostOf28 = 4` |
 | Điểm yếu | Terra (Stage 5, Alpha): "lưỡi gió mài mòn giáp đá" |
 | Khám phá | Thổi tan sương lạnh ở Két giáp Stage 3 (`Barrier`, `requiresWeapon: "Gale Cutter"`) |
@@ -650,10 +686,10 @@ Pha 2 Thử thách: `shot, gust, twister, charge`. Pha 3 Thử thách: `gust, tw
 
 | Mục | Vị trí | Cách mở |
 | --- | --- | --- |
-| Két giáp: Chân Mk I (`leg_mk1` trong `stages.json`) | Dưới sàn mây đá, cạnh phòng khóa đoạn C | Cần **Quake Drill** (Stage 5, **Alpha**): sàn mây đá là `Barrier` ngang với `requiresWeapon: "Quake Drill"`. Trong MVP két **hiện nhưng không mở được**: biểu tượng khóa, gợi ý D02, radar Đầu Mk I ghi "cần Quake Drill". Không tính vào tỷ lệ thu thập ở MVP |
+| Két giáp: Chân Mk I (`leg_mk1`, Q8) | Dưới sàn mây đá, cạnh phòng khóa đoạn C | Cần **Quake Drill** (Stage 5, **Alpha**): sàn mây đá là `Barrier` ngang với `requiresWeapon: "Quake Drill"`. Trong MVP két **hiện nhưng không mở được**: biểu tượng khóa, gợi ý D02, radar Đầu Mk I ghi "cần Quake Drill". Không tính vào tỷ lệ thu thập ở MVP |
 | Memory Log 4 | Nhánh phụ đoạn D | Bệ mây trôi + nhảy tường, không cần vũ khí |
 | Rương Core Bit (+40, tính trong 78 Core Bit rương của màn) | Đoạn B | Đi ngược gió đổi hướng tới bệ mây cao |
-| Nhiệm vụ phụ "Gió mất hướng" (`sq_cirrus_tower`) | Đoạn thử `questZone` (gió đổi hướng + bệ mây, 2–3 màn hình dọc) **ngay sau CP2, đầu đoạn C**, trước phòng khóa: kiểm tra điều đoạn B vừa dạy | Chỉ tham chiếu `15-Nhiem-vu-phu.md`: mang máy ghi gió qua đoạn không đứng trên ô đặc, không rơi hố, không chết → 1 Data Chip + module Energy Siphon. Bệ mây và bám tường không tính là chạm sàn |
+| Nhiệm vụ phụ "Gió mất hướng" (`sq_cirrus_tower`) | Đoạn thử `questZone` (gió đổi hướng + bệ mây, 2–3 màn hình dọc) **ngay sau CP2, đầu đoạn C**, trước phòng khóa: kiểm tra điều đoạn B vừa dạy. **Vào từ cạnh bên** (từ gờ đặc nằm ngoài vùng), ra ở mép trên. **Sàn đặc an toàn bên dưới** nằm trong vùng: không hố, không gai. CP2 cách mép vào **≤ 20 ô** (Q9); CP-S2 nằm **sau mép đích** | Chỉ tham chiếu `15-Nhiem-vu-phu.md`: mang máy ghi gió qua đoạn không đứng trên ô đặc, không rơi hố, không chết → 1 Data Chip + module Energy Siphon. Bệ mây và bám tường không tính là chạm sàn |
 
 ### 5.9 Checkpoint theo độ khó
 
@@ -661,11 +697,14 @@ Pha 2 Thử thách: `shot, gust, twister, charge`. Pha 3 Thử thách: `gust, tw
 | --- | --- | --- | --- | --- | --- |
 | CP1 | Cuối A | Có | Có | Không | `"story,normal"` |
 | CP-S1 | Giữa B | Có | Không | Không | `"story"` |
-| CP2 | Cuối B | Có | Có | Có | |
-| CP-S2 | Giữa C | Có | Không | Không | `"story"` |
+| CP2 | Cuối B, cách mép vào đoạn thử "Gió mất hướng" ≤ 20 ô | Có | Có | Có | |
+| CP-S2 | Giữa C, sau mép đích đoạn thử | Có | Không | Không | `"story"` |
 | CP3 | Trước mini-boss | Có | Có | Có | |
+| CP3b | Cửa ra phòng mini-boss | Có | Có | Không | `"story,normal"` |
 | CP-S3 | Giữa D | Có | Không | Không | `"story"` |
 | CP4 | Trước cửa boss | Có | Có | Có | |
+
+Màn dọc: mọi checkpoint Stage 4 là vùng chữ nhật trên Tiled, xét theo thứ tự (QB-40).
 
 ### 5.10 Lời NOVA dạy cơ chế (nháp)
 
@@ -682,6 +721,7 @@ Pha 2 Thử thách: `shot, gust, twister, charge`. Pha 3 Thử thách: `gust, tw
 | Gió đổi chiều giữa cú nhảy | Có báo trước 1,0 s và đổi dần 0,3 s; lực tính lại mỗi bước logic |
 | Kai đứng yên trên bệ mây trong gió | Trôi `force × groundMul` = 1,25 ô/s; bục rộng 2 ô thì 1,6 s mới trôi khỏi mép (`[SAU CỔNG]`) |
 | Gió đẩy Kai vào tường lúc bám | Bám tường bỏ qua gió, không bị kéo ra |
+| Bị đánh khi đứng trong vùng gió | Gió không đẩy trong `hurt.stunSec` 0,3 s (`wind.hurtIgnores`, QB-07); bật lùi như sàn thường |
 | Rơi hố trong phòng khóa trên không | Không xảy ra: phòng khóa có sàn mây đặc |
 | Cối Xoáy bị phá khi đang thổi | Gió tắt ngay bước đó |
 | Bệ mây tan đang chìm thì Kai nhảy lên lại | Bục vẫn chìm tiếp, không đếm lại |
@@ -702,9 +742,9 @@ Pha 2 Thử thách: `shot, gust, twister, charge`. Pha 3 Thử thách: `gust, tw
 
 | Chỉ số | Stage 2 | Stage 3 | Stage 4 |
 | --- | --- | --- | --- |
-| EXP (kẻ địch + mini-boss + boss) | 309 + 110 + 230 = 649 | 334 + 120 + 250 = 704 | 384 + 140 + 280 = 804 |
+| EXP (kẻ địch + mini-boss + boss) | 309 + 110 + 241 = 660 | 528 + 185 + 388 = 1.101 | 768 + 270 + 564 = 1.602 (= `expBudget`) |
 | Core Bit (kẻ địch + mini-boss + boss + rương) | 120 + 40 + 110 + 30 = 300 | 136 + 50 + 140 + 49 = 375 | 152 + 60 + 160 + 78 = 450 |
-| SP | 1 (boss) + cấp đạt được (4 → 6: +2) | 1 + (6 → 7: +1) | 1 + (7 → 8: +1) |
+| SP | 1 (boss) + cấp đạt được (4 → 6: +2) | 1 + (6 → 8: +2) | 1 + (8 → 10: +2); hết MVP 13 SP |
 | Số lần chết trung bình | 4–7; Lumen 1–3 lần thử đầu | 4–7; Cryo 1–3 | 5–8; Aeris 2–4 |
 | Thời lượng | \~11 phút | \~11,5 phút | \~12 phút |
 | Tỷ lệ hoàn thành ở phiên đầu | ≥ 70% | ≥ 70% | ≥ 65% |
@@ -729,78 +769,108 @@ Quy tắc điều chỉnh (như Stage 1): quá 30% người thử chết ở cù
 
 - **Tín hiệu hướng dẫn mới** (`core/tutorial-config.ts`): `laser`, `laserPulse`, `mirror`, `sensor`, `ice`, `crumble`, `wind`, `windShift`, `cloud`. Dùng lại: `near:<kẻ địch>`, `section:<đoạn>`, `roomLocked`, `bossGate`, `bossPhase`, `bossDefeated`, `weaponGranted`.
 - **Sự kiện thế giới đề xuất** (`WorldEvents`, để Scene vẽ hiệu ứng và phát âm thanh, gameplay không gọi UI): `mirrorToggled`, `sensorActivated`, `laserHit`, `platformCracked`, `platformBroken`, `windChanged`, `enemyFrozen`, `coolantFrozen`, `barrierBroken` (có sẵn cho vật chắn).
-- **Bản lưu:** không thêm trường cho cơ chế (gương, băng, gió đặt lại mỗi lượt). Két giáp suy ra từ bí mật đã nhặt (`10-He-thong-RPG-Xuong.md` mục 2.3). Tiến độ nhiệm vụ phụ chờ đặc tả nhiệm vụ phụ.
+- **Bản lưu:** không thêm trường cho cơ chế (gương, băng, gió đặt lại mỗi lượt). Két giáp suy ra từ bí mật đã nhặt (`10-He-thong-RPG-Xuong.md` mục 2.3). Tiến độ nhiệm vụ phụ: `15-Nhiem-vu-phu.md` mục 4 (`sideQuests` ở bản lưu kế tiếp).
 
 ## 9. Thay đổi cần lan sang tài liệu khác
 
 | Tài liệu / dữ liệu | Thay đổi | Kiểm tra cần thêm (`game/src/core/*-config.ts`) |
 | --- | --- | --- |
-| `03-Data/enemies.json` | Thêm `guong_quang`, `thap_laser`, `nguoi_tuyet_may`, `thap_bang`, `chim_cat_gio`, `coi_xoay`, `prism_sentinel`, `frost_titan`, `gale_roc`, mỗi loại có khối `challenge`. Trường mới: `projectile.bounces`, `attack.bankShot`, `attack.lob {aimAtPlayer, elevationDeg, gravityTilesPerSec2, spreadTiles, maxRangeTiles}`, `attack.pulses`, `attack.pulseGapSec`, `bombs.landShockwave`; hành vi mới `laserTurret`, `diver`, `fan` | Telegraph ≥ 0,4 s cho cả `pulse.warnSec`, báo trước lao nối; `bounces ≤ 2`; không chết một đòn ×1,5; mọi `miniBoss` của màn đã làm có dữ liệu |
-| `03-Data/bosses.json` | Thêm `lumen`, `cryo`, `aeris` (máu, pha, đòn, `challenge`, `weakness`, `reward`, `rewardExp`, `rewardCoreBit`). Đòn mới: `beam`, `focus`, `shatter`, `gust`, `twister`; trường mới `slam.slickFloorSec`, `shot.aim`, `rain.pullTilesPerSec`, `minGapAfterSec`; di chuyển `teleport {anchors}`, `hover {minTiles, maxTiles, speedTilesPerSec}` | Telegraph pha 3 ≥ 0,5 s cho `focus.lockSec`, `shatter`, `twister`; sát thương ≤ `maxAttackDamage` theo màn; `reward` = `weaponGranted`, `weakness` = `bossWeakness` (có sẵn) |
-| `03-Data/weapons.json` | `behavior` và `energyCostOf28` cho Prism Beam (`beam`), Frost Shard (`shard`), Gale Cutter (`boomerang`) | Ngân sách năng lượng 14 ± 15% (mục 2.3) |
-| `03-Data/stages.json` | `enemyRewardMul` mỗi màn (1 / 1,8 / 1,9 / 2,0); `mechanics.laser`, `mirror`, `sensor`, `ice`, `crumble`, `wind`, `cloud`, `coolant` | `enemyRewardMul ≥ 1`; `laser.damage × 1,5 < 100`; `laser.pulse.onSec + warnSec < periodSec`; `crumble.triggerSec ≥ 0,5` |
+| `03-Data/enemies.json` | Thêm `guong_quang`, `thap_laser`, `nguoi_tuyet_may`, `thap_bang`, `chim_cat_gio`, `coi_xoay`, `prism_sentinel`, `frost_titan`, `gale_roc`, mỗi loại có khối `challenge`. Trường mới: `projectile.bounces`, `attack.bankShot`, `attack.lob {aimAtPlayer, elevationDeg, gravityTilesPerSec2, spreadTiles, maxRangeTiles}`, `attack.pulses`, `attack.pulseGapSec`, `bombs.landShockwave`; hành vi mới `laserTurret`, `diver`, `fan`. Luật chung: `minTelegraphSec` cho mini-boss 0,5 (QB-21), `rules.activeRangeTilesY` 7 và `attackRequiresOnScreen` (QB-23) ở ST-15-15; `pickups.energyChance`, `pickups.energy` (QB-17) ở ST-15-16 | Telegraph ≥ 0,4 s cho cả `pulse.warnSec`, báo trước lao nối; mini-boss ≥ 0,5 s; `bounces ≤ 2`; không chết một đòn ×1,5; mọi `miniBoss` của màn đã làm có dữ liệu |
+| `03-Data/bosses.json` | Thêm `lumen`, `cryo`, `aeris` (máu, pha, đòn, `challenge`, `weakness`, `reward`, `rewardExp`, `rewardCoreBit`). Đòn mới: `beam`, `focus`, `shatter`, `gust`, `twister`; trường mới `slam.slickFloorSec`, `shot.aim`, `rain.pullTilesPerSec`, `minGapAfterSec`; di chuyển `teleport {anchors}`, `hover {minTiles, maxTiles, speedTilesPerSec}` (Aeris 3–6 ô). Trường chung `weakStunCooldownSec` 1,5 (QB-14), `phaseShiftSec` 0,6 (QB-31) ở ST-15-14. `rewardExp` theo mục 2.1 (241 / 388 / 564; mini-boss 110 / 185 / 270) | Telegraph pha 3 ≥ 0,5 s cho `focus.lockSec`, `shatter`, `twister`; sát thương ≤ `maxAttackDamage` theo màn; `reward` = `weaponGranted`, `weakness` = `bossWeakness` (có sẵn) |
+| `03-Data/weapons.json` | `behavior` và `energyCostOf28` cho Prism Beam (`beam`, `cooldownSec` 0,3), Frost Shard (`shard`), Gale Cutter (`boomerang`, `maxCancelsPerThrow` 2) | Ngân sách năng lượng 14 ± 15%; sức mạnh khắc chế ≥ 12 (mục 2.3) |
+| `03-Data/stages.json` | `expBudget` (660 / 1.101 / 1.602, GDD 10 mục 0); `enemyRewardMul {exp, coreBit}` mỗi màn (Stage 1 {1; 1}, Stage 2 {1,8; 1,8}, Stage 3 {3,0; 1,9}, Stage 4 {4,0; 2,0}); `checkpoints` 4 → 5 (CP3b); `checkpointMaxGapSec` (QB-111); `mechanics.laser` (`hurtsEnemies = false`, bỏ `enemyDamage`), `mirror`, `sensor`, `ice`, `crumble`, `wind` (thêm `hurtIgnores`), `cloud`, `coolant` | `exp`, `coreBit` ≥ 1; Σ EXP Thường của màn = `expBudget` ± 5% (mục 2.1); khoảng checkpoint theo mục 2.4; `laser.damage × 1,5 < 100`; `laser.pulse.onSec + warnSec < periodSec`; `crumble.triggerSec ≥ 0,5` |
 | `03-Data/skills.json` | `rules.shieldPierceKinds` thêm loại đạn đòn đỉnh của Lumen và Aeris; `bulletKinds` không thêm tia (`beam`) | |
 | `03-Data/tutorial.json` | Bước NOVA cho Stage 2–4 (mục 3.10, 4.10, 5.10) | Tín hiệu có trong `tutorial-config.ts` |
 | `03-Data/ui.json` | Chữ "cần {vũ khí}" của Két khóa (nếu chưa có) | |
-| **Tên giáp lệch** | `stages.json` ghi `leg_mk1`, danh mục tên chuẩn (`07-Ban-do-he-thong.md` mục 3) ghi `legs_mk1`. Thống nhất một tên trước khi làm `armor.json` (Câu hỏi mở 8) | Bất biến `armorCache` có trong `armor.json` (GDD 10 mục 2.3) |
+| `03-Data/player.json` | `nanoCell {max, healPct, useLockSec, refill}` (QB-50…54, ST-15-16); vị trí Nano Cell ở `stages.json` | Theo `17-Quy-tac-bien.md` mục 16 |
 | `01-GDD/01-GDD-chinh.md` | Mục 8.2 và 9.1: trỏ tới tài liệu này | |
 | `01-GDD/11-Do-kho.md` | Mục 2.6: bảng bản Thử thách Stage 2–4 (hoặc trỏ tới mục 3.4–3.6, 4.4–4.6, 5.4–5.6) | |
 | `01-GDD/10-He-thong-RPG-Xuong.md` | Mục 2.2: trạng thái vô hiệu dùng chung Phase Step và Frost Shard; mục 2.3: Két Stage 2–4 như mục 3.8, 4.8, 5.8 | |
-| `01-GDD/15-Nhiem-vu-phu.md` (Draft song song) | Vị trí đoạn thử Stage 3, 4: đầu đoạn C ngay sau CP2; câu `hint` của nhiệm vụ `reach` viết theo cơ chế trượt (mục 4.3) và gió (mục 5.3); Gương Rối không nằm trên đường tia câu đố, Prism Beam không dội khỏi Gương Rối | |
-| `01-GDD/04-Can-bang-kinh-te.md` | Thêm mục EXP theo màn (mục 2.1 của tài liệu này) | |
-| `04-Dev-Plan/07-Ban-do-he-thong.md` | Dòng M5/M6/M7 Stage 2–4: "Draft (16-…)"; danh mục tên chuẩn thêm id kẻ địch, đòn boss, cơ chế mới | |
+| `01-GDD/15-Nhiem-vu-phu.md` (bản 2, Approved) | Đã áp ở bản 2: đoạn thử Stage 3, 4 ở đầu đoạn C ngay sau CP2; Cirrus vào từ cạnh bên, ra mép trên, sàn an toàn trong vùng; Gương Rối A 1, B 2, C 2, D 1. Còn chờ: câu `hint` của nhiệm vụ `reach` viết theo cơ chế trượt (mục 4.3) và gió (mục 5.3) ở ST-18-08 | |
+| `01-GDD/04-Can-bang-kinh-te.md` | Thêm mục EXP theo màn (mục 2.1 của tài liệu này: `expBudget`, `enemyRewardMul {exp, coreBit}`) | |
+| `04-Dev-Plan/07-Ban-do-he-thong.md` | Dòng M5/M6/M7 Stage 2–4: "Approved (16-…), bản đồ `[SAU CỔNG]`"; danh mục tên chuẩn thêm id kẻ địch, đòn boss, cơ chế mới | |
 | `05-Assets` | Danh sách P2 theo mục 7 | |
 
 ## 10. Story đề xuất (EP-15: Stage 2–4 trước cổng; EP-17: Stage 2–4 trên bản đồ)
 
-Quy ước như EP-08 đến EP-10: Story ≤ 1–2 ngày, mỗi Story nhúng số liệu cần thiết, Story có hình ảnh lưu ảnh chạy thử ở `04-Dev-Plan/qa/<mã Story>/` (Look Rule). Phòng thử dùng bản đồ ASCII (`layoutFromRows`) như 4 phòng thử Stage 1, **không phải bản đồ thật**.
+Quy ước như EP-08 đến EP-10: Story ≤ 1–2 ngày, mỗi Story nhúng số liệu cần thiết và mã QB liên quan, Story có hình ảnh lưu ảnh chạy thử ở `04-Dev-Plan/qa/<mã Story>/` (Look Rule). Phòng thử dùng bản đồ ASCII (`layoutFromRows`) như 4 phòng thử Stage 1, **không phải bản đồ thật**. Story nào sửa `player-physics` (sàn trơn, gió) thì chờ cổng: thông số nhảy và lướt còn có thể đổi.
 
-**Làm được trước cổng** (logic thuần, dữ liệu `[PLACEHOLDER]`, test Vitest):
-
-| Mã | Tên | Phụ thuộc | Cỡ |
-| --- | --- | --- | --- |
-| ST-15-01 | Dữ liệu Stage 2–4 và bộ kiểm tra: `enemies`, `bosses`, `weapons`, `stages.enemyRewardMul`, `mechanics.*`; ngân sách năng lượng; telegraph; không chết một đòn | | 1,5 ngày |
-| ST-15-02 | `LaserPath` + `LaserEmitter` (luôn bật, theo nhịp) + `Mirror` 2 góc + `LightSensor` mở cửa; test vạch báo trước trùng hộp sát thương | 01 | 2 ngày |
-| ST-15-03 | Prism Beam (`beam`): bắn, phản xạ, xuyên; `Barrier` nhận tia (rễ khô Két Stage 1) | 02 | 1,5 ngày |
-| ST-15-04 | Trạng thái vô hiệu `disabledSec` cho mọi hành vi kẻ địch; Frost Shard (`shard`, đóng băng); `CoolantFlow` (Két Stage 2). Mở đường cho Phase Step (ST-08-09) | 01 | 2 ngày |
-| ST-15-05 | Gale Cutter (`boomerang`, hủy đạn); sương lạnh = `Barrier` (Két Stage 3) | 01 | 1,5 ngày |
-| ST-15-06 | Kẻ địch dùng lại hành vi: Gương Quang (`drone` + `bounces`, `bankShot`), Người Tuyết Máy (dữ liệu), Tháp Băng (`turret` + `lob`), Frost Titan (`golem` + `landShockwave`), kèm bản Thử thách | 01 | 2 ngày |
-| ST-15-07 | Kẻ địch hành vi mới: Tháp Laser (`laserTurret`), Chim Cắt Gió (`diver`), Cối Xoáy (`fan`), kèm bản Thử thách | 02, 08 | 2,5 ngày |
-| ST-15-08 | Cơ chế sàn trơn (gia tốc theo loại ô), `CrumblePlatform` (break, sink), bệ mây trôi, `WindZone` trong `player-physics` (logic; số giữ `[PLACEHOLDER]`) | 01 | 2,5 ngày |
-| ST-15-09 | Mini-boss Prism Sentinel và Gale Roc (theo quyết định Câu hỏi mở 1) | 02, 08 | 2,5 ngày |
-| ST-15-10 | Boss Lumen: `beam`, dịch chuyển, `focus` (Thử thách); mô phỏng bot | 02 | 2 ngày |
-| ST-15-11 | Boss Cryo: `slam.slickFloorSec`, `shatter` (Thử thách); mô phỏng bot | 08 | 2 ngày |
-| ST-15-12 | Boss Aeris: bay, `shot.aim`, `gust`, `rain` + hút, `twister` (Thử thách); mô phỏng bot | 08 | 2,5 ngày |
-| ST-15-13 | Phòng thử ASCII cho Stage 2–4 (kẻ địch, cơ chế, mini-boss, boss), nối màn Chuẩn bị và hội thoại boss; tín hiệu hướng dẫn mới | 02–12 | 1,5 ngày |
-
-**Phải chờ cổng** (phụ thuộc cảm giác điều khiển):
+**Làm được trước cổng** (logic thuần, dữ liệu `[PLACEHOLDER]`, test Vitest; không đụng `player-physics`):
 
 | Mã | Tên | Phụ thuộc | Cỡ |
 | --- | --- | --- | --- |
-| ST-17-01 | Đo metric thật bằng thang khe trong phòng thử (có và không có gió, trên băng); chốt `ice.*`, `wind.*`, `crumble.triggerSec`, độ cao lốc Aeris, khe né đòn boss | Qua cổng, 13 | 1 ngày |
-| ST-17-02 | Bản đồ Tiled Stage 2 (A–D, phòng boss, checkpoint theo độ khó, bí mật, Két, Gương Rối); test đồ thị đường chính chỉ cần bộ động tác gốc + Arc Cannon | 14 | 2 ngày |
-| ST-17-03 | Bản đồ Tiled Stage 3 | 14 | 2 ngày |
-| ST-17-04 | Bản đồ Tiled Stage 4 (cuộn dọc) | 14 | 2 ngày |
-| ST-17-05 | Bước hướng dẫn NOVA Stage 2–4 trên bản đồ thật | 15–17 | 1 ngày |
-| ST-17-06 | Cân bằng: tính lại `enemyRewardMul` theo số kẻ địch thật; chốt máu boss bằng mô phỏng; chốt số bản Thử thách | 15–17 | 1 ngày |
+| ST-15-01a | Dữ liệu Stage 2 và khung kiểm tra chung: `enemies`, `bosses`, `weapons` (Prism Beam), `stages` (`expBudget`, `enemyRewardMul {exp, coreBit}`), `mechanics.laser`, `mirror`, `sensor`; ngân sách năng lượng, sức mạnh khắc chế ≥ 12, telegraph, không chết một đòn, Σ EXP = `expBudget` ± 5% | | 1 ngày |
+| ST-15-01b | Dữ liệu Stage 3 (kẻ địch, Frost Titan, Cryo, Frost Shard, `ice`, `crumble`, `coolant`) | 01a | 0,5 ngày |
+| ST-15-01c | Dữ liệu Stage 4 (kẻ địch, Gale Roc, Aeris, Gale Cutter, `wind`, `cloud`) | 01a | 0,5 ngày |
+| ST-15-02 | `LaserPath` + `LaserEmitter` (luôn bật, theo nhịp) + `Mirror` 2 góc + `LightSensor` mở cửa; test vạch báo trước trùng hộp sát thương. Góc và vị trí gương là tham số, chốt sau cổng (ST-17-01) | 01a | 2 ngày |
+| ST-15-03 | Prism Beam (`beam`): bắn, phản xạ, xuyên, dừng ở khiên Lính Kén (QB-16, QB-18); `Barrier` nhận tia (rễ khô Két Stage 1) | 02 | 1,5 ngày |
+| ST-15-04 | Trạng thái vô hiệu `disabledSec` cho mọi hành vi kẻ địch (QB-19); Frost Shard (`shard`, đóng băng); `CoolantFlow` (Két Stage 2). **Điều kiện của Phase Step (ST-08-09)** | 01b | 2 ngày |
+| ST-15-05 | Gale Cutter (`boomerang`, hủy tối đa 2 đạn kẻ địch thường mỗi lần ném); sương lạnh = `Barrier` (Két Stage 3) | 01c | 1,5 ngày |
+| ST-15-06 | Kẻ địch dùng lại hành vi: Gương Quang (`drone` + `bounces`, `bankShot`), Người Tuyết Máy (dữ liệu), Tháp Băng (`turret` + `lob`), Frost Titan (`golem` + `landShockwave`), kèm bản Thử thách | 01a, 01b | 2 ngày |
+| ST-15-08a | `CrumblePlatform` (break, sink) và bệ mây trôi (đường hai điểm): phần cơ chế **không** đụng `player-physics` | 01b, 01c | 1 ngày |
+| ST-15-09 | Mini-boss Prism Sentinel và Gale Roc: lớp `Boss` + bộ chuyển cho `LockedRoom` (Q1 đã chốt; Frost Titan dùng `golem` ở ST-15-06). Gió đẩy của Vỗ Cánh nối vào `WindZone` ở ST-15-08b | 01c, 02, 14, 15 | 2,5 ngày |
+| ST-15-10 | Boss Lumen: `beam`, dịch chuyển, `focus` (Thử thách); mô phỏng bot | 02, 14 | 2 ngày |
+| ST-15-13 | Phòng thử ASCII cho phần trước cổng (kẻ địch, cơ chế, mini-boss, Lumen), nối màn Chuẩn bị và hội thoại boss; tín hiệu hướng dẫn mới. Phòng của 07, 08b, 11, 12 thêm trong chính các Story đó | 02–06, 08a, 09, 10 | 1,5 ngày |
+| ST-15-14 | **Boss an toàn:** `weakStunCooldownSec` 1,5 s chống khóa choáng (QB-14), `phaseShiftSec` 0,6 s khi một đòn vượt hai ngưỡng pha (QB-31); áp cả Thorna | 01a | 1 ngày |
+| ST-15-15 | **Kẻ địch:** mini-boss báo trước ≥ 0,5 s (QB-21); tầm hoạt động dọc 7 ô, chỉ báo trước và bắn khi đã trên màn (QB-23) | 01a | 1 ngày |
+| ST-15-16 | **Nano Cell và vật phẩm năng lượng** (QB-17, QB-50…54): dữ liệu và logic thuần; nút cảm ứng ở EP-14 | 01a | 1 ngày |
+
+**Phải chờ cổng** (phụ thuộc cảm giác điều khiển hoặc `player-physics`):
+
+| Mã | Tên | Phụ thuộc | Cỡ |
+| --- | --- | --- | --- |
+| ST-15-08b | Sàn trơn (gia tốc, ma sát theo loại ô) và `WindZone` trong `player-physics`, kèm `wind.hurtIgnores` (QB-07) | Qua cổng, 01b, 01c | 1,5 ngày |
+| ST-15-07 | Kẻ địch hành vi mới: Tháp Laser (`laserTurret`), Chim Cắt Gió (`diver`), Cối Xoáy (`fan`), kèm bản Thử thách. Tháp Laser chỉ cần ST-15-02, có thể tách làm sớm nếu thiếu việc trước cổng | 02, 08b, 01c | 2,5 ngày |
+| ST-15-11 | Boss Cryo: `slam.slickFloorSec`, `shatter` (Thử thách); mô phỏng bot | 08a, 08b, 14 | 2 ngày |
+| ST-15-12 | Boss Aeris: bay, `shot.aim`, `gust`, `rain` + hút, `twister` (Thử thách); mô phỏng bot. Tầm với Aeris (độ cao bay 3–6 ô, lốc ≤ 2,5 ô) là tham số, chốt ở ST-17-01 | 08b, 14 | 2,5 ngày |
+| ST-17-01 | Đo metric thật bằng thang khe trong phòng thử (có và không có gió, trên băng); chốt `ice.*`, `wind.*`, `crumble.triggerSec`, góc gương, độ cao bay và lốc Aeris, khe né đòn boss | Qua cổng, ST-15-08b, ST-15-13 | 1 ngày |
+| ST-17-02 | Bản đồ Tiled Stage 2 (A–D, phòng boss, checkpoint theo độ khó gồm CP3b, CP-S3, bí mật, Két, Gương Rối); test đồ thị đường chính chỉ cần bộ động tác gốc + Arc Cannon | ST-17-01; EP-16 (Tiled, camera QB-120); Story checkpoint vùng chữ nhật (QB-40); tài liệu truyện Memory Log 2–4 (Q10) | 2 ngày |
+| ST-17-03 | Bản đồ Tiled Stage 3 | Như ST-17-02; ST-15-11 | 2 ngày |
+| ST-17-04 | Bản đồ Tiled Stage 4 (cuộn dọc, checkpoint vùng chữ nhật) | Như ST-17-02; ST-15-07, ST-15-12 | 2 ngày |
+| ST-17-05 | Bước hướng dẫn NOVA Stage 2–4 trên bản đồ thật | ST-17-02…04 | 1 ngày |
+| ST-17-06 | Cân bằng: tính lại `enemyRewardMul {exp, coreBit}` theo số kẻ địch thật (giữ Σ EXP = `expBudget` ± 5%); chốt máu boss bằng mô phỏng; chốt số bản Thử thách | ST-17-02…04 | 1 ngày |
 | ST-17-07 | QA: chạy thử Chromium và Pixel 7 giả lập, ảnh Look Rule, nghiệm thu mục 3.12, 4.12, 5.12 | tất cả | 1 ngày |
 
-Tổng khoảng 26 ngày trước cổng và 10 ngày sau cổng. Thứ tự trước cổng: 01 → 02 → (03, 04, 05, 06, 08 song song theo sức) → 07 → 09 → 10 → 11 → 12 → 13.
+**Tổng:** khoảng 21 ngày trước cổng (15 Story của EP-15) và 18,5 ngày chờ cổng (ST-15-07, 08b, 11, 12: 8,5 ngày; EP-17: 10 ngày), cộng 39,5 ngày. Bản 1 ghi 26 + 10 ngày: phần trước cổng giảm vì 4 Story dời sang chờ cổng, dù thêm ST-15-14…16 và tách ST-15-01.
 
-## 11. Câu hỏi mở
+**Thứ tự trước cổng:** 01a → (01b, 01c) → 02 → (14, 15, 16) → (03, 04, 05, 06, 08a song song theo sức) → 09 → 10 → 13.
+**Thứ tự sau cổng:** 08b → 17-01 → 07 → 11 → 12 → (17-02, 17-03, 17-04) → 17-05 → 17-06 → 17-07.
 
-1. **Mini-boss chạy bằng lớp nào?** (a) Lớp `Boss` (có pha, hàng đợi đòn, kiểm telegraph, `exposed`) chạy trong phòng khóa qua bộ chuyển để `LockedRoom` đếm được; (b) mỗi mini-boss một hành vi kẻ địch như `golem`. Đề xuất: (a) cho Prism Sentinel, Gale Roc (cần `beam`, `charge`, `thorns`, `rain` có sẵn trong `Boss`); (b) cho Frost Titan (dùng lại `golem`). Cần Technical Director duyệt.
-2. **Thưởng kẻ địch theo màn:** `enemyRewardMul` (đề xuất) hay nhân bản kẻ địch theo màn (`buom_sat_s4`), hay giữ thưởng kẻ địch và tăng thưởng boss, rương? Phương án khác: hạ cấp khuyến nghị Stage 3–4 để khớp EXP thấp hơn.
-3. **Lumen: Vine Lash phủ gương.** Có thêm luật "Vine Lash trúng gương đấu trường thì gương bị phủ dây leo `coverSec = 6` s, Tia Phản Xạ dừng ở gương đó" không? Tăng khoảnh khắc "à, thì ra thế" nhưng thêm một cơ chế. Đề xuất: để sau Story ST-15-10, thử trong phòng thử rồi quyết.
-4. **Gale Cutter hủy đạn:** phạm vi (`enemyShot`, `bomb`, tối đa 3 mỗi lần ném, không hủy đạn boss) có làm Bướm Sắt và Drone Lính quá dễ không?
-5. **Sát thương boss tăng theo màn** (18 → 20 → 22 → 24): đồng ý, hay giữ trần 18 như Thorna cho mọi boss MVP?
-6. **Laser môi trường gây sát thương kẻ địch** (2 mỗi lần bật): giữ để có lối chơi dụ địch, hay bỏ cho đơn giản?
-7. **Két Chân Mk I trong MVP:** hiện khóa (đề xuất) hay ẩn tới Alpha?
-8. **Tên giáp:** `leg_mk1` (`stages.json`) hay `legs_mk1` (danh mục tên chuẩn)?
-9. **Nhiệm vụ phụ:** cách đếm, lưu và hiển thị theo `15-Nhiem-vu-phu.md` (Draft, chưa duyệt). Cần chốt chéo: đặt đoạn thử Stage 3, 4 ở đầu đoạn C (ngay sau CP2) như tài liệu này đề xuất có khớp luật khoảng cách `zoneCheckpointMaxTiles` không.
-10. **Nội dung Memory Log 2–4** (lý lẽ cho kết thúc C, GDD 3.5): cần tài liệu truyện riêng.
-11. **Đổi góc gương bằng đạn nạp vừa** (đề xuất, an toàn cho tự bắn trên cảm ứng) hay bằng mọi đạn kèm hồi 0,4 s (nhanh hơn trên bàn phím)? Cần thử trên cảm ứng ở đợt chơi thử.
-12. **Frost Shard đóng băng kẻ địch thành bục đứng được** (kiểu Mega Man)? Đề xuất không ở MVP: thêm va chạm động và nguy cơ lách đường.
-13. **Gió có tác động lên đạn kẻ địch?** Đề xuất không (đọc được, công bằng); nếu có thì vạch báo trước phải tính cả gió.
-14. **Aeris bay trong đấu trường cao 12 ô:** đủ chỗ cho 3 bệ mây, lốc cao 3 ô và Mắt Bão không? Kiểm ở phòng thử ST-15-12 trước khi chốt 24 × 12.
-15. **Khoảng Thử thách ở ranh giới:** A + B = 4,0 phút cả ba màn; người chơi Thử thách chết nhiều hơn nên thời gian thật dài hơn. Có đo bằng thời gian thật của người thử (không phải thời gian thiết kế) không?
+## 11. Quyết định (chốt 14/11/2026, ủy quyền)
+
+1. **Mini-boss chạy bằng lớp nào?** Chốt: Prism Sentinel và Gale Roc dùng lớp `Boss` (pha, hàng đợi đòn, kiểm telegraph, `exposed`), chạy trong phòng khóa qua bộ chuyển để `LockedRoom` đếm được. Frost Titan dùng hành vi `golem` (ST-15-06, ST-15-09).
+2. **Thưởng kẻ địch theo màn.** Chốt: `stages.json → enemyRewardMul` tách `{exp, coreBit}`; EXP của màn khớp `expBudget` (mục 2.1).
+3. **Lumen: Vine Lash phủ gương.** Chốt: không làm ở MVP.
+4. **Gale Cutter hủy đạn.** Chốt: hủy `enemyShot`, `bomb` của kẻ địch thường, tối đa **2** mỗi lần ném; không hủy đạn mini-boss, boss (mục 5.7).
+5. **Sát thương boss theo màn.** Chốt: 18 → 20 → 22 → 24 (mục 2.2).
+6. **Laser môi trường gây sát thương kẻ địch?** Chốt: không, `laser.hurtsEnemies = false` (mục 3.3).
+7. **Két Chân Mk I trong MVP.** Chốt: hiện, khóa, ghi "cần Quake Drill" (mục 5.8).
+8. **Tên giáp.** Chốt: `leg_mk1` (như `stages.json`).
+9. **Nhiệm vụ phụ.** Chốt: đếm, lưu, hiển thị theo `15-Nhiem-vu-phu.md` (bản 2). Đoạn thử Stage 3, 4 ở đầu đoạn C; CP2 cách mép vào ≤ 20 ô, khớp `zoneCheckpointMaxTiles`; CP-S2 sau mép đích (mục 4.8, 5.8).
+10. **Nội dung Memory Log 2–4.** Chốt: viết tài liệu truyện riêng trước ST-17-02.
+11. **Đổi góc gương.** Chốt: bằng đạn nạp vừa (mục 3.3).
+12. **Frost Shard đóng băng kẻ địch thành bục?** Chốt: không ở MVP.
+13. **Gió tác động đạn kẻ địch?** Chốt: không (mục 5.3).
+14. **Đấu trường Aeris.** Chốt: giữ 24 × 12; Aeris bay ở độ cao 3–6 ô, Lốc Xoáy cao ≤ 2,5 ô (mục 5.6); kiểm ở phòng thử ST-15-12, chốt số ở ST-17-01.
+15. **Khoảng Thử thách ở ranh giới.** Chốt: thiết kế theo thời gian thiết kế; đợt MVP đo trung vị thời gian thật; khoảng nào vượt 4,5 phút thì rút ngắn đoạn (mục 2.4).
+
+### 11.1 Rủi ro còn lại
+
+- **Vòng khắc chế mỏng:** vũ khí khắc chế chỉ mạnh khoảng 1,6 × Arc Cannon và bị `weakStunCooldownSec` cắt bớt choáng. Đo bằng mô phỏng ở ST-15-10…12.
+- **Stage 4 dồn rủi ro cảm ứng:** gió, bệ mây, cuộn dọc, Aeris bay và Chim Cắt Gió bổ nhào cùng một màn. Đo riêng số lần hỏng trên cảm ứng ở đợt MVP.
+- **Khối lượng:** EP-15/17/18 khoảng 50 ngày (39,5 ở mục 10 + 10,5 của EP-18; bản 1 ước 46 ngày, trước khi thêm ST-15-14…16). Cổng đổi thông số nhảy hoặc lướt thì phải làm lại EP-17.
+
+## 12. Kết quả duyệt
+
+Duyệt độc lập 14/11/2026, người dùng giao toàn quyền nên trạng thái là "Approved (ủy quyền)".
+
+| Người duyệt | Điểm | Đã sửa |
+| --- | --- | --- |
+| Creative Director | EXP theo "cấp khuyến nghị thấp của màn kế" lệch `expBudget` (GDD 10 mục 0); một hệ số cho cả EXP và Core Bit không khớp được cả hai | Mục 1, 2.1, 2.2, 3.4–3.6, 4.4–4.6, 5.4–5.6, 6, 9: tách `{exp, coreBit}`, EXP mỗi màn 660 / 1.101 / 1.602, kiểm ± 5% lúc nạp |
+| Creative Director | Vòng khắc chế mỏng: Prism Beam 0,45 s chỉ 8,3/s khi đánh Cryo | Mục 2.3, 3.7: bất biến ≥ 12/s, `cooldownSec` 0,3; trỏ QB-14 |
+| Creative Director | Lốc Xoáy cao 3 ô chật trong đấu trường 12 ô; Aeris bay tới 7 ô khó với | Mục 5.6: Aeris 3–6 ô, lốc ≤ 2,5 ô |
+| Creative Director | Đoạn thử Cirrus cần vào từ cạnh bên, sàn an toàn; CP2 phải gần mép vào | Mục 4.8, 4.9, 5.8, 5.9 |
+| Technical Director + Producer | Khoảng CP3 → CP4 ở Thường 3,0–4,0 phút, vượt 150 s (QB-111); Stage 2 thiếu checkpoint Cốt truyện giữa D | Mục 1, 2.4, 3.2, 3.9, 4.2, 4.9, 5.2, 5.9: CP3b, CP-S3 Stage 2, "> 90 s" |
+| Technical Director + Producer | Prism Beam gặp khiên chưa có luật; gió đẩy Kai khi bị đánh | Mục 3.7 (QB-16, QB-18); mục 5.3, 5.11 (`wind.hurtIgnores`, QB-07) |
+| Technical Director + Producer | Dọn dẹp: laser hại kẻ địch thêm cơ chế; trỏ cũ về nhiệm vụ phụ; dòng "Tên giáp lệch"; Thorna 60–90 s | Mục 3.3 (`hurtsEnemies = false`), 1.1, 8, 9, 2.2 (45–65 s) |
+| Technical Director + Producer | Story: ST-15-08 sửa `player-physics` trước cổng; phụ thuộc ghi bằng số trơn; thiếu Story cho QB-14, 21, 23, 31, 17, 50…54 | Mục 10: tách 01a–c và 08a/b; 07, 08b, 11, 12 chờ cổng; thêm ST-15-14…16; phụ thuộc EP-16, QB-40, Memory Log |
