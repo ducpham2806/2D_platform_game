@@ -211,6 +211,7 @@ export const EVENT_SPECS = {
       weakHits: int(),
       swaps: int(),
       bossHpPct: pct,
+      weaknessOwned: bool,
       device,
       gameSpeed,
     },

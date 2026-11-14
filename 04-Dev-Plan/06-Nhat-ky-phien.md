@@ -25,6 +25,19 @@ Mẫu:
 
 ---
 
+## 2026-11-14: EP-13 ST-13-05a báo cáo cổng MVP (MV1–MV7, H1–H4)
+
+- **Nhánh / commit:** `ccr-9de01342-2046rb` (không merge vào `main` trong đợt thử G1); commit ST-13-05a.
+- **Mục tiêu:** làm tiếp kế hoạch: bộ báo cáo cổng MVP (`npm run mvp-report`), có bộ dữ liệu mẫu có đáp án.
+- **Đã làm:** `logic/telemetry/report-data.ts` (đọc gói xuất, bảng tải, mảng lô; kiểm, khử trùng QB-152; lọc đợt, build, cửa sổ đo; loại staff, phiên ngắn, ghi rác; dựng lượt qua phiên QB-154), `report.ts` (MV1–MV7 kèm Wilson, H1–H4 ba trạng thái, phễu, theo màn, thiết bị, F1, việc đề xuất theo 7.4, Markdown), `core/mvp-report.ts`, `scripts/mvp-report.mjs` (Vite `runnerImport`). `boss_start`/`boss_end` ghi `weaknessOwned` (MV6 trước đây luôn n = 0); danh mục boss gồm Lumen, Cryo, Aeris; `stages.json` thêm `expectedMin`, `bossFightSec`; khối `report` trong `telemetry.json`.
+- **Duyệt:** QA Lead duyệt GDD 13 mục 6–7 kèm sửa: áp hết 10 sửa bắt buộc vào GDD 13 bản 1.2 (xong màn theo `boss_end{win}` đúng boss; sắp phiên theo `t`; đoạn theo `segments`; MV6 không suy từ `dmg`; ngày 0 bắt buộc; Chưa kết luận khi còn Biên/Thiếu dữ liệu).
+- **File chính:** `game/src/logic/telemetry/report*.ts`, `game/src/core/mvp-report.ts`, `game/scripts/mvp-report.mjs`, `game/tests/mvp-{sample,report}.ts`, `03-Data/{stages,telemetry}.json`, `01-GDD/13-Do-luong-MVP.md`, `stories/EP-13-do-luong.md`, `qa/ST-13-05/`.
+- **Quyết định:** khối `report` game không đọc (lỗi không tắt đo lường); thời gian dự kiến, thời gian thắng boss ở `stages.json` (không thêm boss rỗng vào `bosses.json`); giờ chơi tối thiểu khi tính ghi rác 15 phút (1 giờ làm người chơi nhiều bị loại nhầm).
+- **Lỗi tìm thấy / đã sửa:** bản nháp tính "xong màn" theo `stage_end`, sắp phiên theo `sid`, loại install theo tổng phiên (QA Lead chỉ ra, đã sửa trước commit).
+- **Kiểm tra:** 476 test (thêm 20), typecheck, lint, format, build, docs-check đạt; chạy `npm run mvp-report` thật trên bộ mẫu, báo cáo ở `qa/ST-13-05/`.
+- **Còn dở:** ST-13-05b (K, DK, T, X, S). Prologue chưa ghi `stage_end{clear}` (chưa có Prologue); bản đồ thật phải dùng id đoạn `A`–`D`, `boss`.
+- **Tiếp theo:** người dùng: chơi thử G1, chọn ADR-002. Em: ST-13-05b, rồi test khóa luật QB (mục 3 của `00-Bat-dau.md`).
+
 ## 2026-11-14: Hướng đồ họa 2.5D three.js: demo phòng Thorna (EP-22 ST-22-01)
 
 - **Nhánh / commit:** `ccr-9de01342-2046rb` (không merge vào `main` trong đợt thử G1); commit demo 2.5D.
@@ -44,14 +57,3 @@ Mẫu:
 - **Quyết định:** chỉ màn chiến dịch mới ghi; lớp nối nằm trong `src/scenes/` vì luật lint chỉ cho scene import Phaser; mã lỗi lưu, phiên mới sau 30 phút ẩn, `msToControl` chuyển sang ST-13-03.
 - **Kiểm tra:** 453 test (thêm 7), typecheck, lint, format, build, docs-check đạt; chạy thử Chromium Pixel 7: không cờ thì 0 bộ ghi, 0 request; có cờ thì 17 sự kiện đúng chuỗi, 0 sai lược đồ, 0 lỗi console (`qa/ST-13-02/`); `gate-flow` đạt.
 - **Tiếp theo:** ST-13-05 báo cáo (`report.ts`, `npm run mvp-report`). Người dùng: chơi thử G1, chọn hướng đồ họa, chọn kênh gửi (ADR-002).
-
-## 2026-11-14: EP-13 ST-13-01 lõi đo lường (duyệt Technical Director GDD 13)
-
-- **Nhánh / commit:** `ccr-9de01342-2046rb` (sau merge PR #10, #11; không merge vào `main` trong đợt thử G1); commit ST-13-01.
-- **Mục tiêu:** người dùng giao "làm tiếp theo plan": việc code số 2 của `00-Bat-dau.md`, EP-13 lõi đo lường.
-- **Quy trình:** agent Technical Director duyệt GDD 13 trước khi code: "duyệt kèm sửa", 12 điểm (byte = độ dài JSON ASCII; lô bất biến; bộ đệm không bao giờ vượt; khử trùng theo install+sid+n; id theo danh mục; làm phẳng `audio`; enum còn thiếu; làm sạch lỗi; tắt gửi không ghi `consent: off`; `telemetry.json` thêm trường, không bắt buộc; dấu vân tay `data` trừ `telemetry.json`; hiệu năng). Đã sửa hết vào GDD 13 bản 1.1 và code.
-- **Code:** `logic/telemetry/` (schema 26 sự kiện, validate, text, buffer, batch, logger), `logic/hash.ts`, `core/telemetry-config.ts`, `core/telemetry-catalogs.ts`, `03-Data/telemetry.json`. Bản thường chưa gọi lõi.
-- **Tài liệu:** Epic `stories/EP-13-do-luong.md` (Story ST-13-01 theo mẫu), `17-Quy-tac-bien.md` bản 1.4 (mục 10.1, QB-150…157, 101 luật), `game/docs/quyet-dinh/do-luong.md`, CONTEXT, bản đồ hệ thống.
-- **Lỗi tìm thấy / đã sửa:** bản nháp đầu đếm sự kiện bị bỏ đúng luật vào `lost`; sửa (chỉ đếm `lost` khi không còn gì bỏ được).
-- **Kiểm tra:** 446 test (thêm 21), typecheck, lint, format, build, docs-check đạt; `gate-flow` đạt (PC, cảm ứng).
-- **Tiếp theo:** ST-13-02 nối sự kiện (StageWorld: sát thương theo vũ khí, nguồn cú đánh cuối, chữ ký build; mã lỗi SaveManager), ST-13-05 báo cáo. Người dùng: chơi thử G1, chọn hướng đồ họa, chọn kênh gửi (ADR-002).

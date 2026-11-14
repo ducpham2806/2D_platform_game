@@ -61,5 +61,19 @@
     "minGroup": 5,
     "answerShareMin": 0.7
   },
-  "broken": { "quitSameSection": 0.3, "buildTimeRatio": 2, "buildMinGroup": 3, "bossTtkFrac": 0.1 }
+  "broken": { "quitSameSection": 0.3, "buildTimeRatio": 2, "buildMinGroup": 3, "bossTtkFrac": 0.1 },
+  "report": {
+    "_note": "Chỉ cho npm run mvp-report (GDD 13 mục 6, 7.3), game không đọc. stages: Prologue và các màn của đợt, theo thứ tự (thời gian dự kiến, thời gian thắng boss ở stages.json). tzMin: múi giờ đợt (phút lệch UTC) để cắt cửa sổ đo. upgradeBins: tổng cấp Upgrade ≤ a, ≤ b, còn lại (H3). skillTieMax: nhánh nhiều bậc nhất hơn nhánh kế ≤ chừng này bậc thì build cân bằng. windowDays: cửa sổ đo từ ngày 0 tới hết ngày này. missingWeaknessMax: trận boss thiếu weaknessOwned quá tỷ lệ này thì MV6 Thiếu dữ liệu. maxDayJump: ngày giữa hai phiên lùi hoặc nhảy quá chừng này thì bỏ người đó khỏi MV4 (đổi giờ máy). shortSessionSec: đếm install chỉ có một phiên ngắn hơn chừng này (tab ẩn danh). spamRateMul, spamMinHours: install có sự kiện mỗi giờ (giờ chơi tính tối thiểu spamMinHours) quá spamRateMul lần trung vị thì loại (ghi rác). maxInstalls: hơn chừng này install thì báo xem lại nguồn link (mục 9).",
+    "stages": ["prologue", "verdant_gardens", "prism_institute", "cryo_vault", "cirrus_tower"],
+    "tzMin": 420,
+    "windowDays": 7,
+    "upgradeBins": [2, 5],
+    "skillTieMax": 1,
+    "missingWeaknessMax": 0.1,
+    "maxDayJump": 30,
+    "shortSessionSec": 120,
+    "spamRateMul": 3,
+    "spamMinHours": 0.25,
+    "maxInstalls": 60
+  }
 }

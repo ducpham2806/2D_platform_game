@@ -493,6 +493,7 @@ describe('dấu vân tay dữ liệu, id vũ khí', () => {
     expect(catalogs.stage?.has('verdant_gardens')).toBe(true);
     expect(catalogs.stage?.has('prologue')).toBe(true);
     expect(catalogs.boss?.has('thorna')).toBe(true);
+    expect(catalogs.boss?.has('aeris')).toBe(true);
     expect(catalogs.weapon?.has('vineLash')).toBe(true);
   });
 });

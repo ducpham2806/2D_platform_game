@@ -187,12 +187,24 @@ describe('đo lường một lượt màn (ST-13-02, GDD 13 mục 10 ý 1)', () 
       streak: 1,
     });
     expect(by('checkpoint')).toMatchObject({ index: 1 });
-    expect(by('boss_start', 0)).toMatchObject({ boss: 'thorna', attempt: 1 });
+    // Thorna khắc chế bằng Ember Burst (Stage 8): chưa có (6.1, MV6 không tính Thorna).
+    expect(by('boss_start', 0)).toMatchObject({
+      boss: 'thorna',
+      attempt: 1,
+      weaknessOwned: false,
+      weaponsOwned: ['arcCannon'],
+    });
     expect(by('death', 1)).toMatchObject({ section: 'boss', kind: 'death' });
     expect(by('boss_end', 0)).toMatchObject({ boss: 'thorna', outcome: 'death' });
     expect(by('boss_start', 1)).toMatchObject({ attempt: 2 });
     const win = by('boss_end', 1);
-    expect(win).toMatchObject({ outcome: 'win', bossHpPct: 0, device: 'touch', gameSpeed: 1 });
+    expect(win).toMatchObject({
+      outcome: 'win',
+      bossHpPct: 0,
+      device: 'touch',
+      gameSpeed: 1,
+      weaknessOwned: false,
+    });
     expect((win.dmg as Record<string, number>).arcCannon).toBeGreaterThan(0);
     expect(win.fightSec).toBeGreaterThan(0);
     const end = by('stage_end');

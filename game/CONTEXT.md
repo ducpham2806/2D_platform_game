@@ -52,9 +52,11 @@ src/
   logic/playtest/         nhật ký chơi thử, tổng hợp theo ngưỡng "hỏng" GDD 17, xuất/gộp JSON,
                           danh sách thông số của bảng chỉnh cảm giác (thuần)
   logic/telemetry/        M16 đo lường MVP (EP-13): lược đồ sự kiện, kiểm lược đồ (id theo danh mục), bộ đệm theo
-                          ưu tiên (lô bất biến, cutBatch/ack), lô và gói xuất JSON, bộ ghi Telemetry (thuần)
+                          ưu tiên (lô bất biến, cutBatch/ack), lô và gói xuất JSON, bộ ghi Telemetry; báo cáo
+                          cổng MVP (report-data: đọc, khử trùng, dựng lượt; report: MV1–MV7, H1–H4, Markdown) (thuần)
   logic/hash.ts           FNV-1a dùng chung (mã sao lưu, dấu vân tay 03-Data cho đo lường)
   core/telemetry-*.ts     kiểm tra 03-Data/telemetry.json (không bắt buộc: lỗi thì tắt đo lường); danh mục id
+  core/mvp-report.ts      tham số báo cáo MVP (telemetry.json → report + stages.json), runMvpReport (thuần)
   stages/                 danh sách màn (StageDef: 'ascii' hoặc 'tiled'; `boss` chọn boss trong bosses.json):
                           màn xám Prototype, phòng thử kẻ địch, phòng boss Thorna, phòng Golem (ASCII),
                           phòng thử màn chơi M7 (Tiled)
@@ -101,6 +103,7 @@ scripts/sync-data.mjs     chép dữ liệu 03-Data → public/data
 scripts/ascii-to-tiled.mjs  dựng bản đồ Tiled JSON từ bản phác ASCII (bản đầu, rồi sửa bằng Tiled)
 scripts/gate-check.mjs    đo cổng Prototype bằng Playwright: dung lượng, thời gian vào game, FPS khi
                           CPU chậm, độ trễ phím/chạm (xem 04-Dev-Plan/05-Cong-Prototype.md)
+scripts/mvp-report.mjs    báo cáo cổng MVP từ lô đo lường (đọc file, ghi Markdown; tính ở core/mvp-report.ts)
 ```
 
 ## Quyết định đã chốt (theo module)
@@ -116,7 +119,7 @@ scripts/gate-check.mjs    đo cổng Prototype bằng Playwright: dung lượng,
 | `docs/quyet-dinh/shop.md`                                | Quầy Mira, giá, lịch mở, tác dụng Upgrade, giao dịch                                                      |
 | `docs/quyet-dinh/do-kho.md`                              | Ba độ khó, màn Chuẩn bị, checkpoint theo độ khó, bản Thử thách                                            |
 | `docs/quyet-dinh/cong-prototype.md`                      | Nhật ký chơi thử, Pages, bản `?gate=1`                                                                    |
-| `docs/quyet-dinh/do-luong.md`                            | Đo lường MVP (M16): lược đồ, bộ đệm, lô, làm sạch lỗi, dấu vân tay dữ liệu                                |
+| `docs/quyet-dinh/do-luong.md`                            | Đo lường MVP (M16): lược đồ, bộ đệm, lô, làm sạch lỗi, dấu vân tay dữ liệu, báo cáo cổng                  |
 
 ## Module và trạng thái
 
@@ -137,7 +140,7 @@ Mỗi module một dòng; chi tiết ở file quyết định và Epic.
 - **ĐK Ba độ khó:** Xong cho Stage 1 (EP-10). Còn: checkpoint theo độ khó trên bản đồ thật, chốt số mẫu đòn (sau cổng), Stage 2–4.
 - **M11 Lưu:** Xong lưu cục bộ, bản lưu 4, mã sao lưu. Còn: cloud (Beta).
 - **M12 Âm thanh:** Chưa làm; tài liệu Draft (`01-GDD/12-Am-thanh.md`); EP-12 làm được ngay.
-- **M16 Đo lường MVP:** Lõi xong (ST-13-01); nối vào game xong (ST-13-02a/b, 14/11): StageWorld có nguồn đòn và sát thương boss theo vũ khí, `StageTracker` ghi một lượt màn, sự kiện meta (phiên, khởi động, Quầy, Xưởng, hướng dẫn, gợi ý NOVA, lỗi trang). Tạm bật bằng `?debug=1&telemetry=1`, chỉ trong bộ nhớ. Còn: cờ `?mvp=`, kho, mã lỗi lưu, phiên mới sau 30 phút ẩn (ST-13-03), gửi (ST-13-04, chờ ADR-002), báo cáo (ST-13-05). Bản thường không ghi gì.
+- **M16 Đo lường MVP:** xong lõi (ST-13-01), nối vào game (ST-13-02a/b: nguồn đòn, sát thương boss theo vũ khí, `StageTracker`, sự kiện meta; tạm bật `?debug=1&telemetry=1`, chỉ bộ nhớ), báo cáo MV1–MV7, H1–H4 (ST-13-05a, `npm run mvp-report`). Còn: `?mvp=`, kho, mã lỗi lưu, QB-154 (ST-13-03), gửi (ST-13-04, chờ ADR-002), K, DK, T, X, S (ST-13-05b). Bản thường không ghi gì.
 - **M13–M15, M17, M18:** Chưa làm (sau cổng MVP).
 - **Cổng Prototype:** Công cụ xong (`?gate=1`, `gate-check`, `gate-flow`). Còn: chơi thử 5 người thật.
 
@@ -156,6 +159,7 @@ npm run format:check  # Prettier (kiểm); npm run format để sửa
 npm run build         # typecheck + bản build trong dist/ (tự chạy sync-data)
 npm run gate-check    # đo cổng Prototype trên bản build (Playwright + Chromium)
 npm run gate-flow     # chạy thử trọn luồng người thử ?gate=1 (máy tính + Pixel 7)
+npm run mvp-report -- --day0 2026-11-20 --wave d1 <file.json>...   # báo cáo cổng MVP (GDD 13 mục 7.3)
 node scripts/demo25d-video.mjs <thư mục> 24 30   # quay video demo 2.5D từng khung (cần npm run build; mở demo: /demo-25d.html)
 npm run docs-check    # kiểm nhật ký ≤ 3 mục, ngân sách file đầu phiên, đường dẫn trong file chỉ mục (CI)
 ```

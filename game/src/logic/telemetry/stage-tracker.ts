@@ -14,7 +14,11 @@ import type { Props } from './schema';
 export interface TrackedWorld {
   readonly player: { readonly centerX: number };
   readonly phase: WorldPhase;
-  readonly boss: { readonly hpPct: number; readonly data: { readonly id: string } } | undefined;
+  readonly boss:
+    | { readonly hpPct: number; readonly data: { readonly id: string; readonly weakness: string } }
+    | undefined;
+  /** Vũ khí đang có (tên); `boss_start.weaponsOwned`, `weaknessOwned` (MV6). */
+  readonly loadout: { readonly slots: ReadonlyArray<{ readonly name: string }> };
   readonly bossDamage: ReadonlyMap<string, number>;
   readonly bossWeakHits: number;
   readonly deathStreak: number;
@@ -52,6 +56,7 @@ interface BossFight {
   dmg0: Map<string, number>;
   weak0: number;
   swaps: number;
+  weaknessOwned: boolean;
 }
 
 const round1 = (v: number): number => Math.round(v * 10) / 10;
@@ -197,17 +202,21 @@ export class StageTracker {
     const boss = this.world.boss;
     if (!boss || this.fight) return;
     this.attempts += 1;
+    const owned = this.world.loadout.slots.map((w) => w.name);
     this.fight = {
       attempt: this.attempts,
       startSec: this.runSec,
       dmg0: new Map(this.world.bossDamage),
       weak0: this.world.bossWeakHits,
       swaps: 0,
+      weaknessOwned: owned.includes(boss.data.weakness),
     };
     this.tel.log('boss_start', {
       stage: this.opts.stage,
       boss: boss.data.id,
       attempt: this.attempts,
+      weaknessOwned: this.fight.weaknessOwned,
+      weaponsOwned: owned.map(this.opts.weaponId),
     });
   }
 
@@ -229,6 +238,8 @@ export class StageTracker {
       weakHits: this.world.bossWeakHits - fight.weak0,
       swaps: fight.swaps,
       bossHpPct: outcome === 'win' ? 0 : Math.max(0, boss.hpPct),
+      // Ưu tiên 0, nên MV6 vẫn có khi `boss_start` (ưu tiên 1) bị bỏ lúc bộ đệm đầy.
+      weaknessOwned: fight.weaknessOwned,
       device,
       gameSpeed: this.gameSpeedMin,
     });

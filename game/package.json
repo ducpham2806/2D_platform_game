@@ -22,6 +22,7 @@
     "format:check": "prettier --check .",
     "gate-check": "node scripts/gate-check.mjs",
     "gate-flow": "node scripts/gate-flow.mjs",
+    "mvp-report": "node scripts/mvp-report.mjs",
     "docs-check": "node scripts/docs-check.mjs"
   },
   "dependencies": {

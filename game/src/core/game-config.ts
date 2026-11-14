@@ -41,6 +41,12 @@ export interface StageData {
   checkpoints: number;
   /** id kẻ địch thường của màn (enemies.json). */
   enemies: string[];
+  /** Đoạn của màn theo thứ tự (đoạn kẹt H1 của báo cáo MVP; bản đồ thật phải khớp). */
+  segments: string[];
+  /** Thời gian hoàn thành dự kiến (phút, H3); chỉ màn đã có đặc tả. */
+  expectedMin?: number;
+  /** Thời gian thắng boss theo thiết kế [ít nhất, nhiều nhất] giây (H4). */
+  bossFightSec?: [number, number];
 }
 
 export interface LevelSyncData {
@@ -124,6 +130,13 @@ export interface GameConfig {
   raw: Readonly<Record<string, unknown>>;
 }
 
+function fightRange(value: unknown, p: string): [number, number] {
+  const r = arr(value, `${p}.bossFightSec`);
+  if (r.length !== 2) throw new ConfigError(`${p}.bossFightSec: cần [ít nhất, nhiều nhất]`);
+  const lo = num(r[0], `${p}.bossFightSec[0]`, { min: 1 });
+  return [lo, num(r[1], `${p}.bossFightSec[1]`, { min: lo })];
+}
+
 export function parseStages(value: unknown): StagesData {
   const s = obj(value, 'stages');
   const stages = arr(s.stages, 'stages.stages').map((item, i) => {
@@ -143,6 +156,11 @@ export function parseStages(value: unknown): StagesData {
       coreBitBase: num(st.coreBitBase, `${p}.coreBitBase`, { min: 0 }),
       checkpoints: num(st.checkpoints, `${p}.checkpoints`, { min: 1 }),
       enemies: arr(st.enemies, `${p}.enemies`).map((e, j) => str(e, `${p}.enemies[${j}]`)),
+      segments: arr(st.segments, `${p}.segments`).map((e, j) => str(e, `${p}.segments[${j}]`)),
+      ...(st.expectedMin !== undefined
+        ? { expectedMin: num(st.expectedMin, `${p}.expectedMin`, { min: 0.1 }) }
+        : {}),
+      ...(st.bossFightSec !== undefined ? { bossFightSec: fightRange(st.bossFightSec, p) } : {}),
     };
   });
   const sync = obj(s.levelSync, 'stages.levelSync');

@@ -26,6 +26,11 @@
         "D"
       ],
       "checkpoints": 4,
+      "expectedMin": 10,
+      "bossFightSec": [
+        60,
+        90
+      ],
       "sideQuestId": "sq_verdant_gardens",
       "memoryLog": 1
     },
@@ -55,6 +60,11 @@
         "D"
       ],
       "checkpoints": 5,
+      "expectedMin": 11,
+      "bossFightSec": [
+        60,
+        90
+      ],
       "sideQuestId": "sq_prism_institute",
       "memoryLog": 2
     },
@@ -84,6 +94,11 @@
         "D"
       ],
       "checkpoints": 5,
+      "expectedMin": 11.5,
+      "bossFightSec": [
+        60,
+        90
+      ],
       "sideQuestId": "sq_cryo_vault",
       "memoryLog": 3
     },
@@ -113,6 +128,11 @@
         "D"
       ],
       "checkpoints": 5,
+      "expectedMin": 12,
+      "bossFightSec": [
+        75,
+        105
+      ],
       "sideQuestId": "sq_cirrus_tower",
       "memoryLog": 4
     },

@@ -26,7 +26,8 @@ export function telemetryCatalogs(config: GameConfig): Catalogs {
   return {
     stage: new Set([...config.stages.stages.map((s) => s.id), ...EXTRA_STAGE_IDS]),
     difficulty: new Set(config.difficulties.map((d) => d.id)),
-    boss: new Set(Object.keys(config.bosses)),
+    // Boss chiến dịch theo `stages.json` (Lumen, Cryo, Aeris chưa có trong `bosses.json`).
+    boss: new Set([...Object.keys(config.bosses), ...config.stages.stages.map((s) => s.boss)]),
     weapon: new Set(['arcCannon', ...config.weapons.bossWeapons.map((w) => weaponId(w.name))]),
     upgrade: new Set(Object.keys(config.shop.upgrades)),
     skillNode: new Set(Object.keys(config.skills.nodes)),
