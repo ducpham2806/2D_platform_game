@@ -25,6 +25,22 @@ Mẫu:
 
 ---
 
+## 2026-11-14: Cổng Prototype: chuẩn bị đợt chơi thử 1, cân bằng Thorna
+
+- **Nhánh / commit:** `ccr-9de01342-2046rb`; `55cf18f` (bản người thử), `5e82e50` (Thorna), commit tài liệu và `gate-flow`.
+- **Mục tiêu:** người dùng đồng ý quyết định Hoa Nở xuyên khiên và giao "làm tiếp cổng Prototype". Phần chơi thử 5 người cần người thật, nên phiên này chuẩn bị mọi thứ trước đợt 1.
+- **Đã làm:**
+  - Đo tự động lại trên bản build sau M8 (`npm run gate-check`): mọi hạng mục đạt (tải 1,50 MB, vào game 2,51 s ở CPU 4×, FPS 59,5–60, trễ p95 13–23 ms).
+  - Bản người thử `?gate=1`: menu chỉ còn Chơi, Điều khiển, Kết quả chơi thử; nút và menu tạm dừng ≥ 48 dp trên điện thoại.
+  - `npm run gate-flow`: chạy thử trọn luồng người thử trên máy tính và Pixel 7, gộp nhật ký; đạt.
+  - Thorna máu 100 → 250 theo mô phỏng; mẫu tin nhắn mời và phiếu quan sát trong `05-Cong-Prototype.md` mục 4.
+- **File chính:** `game/src/scenes/{menu-scene,ui}.ts`, `stage/pause-menu.ts`, `debug/flags.ts`, `game/scripts/gate-flow.mjs`, `03-Data/bosses.json`, `game/tests/{power-cap,thorna,hud}.test.ts`, `04-Dev-Plan/05-Cong-Prototype.md`, đặc tả Stage 1 mục 5.
+- **Quyết định:** Thorna 250 máu (`[PLACEHOLDER]`): 100 máu thì bot không né thắng sau 15 s; 250 thì bot không né thua ở cấp 4 kể cả build Core đủ bậc; người né được cần khoảng 45–65 s. Tiêu chí GDD 10 "phòng thủ không thay được né" đạt lại.
+- **Lỗi tìm thấy / đã sửa:** người thử dễ vào nhầm phòng thử khác (chỉ màn xám ghi nhật ký); nút menu và menu tạm dừng chỉ cao 28–30 dp trên điện thoại. Không có lỗi mất phím khi nhấn nhả rất nhanh (đã thử).
+- **Kiểm tra:** 348 test, lint, format, build đạt; `gate-check` và `gate-flow` đạt. Ảnh ở `04-Dev-Plan/qa/cong-prototype/`.
+- **Còn dở:** chơi thử 5 người (≥ 3 cảm ứng) chưa làm; cần merge nhánh vào `main` để GitHub Pages đăng bản mới.
+- **Tiếp theo:** 1. Merge vào `main`, kiểm tra link `?gate=1`, gửi người thử, tổng hợp vào mục 7. 2. Theo kết quả: chỉnh cảm giác, hoặc qua cổng rồi chốt bản đồ Prologue/Stage 1. 3. Tài liệu âm thanh và đo lường MVP.
+
 ## 2026-11-14: Sprint 8, EP-08 ST-08-06…08 (Phantom, Vanguard, khiên Core)
 
 - **Nhánh / commit:** `ccr-9de01342-2046rb`; `e1001c0` (ST-08-06), `fcd59bc` (ST-08-07), `0af2359` (ST-08-08), commit tài liệu.
@@ -73,32 +89,3 @@ Mẫu:
   1. ST-08-06 → 08 (Phantom, Vanguard, Core: cơ chế tầng 2–3).
   2. Tài liệu âm thanh và đo lường MVP.
   3. Chơi thử cổng Prototype, gồm cân bằng Thorna.
-
-## 2026-11-14: Tài liệu M8 (kỹ năng, module, Két giáp, Xưởng) theo quy trình Game Studio Agent
-
-- **Nhánh / commit:** `ccr-9de01342-2046rb`.
-- **Mục tiêu:** người dùng giao "dùng Game Studio Agent triển khai tiếp tài liệu còn thiếu, đề xuất phương án tốt nhất".
-- **Đã làm:** đọc đầu vào bằng graphify. Theo bộ khung:
-  - `/map-systems`: bản đồ hệ thống, tài liệu còn thiếu, tên chuẩn.
-  - `/design-system`: GDD hệ thống theo mẫu 8 mục, so 5 phương án cây kỹ năng, chọn E.
-  - Hai Director duyệt độc lập (agent con): Creative Director; Technical Director + Producer, có chạy mô phỏng DPS bằng code game. Cả hai "duyệt kèm sửa"; đã kiểm chứng trên code và sửa thành bản 2.
-  - ADR-001 (Xưởng là bảng HTML); Epic EP-08 với 9 Story.
-- **File chính:** `01-GDD/10-He-thong-RPG-Xuong.md`, `04-Dev-Plan/07-Ban-do-he-thong.md`, `04-Dev-Plan/adr/ADR-001-xuong-bang-html.md`, `04-Dev-Plan/stories/EP-08-xuong-rpg.md`, `ST-08-01…09`.
-- **Quyết định đề xuất (chờ duyệt, GDD mục 10):**
-  - Cây E: 3 × 3 nút có bậc, 18 SP.
-  - Hạ công theo cấp 0,25 → 0,2.
-  - Tab Kỹ năng làm ngay; Module, Giáp khi có nội dung Stage 2–4; skin, Loadout sang Alpha.
-  - Chỉnh kỹ năng trong menu tạm dừng, áp khi hồi sinh.
-  - Build không giảm sát thương gai/hố.
-- **Lỗi tìm thấy:**
-  - GDD 6.1 mâu thuẫn trần ×2,2: cấp 30 × Upgrade đã 2,16, Citadel không đồng bộ cấp.
-  - Bản 1 tính sai: tăng tốc nạp áp cả nạp vừa nâng DPS tối đa khoảng 26–30% (`loadout.ts` bắn 1 phát khi bấm; mô phỏng 7,47 / 9,62).
-  - P3 bất tử có đồng hồ ẩn, vượt 20%.
-  - Cờ `airDash` cho lướt trên không vô hạn.
-  - Kẻ địch chưa có trạng thái choáng (Phase Step).
-- **Kiểm tra:** chỉ tài liệu, không đổi code; prettier đạt.
-- **Còn dở:** chờ người dùng duyệt; lan thay đổi sang GDD chính, Hub, hướng dẫn, wireframe (GDD mục 9) sau khi duyệt.
-- **Tiếp theo:**
-  1. Duyệt mục 10, rồi làm ST-08-01 → 05 (Vertical slice).
-  2. Tài liệu âm thanh MVP và đo lường MVP (bản đồ hệ thống mục 2).
-  3. Đặc tả Stage 2–4 sau cổng Prototype.

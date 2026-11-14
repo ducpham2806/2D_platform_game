@@ -4,6 +4,35 @@ Các mục cũ chuyển từ `04-Dev-Plan/06-Nhat-ky-phien.md`, mới nhất ở
 
 ---
 
+## 2026-11-14: Tài liệu M8 (kỹ năng, module, Két giáp, Xưởng) theo quy trình Game Studio Agent
+
+- **Nhánh / commit:** `ccr-9de01342-2046rb`.
+- **Mục tiêu:** người dùng giao "dùng Game Studio Agent triển khai tiếp tài liệu còn thiếu, đề xuất phương án tốt nhất".
+- **Đã làm:** đọc đầu vào bằng graphify. Theo bộ khung:
+  - `/map-systems`: bản đồ hệ thống, tài liệu còn thiếu, tên chuẩn.
+  - `/design-system`: GDD hệ thống theo mẫu 8 mục, so 5 phương án cây kỹ năng, chọn E.
+  - Hai Director duyệt độc lập (agent con): Creative Director; Technical Director + Producer, có chạy mô phỏng DPS bằng code game. Cả hai "duyệt kèm sửa"; đã kiểm chứng trên code và sửa thành bản 2.
+  - ADR-001 (Xưởng là bảng HTML); Epic EP-08 với 9 Story.
+- **File chính:** `01-GDD/10-He-thong-RPG-Xuong.md`, `04-Dev-Plan/07-Ban-do-he-thong.md`, `04-Dev-Plan/adr/ADR-001-xuong-bang-html.md`, `04-Dev-Plan/stories/EP-08-xuong-rpg.md`, `ST-08-01…09`.
+- **Quyết định đề xuất (chờ duyệt, GDD mục 10):**
+  - Cây E: 3 × 3 nút có bậc, 18 SP.
+  - Hạ công theo cấp 0,25 → 0,2.
+  - Tab Kỹ năng làm ngay; Module, Giáp khi có nội dung Stage 2–4; skin, Loadout sang Alpha.
+  - Chỉnh kỹ năng trong menu tạm dừng, áp khi hồi sinh.
+  - Build không giảm sát thương gai/hố.
+- **Lỗi tìm thấy:**
+  - GDD 6.1 mâu thuẫn trần ×2,2: cấp 30 × Upgrade đã 2,16, Citadel không đồng bộ cấp.
+  - Bản 1 tính sai: tăng tốc nạp áp cả nạp vừa nâng DPS tối đa khoảng 26–30% (`loadout.ts` bắn 1 phát khi bấm; mô phỏng 7,47 / 9,62).
+  - P3 bất tử có đồng hồ ẩn, vượt 20%.
+  - Cờ `airDash` cho lướt trên không vô hạn.
+  - Kẻ địch chưa có trạng thái choáng (Phase Step).
+- **Kiểm tra:** chỉ tài liệu, không đổi code; prettier đạt.
+- **Còn dở:** chờ người dùng duyệt; lan thay đổi sang GDD chính, Hub, hướng dẫn, wireframe (GDD mục 9) sau khi duyệt.
+- **Tiếp theo:**
+  1. Duyệt mục 10, rồi làm ST-08-01 → 05 (Vertical slice).
+  2. Tài liệu âm thanh MVP và đo lường MVP (bản đồ hệ thống mục 2).
+  3. Đặc tả Stage 2–4 sau cổng Prototype.
+
 ## 2026-11-14: Sprint 8, phóng hình theo px thiết bị và M8 cấp/SP
 
 - **Nhánh / commit:** `ccr-9de01342-2046rb` (2 commit: phóng hình; M8).
