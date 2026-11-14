@@ -20,7 +20,7 @@ Quy ước "Tài liệu":
 | M7 | Màn Prologue, Stage 1 | Gameplay | P0 | M3, M5 | Đặc tả Stage 1 mục 2–3 | Đủ (chờ cổng Prototype mới chốt) | Khung xong |
 | M7 | Màn Stage 2–4 và cơ chế môi trường (laser và gương, sàn trơn và băng vỡ, gió và bệ mây) | Gameplay | P0 | M3, M5 | GDD 8.2, wireframe `Stage2–4.html` | **Chưa có** | Chưa |
 | M8 | Cấp, EXP, SP, đồng bộ cấp | Progression | P0 | M4 | GDD 6.1, `player.json`, `stages.json` | Đủ | Xong (Sprint 8) |
-| M8 | Cây kỹ năng, module, Két giáp, Xưởng | Progression | P0 | M8 cấp, M11 | **`01-GDD/10-He-thong-RPG-Xuong.md` (mới, chờ duyệt)** | Thiếu số liệu → **Đủ khi duyệt** | Chưa |
+| M8 | Cây kỹ năng, module, Két giáp, Xưởng | Progression | P0 | M8 cấp, M11 | **`01-GDD/10-He-thong-RPG-Xuong.md` (mới, chờ duyệt)** | **Đủ** (duyệt 14/11/2026) | Tab Kỹ năng, hiệu ứng V1/P2/C1/C2 xong (ST-08-01…05); cơ chế tầng 2–3 chưa; Module, Giáp bị chặn |
 | M8 | Loadout, Tủ skin | Progression, Meta | P2 (Alpha) | M8, M9 | Đặc tả Hub mục 5, wireframe | Đủ cho Alpha | Chưa |
 | M9 | Shop chỉ Upgrade | Economy | P0 | M8 | GDD 10.1, đặc tả Hub mục 4, `shop.json`, `04-Can-bang-kinh-te.md` | Đủ | Chưa |
 | M9 | Booster | Economy | P1 (mở sau boss 4) | M9 | như trên | Đủ | Chưa |

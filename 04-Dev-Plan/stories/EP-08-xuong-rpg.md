@@ -18,4 +18,6 @@
 | ST-08-08 | Core: C3 khiên, `BuildRuntime`, quy tắc hồi sinh | 03 | Không | 1,5 ngày | MVP |
 | ST-08-09 | Module và Két giáp (tách lại khi gỡ chặn) | 05 | **Có**: nhiệm vụ phụ chưa có; bản đồ Stage 1–4 chờ cổng Prototype; Prism Beam, Frost Shard, Gale Cutter chưa có hành vi; boss Lumen, Cryo, Aeris chưa có dữ liệu | | MVP |
 
+**Đã xong (14/11/2026):** ST-08-01 → ST-08-05 (Vertical slice), trừ bước hướng dẫn R02/R03 của ST-08-05. Tiếp theo: ST-08-06 → 08.
+
 Thứ tự: 01 → 02 → 03 → (04 song song 05) → 06 → 07 → 08. Tổng phần không bị chặn khoảng 11,5 ngày làm việc (khoảng 4–5 tuần với 20 giờ/tuần).
