@@ -12,6 +12,8 @@
 | ST-09-03 | Áp Upgrade vào trận: công, giáp, năng lượng, nam châm | 01 | Không | 1 ngày |
 | ST-09-04 | Quầy Mira (bảng HTML), tab Upgrade, lối vào từ menu | 01, 02 | Không | 1,5 ngày |
 
+**Đã xong (14/11/2026):** ST-09-01 → ST-09-04. Còn ngoài epic này: Booster, Skin (Alpha), bước hướng dẫn R04 (giai đoạn Hub), tác dụng của Nano Cell Cap, Dash Coil, Booster Slot (khóa tới boss 5).
+
 Thứ tự: 01 → (02 song song 03) → 04. Tổng khoảng 4,5 ngày làm việc.
 
 ## Khoảng trống của tài liệu và quyết định (lấp 14/11/2026, `[PLACEHOLDER]`, người dùng có thể đổi)

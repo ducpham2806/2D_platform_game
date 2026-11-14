@@ -118,6 +118,8 @@ damageTaken    = round(raw × difficulty.damageTaken × max(minBuildDamageTakenM
 envDamage      = round(raw × difficulty.damageTaken)   // gai, hố: build không giảm, để duyệt màn đoán trước được
 maxHp          = round(hp(L hiệu dụng) × C1)
 damageDealt    = base × atk(L)/atk(1) × (1 + arc_core.damagePerLevel × lvl) × [V3 khi đang hở] × [Last Stand]
+energyMax      = round(weapons.energyMax × (1 + energy_cell.energyMaxPerLevel × lvl))   // 28 → 31 → 34 (EP-09)
+magnet         = magnet_range.magnetTilesPerLevel × lvl ô, tính từ thân Kai; Core Bit bay tới 12 ô/s (EP-09)
 khiên          : khiên C3 chặn trước, rồi Booster shield_cell
 ```
 

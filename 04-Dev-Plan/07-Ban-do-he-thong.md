@@ -22,7 +22,7 @@ Quy ước "Tài liệu":
 | M8 | Cấp, EXP, SP, đồng bộ cấp | Progression | P0 | M4 | GDD 6.1, `player.json`, `stages.json` | Đủ | Xong (Sprint 8) |
 | M8 | Cây kỹ năng, module, Két giáp, Xưởng | Progression | P0 | M8 cấp, M11 | `01-GDD/10-He-thong-RPG-Xuong.md` (Approved) | **Đủ** (duyệt 14/11/2026) | Tab Kỹ năng và cả 9 nút có tác dụng trong trận (ST-08-01…08); âm thanh kỹ năng chờ M12; Module, Giáp bị chặn |
 | M8 | Loadout, Tủ skin | Progression, Meta | P2 (Alpha) | M8, M9 | Đặc tả Hub mục 5, wireframe | Đủ cho Alpha | Chưa |
-| M9 | Shop chỉ Upgrade | Economy | P0 | M8 | GDD 10.1, đặc tả Hub mục 4, `shop.json`, `04-Can-bang-kinh-te.md` | Đủ | Chưa |
+| M9 | Shop chỉ Upgrade | Economy | P0 | M8 | GDD 10.1, đặc tả Hub mục 4, `shop.json`, `04-Can-bang-kinh-te.md`, Epic `stories/EP-09-quay-upgrade.md` | Đủ (khoảng trống lấp trong EP-09) | **Xong** (14/11, Quầy Mira từ menu; Hub ở Alpha) |
 | M9 | Booster | Economy | P1 (mở sau boss 4) | M9 | như trên | Đủ | Chưa |
 | M10 | HUD, hội thoại, Kết quả | UI | P0 | | wireframe | Đủ | Xong |
 | M10 | Hub dạng menu, màn Chuẩn bị (độ khó, booster) | UI | P0 | M8, M9 | Đặc tả Hub mục 2–3, `Prep.html` | Đủ (cần ghi rõ bản cắt MVP: Hub là menu) | Khung Hub |

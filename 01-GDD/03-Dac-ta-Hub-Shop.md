@@ -74,10 +74,12 @@ Ba tab ở trên cùng: **Skin**, **Booster**, **Upgrade (cộng quầy Premium:
 | --- | --- |
 | Sau 2 boss | **Quầy Upgrade mở.** Upgrade: Arc Core, Energy Cell, Armor Plating, Magnet Range (cấp 1–2) |
 | Sau 4 boss | **Quầy Booster và quầy Skin mở.** Booster: Magnet Pulse, Shield Cell, Repair Kit, Boss Scanner. 6 skin Thường |
-| Sau 5 boss | Booster: Overcharge, Second Chance. Skin Hiếm đợt 1. Upgrade: Nano Cell Cap, Dash Coil, Booster Slot |
+| Sau 5 boss | Booster: Overcharge, Second Chance. Skin Hiếm đợt 1. Upgrade: Nano Cell Cap, Dash Coil, Booster Slot; cấp 3 của Arc Core, Energy Cell, Armor Plating, Magnet Range |
 | Sau 6 boss | Thêm 6 skin Thường. Skin Hiếm đợt 2 |
 | Sau 8 boss | Skin Sử thi (trả bằng Data Chip). Upgrade cấp 4–5 |
 | Theo thành tựu | Skin Thành tựu mở trực tiếp, không bán (mục 7) |
+
+Lịch mở Upgrade nằm trong `shop.json → unlockSchedule` (chỉ đếm boss chiến dịch). Cấp 3 sau 5 boss là quyết định lấp khoảng trống ngày 14/11/2026 (`04-Dev-Plan/stories/EP-09-quay-upgrade.md`), `[PLACEHOLDER]`. **Bản MVP (chưa có Hub):** Quầy Mira mở từ menu chính, chỉ tab Upgrade; tab Booster và Skin hiện khóa "sau boss 4", không có quầy Premium.
 
 ### 4.4 Danh mục skin khi ra mắt
 
