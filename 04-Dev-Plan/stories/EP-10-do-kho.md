@@ -14,7 +14,7 @@ Producer đề xuất 11 Story nhỏ. Gộp còn 6, vì một số phần (dữ 
 | ST-10-02 | Màn Chuẩn bị (HTML), nối StageScene, Kết quả, menu tạm dừng; thưởng boss theo độ khó; nâng bản lưu 3 → 4; cờ `unlock` | 01 | 2 ngày | DONE |
 | ST-10-03 | Checkpoint theo độ khó (Tiled `difficulties`, tiến độ theo độ khó); gợi ý NOVA sau 3 lần chết | 02 | 1,5 ngày | DONE |
 | ST-10-04 | Khung bản Thử thách (`challenge`, `dataFor`, kiểm tra); 4 kẻ địch Stage 1 và Golem; chấm báo nhịp; kiểm không chết một đòn | 01 | 2,5 ngày | DONE |
-| ST-10-05 | Thorna: đòn Rễ Đuổi (logic, kiểm tra telegraph, vẽ) | 04 | 1,5 ngày | |
+| ST-10-05 | Thorna: đòn Rễ Đuổi (logic, kiểm tra telegraph, vẽ) | 04 | 1,5 ngày | DONE |
 | ST-10-06 | QA: bot không né ở 3 độ khó, `gate-flow`, chạy thử Chromium | tất cả | 0,5 ngày | |
 
 Thứ tự: 01 → 02 → 03 → 04 → 05 → 06. Tổng khoảng 9,5 ngày.
@@ -76,15 +76,20 @@ Thứ tự: 01 → 02 → 03 → 04 → 05 → 06. Tổng khoảng 9,5 ngày.
   - 8 test trong `tests/challenge.test.ts`. Tháp Gai: ở 10 ô có đường né (nhảy thấp đúng lúc); ở 6 ô gần như không né được, đã ghi vào GDD 11.
   - Chạy thử Chromium ở Thử thách (`?unlock=1`): Drone, Tháp Gai, Bướm hiện 2 chấm, Golem pha 2 hiện 3 chấm; không lỗi console. Ảnh ở `04-Dev-Plan/qa/ST-10-04/`.
 
-## ST-10-05: Thorna, đòn Rễ Đuổi
+## ST-10-05: Thorna, đòn Rễ Đuổi (DONE)
 
 - **Bối cảnh:** GDD 11 mục 3.3.
 - **File:** `core/boss-config.ts` (`stalk`, kiểm telegraph), `logic/boss/boss.ts`, `scenes/stage/stage-renderer.ts`, `03-Data/bosses.json`.
 - **Tiêu chí:**
-  - [ ] AC-1: Pha 2 có Rễ Đuổi ở Thử thách, không có ở Thường.
-  - [ ] AC-2: 4 rễ trồi ở mặt Kai đang đứng (cả trên bục) 0,6 s sau đánh dấu; pha 3 là 0,5 s.
-  - [ ] AC-3: Kai đứng yên trúng; Kai chạy liên tục không trúng (test).
-  - [ ] AC-4: Ảnh chạy thử vệt tím và tư thế.
+  - [x] AC-1: Pha 2 có Rễ Đuổi ở Thử thách, không có ở Thường.
+  - [x] AC-2: 4 rễ trồi ở mặt Kai đang đứng (cả trên bục) 0,6 s sau đánh dấu; pha 3 là 0,5 s.
+  - [x] AC-3: Kai đứng yên trúng; Kai chạy liên tục không trúng (test).
+  - [x] AC-4: Ảnh chạy thử vệt tím và tư thế.
+- **Kết quả:**
+  - `bossFor(config, id, newAttackPatterns)`. Bản Thử thách của boss được kiểm tra như bản gốc; ngưỡng pha phải khớp bản gốc.
+  - Không chết một đòn ở độ khó khó nhất (×1,5) áp cho mọi boss.
+  - 5 test trong `tests/challenge.test.ts`.
+  - Chạy thử Chromium: tư thế giơ hai tay sáng tím, vệt tím kèm cột mờ đậm dần; không lỗi console. Ảnh ở `04-Dev-Plan/qa/ST-10-05/`.
 
 ## ST-10-06: QA độ khó
 

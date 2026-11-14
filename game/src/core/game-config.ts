@@ -2,7 +2,7 @@ import { type ControlsConfig, parseControls } from './controls-config';
 import { arr, ConfigError, isObject, num, obj, str } from './json-check';
 import { parsePlayer, type PlayerData } from './player-config';
 import { parseWeapons, type WeaponsData } from './weapons-config';
-import { type BossData, checkBossRules, parseBosses } from './boss-config';
+import { type BossData, checkBossRules, parseBossChallenges, parseBosses } from './boss-config';
 import { checkEnemyRules, type EnemiesData, parseEnemies } from './enemy-config';
 import { evaluateFormula } from '../logic/formula';
 import { computeBuild, statsFor } from '../logic/rpg/build';
@@ -99,6 +99,8 @@ export interface GameConfig {
   difficulties: DifficultyData[];
   controls: ControlsConfig;
   bosses: Record<string, BossData>;
+  /** Bản Thử thách của boss (khối `challenge`), chọn bằng `bossFor`. */
+  bossesChallenge: Record<string, BossData>;
   enemies: EnemiesData;
   tutorial: TutorialData;
   /** Thông số giao diện M10 (hộp hội thoại, màn Kết quả). */
@@ -334,10 +336,26 @@ export function checkDesignInvariants(config: GameConfig): string[] {
     errors.push('economy.difficultyRewardMul: cần object theo id độ khó');
   }
 
-  // Boss: telegraph, không chết ngay một đòn (GDD 9), điểm yếu là vũ khí có thật.
+  // Boss (cả bản Thử thách): telegraph, không chết ngay một đòn ở độ khó khó nhất (GDD 9,
+  // GDD 11 mục 3.1), điểm yếu là vũ khí có thật; bản Thử thách giữ ngưỡng pha như bản gốc.
   const baseHp = evaluateFormula(config.player.level.hp, { L: 1 });
+  const worstBossTaken = Math.max(...config.difficulties.map((d) => d.damageTaken));
+  for (const boss of Object.values(config.bossesChallenge)) {
+    errors.push(...checkBossRules(boss, baseHp, worstBossTaken).map((e) => `Thử thách ${e}`));
+    const basePhases = config.bosses[boss.id]?.phases ?? [];
+    const same =
+      basePhases.length === boss.phases.length &&
+      basePhases.every(
+        (ph, i) =>
+          ph.untilHpPct === boss.phases[i]?.untilHpPct && ph.speedMul === boss.phases[i]?.speedMul,
+      );
+    if (!same)
+      errors.push(
+        `bosses.${boss.id}.challenge.phases: ngưỡng máu và speedMul phải khớp bản gốc (mảng thay cả, chỉnh cả hai)`,
+      );
+  }
   for (const boss of Object.values(config.bosses)) {
-    errors.push(...checkBossRules(boss, baseHp));
+    errors.push(...checkBossRules(boss, baseHp, worstBossTaken));
     if (!config.weapons.bossWeapons.some((w) => w.name === boss.weakness)) {
       errors.push(`bosses.${boss.id}.weakness: không có vũ khí ${boss.weakness}`);
     }
@@ -420,6 +438,15 @@ export function checkDesignInvariants(config: GameConfig): string[] {
 }
 
 /** Ghép các file JSON đã nạp thành GameConfig; ném ConfigError nếu thiếu hoặc sai. */
+/** Dữ liệu boss dùng ở một độ khó: Thử thách thì dùng bản Thử thách khi có (GDD 11 mục 2.6). */
+export function bossFor(
+  config: Pick<GameConfig, 'bosses' | 'bossesChallenge'>,
+  id: string,
+  newAttackPatterns: boolean,
+): BossData | undefined {
+  return (newAttackPatterns ? config.bossesChallenge[id] : undefined) ?? config.bosses[id];
+}
+
 export function parseGameConfig(files: Readonly<Record<string, unknown>>): GameConfig {
   const missing = REQUIRED_DATA_FILES.filter((name) => files[name] === undefined);
   if (missing.length > 0) {
@@ -434,6 +461,7 @@ export function parseGameConfig(files: Readonly<Record<string, unknown>>): GameC
     difficulties: parseDifficulties(files.difficulties),
     controls: parseControls(files.controls),
     bosses: parseBosses(files.bosses),
+    bossesChallenge: parseBossChallenges(files.bosses),
     enemies,
     tutorial: parseTutorial(files.tutorial, new Set(Object.keys(enemies.enemies))),
     ui,

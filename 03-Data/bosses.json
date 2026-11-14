@@ -195,6 +195,56 @@
           "h": 10
         }
       }
+    },
+    "challenge": {
+      "note": "Thử thách (01-GDD/11-Do-kho.md mục 2.6, 3.3, [PLACEHOLDER], chốt sau cổng Prototype): thêm Rễ Đuổi ở pha 2 và 3. phases là mảng nên thay cả: giữ untilHpPct, speedMul như bản gốc (kiểm tra lúc nạp). eruptDelaySec 0,6 s, pha 3 (×1,2) còn 0,5 s.",
+      "attacks": {
+        "stalk": {
+          "label": "Rễ Đuổi",
+          "telegraphSec": 0.7,
+          "count": 4,
+          "markIntervalSec": 0.45,
+          "eruptDelaySec": 0.6,
+          "activeSec": 0.5,
+          "damage": 15,
+          "recoverSec": 0.9,
+          "sizePx": {
+            "w": 14,
+            "h": 28
+          }
+        }
+      },
+      "phases": [
+        {
+          "untilHpPct": 60,
+          "speedMul": 1,
+          "attacks": [
+            "thorns",
+            "lash"
+          ]
+        },
+        {
+          "untilHpPct": 30,
+          "speedMul": 1,
+          "attacks": [
+            "thorns",
+            "roots",
+            "stalk",
+            "lash"
+          ]
+        },
+        {
+          "untilHpPct": 0,
+          "speedMul": 1.2,
+          "attacks": [
+            "roots",
+            "thorns",
+            "stalk",
+            "bloom",
+            "lash"
+          ]
+        }
+      ]
     }
   }
 }

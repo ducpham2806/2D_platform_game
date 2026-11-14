@@ -36,6 +36,13 @@ export class Boss {
   /** Thorna: tâm các cột Rễ Trồi (vết nứt trên sàn khi báo trước) và hướng/độ dài Dây Quất. */
   rootXs: number[] = [];
   lashReachPx = 0;
+  /**
+   * Rễ Đuổi (Thử thách): các vệt đã đánh dấu trên mặt Kai đứng (tâm x, mặt y), tiến độ 0..1 tới
+   * khi trồi. Rễ trồi rồi thì vệt bị bỏ.
+   */
+  stalkMarks: { x: number; y: number; progress: number }[] = [];
+  private stalkMarked = 0;
+  private stalkPending: { x: number; y: number; left: number; total: number }[] = [];
   /** Tiến độ telegraph 0..1 để vẽ hiệu ứng báo trước. */
   telegraphProgress = 0;
 
@@ -133,7 +140,7 @@ export class Boss {
       return ev;
     }
     this.timer -= dt;
-    this.think(ctx, pool, ev);
+    this.think(ctx, pool, ev, dt);
     this.physics(dt, ev, pool);
     return ev;
   }
@@ -156,7 +163,7 @@ export class Boss {
     return Math.max(this.data.minTelegraphSec, this.scaled(attackOf(this.data, id).telegraphSec));
   }
 
-  private think(ctx: BossContext, pool: ProjectilePool, ev: BossEvents): void {
+  private think(ctx: BossContext, pool: ProjectilePool, ev: BossEvents, dt: number): void {
     switch (this.state) {
       case 'idle':
         this.facing = ctx.playerX < this.centerX ? -1 : 1;
@@ -169,7 +176,8 @@ export class Boss {
         if (this.timer <= 0) this.beginActive(pool);
         break;
       case 'active':
-        this.runActive(pool);
+        if (this.attack === 'stalk') this.runStalk(ctx, pool, dt);
+        else this.runActive(pool);
         break;
       case 'recover':
       case 'stunned':
@@ -341,9 +349,67 @@ export class Boss {
         this.enter('active', b.activeSec);
         break;
       }
+      case 'stalk':
+        // Đánh dấu ngay vệt đầu tiên.
+        this.stalkMarked = 0;
+        this.stalkPending = [];
+        this.stalkMarks = [];
+        this.enter('active', 0);
+        break;
       default:
         this.enter('recover', 0.5);
     }
+  }
+
+  /** Mặt đứng (y của đỉnh ô đặc hoặc bục) ngay dưới điểm (x, y); không có thì đáy boss. */
+  private surfaceBelow(x: number, y: number): number {
+    const t = this.map.tileSize;
+    const col = Math.floor(x / t);
+    for (let row = Math.max(0, Math.floor(y / t)); row < this.map.rows; row += 1)
+      if (this.map.isSolid(col, row) || this.map.isOneWay(col, row)) return row * t;
+    return this.box.y + this.box.h;
+  }
+
+  /**
+   * Rễ Đuổi (GDD 11 mục 3.3): cứ `markIntervalSec` (chia tốc độ pha) đánh dấu mặt Kai đang đứng,
+   * kể cả bục; `eruptDelaySec` sau (chia tốc độ pha, không dưới minTelegraphSec) rễ trồi ở đó.
+   */
+  private runStalk(ctx: BossContext, pool: ProjectilePool, dt: number): void {
+    const a = attackOf(this.data, 'stalk');
+    const t = this.map.tileSize;
+    if (this.timer <= 0 && this.stalkMarked < a.count) {
+      const lo = this.arenaCols.first * t + a.sizePx.w / 2;
+      const hi = (this.arenaCols.last + 1) * t - a.sizePx.w / 2;
+      const x = Math.min(Math.max(ctx.playerX, lo), hi);
+      const total = Math.max(this.data.minTelegraphSec, this.scaled(a.eruptDelaySec));
+      this.stalkPending.push({ x, y: this.surfaceBelow(x, ctx.playerY), left: total, total });
+      this.stalkMarked += 1;
+      this.timer = this.scaled(a.markIntervalSec);
+    }
+    for (const m of this.stalkPending) {
+      m.left -= dt;
+      if (m.left <= 1e-9) {
+        const spec = enemyProjectile(
+          t,
+          'root',
+          m.x - a.sizePx.w / 2,
+          m.y - a.sizePx.h,
+          a.sizePx,
+          0,
+          0,
+          a.damage,
+        );
+        pool.spawn({ ...spec, ttl: a.activeSec });
+      }
+    }
+    this.stalkPending = this.stalkPending.filter((m) => m.left > 1e-9);
+    this.stalkMarks = this.stalkPending.map((m) => ({
+      x: m.x,
+      y: m.y,
+      progress: 1 - m.left / m.total,
+    }));
+    if (this.stalkMarked >= a.count && this.stalkPending.length === 0)
+      this.enter('recover', this.scaled(a.recoverSec));
   }
 
   private runActive(pool: ProjectilePool): void {

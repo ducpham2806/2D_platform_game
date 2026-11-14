@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { FIXED_STEP_MS, TILE_SIZE } from '@/core/constants';
 import { checkEnemyRules, type EnemyData, enemiesFor, parseEnemies } from '@/core/enemy-config';
-import { parseGameConfig } from '@/core/game-config';
+import { checkBossRules } from '@/core/boss-config';
+import { bossFor, parseGameConfig } from '@/core/game-config';
 import { ProjectilePool, type Projectile } from '@/logic/combat/projectiles';
 import { createEnemy, type Golem, type ShieldCharger } from '@/logic/enemy/behaviors';
 import type { Enemy, EnemyContext } from '@/logic/enemy/enemy';
@@ -9,6 +10,7 @@ import { TileMap } from '@/logic/tilemap';
 import { StageWorld } from '@/logic/world/stage-world';
 import { IDLE_INPUT } from '@/logic/world/world-types';
 import { STAGE_DEFS } from '@/stages';
+import { THORNA_ROOM_ROWS } from '@/stages/thorna-room';
 import { loadData } from './helpers';
 
 const DT = FIXED_STEP_MS / 1000;
@@ -215,3 +217,109 @@ describe('bản Thử thách của kẻ địch (GDD 11 mục 2.6, ST-10-04)', (
 });
 
 type Json = Record<string, unknown>;
+
+describe('Thorna: Rễ Đuổi ở Thử thách (GDD 11 mục 3.3, ST-10-05)', () => {
+  const thornaHard = bossFor(config, 'thorna', true)!;
+  const challenge = config.difficulties.find((d) => d.id === 'challenge')!;
+
+  it('chỉ bản Thử thách có Rễ Đuổi, ở pha 2 và 3; ngưỡng pha khớp bản gốc', () => {
+    expect(bossFor(config, 'thorna', false)).toBe(config.bosses.thorna);
+    expect(config.bosses.thorna!.attacks.stalk).toBeUndefined();
+    expect(thornaHard.phases.map((p) => p.attacks.includes('stalk'))).toEqual([false, true, true]);
+    expect(thornaHard.phases.map((p) => [p.untilHpPct, p.speedMul])).toEqual(
+      config.bosses.thorna!.phases.map((p) => [p.untilHpPct, p.speedMul]),
+    );
+    expect(thornaHard.hp).toBe(config.bosses.thorna!.hp);
+    expect(checkBossRules(thornaHard, 100, 1.5)).toEqual([]);
+  });
+
+  it('kiểm tra lúc nạp: đánh dấu tới khi trồi dưới 0,5 s sau tăng tốc 1,2 thì báo lỗi; pha lệch bản gốc thì báo lỗi', () => {
+    const fast = {
+      ...thornaHard,
+      attacks: {
+        ...thornaHard.attacks,
+        stalk: { ...thornaHard.attacks.stalk!, eruptDelaySec: 0.55 },
+      },
+    };
+    expect(checkBossRules(fast, 100).some((e) => e.includes('stalk: đánh dấu tới khi trồi'))).toBe(
+      true,
+    );
+    const r = structuredClone(data) as Record<string, Record<string, Record<string, unknown>>>;
+    const ch = r.bosses!.thorna!.challenge as { phases: { untilHpPct: number }[] };
+    ch.phases[1]!.untilHpPct = 25;
+    expect(() => parseGameConfig(r)).toThrow('challenge.phases: ngưỡng máu và speedMul phải khớp');
+  });
+
+  /** Thorna chỉ dùng Rễ Đuổi, tốc độ pha `speed`; Kai vào đấu trường rồi đặt ở (x, đáy). */
+  function arena(speed = 1) {
+    const boss = {
+      ...thornaHard,
+      phases: [{ untilHpPct: 0, speedMul: speed, attacks: ['stalk' as const] }],
+    };
+    const w = new StageWorld({
+      rows: THORNA_ROOM_ROWS,
+      tileSize: t,
+      stepSec: DT,
+      player: config.player,
+      weapons: config.weapons,
+      boss,
+      difficulty: challenge,
+      mechanics: config.stages.mechanics,
+      seed: 3,
+    });
+    w.player.respawn((w.arena!.first + 3) * t, 11 * t);
+    w.step(IDLE_INPUT);
+    expect(w.phase).toBe('boss');
+    return w;
+  }
+
+  it('Kai đứng yên trên bục: rễ trồi từ mặt bục và trúng', () => {
+    const w = arena();
+    w.player.respawn(20.5 * t, 8 * t);
+    let hurt = false;
+    let rootBottom = -1;
+    for (let i = 0; i < Math.round(4 / DT) && !hurt; i += 1) {
+      w.player.hp = w.player.maxHp;
+      hurt = w.step(IDLE_INPUT).playerHurt;
+      const root = w.pool.all.find((p) => p.kind === 'root');
+      if (root) rootBottom = root.y + root.h;
+    }
+    expect(hurt).toBe(true);
+    expect(rootBottom).toBe(8 * t);
+  });
+
+  it('Kai chạy liên tục: cả 4 rễ trồi sau lưng, không trúng', () => {
+    const w = arena();
+    w.player.respawn((w.arena!.first + 14) * t, 11 * t);
+    // Đứng chờ tới khi Thorna báo trước Rễ Đuổi rồi mới chạy (đúng cách người chơi phản ứng).
+    for (let i = 0; i < Math.round(3 / DT) && w.boss!.state !== 'telegraph'; i += 1)
+      w.step(IDLE_INPUT);
+    expect(w.boss!.attack).toBe('stalk');
+    let hurt = 0;
+    // Đạn dùng pool (đối tượng được dùng lại): đếm rễ mới trồi theo thời gian còn lại gần đầy.
+    const active = thornaHard.attacks.stalk!.activeSec;
+    let roots = 0;
+    for (let i = 0; i < Math.round(4 / DT); i += 1) {
+      const ev = w.step({ ...IDLE_INPUT, moveX: -1 });
+      if (ev.playerHurt) hurt += 1;
+      roots += w.pool.all.filter((p) => p.kind === 'root' && p.ttl > active - 1.5 * DT).length;
+      if (w.boss!.state === 'recover') break;
+    }
+    expect(roots).toBe(4);
+    expect(hurt).toBe(0);
+  });
+
+  it('pha 3 (tốc độ 1,2): từ đánh dấu tới khi trồi đúng 0,5 s', () => {
+    const w = arena(1.2);
+    w.player.respawn((w.arena!.first + 6) * t, 11 * t);
+    let markedAt = -1;
+    let eruptedAt = -1;
+    for (let i = 0; i < Math.round(4 / DT) && eruptedAt < 0; i += 1) {
+      w.player.hp = w.player.maxHp;
+      w.step(IDLE_INPUT);
+      if (markedAt < 0 && w.boss!.stalkMarks.length > 0) markedAt = i;
+      if (w.pool.all.some((p) => p.kind === 'root')) eruptedAt = i;
+    }
+    expect((eruptedAt - markedAt) * DT).toBeCloseTo(0.5, 1);
+  });
+});

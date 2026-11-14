@@ -144,7 +144,13 @@ function drawBoss(
       for (const x of boss.rootXs) g.fillStyle(0xffd166, a).fillRect(x - 6, b.y + b.h - 2, 12, 2);
     }
     const tint = boss.data.id === 'gray' ? 0x8a94a6 : 0x3f8f5a;
-    g.fillStyle(blink ? 0xffa94d : tint, 1).fillRect(b.x, b.y, b.w, b.h);
+    // Rễ Đuổi (Thử thách): tư thế riêng, sáng tím, giơ hai tay (khác Rễ Trồi sáng cam).
+    const stalk = boss.attack === 'stalk';
+    g.fillStyle(blink ? (stalk ? 0xc084fc : 0xffa94d) : tint, 1).fillRect(b.x, b.y, b.w, b.h);
+    if (stalk) {
+      g.fillStyle(0xc084fc, 1).fillRect(b.x - 3, b.y - 8, 4, 12);
+      g.fillStyle(0xc084fc, 1).fillRect(b.x + b.w - 1, b.y - 8, 4, 12);
+    }
   } else {
     const color =
       boss.flash > 0
@@ -157,6 +163,13 @@ function drawBoss(
               ? 0x8a94a6
               : 0x3f8f5a;
     g.fillStyle(color, 1).fillRect(b.x, b.y, b.w, b.h);
+  }
+  // Rễ Đuổi: vệt tím trên mặt được đánh dấu, nhấp nháy nhanh dần tới lúc rễ trồi.
+  // Cột tím mờ cao bằng rễ, đậm dần, để vẫn thấy khi Kai đứng che vệt.
+  for (const m of boss.stalkMarks) {
+    const on = Math.floor(timeMs / (150 - 110 * m.progress)) % 2 === 0;
+    g.fillStyle(0xc084fc, 0.12 + 0.25 * m.progress).fillRect(m.x - 7, m.y - 28, 14, 28);
+    g.fillStyle(0xc084fc, on ? 0.95 : 0.45).fillRect(m.x - 9, m.y - 3, 18, 3);
   }
   // Mắt chỉ hướng.
   const eyeX = boss.facing > 0 ? b.x + b.w - 8 : b.x + 4;

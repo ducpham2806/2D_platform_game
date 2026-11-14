@@ -9,7 +9,7 @@ import {
 } from '../core/constants';
 import { wardenIds } from '../core/dialogue-config';
 import { enemiesFor } from '../core/enemy-config';
-import { parseLevelRange } from '../core/game-config';
+import { bossFor, parseLevelRange } from '../core/game-config';
 import { getBus, getConfig, getInput, getSave } from '../core/phaser-services';
 import type { InputService } from '../input/input-service';
 import { FixedStep } from '../logic/fixed-step';
@@ -174,12 +174,13 @@ export class StageScene extends Phaser.Scene {
     getBus(this).emit('scene:changed', { key: SceneKey.Stage });
     const config = getConfig(this);
     const bossId = this.def.boss ?? 'gray';
-    const boss = config.bosses[bossId];
     // Màn chơi thử (cổng Prototype) luôn Thường để số liệu các phiên so sánh được.
     const wanted = this.def.playtest ? DEFAULT_DIFFICULTY : this.difficultyId;
     const difficulty =
       config.difficulties.find((d) => d.id === wanted) ??
       config.difficulties.find((d) => d.id === DEFAULT_DIFFICULTY);
+    // Thử thách: boss dùng bản Thử thách khi có (GDD 11 mục 2.6).
+    const boss = difficulty ? bossFor(config, bossId, difficulty.newAttackPatterns) : undefined;
     if (!boss || !difficulty) throw new Error(`Thiếu dữ liệu boss "${bossId}" hoặc độ khó Thường`);
     this.stepper.reset();
     this.cameraLock = undefined;
