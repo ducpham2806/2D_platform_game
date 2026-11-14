@@ -109,6 +109,18 @@ export class Boss {
     if (this.state === 'waiting') this.enter('idle', this.data.idleSec);
   }
 
+  /**
+   * Hết máu thì chết ngay trong bước này (gọi sau khi xử lý đạn của Kai). Trả true nếu vừa chết.
+   * Nếu không, boss chỉ bị đánh dấu chết ở bước sau, và đòn của nó trong bước này có thể giết Kai
+   * rồi nhánh hồi sinh dựng lại boss đầy máu (người chơi mất trận thắng).
+   */
+  settleDefeat(): boolean {
+    if (this.state === 'dead' || this.state === 'waiting' || this.hp > 0) return false;
+    this.state = 'dead';
+    this.vx = 0;
+    return true;
+  }
+
   takeHit(hit: OutgoingHit): boolean {
     if (this.state === 'dead' || this.state === 'waiting') return false;
     this.hp = Math.max(0, this.hp - hit.amount);

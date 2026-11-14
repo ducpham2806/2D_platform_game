@@ -403,6 +403,9 @@ export class StageWorld {
       this.vanguard,
     );
     this.field?.onKilled(killed, pl);
+    // Boss hết máu vì đạn của Kai trong bước này thì thắng ngay, trước khi xét đòn lên Kai
+    // (trước đây cùng bước Kai chết thì boss được dựng lại đầy máu).
+    if (this.phase === 'boss' && this.boss?.settleDefeat()) this.onBossDefeated(ev);
     resolveEnemyHits(
       this.pool,
       this.field?.active(pl) ?? [],
