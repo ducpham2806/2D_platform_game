@@ -212,9 +212,9 @@ Thành tựu nhỏ khác (ví dụ hạ boss không bị đánh trúng) thưởn
 | --- | --- |
 | Tiến trình | Boss đã hạ, màn đã mở, độ khó đã mở, Memory Log, lựa chọn cốt truyện |
 | Nhân vật | Cấp, EXP, SP, kỹ năng đã học, module sở hữu, Két giáp |
-| Kho | Core Bit, Data Chip (`inventory.dataChips`, bản lưu 5), số lượng booster, cấp upgrade |
+| Kho | Core Bit, Data Chip (`inventory.dataChips`, bản lưu kế tiếp), số lượng booster, cấp upgrade |
 | Cosmetic | Skin sở hữu, 3 bộ phối, 3 loadout |
-| Nhiệm vụ và thành tựu | Trạng thái, tiến độ (nhiệm vụ phụ: nhóm `sideQuests`, bản lưu 5) |
+| Nhiệm vụ và thành tựu | Trạng thái, tiến độ (nhiệm vụ phụ: nhóm `sideQuests`, bản lưu kế tiếp) |
 | Cài đặt | Bố cục nút, độ nhạy, trợ năng |
 | Kỷ lục | Thành tích tốt nhất theo màn và độ khó |
 

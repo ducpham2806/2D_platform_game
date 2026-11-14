@@ -58,7 +58,7 @@
 | --- | --- |
 | G1 đổi thông số nhảy, lướt sau khi đã làm EP-15 | EP-15 chỉ làm logic không đụng `player-physics`, thử trên phòng thử; số đo theo metric `player.json`; Story đụng vật lý chờ G1 |
 | Code mới lẫn vào bản người thử G1 | Đóng băng bản thử bằng tag `gate-r1` trước khi code tiếp; code mới ở nhánh mới |
-| Khối lượng EP-15/17/18 (khoảng 46 phiên) | Ưu tiên Stage 2 làm trọn trước; cắt Stage 4 nếu G3 trễ quá 4 tuần (quyết định với người dùng) |
+| Khối lượng EP-15/17/18 (khoảng 50 phiên) | Ưu tiên Stage 2 làm trọn trước; cắt Stage 4 nếu G3 trễ quá 4 tuần (quyết định với người dùng) |
 | Asset không kịp (P1 84 sheet, P2a) | Màn chơi được với hình khối; asset là việc song song, không chặn code |
 | Không tuyển đủ người thử | Bắt đầu tuyển từ S13; đợt G3 chia 2 × 25 |
 | Pháp lý dữ liệu khi đo lường | ADR-002 chọn phương án không gửi dữ liệu cá nhân, có đồng ý; người dùng xác nhận |

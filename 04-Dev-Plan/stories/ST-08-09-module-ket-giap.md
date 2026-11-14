@@ -3,7 +3,7 @@
 - **Thuộc Epic:** EP-08 · **Ưu tiên:** P0 (MVP) · **Trạng thái:** BLOCKED
 - **Phụ thuộc:** ST-08-05
 - **Bị chặn bởi** (cập nhật 14/11/2026 sau rà soát; sẽ làm trong **EP-18**, kế hoạch S13–S16):
-  - Nhiệm vụ phụ (nguồn module): đặc tả đã có (`01-GDD/15-Nhiem-vu-phu.md`, Draft); ST-18-01…06 không bị chặn, làm trước.
+  - Nhiệm vụ phụ (nguồn module): đặc tả đã duyệt (`01-GDD/15-Nhiem-vu-phu.md`, Approved ủy quyền); ST-18-01…06 làm được trước bản đồ (ST-18-01 cần danh mục module đã parse).
   - Bản đồ Stage 1–4 chờ qua cổng Prototype (G1).
   - Prism Beam, Frost Shard, Gale Cutter, boss Lumen, Cryo, Aeris: EP-15 (`01-GDD/16-Dac-ta-Stage2-4-nhap.md`).
 - **Đổi theo rà soát:** tab Module mở khi nhận module đầu tiên (không cố định "sau boss 3"); Thân Mk II **thay thế** Mk I (−15% kèm phản đòn 2), không cộng dồn; id giáp chân là `leg_mk1`, `leg_mk2` (theo `stages.json`); Magnet Core cộng dồn tầm hút theo QB-63 (`17-Quy-tac-bien.md`).

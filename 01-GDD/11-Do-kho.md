@@ -49,12 +49,12 @@ Ba độ khó cho cốt truyện: **Cốt truyện** (xem truyện, ít áp lự
 - Checkpoint trên bản đồ **Tiled** có thuộc tính tùy chọn `difficulties` (chuỗi id cách nhau bằng dấu phẩy). Không ghi thì có ở cả ba độ khó. Ký hiệu `C` của bản đồ ASCII (phòng thử) luôn có ở mọi độ khó.
 - Quy tắc đặt khi chốt bản đồ Stage 1–4 (sau cổng Prototype):
   - **Khoảng cách tối đa** giữa hai điểm hồi sinh liền nhau (GDD chính 8.3): Cốt truyện ≤ 90 s, Thường ≤ 150 s, Thử thách ≤ 270 s chơi `[PLACEHOLDER]`.
-  - **Thường:** 4 checkpoint sau mỗi đoạn A–D (đặc tả Stage 1).
+  - **Thường:** 4 checkpoint sau mỗi đoạn A–D (đặc tả Stage 1); thêm CP3b ở cửa ra phòng mini-boss (`difficulties: "story,normal"`) khi CP3 → CP4 dài hơn 150 s (Stage 2–4, `16-Dac-ta-Stage2-4-nhap.md` mục 2.4).
   - **Thử thách:** bỏ CP1, giữ CP2–CP4 (ghi `difficulties: "story,normal"` cho CP1). Khoảng cách giữa hai điểm hồi sinh liền nhau không quá khoảng 4,5 phút chơi.
   - **Cốt truyện:** thêm 1 checkpoint giữa mỗi đoạn dài hơn 1,5 phút (90 s), ghi `difficulties: "story"` (bản 2 ghi "từ 2,5 phút", nên đoạn A Stage 1 dài 2 phút vượt 90 s; sửa khi rà soát 14/11/2026).
 - **Tiến độ checkpoint ghi theo độ khó.** Vào màn ở độ khó d thì dùng checkpoint xa nhất đã chạm ở d **hoặc khó hơn** (thứ tự trong `difficulties.json`); không mang từ dễ sang khó. Sau đó lùi về checkpoint gần nhất phía trước có ở d.
   - Ví dụ: chạm CP4 ở Cốt truyện rồi vào Thử thách thì xuất phát từ đầu màn, nên không thể mở khóa bằng cách đi tắt.
-- Bản lưu ghi **chỉ số trên danh sách đầy đủ**. Khi chốt bản đồ, nếu sau đó còn sửa vị trí hay số checkpoint mà đã có bản lưu của người chơi thật, chuyển sang id checkpoint cố định (bản lưu 5). Hiện chưa có bản lưu của người chơi thật nên chưa cần.
+- Bản lưu ghi **chỉ số trên danh sách đầy đủ**. Khi chốt bản đồ, nếu sau đó còn sửa vị trí hay số checkpoint mà đã có bản lưu của người chơi thật, chuyển sang id checkpoint cố định (bản lưu kế tiếp, làm ở EP-16; số phiên bản theo thứ tự merge với bản lưu của nhiệm vụ phụ). Hiện chưa có bản lưu của người chơi thật nên chưa cần.
 - `difficulties.json → checkpoints` ("more", "normal", "fewer") chỉ là chữ mô tả.
 
 ### 2.5 Gợi ý khi chết nhiều lần
@@ -108,7 +108,7 @@ thưởng (từng nguồn)             = round(base × difficulty.rewardMul) ; b
 
 - **Nhân `rewardMul`:** Core Bit và EXP của từng kẻ địch (làm tròn theo từng kẻ địch lúc bị hạ, không làm tròn lúc nhặt); thưởng lần đầu hạ boss của từng độ khó; rương, thùng khi có.
 - **Không nhân:** Data Chip, SP, vũ khí boss, module, Két giáp, vật phẩm bí mật; máu Gương Rối của nhiệm vụ phụ. Tiến độ và thưởng nhiệm vụ phụ dùng chung mọi độ khó (`15-Nhiem-vu-phu.md`).
-- Lần đầu phá đảo Thử thách (+3 Data Chip, `economy.json → dataChipSources.firstClearChallenge`): khi hạ boss cuối cốt truyện lần đầu ở Thử thách. Ngoài MVP; Data Chip vào bản lưu 5 cùng nhiệm vụ phụ (`inventory.dataChips`, `15-Nhiem-vu-phu.md`).
+- Lần đầu phá đảo Thử thách (+3 Data Chip, `economy.json → dataChipSources.firstClearChallenge`): khi hạ boss cuối cốt truyện lần đầu ở Thử thách. Ngoài MVP; Data Chip vào bản lưu kế tiếp cùng nhiệm vụ phụ (`inventory.dataChips`, `15-Nhiem-vu-phu.md`).
 - EXP ở Cốt truyện cũng ×0,5 (đúng GDD chính). Người chơi Cốt truyện lên cấp chậm hơn; đồng bộ cấp bù phần máu và công.
 
 | Độ khó | `damageTaken` | `enemyHp` | `rewardMul` | Mở khi | Mẫu đòn mới |

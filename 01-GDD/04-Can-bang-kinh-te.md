@@ -111,7 +111,7 @@ Nếu người chơi dồn toàn bộ tiền vào upgrade thì sau Stage 2 (525)
 
 Data Chip hữu hạn, chỉ nhận một lần cho mỗi nguồn, không mua được. **Live-ops không cho Data Chip** (rà soát 14/11): đăng nhập, vòng quay, 7 ngày tân thủ và nhiệm vụ tuần trả Gem hoặc mỹ phẩm thay thế (`05-Ke-hoach-kiem-tien.md` mục 8).
 
-**Bản lưu:** Data Chip chưa có trong bản lưu; sẽ thêm `inventory.dataChips` ở bản lưu 5 (cùng Nhiệm vụ phụ, xem `01-GDD/15-Nhiem-vu-phu.md`).
+**Bản lưu:** Data Chip chưa có trong bản lưu; sẽ thêm `inventory.dataChips` ở bản lưu kế tiếp (cùng Nhiệm vụ phụ, xem `01-GDD/15-Nhiem-vu-phu.md`).
 
 | Nguồn | Số lượng | Ghi chú |
 | --- | --- | --- |
@@ -153,7 +153,7 @@ Mô hình phát hiện bốn chỗ lệch với bản trước, đã sửa:
 2. **Mức upgrade dự kiến theo độ khó:** thay vì một con số mỗi độ khó, ghi rõ khoảng đầu → cuối lượt chơi: **Thường 0 → 37%, Thử thách 37 → 94%** (mục 4; năm khoảng của sáu độ khó cũ đã bỏ). Độ khó nên được cân quanh mức giữa khoảng đó.
 3. **Data Chip mới:** lần đầu phá đảo Thử thách thưởng 3 Data Chip; từ GDD 0.6, ba mốc Mức Eclipse 3, 6, 10 thay cho ba độ khó đã bỏ, mỗi mốc 3 Data Chip.
 4. **GDD 0.6, thu gọn độ khó:** bỏ Ác mộng, Huyền thoại, Overclock; giá upgrade hạ (hệ số 1,8 → 1,25, giá cấp 1 của bốn loại giảm) để toàn bộ upgrade đủ sau lượt Thử thách thay vì giữa lượt Overclock.
-5. **Rà soát 14/11/2026:** tổng vĩnh viễn 34.693; luật thưởng boss theo cặp, kẻ địch trả thưởng một lần mỗi lượt, chơi lại chỉ nhận phần kẻ địch, gợi ý Quầy (mục 2); trần Core Bit ngoài màn 25%, cột live-ops, số lượt Farm 5,4, điều kiện của mốc 37/94 (mục 4); Data Chip bỏ khỏi live-ops, ghi bản lưu 5 và phòng bí mật (mục 5).
+5. **Rà soát 14/11/2026:** tổng vĩnh viễn 34.693; luật thưởng boss theo cặp, kẻ địch trả thưởng một lần mỗi lượt, chơi lại chỉ nhận phần kẻ địch, gợi ý Quầy (mục 2); trần Core Bit ngoài màn 25%, cột live-ops, số lượt Farm 5,4, điều kiện của mốc 37/94 (mục 4); Data Chip bỏ khỏi live-ops, ghi bản lưu kế tiếp và phòng bí mật (mục 5).
 
 Giữ nguyên: giá booster và giá skin Thường/Hiếm.
 

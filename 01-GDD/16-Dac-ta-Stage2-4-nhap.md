@@ -833,8 +833,8 @@ Quy ước như EP-08 đến EP-10: Story ≤ 1–2 ngày, mỗi Story nhúng s�
 
 **Tổng:** khoảng 21 ngày trước cổng (15 Story của EP-15) và 18,5 ngày chờ cổng (ST-15-07, 08b, 11, 12: 8,5 ngày; EP-17: 10 ngày), cộng 39,5 ngày. Bản 1 ghi 26 + 10 ngày: phần trước cổng giảm vì 4 Story dời sang chờ cổng, dù thêm ST-15-14…16 và tách ST-15-01.
 
-**Thứ tự trước cổng:** 01a → (01b, 01c) → 02 → (14, 15, 16) → (03, 04, 05, 06, 08a song song theo sức) → 09 → 10 → 13.
-**Thứ tự sau cổng:** 08b → 17-01 → 07 → 11 → 12 → (17-02, 17-03, 17-04) → 17-05 → 17-06 → 17-07.
+- **Thứ tự trước cổng:** 01a → (01b, 01c) → 02 → (14, 15, 16) → (03, 04, 05, 06, 08a song song theo sức) → 09 → 10 → 13.
+- **Thứ tự sau cổng:** 08b → 17-01 → 07 → 11 → 12 → (17-02, 17-03, 17-04) → 17-05 → 17-06 → 17-07.
 
 ## 11. Quyết định (chốt 14/11/2026, ủy quyền)
 

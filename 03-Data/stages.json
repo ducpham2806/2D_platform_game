@@ -54,7 +54,7 @@
         "C",
         "D"
       ],
-      "checkpoints": 4,
+      "checkpoints": 5,
       "sideQuestId": "sq_prism_institute",
       "memoryLog": 2
     },
@@ -83,7 +83,7 @@
         "C",
         "D"
       ],
-      "checkpoints": 4,
+      "checkpoints": 5,
       "sideQuestId": "sq_cryo_vault",
       "memoryLog": 3
     },
@@ -112,7 +112,7 @@
         "C",
         "D"
       ],
-      "checkpoints": 4,
+      "checkpoints": 5,
       "sideQuestId": "sq_cirrus_tower",
       "memoryLog": 4
     },
