@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { LOGIC_WIDTH, SceneKey } from '../core/constants';
 import { getBus, getConfig, getSave } from '../core/phaser-services';
+import { GATE } from '../debug/flags';
 import { characterProgress } from '../logic/rpg/progression';
 import { spentPoints } from '../logic/rpg/skill-tree';
 import { workshopUnlocked } from '../workshop/workshop-panel';
@@ -19,6 +20,10 @@ export class MenuScene extends Phaser.Scene {
     this.add
       .text(cx, 28, 'CYBER VANGUARD', { ...TEXT_STYLE, fontSize: '16px', color: '#4fd1ff' })
       .setOrigin(0.5);
+    if (GATE) {
+      this.createGateMenu(cx);
+      return;
+    }
     const manager = getSave(this);
     const save = manager.data;
     const saved = summarize(save);
@@ -95,5 +100,29 @@ export class MenuScene extends Phaser.Scene {
     keyboard?.once('keydown-B', thorna);
     keyboard?.once('keydown-G', golem);
     keyboard?.once('keydown-X', workshop);
+  }
+
+  /**
+   * Menu cho người thử cổng Prototype (`?gate=1`, 05-Cong-Prototype.md mục 4): chỉ màn xám (nơi
+   * duy nhất ghi nhật ký chơi thử), Điều khiển và Kết quả chơi thử. Không giải thích cách chơi.
+   */
+  private createGateMenu(cx: number): void {
+    this.add.text(cx, 44, 'bản chơi thử', MUTED_STYLE).setOrigin(0.5);
+    const play = (): void => {
+      this.scene.start(SceneKey.Stage);
+    };
+    textButton(this, cx, 74, 'Chơi', play, true);
+    textButton(this, cx, 108, 'Điều khiển', () => this.scene.start(SceneKey.Controls), true);
+    textButton(this, cx, 142, 'Kết quả chơi thử', () => this.scene.start(SceneKey.Playtest), true);
+    this.add
+      .text(cx, 182, 'Enter: chơi · C: điều khiển · R: kết quả chơi thử', {
+        ...MUTED_STYLE,
+        fontSize: '8px',
+      })
+      .setOrigin(0.5);
+    const keyboard = this.input.keyboard;
+    keyboard?.once('keydown-ENTER', play);
+    keyboard?.once('keydown-C', () => this.scene.start(SceneKey.Controls));
+    keyboard?.once('keydown-R', () => this.scene.start(SceneKey.Playtest));
   }
 }

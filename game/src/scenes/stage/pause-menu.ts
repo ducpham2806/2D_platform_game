@@ -3,6 +3,7 @@ import { LOGIC_HEIGHT, LOGIC_WIDTH } from '../../core/constants';
 import { MenuNavigator } from '../../logic/hud/menu-cursor';
 import type { InputSnapshot } from '../../logic/input/actions';
 import { MUTED_STYLE, TEXT_STYLE } from '../ui';
+import { GATE } from '../../debug/flags';
 
 export type PauseChoice = 'resume' | 'quit' | 'tutorial' | 'skills';
 
@@ -15,6 +16,8 @@ interface Item {
 const DEPTH = 30;
 const ITEM_W = 150;
 const ITEM_GAP = 19;
+/** Bản người thử (`?gate=1`) chỉ có 2 mục nên hàng cao hơn: ≥ 48 dp trên điện thoại cầm ngang. */
+const ROW = GATE ? { gap: 32, padY: 10 } : { gap: ITEM_GAP, padY: 3 };
 const COLOR = { idle: '#1d2a3b', picked: '#2f6d8f', off: '#151d29' };
 
 /**
@@ -42,14 +45,19 @@ export class PauseMenu {
       { label: 'Tiếp tục', choice: 'resume' },
       ...(skills ? [{ label: 'Kỹ năng (áp khi hồi sinh)', choice: 'skills' as const }] : []),
       ...(tutorialOn ? [{ label: '', choice: 'tutorial' as const }] : []),
-      { label: 'Lắp module nhanh (chưa có)', choice: undefined },
-      { label: 'Tùy chọn (chưa có)', choice: undefined },
+      // Bản cho người thử cổng Prototype ẩn các mục chưa có để khỏi rối.
+      ...(GATE
+        ? []
+        : [
+            { label: 'Lắp module nhanh (chưa có)', choice: undefined },
+            { label: 'Tùy chọn (chưa có)', choice: undefined },
+          ]),
       { label: 'Thoát về menu', choice: 'quit' },
     ];
     this.nav = new MenuNavigator(this.items.map((i) => i.choice !== undefined));
     const cx = LOGIC_WIDTH / 2;
     const top = 30;
-    const h = 34 + this.items.length * ITEM_GAP + 8;
+    const h = 34 + this.items.length * ROW.gap + 8 + (ROW.gap - ITEM_GAP) / 2;
     const dim = scene.add.rectangle(0, 0, LOGIC_WIDTH, LOGIC_HEIGHT, 0x05080d, 0.6).setOrigin(0);
     // Chặn chạm xuyên xuống các nút khác của scene.
     dim.setInteractive();
@@ -67,11 +75,11 @@ export class PauseMenu {
     this.items.forEach((item, i) => {
       const enabled = item.choice !== undefined;
       const text = scene.add
-        .text(cx, top + 42 + i * ITEM_GAP, item.label, {
+        .text(cx, top + 42 + (ROW.gap - ITEM_GAP) / 2 + i * ROW.gap, item.label, {
           ...(enabled ? TEXT_STYLE : MUTED_STYLE),
           fixedWidth: ITEM_W,
           align: 'center',
-          padding: { x: 0, y: 3 },
+          padding: { x: 0, y: ROW.padY },
         })
         .setOrigin(0.5);
       if (enabled) {
