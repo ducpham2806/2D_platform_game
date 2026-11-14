@@ -73,7 +73,7 @@ Chủ đề: khu vườn sinh học bị Eclipse biến dị, ánh sáng xanh l�
 | Memory Log 1 | Phòng bí mật đoạn B | Bám tường lên nhánh cao, không cần vũ khí |
 | Két giáp: Đầu Mk I | Phòng bí mật đoạn C | Cần **Prism Beam** (từ Stage 2: Prism Institute) để đốt rễ khô chắn phòng; quay lại sau |
 | Nano Cell | Phòng bí mật đoạn D | Lướt qua khe gai hẹp |
-| 5 Hạt Giống Phát Quang | Rải trong đoạn A–D, mỗi hạt có cột sáng mờ nhìn thấy từ đường chính (MVP không có bản đồ nhỏ) | Nhiệm vụ phụ nhận ở Bảng Nhiệm Vụ, mở sau boss 3 (`15-Nhiem-vu-phu.md`); người chơi quay lại Stage 1 để nhặt |
+| 5 Hạt Giống Phát Quang | Rải trong đoạn A–D, mỗi hạt có cột sáng mờ nhìn thấy từ đường chính (MVP không có bản đồ nhỏ) | Nhiệm vụ phụ nhận ở Bảng Nhiệm Vụ, mở sau boss 3 (`15-Nhiem-vu-phu.md`); hạt chỉ xuất hiện khi nhiệm vụ đang làm, quy tắc đặt ở `15-…` mục 2.8; người chơi quay lại Stage 1 để nhặt |
 
 Phần thưởng nhiệm vụ phụ "Hạt giống thất lạc": 1 Data Chip và module Magnet Core.
 
@@ -156,8 +156,8 @@ Quy tắc điều chỉnh: nếu quá 30% người thử chết ở cùng một 
 | Tile và nền | Tileset phòng thí nghiệm (Prologue), tileset vườn (Stage 1) 3 lớp parallax, dây leo, gai, thùng, khối cam, cửa | Dung lượng Stage 1 ≤ 8 MB |
 | UI | Biểu tượng nút (cảm ứng, bàn phím, tay cầm), thanh máu, thanh năng lượng, hộp thoại, tiêu đề màn | Nút cảm ứng ≥ 48 dp |
 | Cutscene | Bóng dáng Vex, cảnh Kai tỉnh dậy | Bỏ qua được |
-| SFX | Bắn, nạp (3 mức), lướt, nhảy, đáp, bị thương, phá thùng, nhặt Core Bit, telegraph kẻ địch/boss, boss chết | Mỗi vũ khí một âm sắc |
-| Nhạc | Prologue (hồi hộp, \~90 BPM), Stage 1 (\~120 BPM), boss Thorna (\~140 BPM), jingle thắng | Chiptune pha synth |
+| SFX | Bắn, nạp (3 mức), lướt, nhảy, đáp, bị thương, phá thùng, nhặt Core Bit, telegraph kẻ địch/boss, boss chết. Danh sách id và quy cách: `12-Am-thanh.md` mục 2 | Mỗi vũ khí một âm sắc |
+| Nhạc | Prologue (hồi hộp, \~90 BPM), Stage 1 (\~120 BPM), bản boss chung 3 lớp theo pha (\~140 BPM; nhạc riêng Thorna từ Alpha), jingle thắng. Chi tiết: `12-Am-thanh.md` mục 3 | Chiptune pha synth |
 
 ## 8. Tiêu chí nghiệm thu
 
@@ -166,7 +166,7 @@ Quy tắc điều chỉnh: nếu quá 30% người thử chết ở cùng một 
 - [ ] Prologue P01–P09 không mất máu (Drone và đạn huấn luyện chỉ đẩy lùi); sát thương thật bắt đầu từ P10.
 - [ ] Mỗi cơ chế mới có tình huống dạy riêng; biểu tượng nút đúng theo nền tảng (cảm ứng, bàn phím, tay cầm).
 - [ ] 4 checkpoint của Stage 1 hoạt động, hồi sinh ≤ 1,5 giây, giữ nguyên Core Bit và EXP.
-- [ ] Mọi đòn kẻ địch có telegraph ≥ 0,4 giây; đòn boss ≥ 0,5 giây.
+- [ ] Mọi đòn kẻ địch có telegraph ≥ 0,4 giây; đòn boss ≥ 0,5 giây; mọi telegraph có âm báo (`12-Am-thanh.md`).
 - [ ] Thorna đúng 3 pha tại 60% và 30% máu; Ember Burst gây 2,5× (kiểm tra bằng bản debug); thắng được chỉ với Arc Cannon.
 - [ ] Nhận được Vine Lash, Memory Log 1, Nano Cell; Két giáp chỉ mở được khi có Prism Beam.
 - [ ] Nano Cell dùng bằng nút `heal`, hồi 40% máu tối đa, khóa thao tác 0,4 s, không dùng được khi đầy máu, nạp đầy khi vào màn, không nạp lại khi chết (cần Story).

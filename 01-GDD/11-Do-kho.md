@@ -72,6 +72,8 @@ Thống nhất với kịch bản hướng dẫn D06 và S09: **3 lần chết l
 
 ### 2.6 Mẫu đòn Thử thách
 
+Bản Thử thách của kẻ địch, mini-boss và boss Stage 2–4: `16-Dac-ta-Stage2-4-nhap.md` mục 3.4–3.6, 4.4–4.6, 5.4–5.6 (bản nháp).
+
 - Khi độ khó có `newAttackPatterns: true`, kẻ địch và boss dùng **bản Thử thách**.
 - **Dữ liệu:** khối `challenge` trong từng kẻ địch (`enemies.json`) hoặc boss (`bosses.json`), ghép sâu lên bản gốc:
   - Đối tượng thì ghép từng khóa; mảng thì thay cả mảng. Ví dụ `phases` của Thorna phải chép lại `untilHpPct`, `speedMul`; test kiểm hai bản khớp nhau.
@@ -105,8 +107,8 @@ thưởng (từng nguồn)             = round(base × difficulty.rewardMul) ; b
 ```
 
 - **Nhân `rewardMul`:** Core Bit và EXP của từng kẻ địch (làm tròn theo từng kẻ địch lúc bị hạ, không làm tròn lúc nhặt); thưởng lần đầu hạ boss của từng độ khó; rương, thùng khi có.
-- **Không nhân:** Data Chip, SP, vũ khí boss, module, Két giáp, vật phẩm bí mật.
-- Lần đầu phá đảo Thử thách (+3 Data Chip, `economy.json → dataChipSources.firstClearChallenge`): khi hạ boss cuối cốt truyện lần đầu ở Thử thách. Ngoài MVP; Data Chip chưa có trong bản lưu.
+- **Không nhân:** Data Chip, SP, vũ khí boss, module, Két giáp, vật phẩm bí mật; máu Gương Rối của nhiệm vụ phụ. Tiến độ và thưởng nhiệm vụ phụ dùng chung mọi độ khó (`15-Nhiem-vu-phu.md`).
+- Lần đầu phá đảo Thử thách (+3 Data Chip, `economy.json → dataChipSources.firstClearChallenge`): khi hạ boss cuối cốt truyện lần đầu ở Thử thách. Ngoài MVP; Data Chip vào bản lưu 5 cùng nhiệm vụ phụ (`inventory.dataChips`, `15-Nhiem-vu-phu.md`).
 - EXP ở Cốt truyện cũng ×0,5 (đúng GDD chính). Người chơi Cốt truyện lên cấp chậm hơn; đồng bộ cấp bù phần máu và công.
 
 | Độ khó | `damageTaken` | `enemyHp` | `rewardMul` | Mở khi | Mẫu đòn mới |
@@ -182,7 +184,7 @@ Pha 2: `thorns, roots, stalk, lash`. Pha 3: `roots, thorns, stalk, bloom, lash`.
 - **Màn Kết quả:** dòng "Độ khó"; "Đã mở Thử thách cho màn này" khi vừa mở.
 - **Báo trước nhiều nhịp:** chấm sáng theo số nhịp trên đầu kẻ địch.
 - **Rễ Đuổi:** tư thế và màu tím riêng (mục 3.3).
-- **Âm thanh:** cảnh báo đòn mới dùng âm cảnh báo đòn boss (M12, chưa làm).
+- **Âm thanh:** cảnh báo đòn mới dùng bus `alert` (`12-Am-thanh.md`): Rễ Đuổi có `thorna.stalk.tele` và `thorna.stalk.mark`; đòn nhiều nhịp có tiếng tích theo số nhịp (EP-12).
 
 ## 7. Nút tinh chỉnh
 
@@ -203,7 +205,7 @@ Pha 2: `thorns, roots, stalk, lash`. Pha 3: `roots, thorns, stalk, bloom, lash`.
 - [ ] Bản Thử thách của 4 kẻ địch Stage 1, Golem và Thorna chạy đúng; báo trước không dưới ngưỡng; Tháp Gai còn đường né bằng nhảy; không chết một đòn (kiểm tra lúc nạp).
 - [ ] Bot không né thua Thorna ở Thường và Thử thách (cấp 4).
 - [ ] Màn xám luôn Thường, không bảng Chuẩn bị (`gate-flow` đạt).
-- **Giả thuyết đo ở đợt thử MVP:** khoảng 10–20% người chơi chọn Thử thách ở ít nhất một màn; tỷ lệ bỏ cuộc ở Thử thách ≤ 2 lần Thường; người chọn Cốt truyện vẫn hoàn thành ≥ 90% màn.
+- **Giả thuyết đo ở đợt thử MVP** (mẫu số: người đã mở Thử thách ở ít nhất một màn; cách đo ở `13-Do-luong-MVP.md`): khoảng 10–20% người chơi chọn Thử thách ở ít nhất một màn; tỷ lệ bỏ cuộc ở Thử thách ≤ 2 lần Thường; người chọn Cốt truyện vẫn hoàn thành ≥ 90% màn.
 
 ## 9. Kết quả duyệt và quyết định (bản 1 → bản 2)
 

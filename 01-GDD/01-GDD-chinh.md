@@ -135,7 +135,7 @@ Chỉ cần chơi lại **từ điểm chọn thứ hai (sau boss thứ 8)** đ�
 
 ### 3.6 Cách kể chuyện
 
-- Hội thoại tối đa 3–4 dòng/lần, có nút bỏ qua; không khóa điều khiển quá 10 giây liên tục.
+- Hội thoại tối đa 3–4 dòng/lần, có nút bỏ qua; không khóa điều khiển quá 10 giây liên tục. Hộp thoại không tự đóng theo giờ, trừ khi người chơi bật "tự tiến thoại" ở Cài đặt (`14-Cai-dat-Tiep-can.md`). Bỏ qua cả đoạn cần giữ Lướt 0,6 s hoặc nút Bỏ qua (`17-Quy-tac-bien.md` QB-80).
 - Nhật ký và Memory Log đọc tùy chọn ở Hub. **Đường chính phải hiểu được mà không cần đọc chúng**; chúng thêm chiều sâu và lý lẽ cho kết thúc C.
 - Boss có đoạn thoại trước/sau trận ngắn, thể hiện động cơ (3 biến thể theo số boss, mục 3.3).
 - Giáp của Kai thay đổi hình ảnh theo tiến trình để người chơi *thấy* nhân vật phát triển.
@@ -253,7 +253,7 @@ Luật thêm khi rà soát 14/11/2026. Mọi số là `[PLACEHOLDER]`; **cần S
 
 ### 6.1 Cấp độ và chỉ số
 
-Nhận kinh nghiệm (EXP) từ kẻ địch, boss, nhiệm vụ phụ. Cấp tối đa: **30**.
+Nhận kinh nghiệm (EXP) từ kẻ địch và boss; nhiệm vụ phụ chỉ cho EXP gián tiếp (kẻ địch trong lượt chơi lại), ở MVP `reward.exp = 0` (`15-Nhiem-vu-phu.md`). Cấp tối đa: **30**.
 
 - EXP cần để lên cấp: `40 × L^1,4` `[PLACEHOLDER]`
 - Máu tối đa: `100 + 4 × (L − 1)` → cấp 30 = 216 (×2,16) `[PLACEHOLDER]`
@@ -410,6 +410,7 @@ Mô hình cân bằng kinh tế toàn game (nguồn thu, giá Shop, Data Chip, n
 - Khoảng cách tối đa giữa hai điểm hồi sinh liền nhau: Cốt truyện ≤ 90 s, Thường ≤ 150 s, Thử thách ≤ 270 s chơi `[PLACEHOLDER]`. Cách đặt checkpoint theo độ khó: `11-Do-kho.md` mục 2.4.
 - **Checkpoint là vùng chữ nhật** đặt trên bản đồ Tiled; Kai chạm vùng thì kích hoạt. Checkpoint xét theo thứ tự trong danh sách: chỉ checkpoint đứng sau checkpoint hiện tại mới kích hoạt, nên dùng được cho màn dọc (Cirrus Tower), không chỉ màn chạy ngang. **Cần Story:** code hiện kích hoạt khi tâm Kai vượt qua một cột (`centerX`).
 - Mỗi màn có 3 phòng bí mật, chứa Memory Log, Két giáp (cần vũ khí mới) và một vật phẩm thứ ba (Stage 1: Nano Cell); cộng 1 nhiệm vụ phụ.
+- **Mục tiêu nhiệm vụ phụ** chỉ cần Vine Lash và vũ khí của chính màn đó (`15-Nhiem-vu-phu.md` mục 2.8).
 - **Luật duyệt màn (bản 0.7):** mọi vật phẩm được lưu (Két giáp, Memory Log, bí mật, Data Chip, mục tiêu nhiệm vụ phụ) và đường chính đều tới được bằng **bộ động tác gốc** (lướt đất, lướt-nhảy, bám và nhảy tường). Lối chỉ lướt trên không (kỹ năng Phantom) mới tới là đường tắt, thưởng tối đa là Core Bit; cây kỹ năng không bao giờ chặn tiến trình.
 
 ### 8.4 Vùng Eclipse (endgame)
@@ -450,6 +451,8 @@ Boss về 0 máu ở bước logic nào thì người chơi thắng ngay ở bư
 Dữ liệu boss nằm ở `03-Data/bosses.json`; khi nạp game tự kiểm tra hai nguyên tắc trên (telegraph sau khi tăng tốc vẫn ≥ 0,5 s, không đòn nào ≥ máu người chơi cấp 1). Boss xám (thử nghiệm, giữ 100 máu để so sánh các đợt chơi thử) dùng cho mốc Prototype: 3 pha, 4 đòn (Bắn thẳng, Lao ngang, Nhảy đập kèm sóng đất, đòn đỉnh Mưa đạn chừa 3 khe né rồi choáng 2 s); thắng lần đầu nhận Vine Lash, đấu lại thì Vine Lash là điểm yếu.
 
 ### 9.1 Kẻ địch, mini-boss và boss theo màn
+
+Đặc tả Stage 2–4 (kẻ địch, mini-boss, boss Lumen, Cryo, Aeris, cơ chế môi trường; bản nháp chờ cổng Prototype cho phần phụ thuộc cảm giác): `16-Dac-ta-Stage2-4-nhap.md`.
 
 Prologue dùng Drone Lính và Tháp Pháo Tập Sự. Tên kẻ địch thường và mini-boss của Stage 2–8 lấy từ bản đề xuất đã duyệt; chỉ số chi tiết Stage 1 ở tab đặc tả Prologue & Stage 1, các màn sau theo cùng khuôn.
 
@@ -585,7 +588,7 @@ Mỗi độ khó được cân bằng quanh một mức sức mạnh dự kiến
 
 Cấu hình: `eclipseLevels` trong `03-Data/endgame.json` `[PLACEHOLDER]`.
 
-Tùy chọn tiếp cận: chế độ mù màu, giảm rung màn hình, giảm hiệu ứng nhấp nháy, phụ đề cỡ lớn, đổi phím, tự bắn, giảm tốc độ game 10–30%, hộp thoại tự tiến tùy chọn.
+Tùy chọn tiếp cận: chế độ mù màu, giảm rung màn hình, giảm hiệu ứng nhấp nháy, phụ đề cỡ lớn, đổi phím, tự bắn, giảm tốc độ game 10–30%, hộp thoại tự tiến tùy chọn. Giá trị, mặc định, tác dụng bằng số: `14-Cai-dat-Tiep-can.md`. Cảnh báo âm thanh cho đòn boss đi bus riêng `alert` (không bị nhạc lấn); mọi cue âm có tín hiệu hình tương ứng (`12-Am-thanh.md` mục 6.3).
 
 Phản hồi khi chết nhiều lần: sau 3 lần chết liên tiếp ở một đoạn (sửa 14/11/2026 cho khớp kịch bản hướng dẫn D06, S09), NOVA gợi ý (không ép) hạ độ khó hoặc dùng vũ khí khắc chế. Chi tiết độ khó, màn Chuẩn bị, mẫu đòn Thử thách: `01-GDD/11-Do-kho.md`.
 
@@ -595,7 +598,7 @@ Phản hồi khi chết nhiều lần: sau 3 lần chết liên tiếp ở một
 - [ ] Thành công đầu tiên được đảm bảo, không thể thua ở nhịp 1.
 - [ ] Mỗi cơ chế mới (lướt, bám tường, nạp, đổi vũ khí) dạy trong môi trường an toàn.
 - [ ] Ít nhất một cơ chế do người chơi tự khám phá, không cần chữ.
-- [ ] Hướng dẫn cảm ứng kèm hình, có thể thử bố cục nút trước khi bắt đầu.
+- [ ] Hướng dẫn cảm ứng kèm hình. Trong Prologue dùng cỡ nút vừa mặc định; thử và chỉnh bố cục nút ở bước F03 ngay sau Prologue (`07-Kich-ban-huong-dan.md`; rà soát C08).
 - [ ] Kết thúc buổi chơi đầu bằng một điểm treo (xuất hiện bóng dáng Vex).
 - [ ] Người chơi điều khiển Kai trong ≤ 15 giây kể từ lần mở đầu; tuổi, đồng ý quảng cáo và cỡ nút hỏi sau Prologue.
 - [ ] Không có cơ chế mới nào được dạy cùng lúc với lần đầu kẻ địch gây sát thương thật.
@@ -606,7 +609,7 @@ Mục tiêu: **tỷ lệ hoàn thành Prologue ≥ 90%** không cần hỗ trợ
 ## 13. Giao diện và trải nghiệm (UI/UX)
 
 - **HUD:** thanh máu trái trên, thanh năng lượng vũ khí dưới thanh máu, biểu tượng vũ khí hiện tại, Core Bit nhỏ góc phải. HUD không che vùng chơi trên điện thoại.
-- **Menu tạm dừng:** tiếp tục, tùy chọn, Kỹ năng (học, đặt lại; áp dụng ở lần hồi sinh kế tiếp, `10-He-thong-RPG-Xuong.md` mục 2.5), lắp module, thoát về Hub.
+- **Menu tạm dừng:** tiếp tục, tùy chọn (mở màn Cài đặt, `14-Cai-dat-Tiep-can.md` mục 2), âm thanh bật/tắt, Kỹ năng (học, đặt lại; áp dụng ở lần hồi sinh kế tiếp, `10-He-thong-RPG-Xuong.md` mục 2.5), lắp module, thoát về Hub.
 - **Màn hình khởi động:** vào game trong ≤ 3 giây, không bắt đăng nhập; có “Tiếp tục” rõ ràng.
 - **Bản đồ nhỏ** (sau MVP; MVP không có bản đồ nhỏ): hiện hướng đi và đánh dấu bí mật đã mở (nhờ giáp Đầu).
 - Nút và chữ đủ lớn cho cảm ứng; mọi hành động quan trọng đạt được trong ≤ 2 lần chạm ở Hub.
@@ -619,7 +622,7 @@ Vị trí, hạn mức, luồng và kỹ thuật quảng cáo chi tiết (hồi 
 
 - **Phong cách:** pixel art độ phân giải cao, bảng màu neon trên nền tối cho Nova Prime; mỗi màn một bảng màu chủ đạo dễ phân biệt.
 - **Nhân vật:** Kai có hình dạng rõ ràng ở khoảng cách nhỏ (cần dễ nhìn trên màn hình điện thoại 6 inch).
-- **Âm nhạc:** chiptune pha synth, mỗi màn một chủ đề, boss có nhạc riêng, nhạc nhịp theo pha boss.
+- **Âm nhạc:** chiptune pha synth, mỗi màn một chủ đề. MVP: một bản nhạc boss chung 3 lớp, mỗi pha thêm một lớp; nhạc riêng từng boss từ Alpha. Chi tiết âm thanh MVP (94 id âm, 5 bus, cue báo đòn): `12-Am-thanh.md`.
 - **SFX:** mỗi vũ khí có âm sắc riêng; âm thanh báo hiệu đòn boss (cảnh báo bằng âm thanh).
 - **Hiệu ứng:** hit-stop, rung nhẹ, hạt (particle) tiết chế để chạy mượt trên máy yếu.
 
@@ -634,7 +637,7 @@ Vị trí, hạn mức, luồng và kỹ thuật quảng cáo chi tiết (hồi 
 | Hiệu năng | 60 FPS trên điện thoại tầm trung (\~3 GB RAM), 60 FPS trên laptop phổ thông |
 | Dung lượng | Tải đầu ≤ 30 MB, mỗi màn tải thêm ≤ 8 MB (lazy-load) |
 | Độ trễ nhập | Từ nút bấm đến phản hồi ≤ 50 ms |
-| Lưu game | IndexedDB cục bộ cho tiến trình và cài đặt, mã xuất/nhập làm sao lưu; **Gem, giao dịch và bốc thăm rơi đồ do máy chủ giữ làm gốc**; cloud save từ Beta (MVP chỉ lưu cục bộ + mã sao lưu, mục 16); xung đột hai thiết bị hiện màn chọn, không tự gộp |
+| Lưu game | IndexedDB cục bộ cho tiến trình; cài đặt (`cv.settings`, `cv.controls`, `cv.audio`) ở localStorage để đọc đồng bộ khi khởi động; mã xuất/nhập làm sao lưu; **Gem, giao dịch và bốc thăm rơi đồ do máy chủ giữ làm gốc**; cloud save từ Beta (MVP chỉ lưu cục bộ + mã sao lưu, mục 16); xung đột hai thiết bị hiện màn chọn, không tự gộp |
 | Bảng xếp hạng | Từ Beta (cơ bản) và Endgame MVP (Tiêu chuẩn), không có trong MVP (mục 16): Tiêu chuẩn và Mở; server kiểm tra seed và chuỗi input; chỉ tính lượt không dùng booster |
 | Backend | Supabase (xác thực, cơ sở dữ liệu, Edge Functions) cho cloud save, giao dịch, bốc thăm và bảng xếp hạng |
 | Quảng cáo | AdMob (app), H5 Games Ads (web); đồng ý quảng cáo (UMP) và hộp thoại theo dõi iOS (ATT) |

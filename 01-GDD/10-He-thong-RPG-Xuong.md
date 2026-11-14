@@ -85,7 +85,8 @@ Kiểm luật bậc: V2 bậc 2 tăng 67% sát thương; V3 bậc 1 = 60% hiệu
 ### 2.2 Module (Draft, bị chặn: cần nhiệm vụ phụ Stage 1–4)
 
 - **Ô theo cấp:** dữ liệu đổi sang dạng `moduleSlots: [{ fromLevel: 1, slots: 3 }, { fromLevel: 10, slots: 4 }, { fromLevel: 20, slots: 5 }]` (không viết cứng mốc 10, 20 trong mã). **Tải tối đa** `loadCap = moduleLoadPerSlot (2) × slots`.
-- **Nguồn:** nhiệm vụ phụ theo vị trí màn (đặc tả Hub mục 7). Không lắp được module làm tổng tải vượt `loadCap`.
+- **Nguồn:** nhiệm vụ phụ theo `index` của màn (`quests.json`, `15-Nhiem-vu-phu.md`; đặc tả Hub mục 7). Tab Module của Xưởng mở khi nhận module đầu tiên. Không lắp được module làm tổng tải vượt `loadCap`.
+- **Trạng thái vô hiệu dùng chung:** Phase Step (choáng) và Frost Shard (đóng băng) dùng cùng trạng thái `disabledSec` trên mọi hành vi kẻ địch; boss và mini-boss miễn (`16-Dac-ta-Stage2-4-nhap.md` ST-15-04).
 
 | Module | Tải | Hiệu ứng (biến dữ liệu) | Ghi chú |
 | --- | --- | --- | --- |
@@ -102,7 +103,7 @@ Tải 4 module = 8 > 6 (3 ô) nên trước cấp 10 phải chọn tổ hợp; t
 
 | Két | Màn, vũ khí cần | Bộ phận | Hiệu ứng MVP |
 | --- | --- | --- | --- |
-| 1 | Stage 1, Prism Beam | Đầu Mk I | **Radar:** khi vật phẩm được lưu chưa lấy trong `scanRadiusTiles = 12` ô, mép màn hình hiện mũi tên **tĩnh** nhịp thở ≥ 1 s. Hai biểu tượng: "lấy được" và "cần [vũ khí X]". Ẩn trong đấu trường boss và khi có kẻ địch trong 6 ô. Tiếng ping 1 lần khi vào tầm (tối đa 1 lần mỗi 10 s) |
+| 1 | Stage 1, Prism Beam | Đầu Mk I | **Radar:** khi vật phẩm được lưu chưa lấy trong `scanRadiusTiles = 12` ô, mép màn hình hiện mũi tên **tĩnh** nhịp thở ≥ 1 s. Hai biểu tượng: "lấy được" và "cần [vũ khí X]". Ẩn trong đấu trường boss và khi có kẻ địch trong 6 ô. Tiếng ping 1 lần khi vào tầm (tối đa 1 lần mỗi 10 s). Tính cả vật của nhiệm vụ phụ đang làm (`15-…`) |
 | 2 | Stage 2, Frost Shard | Thân Mk I | `damageTakenMul = 0.85` (chỉ đòn kẻ địch và boss) |
 | 3 | Stage 3, Gale Cutter | Tay Mk I | **Đạn nạp vừa phá khiên** (`midChargeBreaksShield = true`). Không trùng V1 nữa |
 
@@ -247,7 +248,7 @@ SP còn lại             : skillPoints(cấp, boss) − Σ rank (không lưu)
 | Vừa | 1–2 bước | trauma ≤ 0,2 | Nổ lan V2 (vòng tròn đúng bán kính, 0,2 s), khiên vỡ |
 | Lớn | 3 bước (như hiện có) | như hiện có | Nạp đầy, điểm yếu, Đòn Trừng Phạt |
 
-- **Âm thanh (M12):** tiếng lướt trên không khác lướt đất; tiếng sượt đạn; khiên vỡ, khiên sẵn (hạ âm lượng khi boss đang báo đòn); nhịp tim khi Last Stand bật (tắt được); ping radar ≤ 1 lần mỗi 10 s; tiếng học kỹ năng.
+- **Âm thanh (M12):** tiếng lướt trên không khác lướt đất; tiếng sượt đạn; khiên vỡ, khiên sẵn (hạ âm lượng khi boss đang báo đòn); nhịp tim khi Last Stand bật (tắt được); ping radar ≤ 1 lần mỗi 10 s; tiếng học kỹ năng. Id theo `12-Am-thanh.md`: `kai.dash.air`, `kai.graze`, `kai.shield.break`, `kai.shield.ready`, `fx.burst`, `hit.punish`, `ui.learn`, `kai.laststand`, `radar.ping`.
 - **Phụ thuộc chưa có:** tùy chọn "giảm rung, giảm nhấp nháy" (mục Tùy chọn của menu tạm dừng còn mờ); khi làm phải áp lên ba bậc phản hồi trên.
 
 ## 7. Nút tinh chỉnh
