@@ -22,7 +22,7 @@
   - C2 `energyRegenMul` [1.25, 1.5], `regenDelaySec` [3, 2].
   - C3 `shieldRechargeSec` [30, 25, 20], `shieldIFrameSec` 0.3.
 - **Luật bậc** (kiểm lúc nạp): mỗi bậc sau tăng phần thưởng ≥ 20% hoặc thêm hiệu ứng mới (một tham số từ 0 thành khác 0). Bậc 1 nút tầng 3 ≥ 60% hiệu lực tối đa. Với tham số "càng nhỏ càng mạnh" (`*Mul` < 1, `shieldRechargeSec`), so phần thưởng là `1 − giá trị` hoặc `1 / giá trị`.
-- **Quy tắc chung** (`skills.json` → `rules`): `minFullChargeSec = 0.75` (phải > `weapons.arcCannon.midCharge.timeSec`), `minBuildDamageTakenMul = 0.5`.
+- **Quy tắc chung** (`skills.json` → `rules`): `minFullChargeSec = 0.8` (ban đầu 0.75, ST-08-04 nâng) (phải > `weapons.arcCannon.midCharge.timeSec`), `minBuildDamageTakenMul = 0.5`.
 - **`shop.json`**, thêm trường số và kiểm tra ở `core/shop-config.ts`:
   - `arc_core.damagePerLevel = 0.05`
   - `armor_plating.damageTakenPerLevel = 0.04`

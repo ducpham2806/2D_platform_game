@@ -5,7 +5,7 @@ import { parseWeapons, type WeaponsData } from './weapons-config';
 import { type BossData, checkBossRules, parseBosses } from './boss-config';
 import { checkEnemyRules, type EnemiesData, parseEnemies } from './enemy-config';
 import { evaluateFormula } from '../logic/formula';
-import { levelStats } from '../logic/rpg/progression';
+import { computeBuild, statsFor } from '../logic/rpg/build';
 import { parseStageMechanics, type StageMechanics } from './stage-mechanics-config';
 import { parseTutorial, type TutorialData } from './tutorial-config';
 import { parseUi, type UiData } from './ui-config';
@@ -162,6 +162,61 @@ export function parseLevelRange(range: string): [number, number] {
   return [lo, hi];
 }
 
+/** Hệ số sát thương lớn nhất của các module có điều kiện (`conditional: true`, `damageMul`). */
+function conditionalDamageMul(modules: unknown): number {
+  if (!Array.isArray(modules)) return 1;
+  return modules.reduce<number>((best, m) => {
+    if (!isObject(m) || m.conditional !== true || typeof m.damageMul !== 'number') return best;
+    return Math.max(best, m.damageMul);
+  }, 1);
+}
+
+/**
+ * Trần sức mạnh cốt truyện (GDD 6.1, 01-GDD/10-He-thong-RPG-Xuong.md mục 3.3), đo ở cấp tối đa
+ * với build có mọi nút kỹ năng đủ bậc và Upgrade tối đa:
+ * - thường trực: công theo cấp × upgrade sát thương ≤ `damageMul`;
+ * - máu: máu (có kỹ năng) / máu cấp 1 ≤ `hpMul`;
+ * - có điều kiện: thường trực × module có điều kiện ≤ `conditionalDamageMul`;
+ * - máu hiệu dụng: máu / giảm sát thương tốt nhất của build ≤ `effectiveHpMul`.
+ * Kỹ năng tăng tốc nạp không vào đây: chỉ áp nạp đầy nên không nâng DPS tối đa (test mô phỏng).
+ */
+export function checkStoryPowerCap(config: GameConfig): string[] {
+  const errors: string[] = [];
+  const lv = config.player.level;
+  const cap = lv.storyPowerCap;
+  const maxRanks = Object.fromEntries(
+    Object.values(config.skills.nodes).map((n) => [n.id, n.ranks.length]),
+  );
+  const build = computeBuild(config.skills, maxRanks);
+  const top = statsFor(lv.max, lv, build);
+  const base = statsFor(1, lv);
+  const arcCore = config.shop.upgrades.arc_core;
+  const plating = config.shop.upgrades.armor_plating;
+  const damage = top.attackMul * (1 + (arcCore?.damagePerLevel ?? 0) * (arcCore?.maxLevel ?? 0));
+  const hp = top.maxHp / base.maxHp;
+  const fmt = (x: number): string => x.toFixed(3);
+  if (damage > cap.damageMul + 1e-9)
+    errors.push(
+      `trần sát thương: cấp ${lv.max} × upgrade tối đa = ${fmt(damage)} lần cấp 1, trần ${cap.damageMul}`,
+    );
+  if (hp > cap.hpMul + 1e-9)
+    errors.push(`trần máu: cấp ${lv.max} với kỹ năng = ${fmt(hp)} lần cấp 1, trần ${cap.hpMul}`);
+  const conditional = damage * conditionalDamageMul(config.raw.modules);
+  if (conditional > cap.conditionalDamageMul + 1e-9)
+    errors.push(
+      `trần có điều kiện: ${fmt(conditional)} lần cấp 1, trần ${cap.conditionalDamageMul}`,
+    );
+  // Giáp (armor.json) cộng vào khi làm Két giáp (ST-08-09).
+  const reduction = Math.max(
+    config.skills.rules.minBuildDamageTakenMul,
+    1 - (plating?.damageTakenPerLevel ?? 0) * (plating?.maxLevel ?? 0),
+  );
+  const ehp = hp / reduction;
+  if (ehp > cap.effectiveHpMul + 1e-9)
+    errors.push(`trần máu hiệu dụng: ${fmt(ehp)} lần cấp 1, trần ${cap.effectiveHpMul}`);
+  return errors;
+}
+
 /**
  * Các bất biến thiết kế giữa nhiều file (GDD mục 6.3, 7, 11). Trả về danh sách lỗi;
  * rỗng nghĩa là dữ liệu nhất quán.
@@ -284,23 +339,13 @@ export function checkDesignInvariants(config: GameConfig): string[] {
       errors.push(`stages.mechanics.${name}.damage: ${damage} giết ngay Kai cấp 1 (${baseHp} máu)`);
   }
 
-  // Cấp (GDD 6.1): EXP lên cấp dương ở mọi cấp; riêng cấp đã không vượt trần sức mạnh cốt
-  // truyện (upgrade và module cộng thêm sau, khi làm M8 đủ và M9 thì kiểm tra cả tổng).
+  // Cấp (GDD 6.1): EXP lên cấp dương ở mọi cấp.
   const lv = config.player.level;
   for (let L = 1; L < lv.max; L += 1) {
     const need = evaluateFormula(lv.expFormula, { L });
     if (!(need >= 1)) errors.push(`player.level.expFormula: cấp ${L} cần ${need} EXP (phải ≥ 1)`);
   }
-  const top = levelStats(lv.max, lv);
-  const base = levelStats(1, lv);
-  if (top.maxHp / base.maxHp > lv.storyPowerCap.hpMul)
-    errors.push(
-      `player.level.hp: cấp ${lv.max} gấp ${top.maxHp / base.maxHp} lần cấp 1, trần ${lv.storyPowerCap.hpMul}`,
-    );
-  if (top.attackMul > lv.storyPowerCap.damageMul)
-    errors.push(
-      `player.level.atk: cấp ${lv.max} gấp ${top.attackMul} lần cấp 1, trần ${lv.storyPowerCap.damageMul}`,
-    );
+  errors.push(...checkStoryPowerCap(config));
 
   // Kỹ năng chỉ giảm thời gian nạp đầy; sàn nạp đầy phải lớn hơn nạp vừa để lối nạp đầy không
   // vượt lối mạnh nhất (01-GDD/10-He-thong-RPG-Xuong.md mục 3.2).

@@ -1,7 +1,7 @@
 {
   "_note": "Cây kỹ năng MVP (01-GDD/10-He-thong-RPG-Xuong.md mục 2.1, duyệt 14/11/2026). 3 nhánh × 3 nút; nút tầng k có k bậc; mỗi bậc 1 SP; tầng sau mở khi tầng trước đủ bậc. 'ranks' ghi giá trị đầy đủ của từng hiệu ứng TẠI bậc đó, tương đối so với số gốc trong player.json/weapons.json (Mul nhân, Sec/Steps cộng hoặc đặt); hiệu ứng không ghi ở một bậc = chưa có. Game kiểm tra lúc nạp: mỗi bậc sau tăng phần thưởng ≥ 20% hoặc thêm hiệu ứng mới; bậc 1 nút tầng 3 ≥ 60% hiệu lực tối đa. Mọi số là [PLACEHOLDER].",
   "rules": {
-    "minFullChargeSec": 0.75,
+    "minFullChargeSec": 0.8,
     "minBuildDamageTakenMul": 0.5,
     "shieldIFrameSec": 0.3,
     "note": "minFullChargeSec: sàn thời gian nạp đầy sau mọi giảm của build, phải lớn hơn thời gian nạp vừa (kỹ năng chỉ giảm nạp đầy, không nâng DPS tối đa). minBuildDamageTakenMul: sàn của tích hệ số giảm sát thương nhận của build (không gồm độ khó). shieldIFrameSec: bất tử sau khi khiên C3 chặn một đòn."

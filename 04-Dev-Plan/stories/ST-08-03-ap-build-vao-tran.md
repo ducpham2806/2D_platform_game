@@ -28,7 +28,7 @@
 
 ## 4. Tiêu chí nghiệm thu
 
-- [x] AC-1: Có V1 thì nạp đầy 1,02 s, nạp vừa vẫn 0,5 s; hệ số quá nhỏ thì kẹp ở sàn 0,75 s (`tests/build.test.ts`). (Overcharge áp khi có Booster, M9.)
+- [x] AC-1: Có V1 thì nạp đầy 1,02 s, nạp vừa vẫn 0,5 s; hệ số quá nhỏ thì kẹp ở sàn (0,75 s lúc làm; ST-08-04 nâng lên 0,8 s) (`tests/build.test.ts`). (Overcharge áp khi có Booster, M9.)
 - [x] AC-2: Có C1 ở cấp 4: máu tối đa 129; lên cấp 5 giữa màn: 133, máu hiện tại cộng phần chênh.
 - [x] AC-3: `retune()` giữ build (dữ liệu chỉnh là dữ liệu gốc, `world.tuning` vẫn trả số gốc); màn xám bỏ qua build.
 - [x] AC-4: Chạy thử Chromium với bản lưu cấp 3, P1 + P2 + C1:

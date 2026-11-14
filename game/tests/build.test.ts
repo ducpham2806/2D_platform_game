@@ -34,7 +34,7 @@ describe('gom hiệu ứng build (GDD 10 mục 3.1)', () => {
     expect(weapons.energyRegen.afterNoFireSec).toBeCloseTo(2.01, 9);
     expect(config.weapons.arcCannon.charge.timeSec).toBe(1.2);
     const floored = applyBuild(config.player, config.weapons, { ...full, fullChargeTimeMul: 0.3 });
-    expect(floored.weapons.arcCannon.charge.timeSec).toBe(0.75);
+    expect(floored.weapons.arcCannon.charge.timeSec).toBe(0.8);
     const same = applyBuild(config.player, config.weapons, EMPTY_BUILD);
     expect(same.weapons).toBe(config.weapons);
   });

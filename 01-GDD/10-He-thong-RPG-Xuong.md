@@ -112,7 +112,7 @@ Menu tạm dừng có mục **Kỹ năng** mở cùng bảng tab Kỹ năng (h�
 Hệ số cùng loại **nhân với nhau**, rồi kẹp theo sàn trong dữ liệu. Sàn chỉ áp lên **tích các hệ số của build** (kỹ năng, giáp, upgrade, booster), **không gồm hệ số độ khó**.
 
 ```text
-fullChargeTime = base × V1 × (1 / (1 + overcharge.chargeSpeed)) ; ≥ minFullChargeSec (0.75 s) ; phải > midCharge.timeSec
+fullChargeTime = base × V1 × (1 / (1 + overcharge.chargeSpeed)) ; ≥ minFullChargeSec (0.8 s) ; phải > midCharge.timeSec
 midChargeTime  = base (không kỹ năng nào đổi)
 damageTaken    = round(raw × difficulty.damageTaken × max(minBuildDamageTakenMul, (1 − plating × lvl) × ThânMkI)) ; ≥ 1 ; chỉ đòn kẻ địch và boss
 envDamage      = round(raw × difficulty.damageTaken)   // gai, hố: build không giảm, để duyệt màn đoán trước được
@@ -135,7 +135,7 @@ Technical Director chạy mô phỏng dùng chính `WeaponLoadout` và `PlayerPh
 | Tự bắn + nạp vừa, cảm ứng | **9,62** | 12,55 | 9,62 |
 | Tự bắn + nạp đầy, cảm ứng (ở sàn) | | | 8,68 |
 
-Kết luận: khi tăng tốc nạp **chỉ áp nạp đầy** và sàn nạp đầy lớn hơn nạp vừa, lối nạp đầy luôn thấp hơn lối mạnh nhất (bắn thường trên bàn phím, nạp vừa + tự bắn trên cảm ứng). Vì vậy V1, V3 (chỉ cho đạn nạp đầy) và Overcharge làm lối nạp đầy hấp dẫn hơn mà **không nâng DPS tối đa**. V2 chỉ đánh mục tiêu khác. Phép kiểm tra trần bằng mô phỏng theo bốn lối bắn trên là một test bắt buộc (Story ST-08-04).
+Kết luận: khi tăng tốc nạp **chỉ áp nạp đầy** và sàn nạp đầy lớn hơn nạp vừa, lối nạp đầy luôn thấp hơn lối mạnh nhất. Mô phỏng của ST-08-04 (`tests/power-cap.test.ts`, đo lại: bắn liên thanh 7,40; nạp vừa + tự bắn cảm ứng 9,15) thấy trên cảm ứng, nếu **mọi** phát nạp đầy đều trúng lúc boss hở thì lối nạp đầy có Đòn Trừng Phạt vượt mốc (9,4 ở sàn 0,75 s). Vì vậy sàn nạp đầy nâng lên **0,8 s** (V1 + Overcharge = 0,785 s → 0,8 s), và phép thử giả định tối đa 1/3 số phát nạp đầy trúng lúc boss hở (dữ liệu Thorna: boss hở khoảng 1/4 thời gian; boss mới có pha hồi dài hơn thì phải chạy lại). Với giả định đó, lối nạp đầy có build vẫn thấp hơn lối mạnh nhất không build (bắn thường trên bàn phím, nạp vừa + tự bắn trên cảm ứng). Vì vậy V1, V3 (chỉ cho đạn nạp đầy) và Overcharge làm lối nạp đầy hấp dẫn hơn mà **không nâng DPS tối đa**. V2 chỉ đánh mục tiêu khác. Phép kiểm tra trần bằng mô phỏng theo bốn lối bắn trên là một test bắt buộc (Story ST-08-04).
 
 ### 3.3 Trần sức mạnh cốt truyện
 
@@ -241,7 +241,7 @@ Mọi số ở mục 2–3 nằm trong `skills.json`, `modules.json`, `armor.jso
 | Người chơi tự quay lại Xưởng | Số lần mở Xưởng không do hướng dẫn nhắc | ≥ 50% người chơi tự mở lại trước cuối MVP |
 | SP được dùng | SP còn lại khi vào Stage 2 | ≥ 70% người chơi tiêu hết SP trước Stage 2 |
 | Không phá trần | Test logic: hệ số thường trực ở cấp tối đa, trường hợp có điều kiện, máu hiệu dụng; mô phỏng 4 lối bắn (mục 3.2) | ≤ `storyPowerCap` trong dữ liệu; lối nạp đầy có build thấp hơn lối mạnh nhất không build |
-| Phòng thủ không thay được né | Mô phỏng: bot không né, build phòng thủ tối đa MVP (nhánh Core đủ bậc, Thân Mk I, Booster Khiên) đấu Thorna ở Thường | Bot vẫn thua |
+| Phòng thủ không thay được né | Mô phỏng: bot không né, có và không có nhánh Core đủ bậc, đấu Thorna ở Thường | Build Core không đổi số đòn trúng; chỉ thêm máu đúng phần C1 (và một đòn mỗi lần khiên hồi, ST-08-08). Ghi chú: mô phỏng ST-08-04 thấy bot không né **thắng** Thorna sau khoảng 15 s, chỉ trúng 5–6 đòn, kể cả không có build, trong khi đặc tả Stage 1 dự kiến 60–90 s. Đây là việc cân bằng boss ở cổng Prototype, không thuộc hệ thống kỹ năng |
 | P3 không thành bất tử liên tục | Test logic, mẫu lướt đủ cú liên tục (0,25 s lướt + 0,6 s hồi) | Tỉ lệ thời gian bất tử với đạn ≤ gốc + 8 điểm % (gốc 11,8%; bậc 3: 10/51 = 19,6%) |
 | Khiên không "ăn" được đòn đỉnh | Mô phỏng Hoa Nở với khiên sẵn | Đứng yên vẫn trúng ít nhất 1 hạt sau khi khiên vỡ |
 

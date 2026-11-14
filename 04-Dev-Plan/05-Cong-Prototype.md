@@ -82,6 +82,8 @@ Mở link có `?tune=1` (bản dev `npm run dev` luôn bật), vào màn thử r
 - **Sao chép JSON:** chỉ xuất phần đã đổi, gom theo file (`player`, `weapons`, `boss` = boss `gray` trong `bosses.json`). Dán giá trị vào `03-Data` qua một PR; test sẽ báo nếu giá trị phá ràng buộc thiết kế.
 - **Đặt lại:** về dữ liệu gốc.
 
+**Cần xem khi chơi thử (phát hiện bằng mô phỏng ngày 14/11/2026, `game/tests/power-cap.test.ts`):** bot không né, chỉ bắn liên tục (7,5 phát/giây) ở cấp 6, thắng Thorna ở Thường sau khoảng 15 s và chỉ trúng 5–6 đòn, kể cả khi không có kỹ năng. Đặc tả Stage 1 mục 5 dự kiến 60–90 s. Nếu người thử thật cũng thắng quá nhanh, chỉnh Thorna (máu, nhịp nghỉ, tầm của đòn) trong lúc thử cổng; test này ghi lại hiện trạng và cần đổi kỳ vọng khi chỉnh.
+
 ## 6. Quy tắc quyết định
 
 - **Qua cổng** khi mọi tiêu chí ở mục 1 đạt ở cùng một bản build, với một đợt 5 người mới. Khi đó tiếp tục Vertical slice với thông số đã chốt.
