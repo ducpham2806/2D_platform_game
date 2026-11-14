@@ -48,7 +48,7 @@ Workflow `.github/workflows/pages.yml` build và đăng `game/dist` lên GitHub 
 
 **Bật một lần:** trên GitHub, vào Settings → Pages → Build and deployment → Source chọn **GitHub Actions**. Sau đó chạy workflow "Pages" (tab Actions → Pages → Run workflow) hoặc merge một PR vào `main`. Repo chuyển **công khai** ngày 14/11/2026 (gói Free chỉ có Pages cho repo công khai); chuyển công khai không tự bật Pages, vẫn phải chọn Source như trên.
 
-**Trước đợt 1:** PR #10 đã merge vào `main` (`eeb8ca1`, 14/11/2026). Workflow Pages lần #5 trên `main`: test, build đạt; dừng ở `configure-pages` vì repo chưa bật Pages (lần #4 ngày 3/11 và lần #6 sau khi chuyển công khai cũng vậy). Bật Pages (đoạn trên) rồi chạy lại workflow; xong thì mở link `?gate=1` trên một điện thoại để chắc chắn trang đã cập nhật (menu chỉ còn 3 nút). Trong lúc người thử đang chơi, không merge gì vào `main` (Pages đăng lại mỗi lần `main` đổi).
+**Trước đợt 1:** PR #10 đã merge vào `main` (`eeb8ca1`, 14/11/2026). Workflow Pages lần #5 trên `main`: test, build đạt; dừng ở `configure-pages` vì repo chưa bật Pages (lần #4 ngày 3/11 và lần #6 sau khi chuyển công khai cũng vậy). Người dùng bật Pages cùng ngày; lần #7 đăng thành công bản `eeb8ca1` lên `https://ducpham2806.github.io/2D_platform_game/`. Trước khi gửi link, mở `?gate=1` trên một điện thoại để chắc chắn trang đã cập nhật (menu chỉ còn 3 nút). Trong lúc người thử đang chơi, không merge gì vào `main` (Pages đăng lại mỗi lần `main` đổi).
 
 | Link | Dùng cho |
 |---|---|

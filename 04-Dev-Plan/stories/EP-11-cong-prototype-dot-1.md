@@ -1,7 +1,7 @@
 # EP-11: Cổng Prototype đợt 1 (G1)
 
 - **Mốc:** Prototype → quyết định G1 (`01-Ke-hoach-lam-viec.md`, S9). Cổng: `05-Cong-Prototype.md` (cảm ứng là tiêu chí chính).
-- **Việc của người:** ~~merge PR~~ (PR #10 merge 14/11, `eeb8ca1`); bật GitHub Pages; tag `gate-r1`; chơi thử 5 người (≥ 3 cảm ứng), ghi mục 7 file 05.
+- **Việc của người:** ~~merge PR~~ (PR #10 merge 14/11, `eeb8ca1`); ~~bật GitHub Pages~~ (đăng `eeb8ca1` ngày 14/11); tag `gate-r1`; chơi thử 5 người (≥ 3 cảm ứng), ghi mục 7 file 05.
 - **Việc code:** chỉ sửa những gì làm sai lệch kết quả đợt thử trên điện thoại. Sau khi tag `gate-r1`, code mới ở nhánh mới.
 
 | Mã | Tên | Phụ thuộc | Cỡ | Trạng thái |
