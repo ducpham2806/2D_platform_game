@@ -701,3 +701,12 @@ body.portrait #rotate-overlay {
   flex: 1 1 auto;
   min-height: 56px;
 }
+
+/* Quầy Mira trên điện thoại ngang: dòng gợi ý thiếu tiền dài thêm, bớt khoảng cách để không phải cuộn. */
+.cv-shop .cv-ws-detail p {
+  margin: 2px 0;
+}
+
+.cv-shop .cv-panel-actions {
+  margin-top: 6px;
+}

@@ -68,6 +68,8 @@ export interface SaveData {
     coreBits: number;
     /** Cấp Upgrade đã mua theo id (shop.json); không có = cấp 0. */
     upgrades: Record<string, number>;
+    /** Giá đã trả cho từng cấp Upgrade (gỡ thì hoàn đúng số này; bản 4). */
+    upgradePaid: Record<string, number[]>;
   };
   /** Hướng dẫn: bước đã xong (đổi máy không học lại), và người chơi tắt hướng dẫn. */
   tutorial: {
@@ -95,7 +97,7 @@ export function defaultSave(): SaveData {
       loadouts: [defaultLoadout()],
       activeLoadout: 0,
     },
-    inventory: { coreBits: 0, upgrades: {} },
+    inventory: { coreBits: 0, upgrades: {}, upgradePaid: {} },
     tutorial: { done: [], off: false },
   };
 }
@@ -140,6 +142,18 @@ function parseLoadouts(v: unknown): Loadout[] {
     ? v.filter(isRecord).map((l) => ({ modules: names(l.modules), armorOff: names(l.armorOff) }))
     : [];
   return list.length > 0 ? list : [defaultLoadout()];
+}
+
+/** Giá đã trả từng cấp: mảng số nguyên không âm; khóa hoặc giá trị sai bị bỏ. */
+function parsePaid(v: unknown): Record<string, number[]> {
+  const out: Record<string, number[]> = {};
+  if (!isRecord(v)) return out;
+  for (const [id, list] of Object.entries(v)) {
+    if (id.length === 0 || !Array.isArray(list)) continue;
+    const ok = list.every((x) => typeof x === 'number' && Number.isFinite(x) && x >= 0);
+    if (ok && list.length > 0) out[id] = list.map((x) => Math.floor(x as number));
+  }
+  return out;
 }
 
 function parseDifficulty(v: unknown): Record<string, StageDifficultySave> {
@@ -201,7 +215,11 @@ export function parseSave(raw: unknown): SaveData {
       loadouts,
       activeLoadout: Math.min(count(character.activeLoadout), loadouts.length - 1),
     },
-    inventory: { coreBits: count(inventory.coreBits), upgrades: parseLevels(inventory.upgrades) },
+    inventory: {
+      coreBits: count(inventory.coreBits),
+      upgrades: parseLevels(inventory.upgrades),
+      upgradePaid: parsePaid(inventory.upgradePaid),
+    },
     tutorial: { done: names(tutorial.done), off: tutorial.off === true },
   };
 }
@@ -329,14 +347,31 @@ export function setInventory(
   save: SaveData,
   upgrades: Readonly<Record<string, number>>,
   coreBits: number,
+  paid?: Readonly<Record<string, readonly number[]>>,
 ): SaveData {
   const cur = save.inventory;
+  const nextPaid = paid ?? cur.upgradePaid;
   const keys = new Set([...Object.keys(cur.upgrades), ...Object.keys(upgrades)]);
-  if (cur.coreBits === coreBits && [...keys].every((k) => cur.upgrades[k] === upgrades[k]))
+  const paidKeys = new Set([...Object.keys(cur.upgradePaid), ...Object.keys(nextPaid)]);
+  const samePaid = [...paidKeys].every(
+    (k) => (cur.upgradePaid[k] ?? []).join(',') === (nextPaid[k] ?? []).join(','),
+  );
+  if (
+    cur.coreBits === coreBits &&
+    samePaid &&
+    [...keys].every((k) => cur.upgrades[k] === upgrades[k])
+  )
     return save;
+  const copy: Record<string, number[]> = {};
+  for (const [k, v] of Object.entries(nextPaid)) copy[k] = [...v];
   return {
     ...save,
-    inventory: { ...cur, coreBits: Math.max(0, Math.floor(coreBits)), upgrades: { ...upgrades } },
+    inventory: {
+      ...cur,
+      coreBits: Math.max(0, Math.floor(coreBits)),
+      upgrades: { ...upgrades },
+      upgradePaid: copy,
+    },
   };
 }
 

@@ -38,6 +38,7 @@ export function shopBosses(save: SaveManager, config: GameConfig): number {
 export function shopModel(save: SaveManager, config: GameConfig): ShopModel {
   return buildShop(config, {
     levels: save.data.inventory.upgrades,
+    paid: save.data.inventory.upgradePaid,
     coreBits: save.data.inventory.coreBits,
     bosses: shopBosses(save, config),
     readOnly: save.readOnly,
@@ -175,8 +176,15 @@ export class ShopPanel {
     const inv = this.save.data.inventory;
     const result =
       a.kind === 'buy'
-        ? buyUpgrade(this.config.shop, inv.upgrades, inv.coreBits, card.id, model.bosses)
-        : refundUpgrade(this.config.shop, inv.upgrades, inv.coreBits, card.id);
+        ? buyUpgrade(
+            this.config.shop,
+            inv.upgrades,
+            inv.coreBits,
+            card.id,
+            model.bosses,
+            inv.upgradePaid,
+          )
+        : refundUpgrade(this.config.shop, inv.upgrades, inv.coreBits, card.id, inv.upgradePaid);
     if (!result.ok) {
       this.message = 'Không thực hiện được (kiểm tra số dư và điều kiện mở).';
       this.render();
@@ -186,7 +194,7 @@ export class ShopPanel {
     this.message = 'Đang lưu…';
     this.render();
     void this.save
-      .transact((s) => setInventory(s, result.levels, result.coreBits))
+      .transact((s) => setInventory(s, result.levels, result.coreBits, result.paid))
       .then((r) => {
         this.busy = false;
         if (r.ok)
@@ -313,6 +321,7 @@ export class ShopPanel {
     const dots = DOTS.on.repeat(c.level) + DOTS.off.repeat(c.maxLevel - c.level);
     let price: string;
     if (c.state === 'maxed') price = '✓ Đủ cấp';
+    else if (c.comingSoon) price = '🔒 Sắp có';
     else if (c.state === 'locked')
       price = `🔒 Sau ${c.unlockAfterBosses ?? model.openAfterBosses} boss`;
     else if (c.state === 'funds') price = `${c.nextCost} · thiếu ${c.missing}`;
@@ -329,13 +338,17 @@ export class ShopPanel {
       lines.push(
         `<p class="lock">Quầy Upgrade mở sau ${model.openAfterBosses} boss (đã hạ ${model.bosses}).</p>`,
       );
+    else if (c.comingSoon)
+      lines.push('<p class="lock">Chưa có tác dụng trong bản này; mở bán khi có (Alpha).</p>');
     else if (c.state === 'maxed') lines.push('<p>Đã đủ cấp.</p>');
     else if (c.state === 'locked')
       lines.push(
         `<p class="lock">Cấp ${c.level + 1} mở khi hạ ${c.unlockAfterBosses} boss (đã hạ ${model.bosses}).</p>`,
       );
     else {
-      lines.push(`<p>Cấp ${c.level + 1}: <b>${c.nextCost} Core Bit</b></p>`);
+      const effect =
+        c.effectNow && c.effectNext ? ` · ${c.effectNow} → <b>${c.effectNext}</b>` : '';
+      lines.push(`<p>Cấp ${c.level + 1}: <b>${c.nextCost} Core Bit</b>${effect}</p>`);
       if (c.state === 'funds') {
         // Chỉ gợi ý, không chặn, không đẩy mua (đặc tả Hub mục 4.2).
         const inc = model.income;
@@ -345,7 +358,7 @@ export class ShopPanel {
       }
     }
     if (c.refund !== undefined)
-      lines.push(`<small>Gỡ cấp ${c.level}: hoàn 100% (${c.refund} Core Bit).</small>`);
+      lines.push(`<small>Gỡ cấp ${c.level}: hoàn 100% số đã trả (${c.refund} Core Bit).</small>`);
     return lines.join('');
   }
 }

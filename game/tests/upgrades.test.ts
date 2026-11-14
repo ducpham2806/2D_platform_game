@@ -46,7 +46,7 @@ describe('dữ liệu Upgrade (shop.json, ST-09-01)', () => {
   });
 
   it('trường số mới có và được đọc', () => {
-    expect(shop.upgrades.energy_cell?.energyMaxPerLevel).toBe(0.1);
+    expect(shop.upgrades.energy_cell?.energyMaxPerLevel).toBe(0.15);
     expect(shop.upgrades.magnet_range?.magnetTilesPerLevel).toBe(1);
     expect(config.enemies.rules.pickups.magnetSpeedTilesPerSec).toBe(12);
     for (const [id, field] of [
@@ -97,9 +97,11 @@ describe('mở hàng theo boss, mua, gỡ (ST-09-01)', () => {
     expect(levelCap(shop, 'arc_core', 4)).toBe(2);
     expect(levelCap(shop, 'arc_core', 5)).toBe(3);
     expect(levelCap(shop, 'arc_core', 8)).toBe(5);
+    // Upgrade chưa có tác dụng (Dash Coil, Nano Cell Cap, Booster Slot) chưa bán dù tới mốc.
     expect(levelCap(shop, 'dash_coil', 2)).toBe(0);
-    expect(levelCap(shop, 'dash_coil', 5)).toBe(3);
-    expect(levelCap(shop, 'nano_cell_cap', 8)).toBe(4);
+    expect(levelCap(shop, 'dash_coil', 5)).toBe(0);
+    expect(levelCap(shop, 'nano_cell_cap', 8)).toBe(0);
+    expect(levelCap(shop, 'magnet_range', 8)).toBe(3);
     expect(bossesForLevel(shop, 'arc_core', 3)).toBe(5);
     expect(bossesForLevel(shop, 'arc_core', 4)).toBe(8);
     expect(bossesForLevel(shop, 'booster_slot', 1)).toBe(5);
@@ -111,6 +113,7 @@ describe('mở hàng theo boss, mua, gỡ (ST-09-01)', () => {
     expect(first).toEqual({
       ok: true,
       levels: { arc_core: 1 },
+      paid: { arc_core: [400] },
       coreBits: 125,
       amount: 400,
       level: 1,
@@ -123,7 +126,7 @@ describe('mở hàng theo boss, mua, gỡ (ST-09-01)', () => {
       ok: false,
       reason: 'locked',
     });
-    expect(buyUpgrade(shop, {}, 9999, 'dash_coil', 4)).toEqual({ ok: false, reason: 'locked' });
+    expect(buyUpgrade(shop, {}, 9999, 'dash_coil', 8)).toEqual({ ok: false, reason: 'locked' });
     expect(buyUpgrade(shop, { arc_core: 5 }, 9999, 'arc_core', 8)).toEqual({
       ok: false,
       reason: 'maxed',
@@ -134,12 +137,32 @@ describe('mở hàng theo boss, mua, gỡ (ST-09-01)', () => {
     expect(exact.ok && exact.coreBits).toBe(0);
   });
 
+  it('gỡ hoàn đúng số đã trả, kể cả khi giá trong dữ liệu đã đổi; chuẩn hóa cũng vậy', () => {
+    // Đã trả 350 cho cấp 1 (giá cũ); giá hiện hành 400.
+    const r = refundUpgrade(shop, { arc_core: 1 }, 0, 'arc_core', { arc_core: [350] });
+    expect(r.ok && [r.coreBits, r.paid]).toEqual([350, {}]);
+    const two = refundUpgrade(shop, { arc_core: 2 }, 0, 'arc_core', { arc_core: [350, 450] });
+    expect(two.ok && [two.coreBits, two.paid]).toEqual([450, { arc_core: [350] }]);
+    // Id lạ có ghi số đã trả thì hoàn số đó; cấp vượt tối đa hoàn theo số đã trả.
+    const save = setInventory(defaultSave(), { laser: 2, magnet_range: 4 }, 0, {
+      laser: [100, 120],
+      magnet_range: [200, 250, 313, 999],
+    });
+    const n = normalizeUpgrades(save, shop);
+    expect(n.save.inventory).toEqual({
+      coreBits: 100 + 120 + 999,
+      upgrades: { magnet_range: 3 },
+      upgradePaid: { magnet_range: [200, 250, 313] },
+    });
+  });
+
   it('gỡ hoàn 100% giá cấp cao nhất; mua rồi gỡ trả lại đúng như cũ', () => {
     const levels = { arc_core: 2, magnet_range: 1 };
     const back = refundUpgrade(shop, levels, 10, 'arc_core');
     expect(back).toEqual({
       ok: true,
       levels: { arc_core: 1, magnet_range: 1 },
+      paid: {},
       coreBits: 510,
       amount: 500,
       level: 1,
@@ -164,7 +187,7 @@ describe('bản lưu 3, chuẩn hóa, giao dịch nguyên tử (ST-09-02)', () =
   it('bản 2 đọc lên thành bản 3: upgrades trống, giữ Core Bit; cấp sai kiểu bị bỏ', () => {
     const s = parseSave({ version: 2, inventory: { coreBits: 900 } });
     expect(s.version).toBe(SAVE_VERSION);
-    expect(s.inventory).toEqual({ coreBits: 900, upgrades: {} });
+    expect(s.inventory).toEqual({ coreBits: 900, upgrades: {}, upgradePaid: {} });
     const bad = parseSave({
       version: 3,
       inventory: { coreBits: 5, upgrades: { arc_core: 2, energy_cell: -1, x: 'a' } },
@@ -179,6 +202,7 @@ describe('bản lưu 3, chuẩn hóa, giao dịch nguyên tử (ST-09-02)', () =
     expect(r.save.inventory).toEqual({
       coreBits: 10 + 1221 + 1526,
       upgrades: { arc_core: 5, magnet_range: 1 },
+      upgradePaid: {},
     });
     expect(r.notice).toMatch(/hoàn 2747 Core Bit/);
     expect(r.notice).toMatch(/không còn trong dữ liệu/);
@@ -206,10 +230,14 @@ describe('bản lưu 3, chuẩn hóa, giao dịch nguyên tử (ST-09-02)', () =
       2,
     );
     if (!buy.ok) throw new Error('phải mua được');
-    const r = await m.transact((s) => setInventory(s, buy.levels, buy.coreBits));
+    const r = await m.transact((s) => setInventory(s, buy.levels, buy.coreBits, buy.paid));
     expect(r).toEqual({ ok: true, changed: true });
     expect(store.writes).toBe(writes + 1);
-    expect(JSON.parse(store.text!).inventory).toEqual({ coreBits: 125, upgrades: { arc_core: 1 } });
+    expect(JSON.parse(store.text!).inventory).toEqual({
+      coreBits: 125,
+      upgrades: { arc_core: 1 },
+      upgradePaid: { arc_core: [400] },
+    });
     expect(await m.transact((s) => s)).toEqual({ ok: true, changed: false });
   });
 
@@ -233,7 +261,7 @@ describe('bản lưu 3, chuẩn hóa, giao dịch nguyên tử (ST-09-02)', () =
     expect(r.ok).toBe(false);
     expect(!r.ok && r.error).toMatch(/mất kết nối kho/);
     expect(m.data).toBe(before);
-    expect(m.data.inventory).toEqual({ coreBits: 525, upgrades: {} });
+    expect(m.data.inventory).toEqual({ coreBits: 525, upgrades: {}, upgradePaid: {} });
     expect(JSON.parse(text!).inventory.coreBits).toBe(525);
     // Kho chạy lại: mua lại được, revision tiếp nối bản đã ghi.
     fail = false;

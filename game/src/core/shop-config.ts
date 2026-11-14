@@ -26,6 +26,19 @@ export interface UpgradeData {
   magnetTilesPerLevel?: number;
 }
 
+/**
+ * Upgrade có tác dụng trong game chưa (có ít nhất một trường số mà công thức build dùng). Chưa có
+ * thì chưa bán dù đã tới mốc mở (duyệt EP-09: không bán món vô dụng).
+ */
+export function upgradeHasEffect(u: UpgradeData): boolean {
+  return (
+    u.damagePerLevel !== undefined ||
+    u.damageTakenPerLevel !== undefined ||
+    u.energyMaxPerLevel !== undefined ||
+    u.magnetTilesPerLevel !== undefined
+  );
+}
+
 /** Một mốc mở hàng: từ khi hạ `afterBosses` boss chiến dịch, mỗi Upgrade mua được tới cấp ghi ở đây. */
 export interface UnlockTier {
   afterBosses: number;

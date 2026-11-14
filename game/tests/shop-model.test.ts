@@ -14,7 +14,7 @@ describe('mô hình Quầy Mira, tab Upgrade (ST-09-04)', () => {
     expect(m.openAfterBosses).toBe(2);
     expect(m.cards.map((c) => c.state)).toEqual(Array(7).fill('locked'));
     expect(card(m, 'arc_core').unlockAfterBosses).toBe(2);
-    expect(card(m, 'dash_coil').unlockAfterBosses).toBe(5);
+    expect(card(m, 'dash_coil')).toMatchObject({ comingSoon: true, unlockAfterBosses: undefined });
   });
 
   it('2 boss: thẻ mua được, thiếu tiền (ghi số thiếu), khóa (Booster Slot sau 5 boss)', () => {
@@ -23,7 +23,7 @@ describe('mô hình Quầy Mira, tab Upgrade (ST-09-04)', () => {
     expect(card(m, 'arc_core')).toMatchObject({ state: 'funds', nextCost: 400, missing: 100 });
     expect(card(m, 'energy_cell')).toMatchObject({ state: 'buyable', nextCost: 250, missing: 0 });
     expect(card(m, 'magnet_range')).toMatchObject({ state: 'buyable', nextCost: 200 });
-    expect(card(m, 'booster_slot')).toMatchObject({ state: 'locked', unlockAfterBosses: 5 });
+    expect(card(m, 'booster_slot')).toMatchObject({ state: 'locked', comingSoon: true });
     const rich = buildShop(config, { levels: {}, coreBits: 525, bosses: 2 });
     expect(card(rich, 'arc_core').state).toBe('buyable');
   });
@@ -56,5 +56,33 @@ describe('mô hình Quầy Mira, tab Upgrade (ST-09-04)', () => {
     expect(m.income).toEqual({ stage: 3, name: config.stages.stages[2]!.name, coreBits: 375 });
     // Đã hạ cả 8 boss: gợi ý màn cuối.
     expect(buildShop(config, { levels: {}, coreBits: 0, bosses: 8 }).income.stage).toBe(8);
+  });
+});
+
+describe('thẻ Quầy Mira hiện tác dụng bằng số thật (duyệt EP-09)', () => {
+  it('Energy Cell 28 → 32; Arc Core +5% → +10%; Magnet "không hút" → 1 ô; món chưa có tác dụng "Sắp có"', () => {
+    const m = buildShop(config, { levels: { arc_core: 1 }, coreBits: 0, bosses: 2 });
+    expect(card(m, 'energy_cell')).toMatchObject({
+      effectNow: '28 năng lượng',
+      effectNext: '32 năng lượng',
+    });
+    expect(card(m, 'arc_core')).toMatchObject({
+      effectNow: '+5% sát thương',
+      effectNext: '+10% sát thương',
+    });
+    expect(card(m, 'armor_plating').effectNext).toBe('−4% sát thương nhận');
+    expect(card(m, 'magnet_range')).toMatchObject({
+      effectNow: 'không hút',
+      effectNext: 'hút trong 1 ô',
+    });
+    expect(card(m, 'nano_cell_cap')).toMatchObject({ comingSoon: true, effectNext: undefined });
+    // Hoàn theo số đã trả.
+    const paid = buildShop(config, {
+      levels: { arc_core: 1 },
+      paid: { arc_core: [350] },
+      coreBits: 0,
+      bosses: 2,
+    });
+    expect(card(paid, 'arc_core').refund).toBe(350);
   });
 });

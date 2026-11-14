@@ -38,9 +38,10 @@ Mở khi chọn một màn ở Cổng Chiến dịch. Bố cục ngang gồm ba 
 | Cột | Thành phần |
 | --- | --- |
 | Trái: thông tin màn | Tên màn, cấp khuyến nghị, tiến độ thu thập (Két giáp, Memory Log, bí mật: x/y), vũ khí khắc chế boss (chỉ hiện sau khi đã gặp boss) |
-| Giữa: độ khó | Chọn một trong 6 độ khó; độ khó chưa mở hiện khóa kèm điều kiện; mặc định là độ khó đã chọn lần trước cho màn đó |
+| Giữa: độ khó | Chọn một trong 3 độ khó (Cốt truyện, Thường, Thử thách; GDD 0.6); độ khó chưa mở hiện khóa kèm điều kiện; mặc định là độ khó đã chọn lần trước cho màn đó. Quy tắc chi tiết: `01-GDD/11-Do-kho.md` |
 | Phải: chuẩn bị | 2 slot booster (3 sau upgrade), loadout hiện tại (đổi nhanh giữa 3 preset), thanh Sức mạnh so với mức khuyến nghị |
 
+- **Bản MVP (Hub là menu, 14/11/2026):** bảng Chuẩn bị hiện khi vào màn chiến dịch từ menu, chỉ có thông tin màn, cấp và ba thẻ độ khó; ô booster, loadout, thanh Power Score sang Alpha (`01-GDD/11-Do-kho.md` mục 2.1).
 - Nút **Bắt đầu** lớn ở góc dưới phải; từ lúc chọn màn tới khi vào chơi tối đa 2 chạm.
 - Nếu cấp thấp hơn mức khuyến nghị quá 2 cấp, hiện gợi ý mềm (nâng cấp, dùng booster) nhưng không chặn.
 - Gán booster bằng chạm vào slot rồi chọn; booster tiêu hao khi vào màn, hoàn lại nếu thoát trước checkpoint đầu tiên.

@@ -49,7 +49,7 @@ Thu theo màn tăng đều: Stage n thu `225 + 75 × (n − 1)` Core Bit ở đ�
 
 | Hạng mục | Chi tiết | Tổng Core Bit |
 | --- | --- | --- |
-| Upgrade | Arc Core 3.283; Armor Plating 3.283; Energy Cell 2.051; Nano Cell Cap 2.306; Dash Coil 1.906; Magnet Range 762; Booster Slot 1.000 | **14.591** |
+| Upgrade | Arc Core 3.283; Armor Plating 3.283; Energy Cell 2.052; Nano Cell Cap 2.306; Dash Coil 1.906; Magnet Range 763; Booster Slot 1.000 | **14.593** (giá mỗi cấp làm tròn riêng, sửa 14/11/2026 khi làm EP-09) |
 | Skin Thường | 12 món × \~550 | 6.600 |
 | Skin Hiếm | 6 món × \~2.250 | 13.500 |
 | Skin Sử thi | 6 món, trả bằng Data Chip (mục 5) | 0 |
@@ -67,7 +67,7 @@ Module không tính vào chi Core Bit vì nhận qua nhiệm vụ phụ (8 modul
 | Thử thách | 11.700 | 7.800 | 37% → 94% |
 | Đầu endgame (Farm Run, \~250 Core Bit mỗi lượt) | \~1.500 mỗi ngày | 19.500 | 94% → 100% sau khoảng 3–4 lượt |
 
-(Phần trăm upgrade = 70% thu nhập tích lũy chia cho tổng giá upgrade 14.591.)
+(Phần trăm upgrade = 70% thu nhập tích lũy chia cho tổng giá upgrade 14.593.)
 
 **Hoàn thiện Shop:** upgrade (sức mạnh cốt truyện) hoàn thành ở đầu endgame. Skin Thường và Hiếm (tổng 20.100 Core Bit) là sink thẩm mỹ dài hạn: trong cốt truyện chỉ khoảng 2.900 Core Bit (15%) đi vào skin, phần còn lại mua dần bằng Core Bit từ Farm Run. Người chơi không bị buộc phải cày: cốt truyện chỉ cần một lượt Thường, và mọi thứ ảnh hưởng sức mạnh cốt truyện đều đủ sau lượt Thử thách.
 

@@ -3,15 +3,22 @@
  * mô hình này). Logic thuần.
  */
 import type { DifficultyData } from '../../core/game-config';
-import type { EconomyData, ShopData } from '../../core/shop-config';
+import {
+  type EconomyData,
+  type ShopData,
+  type UpgradeData,
+  upgradeHasEffect,
+} from '../../core/shop-config';
 import { evaluateFormula } from '../formula';
 import {
   bossesForLevel,
   levelCap,
   levelOf,
+  refundAmount,
   shopOpen,
   upgradeCost,
   type UpgradeLevels,
+  type UpgradePaid,
 } from './upgrades';
 
 /**
@@ -33,8 +40,13 @@ export interface ShopCardView {
   missing: number;
   /** Số boss chiến dịch cần để mở cấp kế (khi khóa). */
   unlockAfterBosses: number | undefined;
-  /** Gỡ cấp cao nhất hoàn chừng này Core Bit (undefined khi cấp 0). */
+  /** Gỡ cấp cao nhất hoàn chừng này Core Bit (số đã trả; undefined khi cấp 0). */
   refund: number | undefined;
+  /** Upgrade chưa có tác dụng trong bản này: chưa bán ("Sắp có"). */
+  comingSoon: boolean;
+  /** Tác dụng ở cấp hiện tại và cấp kế, bằng số thật (ví dụ "28 năng lượng" → "32 năng lượng"). */
+  effectNow: string | undefined;
+  effectNext: string | undefined;
 }
 
 export interface ShopModel {
@@ -53,12 +65,15 @@ export interface ShopModel {
 export interface ShopSources {
   shop: ShopData;
   economy: EconomyData;
+  /** Năng lượng tối đa gốc của vũ khí boss (Energy Cell hiện số thật). */
+  weapons: { energyMax: number };
   stages: { stages: readonly { index: number; name: string }[] };
   difficulties: readonly DifficultyData[];
 }
 
 export interface ShopState {
   levels: UpgradeLevels;
+  paid?: UpgradePaid;
   coreBits: number;
   /** Số boss chiến dịch đã hạ. */
   bosses: number;
@@ -71,6 +86,27 @@ export function stageIncome(src: ShopSources, stage: number, difficultyId = 'nor
   return Math.round(evaluateFormula(src.economy.incomeFormula, { stage }) * mul);
 }
 
+/** "12,5%" kiểu Việt Nam. */
+function pct(x: number): string {
+  return `${String(Math.round(x * 1000) / 10).replace('.', ',')}%`;
+}
+
+/** Tác dụng của Upgrade ở cấp `level` bằng số thật (GDD 10 mục 3.1); không có tác dụng: undefined. */
+export function upgradeEffectText(
+  u: UpgradeData,
+  level: number,
+  energyMax: number,
+): string | undefined {
+  if (u.damagePerLevel !== undefined) return `+${pct(u.damagePerLevel * level)} sát thương`;
+  if (u.damageTakenPerLevel !== undefined)
+    return `−${pct(u.damageTakenPerLevel * level)} sát thương nhận`;
+  if (u.energyMaxPerLevel !== undefined)
+    return `${Math.round(energyMax * (1 + u.energyMaxPerLevel * level))} năng lượng`;
+  if (u.magnetTilesPerLevel !== undefined)
+    return level === 0 ? 'không hút' : `hút trong ${u.magnetTilesPerLevel * level} ô`;
+  return undefined;
+}
+
 export function buildShop(src: ShopSources, state: ShopState): ShopModel {
   const { shop } = src;
   const stages = [...src.stages.stages].sort((a, b) => a.index - b.index);
@@ -81,6 +117,7 @@ export function buildShop(src: ShopSources, state: ShopState): ShopModel {
     const level = Math.min(levelOf(state.levels, u.id), u.maxLevel);
     const maxed = level >= u.maxLevel;
     const nextCost = maxed ? undefined : upgradeCost(u, level + 1);
+    const comingSoon = !upgradeHasEffect(u);
     const locked = !maxed && level + 1 > levelCap(shop, u.id, state.bosses);
     const missing = nextCost === undefined ? 0 : Math.max(0, nextCost - state.coreBits);
     let cardState: ShopCardState = 'buyable';
@@ -96,8 +133,11 @@ export function buildShop(src: ShopSources, state: ShopState): ShopModel {
       state: cardState,
       nextCost,
       missing,
-      unlockAfterBosses: locked ? bossesForLevel(shop, u.id, level + 1) : undefined,
-      refund: level > 0 ? upgradeCost(u, level) : undefined,
+      unlockAfterBosses: locked && !comingSoon ? bossesForLevel(shop, u.id, level + 1) : undefined,
+      refund: level > 0 ? refundAmount(u, level, state.paid) : undefined,
+      comingSoon,
+      effectNow: upgradeEffectText(u, level, src.weapons.energyMax),
+      effectNext: maxed ? undefined : upgradeEffectText(u, level + 1, src.weapons.energyMax),
     };
   });
   return {

@@ -77,12 +77,12 @@ describe('áp Upgrade vào trận (ST-09-03, GDD 10 mục 3.1)', () => {
     expect(beforeSpike - w.player.hp).toBe(config.stages.mechanics.spikes.damage);
   });
 
-  it('Energy Cell cấp 2: năng lượng tối đa 28 → 34; vũ khí boss nhận đầy 34', () => {
+  it('Energy Cell cấp 2: năng lượng tối đa 28 → 36 (+15%/cấp); vũ khí boss nhận đầy 36', () => {
     expect(config.weapons.energyMax).toBe(28);
     const w = makeWorld({ energy_cell: 2 }, ['Vine Lash']);
-    expect(w.loadout.energyMax).toBe(34);
-    expect(w.loadout.slots.find((s) => s.kind !== 'buster')?.energy).toBe(34);
-    expect(makeWorld({ energy_cell: 1 }).loadout.energyMax).toBe(31);
+    expect(w.loadout.energyMax).toBe(36);
+    expect(w.loadout.slots.find((s) => s.kind !== 'buster')?.energy).toBe(36);
+    expect(makeWorld({ energy_cell: 1 }).loadout.energyMax).toBe(32);
     expect(applyBuild(config.player, config.weapons, EMPTY_BUILD).weapons.energyMax).toBe(28);
   });
 
@@ -130,7 +130,7 @@ describe('áp Upgrade vào trận (ST-09-03, GDD 10 mục 3.1)', () => {
     const build = computeBuild(config.skills, {}, { shop: config.shop, levels });
     expect(build.damageMul).toBeCloseTo(1.25, 9);
     expect(build.damageTakenMul).toBeCloseTo(0.8, 9);
-    expect(build.energyMaxMul).toBeCloseTo(1.5, 9);
+    expect(build.energyMaxMul).toBeCloseTo(1.75, 9);
     expect(build.magnetTiles).toBe(3);
     expect(checkStoryPowerCap(config)).toEqual([]);
     // Cấp vượt tối đa bị kẹp, id lạ bị bỏ.

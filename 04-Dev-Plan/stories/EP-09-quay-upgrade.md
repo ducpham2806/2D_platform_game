@@ -12,20 +12,22 @@
 | ST-09-03 | Áp Upgrade vào trận: công, giáp, năng lượng, nam châm | 01 | Không | 1 ngày |
 | ST-09-04 | Quầy Mira (bảng HTML), tab Upgrade, lối vào từ menu | 01, 02 | Không | 1,5 ngày |
 
-**Đã xong (14/11/2026):** ST-09-01 → ST-09-04. Còn ngoài epic này: Booster, Skin (Alpha), bước hướng dẫn R04 (giai đoạn Hub), tác dụng của Nano Cell Cap, Dash Coil, Booster Slot (khóa tới boss 5).
+**Đã xong (14/11/2026):** ST-09-01 → ST-09-04; sửa theo duyệt cùng ngày (mục quyết định bên dưới). Còn ngoài epic này: Booster, Skin (Alpha), bước hướng dẫn R04 (giai đoạn Hub), tác dụng của Nano Cell Cap, Dash Coil, Booster Slot (khóa tới boss 5).
 
 Thứ tự: 01 → (02 song song 03) → 04. Tổng khoảng 4,5 ngày làm việc.
 
-## Khoảng trống của tài liệu và quyết định (lấp 14/11/2026, `[PLACEHOLDER]`, người dùng có thể đổi)
+## Khoảng trống của tài liệu và quyết định (chốt 14/11/2026 sau duyệt)
 
-Tài liệu nguồn chưa nói rõ các điểm dưới đây. Không điểm nào ghi đè quyết định đã chốt; mọi số nằm trong dữ liệu.
+Tài liệu nguồn chưa nói rõ các điểm dưới đây. Ban đầu (bản lấp khoảng trống) không điểm nào ghi đè quyết định đã chốt; mọi số nằm trong dữ liệu. Người dùng giao toàn quyền quyết định. Creative Director (kèm economy-designer) duyệt độc lập theo quy trình Game Studio Agent: 4 điểm "duyệt", 5 điểm "duyệt kèm sửa"; đã sửa cả 5 (cột cuối). Số liệu vẫn là `[PLACEHOLDER]`.
 
-1. **Lối vào khi chưa có Hub.** Hub là việc của Alpha. MVP mở Quầy Mira từ menu chính (phím Q), giống Xưởng. Không mở từ menu tạm dừng: đặc tả mục 1 chỉ cho mua và hoàn upgrade tại Hub.
-2. **Cấp 3 mở khi nào.** Mục 4.3 chỉ ghi "cấp 1–2 sau 2 boss" và "cấp 4–5 sau 8 boss". Chọn: **cấp 3 mở sau 5 boss**, cùng đợt Nano Cell Cap, Dash Coil, Booster Slot. Mô hình kinh tế mục 4 (hết Stage 8 khoảng 7 cấp, cuối lượt đầu cấp 2–3) không bị ảnh hưởng. Lịch nằm trong `shop.json → unlockSchedule`.
-3. **Energy Cell:** năng lượng tối đa của vũ khí boss = round(gốc × (1 + 0,1 × cấp)), tức 28 → 31 → 34. Tốc độ hồi giữ nguyên.
-4. **Magnet Range:** Kai chưa có nam châm gốc, nên mỗi cấp hút Core Bit trong 1 ô, tính từ thân Kai (hộp va chạm). Nếu tính từ tâm thì cấp 1 gần như không khác nhặt tay, vì thân Kai đã rộng nửa ô. Viên trong tầm bay thẳng tới Kai với tốc độ 12 ô/s (`enemies.json → pickups.magnetSpeedTilesPerSec`). Chỉ hút Core Bit, không hút viên máu. Cộng dồn với module Magnet Core: quyết định ở ST-08-09.
-5. **Giá và hoàn tiền:** giá mỗi cấp làm tròn tới số nguyên gần nhất. Tổng 5 cấp có thể lệch ±1 so với bảng kinh tế mục 3 (bảng làm tròn tổng). "Gỡ" hoàn đúng giá của cấp cao nhất theo dữ liệu hiện hành.
-6. **Tab Booster và Skin** hiện khóa "mở sau boss 4". Quầy Premium (Gem, Cyber+) không hiện trong MVP.
-7. **Upgrade chưa có tác dụng trong MVP** (Nano Cell Cap: chưa có bình máu phụ; Dash Coil; Booster Slot): vẫn hiện thẻ khóa "mở sau 5 boss". Tác dụng làm khi gỡ khóa (Alpha).
-8. **Bước hướng dẫn R04** (Mira làm nổi upgrade cấp 1, thiếu tiền thì tặng 150 Core Bit một lần) làm cùng giai đoạn Hub của TutorialManager, như R02/R03.
-9. **Thử khi chưa đủ 2 boss.** Bản hiện tại mới có Thorna. Tham số `?shop=1` mở quầy với lịch của mốc đầu tiên (2 boss) để chạy thử; không đổi bản lưu.
+| # | Quyết định | Duyệt | Bản chốt |
+| --- | --- | --- | --- |
+| 1 | **Lối vào khi chưa có Hub:** menu chính (phím Q), như Xưởng; không mở từ menu tạm dừng (đặc tả mục 1: mua, hoàn ở Hub) | Duyệt | Giữ |
+| 2 | **Cấp 3 mở sau 5 boss** (mục 4.3 bỏ trống cấp 3), cùng đợt Nano Cell Cap, Dash Coil, Booster Slot. Lịch ở `shop.json → unlockSchedule` | Duyệt: mua hết cấp 1–2 của 4 loại cần 2.813 Core Bit, hết Stage 5 mới có 1.875; mô hình mục 4 không bị chặn | Giữ |
+| 3 | **Energy Cell** +10%/cấp (28 → 31 → 34) | Duyệt kèm sửa: Vine Lash tốn 4 năng lượng nên 28 → 31 → 34 → 36 → 39 → 42 cho 7 → 7 → 8 → 9 → 9 → 10 phát; cấp 1 và cấp 4 không thêm phát nào | **+15%/cấp**: 28 → 32 → 36 → 41 → 45 → 50, mỗi cấp thêm 1 phát (sửa cả GDD chính). Thẻ Quầy hiện số thật ("28 năng lượng → 32 năng lượng") |
+| 4 | **Magnet Range:** 1 ô mỗi cấp, tính từ thân Kai; bay 12 ô/s; chỉ hút Core Bit | Duyệt kèm sửa: ghi chú `shop.json` còn ghi "tâm Kai"; lý do "thân rộng nửa ô" sai | Sửa ghi chú. Lý do đúng: hộp va chạm của Kai 12 × 24 px (0,75 × 1,5 ô), tính từ tâm thì cấp 1 gần như không khác nhặt tay |
+| 5 | **Giá, hoàn tiền:** làm tròn mỗi cấp; gỡ hoàn giá hiện hành | Duyệt kèm sửa: bảng kinh tế mục 3 sai tổng; giá là PLACEHOLDER nên hoàn theo giá hiện hành làm người chơi lời hoặc lỗ khi giá đổi | Sửa bảng kinh tế: Energy Cell 2.052, Magnet Range 763, tổng 14.593. **Bản lưu ghi giá đã trả từng cấp** (`inventory.upgradePaid`); gỡ và chuẩn hóa hoàn đúng số đó |
+| 6 | **Tab Booster, Skin** khóa "sau boss 4"; không có Premium | Duyệt | Giữ |
+| 7 | **Upgrade chưa có tác dụng** (Nano Cell Cap, Dash Coil, Booster Slot) vẫn hiện thẻ khóa "sau 5 boss" | Duyệt kèm sửa: không được bán món vô dụng | Upgrade không có trường tác dụng thì **không bán** dù tới mốc; thẻ ghi "Sắp có" (`upgradeHasEffect`) |
+| 8 | **Bước R04** làm cùng giai đoạn Hub của hướng dẫn | Duyệt: người chơi Cốt truyện chỉ có khoảng 260 Core Bit sau 2 boss | Khi làm R04: làm nổi món mua được (200 hoặc 250 Core Bit) |
+| 9 | `?shop=1` mở quầy khi chưa đủ boss, "không đổi bản lưu" | Duyệt kèm sửa: mua vẫn được ghi; cờ chạy cả ở bản build thật | `?shop=1` chỉ có tác dụng cùng `?debug=1` (hoặc bản dev); ghi rõ là mua vẫn được lưu |

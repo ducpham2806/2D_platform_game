@@ -518,7 +518,7 @@ Upgrade tách khỏi cây kỹ năng (SP) và mua bằng Core Bit. Mỗi cấp t
 | --- | --- | --- | --- |
 | Arc Core | 5 | +5% sát thương | 400 |
 | Armor Plating | 5 | −4% sát thương nhận | 400 |
-| Energy Cell | 5 | +10% dung lượng năng lượng vũ khí | 250 |
+| Energy Cell | 5 | +15% dung lượng năng lượng vũ khí (sửa 14/11/2026: +10% thì cấp 1 và cấp 4 không thêm phát Vine Lash nào) | 250 |
 | Nano Cell Cap | 4 | +25% lượng hồi mỗi Nano Cell | 400 |
 | Dash Coil | 3 | −10% thời gian hồi lướt | 500 |
 | Magnet Range | 3 | +1 tile phạm vi hút | 200 |
