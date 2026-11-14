@@ -1,6 +1,6 @@
 # Độ khó cốt truyện và màn Chuẩn bị (bản MVP)
 
-- **Trạng thái:** **Bản 2, Approved (14/11/2026).** Bản 1 qua hai lượt duyệt độc lập của Game Studio Agent: Creative Director (kèm economy-designer, game-designer) "duyệt kèm sửa"; Technical Director + Producer "duyệt có điều kiện". Bản 2 đã sửa theo mọi điểm bắt buộc (mục 9). Người dùng giao toàn quyền quyết định.
+- **Trạng thái:** **Bản 2, Approved (14/11/2026).** Bản 1 qua hai lượt duyệt độc lập của Game Studio Agent: Creative Director (kèm economy-designer, game-designer) "duyệt kèm sửa"; Technical Director + Producer "duyệt có điều kiện". Bản 2 đã sửa theo mọi điểm bắt buộc (mục 9). Người dùng giao toàn quyền quyết định. Sửa nhỏ khi rà soát 14/11/2026: khoảng cách checkpoint tối đa theo độ khó (mục 2.4).
 - **Quy trình:** Game Studio Agent `/design-system` theo mẫu `templates/gdd-system-template.md`.
 - **Nguồn:** GDD chính mục 11; đặc tả Hub mục 3 (màn Chuẩn bị); `02-Wireframes/boards/Prep.html`; kịch bản hướng dẫn D06, S09; `03-Data/difficulties.json`; `04-Can-bang-kinh-te.md` mục 4–5.
 - **Phạm vi MVP:** Stage 1–4. Tài liệu này chốt quy tắc chung và mẫu đòn Thử thách của **Stage 1**. Mẫu đòn Stage 1 là `[PLACEHOLDER]`: code làm song song nhưng **chốt sau cổng Prototype** (`05-Cong-Prototype.md`). Stage 2–4 thêm mẫu đòn khi viết đặc tả các màn đó.
@@ -48,9 +48,10 @@ Ba độ khó cho cốt truyện: **Cốt truyện** (xem truyện, ít áp lự
 
 - Checkpoint trên bản đồ **Tiled** có thuộc tính tùy chọn `difficulties` (chuỗi id cách nhau bằng dấu phẩy). Không ghi thì có ở cả ba độ khó. Ký hiệu `C` của bản đồ ASCII (phòng thử) luôn có ở mọi độ khó.
 - Quy tắc đặt khi chốt bản đồ Stage 1–4 (sau cổng Prototype):
+  - **Khoảng cách tối đa** giữa hai điểm hồi sinh liền nhau (GDD chính 8.3): Cốt truyện ≤ 90 s, Thường ≤ 150 s, Thử thách ≤ 270 s chơi `[PLACEHOLDER]`.
   - **Thường:** 4 checkpoint sau mỗi đoạn A–D (đặc tả Stage 1).
   - **Thử thách:** bỏ CP1, giữ CP2–CP4 (ghi `difficulties: "story,normal"` cho CP1). Khoảng cách giữa hai điểm hồi sinh liền nhau không quá khoảng 4,5 phút chơi.
-  - **Cốt truyện:** thêm 1 checkpoint giữa mỗi đoạn dài từ 2,5 phút trở lên, ghi `difficulties: "story"`.
+  - **Cốt truyện:** thêm 1 checkpoint giữa mỗi đoạn dài hơn 1,5 phút (90 s), ghi `difficulties: "story"` (bản 2 ghi "từ 2,5 phút", nên đoạn A Stage 1 dài 2 phút vượt 90 s; sửa khi rà soát 14/11/2026).
 - **Tiến độ checkpoint ghi theo độ khó.** Vào màn ở độ khó d thì dùng checkpoint xa nhất đã chạm ở d **hoặc khó hơn** (thứ tự trong `difficulties.json`); không mang từ dễ sang khó. Sau đó lùi về checkpoint gần nhất phía trước có ở d.
   - Ví dụ: chạm CP4 ở Cốt truyện rồi vào Thử thách thì xuất phát từ đầu màn, nên không thể mở khóa bằng cách đi tắt.
 - Bản lưu ghi **chỉ số trên danh sách đầy đủ**. Khi chốt bản đồ, nếu sau đó còn sửa vị trí hay số checkpoint mà đã có bản lưu của người chơi thật, chuyển sang id checkpoint cố định (bản lưu 5). Hiện chưa có bản lưu của người chơi thật nên chưa cần.

@@ -3,7 +3,7 @@
 - **Mã hệ thống:** `SYS-08` (module M8 trong `04-Dev-Plan/02-Module.md`)
 - **Phân loại:** Progression
 - **Độ ưu tiên:** MVP (P0). Vertical slice chỉ cần tab Kỹ năng.
-- **Trạng thái:** **Approved**, bản 2 (14/11/2026): qua duyệt của Creative Director và Technical Director + Producer (duyệt kèm sửa, đã sửa); người dùng duyệt 5 quyết định ở mục 10 ngày 14/11/2026; thay đổi ở mục 9 đã lan sang các tài liệu. Phần Module và Két giáp (mục 2.2, 2.3) là **Draft, bị chặn** tới khi có nội dung Stage 2–4. Mọi số là `[PLACEHOLDER]`, chỉnh sau chơi thử.
+- **Trạng thái:** **Approved**, bản 2 (14/11/2026): qua duyệt của Creative Director và Technical Director + Producer (duyệt kèm sửa, đã sửa); người dùng duyệt 5 quyết định ở mục 10 ngày 14/11/2026; thay đổi ở mục 9 đã lan sang các tài liệu. Sửa theo rà soát 14/11/2026 (`/review-all-gdds`): cấp cuối màn theo ngân sách EXP, cấp cuối cốt truyện 22–24 (mục 0), Thân Mk II (mục 3.3), số và tên biến theo dữ liệu (mục 2.1, 2.2, 3.1, 4), rủi ro Dash Coil (mục 8). Phần Module và Két giáp (mục 2.2, 2.3) là **Draft, bị chặn** tới khi có nội dung Stage 2–4. Mọi số là `[PLACEHOLDER]`, chỉnh sau chơi thử.
 - **Phụ thuộc (upstream):** M3 Nhân vật, M4 Chiến đấu, M8 cấp và SP (đã code: `game/src/logic/rpg/progression.ts`), M11 Lưu, M9 Upgrade và Booster (`shop.json`).
 - **Bị ảnh hưởng (downstream):** M10 Xưởng, HUD, menu tạm dừng; M9 Power Score ở màn Chuẩn bị; nhiệm vụ phụ (nguồn module); M7 Két giáp và quy tắc duyệt màn; M12 âm thanh; M16 đo lường.
 - **Nguồn:** GDD chính 6.1–6.4, 9, 10.1, 11; `03-Dac-ta-Hub-Shop.md` mục 5, 7, 8; `07-Kich-ban-huong-dan.md` mục 2, R02–R03, D02, D04; wireframe `Workshop.html`, `Module.html`, `Armor.html`; `player.json`, `modules.json`, `shop.json`, `weapons.json`, `bosses.json`.
@@ -13,15 +13,33 @@
 
 **Câu hỏi:** cây kỹ năng MVP (Stage 1–4) gồm gì, tốn bao nhiêu SP, để người chơi **phải chọn** (GDD 6.2) mà không tốn quá nhiều công làm cơ chế mới.
 
-**Nguồn SP trong MVP** (SP = (cấp − 1) + số boss; cấp cuối mỗi màn lấy theo cận trên cấp khuyến nghị, Stage 1 khớp đặc tả là cấp 4):
+**Nguồn SP trong MVP** (SP = (cấp − 1) + số boss; cấp cuối mỗi màn lấy theo ngân sách EXP ở bảng dưới, Stage 1 khớp đặc tả là cấp 4):
 
 | Mốc | Cấp | Boss | SP có |
 | --- | --- | --- | --- |
 | Hết Stage 1 | 4 | 1 | 4 |
-| Hết Stage 2 | 7 | 2 | 8 |
+| Hết Stage 2 | 6 | 2 | 7 |
 | Hết Stage 3 | 8 | 3 | 10 |
 | Hết Stage 4 (cuối MVP) | 10 | 4 | 13 |
-| Cuối cốt truyện (đối chiếu) | 30 | 8 (+2 sự kiện) | 39 |
+| Cuối cốt truyện (đối chiếu) | 22–24 | 8 (+2 sự kiện `[TBD-Alpha]`) | 31–33 |
+
+Cuối cốt truyện có 31–33 SP; cây đầy đủ của Alpha (3 nhánh × 5 tầng, tầng k có k bậc) cần 45 SP, tỉ lệ khoảng 1,4. Bản cũ ghi cấp 30 và 39 SP, nhưng màn cuối khuyến nghị 22+ và cấp 30 cần 56.151 EXP (rà soát 14/11/2026).
+
+**Ngân sách EXP theo màn (`expBudget`, độ khó Thường)** `[PLACEHOLDER]`. Cấp mục tiêu cuối màn 4, 6, 8, …, 18: mỗi màn đưa người chơi lên đúng 2 cấp (Stage 1: 3 cấp, tính cả Prologue), nằm trong cấp khuyến nghị (GDD chính 8.2). Bản cũ lấy cận trên cấp khuyến nghị (7 / 8 / 10 khi hết Stage 2 / 3 / 4) nên mỗi màn cho +1.151 / +610 / +1.602 EXP, lệch nhịp. EXP tính theo `40 × L^1,4`, làm tròn từng cấp như `progression.ts`. **Cần thêm vào `stages.json` khi làm Stage 2** (kèm kiểm tra ở `core/`).
+
+| Màn | Cấp khuyến nghị | Cấp cuối màn | EXP của màn (`expBudget`) | EXP tích lũy cuối màn |
+| --- | --- | --- | --- | --- |
+| Prologue + Stage 1 | 1; 2–4 | 4 | 332 | 332 |
+| Stage 2 | 4–7 | 6 | 660 | 992 |
+| Stage 3 | 5–8 | 8 | 1.101 | 2.093 |
+| Stage 4 | 7–10 | 10 | 1.602 | 3.695 |
+| Stage 5 | 8–12 | 12 | 2.153 | 5.848 |
+| Stage 6 | 10–14 | 14 | 2.748 | 8.596 |
+| Stage 7 | 12–16 | 16 | 3.382 | 11.978 |
+| Stage 8 | 14–18 | 18 | 4.052 | 16.030 |
+| Citadel 1–3 + màn cuối | 20+; 22–24 | 22–24 | 10.247–16.502 | 26.277–32.532 |
+
+Ghi chú: dãy 332, 660, 1.101, …, 4.052 là EXP **của từng màn** (hiệu hai mốc tích lũy), không phải EXP tích lũy; cột cuối mới là tích lũy. Cốt truyện nhận ×0,5 EXP nên tới màn sau ở cấp thấp hơn; đồng bộ cấp (GDD chính 6.1) bù phần chênh.
 
 | Phương án | Mô tả | Tổng SP | Tỉ lệ cuối MVP | Công làm | Đánh giá |
 | --- | --- | --- | --- | --- | --- |
@@ -59,7 +77,7 @@ Thời gian tính theo **bước logic 60 Hz** (1 bước = 1/60 s). Giá trị 
 | P2 | Bám Tường Bền | 2 | Bậc 1: `wallSlideMul = 0.6` (2 → 1,2 ô/s). Bậc 2 thêm **ân hạn nhảy tường** `wallJumpGraceSec = 0.1`: rời tường 0,1 s vẫn nhảy tường được. Không đổi quỹ đạo nhảy tường (giữ trí nhớ tay khi đặt lại) | Thông số có sẵn + cơ chế nhỏ |
 | P3 | Lướt Xuyên Đạn | 3 | Thêm bất tử **chỉ với đạn** ở đầu cú lướt: +3 / +4 / +4 bước (gốc 6 bước = 0,1 s). Bậc 3 thêm **sượt đạn**: đạn đi xuyên trong phần bất tử thêm thì cộng `grazeChargeSec = 0.25` vào thời gian nạp. Phần thêm mất ngay khi cú lướt kết thúc hoặc bị hủy. Không có đồng hồ ẩn | Thông số có sẵn + cơ chế nhỏ |
 | C1 | Khung Gia Cố | 1 | `maxHpMul = 1.15` (cấp 4: 112 → 129, chịu thêm khoảng 1 đòn boss) | Thông số có sẵn |
-| C2 | Tái Nạp | 2 | Năng lượng vũ khí Warden tự hồi `energyRegenMul`: 1,25 / 1,5; bậc 2 thêm `regenDelaySec` 3 → 2 s | Thông số có sẵn |
+| C2 | Tái Nạp | 2 | Năng lượng vũ khí Warden tự hồi `energyRegenMul`: 1,25 / 1,5; bậc 2 thêm `regenDelayMul` (nhân thời gian chờ 3 s; dữ liệu 0,67 ra 2,01 s, nên đặt 0,6667 để ra đúng 2 s) | Thông số có sẵn |
 | C3 | Khiên Hấp Thụ | 3 | Chặn trọn một đòn của kẻ địch hoặc boss: 0 sát thương, không bật lùi, **bất tử 0,3 s**, không mất mức nạp, không tính là "bị đánh". Hồi sau `shieldRechargeSec` 30 / 25 / 20 s **tính từ lúc khiên vỡ**. Không chặn gai, hố và hạt Hoa Nở (`skills.json → rules.shieldPierceKinds`, ST-08-08): đòn đi qua, khiên vẫn sẵn. Không chặn đòn 0 máu (kẻ địch vô hại ở Prologue) | Cơ chế nhỏ mới |
 
 Kiểm luật bậc: V2 bậc 2 tăng 67% sát thương; V3 bậc 1 = 60% hiệu lực tối đa (0,3 / 0,5); P3 bậc 1 = 75% (+3 / +4 bước), bậc 3 thêm hiệu ứng sượt đạn; C2 bậc 2 tăng gấp đôi phần thưởng; C3 bậc 1 = 67% tốc độ hồi tối đa (1/30 so với 1/20).
@@ -71,10 +89,10 @@ Kiểm luật bậc: V2 bậc 2 tăng 67% sát thương; V3 bậc 1 = 60% hiệu
 
 | Module | Tải | Hiệu ứng (biến dữ liệu) | Ghi chú |
 | --- | --- | --- | --- |
-| Magnet Core | 1 | Hút Core Bit, viên máu trong `magnetRadiusTiles = 3` ô, `pullTilesPerSec = 8` | Cộng Upgrade `magnet_range` |
+| Magnet Core | 1 | Hút Core Bit, viên máu trong `magnetRadiusTiles = 3` ô; vật phẩm bay tới 12 ô/s (`enemies.json → pickups.magnetSpeedTilesPerSec`, chung với Upgrade) | Cộng Upgrade `magnet_range` |
 | Last Stand | **3** | Máu dưới `hpFrac = 0.2`: sát thương gây ra × `damageMul = 1.3` | Có điều kiện: `conditional: true` (mục 3.3) |
 | Phase Step | **3** | Lướt để lại ảo ảnh `lifeSec = 0.6` s; kẻ địch thường chạm vào bị choáng `stunSec = 0.3` | Cần thêm trạng thái choáng cho mọi hành vi kẻ địch (hiện chưa có). Boss, mini-boss miễn nhiễm |
-| Energy Siphon | 1 | Hạ một kẻ địch hồi `energyPerKill = 2` đơn vị (≈ 7% của 28) | Thay "2%" của GDD (0,56 đơn vị, không cảm nhận được) |
+| Energy Siphon | 1 | Hạ một kẻ địch hồi `energyPerKill = 2` đơn vị (≈ 7% của 28) | Thay "2%" của GDD (0,56 đơn vị, không cảm nhận được). `modules.json` vẫn ghi "2%" bằng chữ: thêm trường số và `load` ở ST-08-09 |
 
 Tải 4 module = 8 > 6 (3 ô) nên trước cấp 10 phải chọn tổ hợp; từ cấp 10 (4 ô, tải 8) lắp đủ. Đây là lựa chọn mỏng; nếu chơi thử thấy tab Module không ai cân nhắc thì ghi rõ module không thuộc phần đo ở cổng MVP.
 
@@ -118,7 +136,7 @@ damageTaken    = round(raw × difficulty.damageTaken × max(minBuildDamageTakenM
 envDamage      = round(raw × difficulty.damageTaken)   // gai, hố: build không giảm, để duyệt màn đoán trước được
 maxHp          = round(hp(L hiệu dụng) × C1)
 damageDealt    = base × atk(L)/atk(1) × (1 + arc_core.damagePerLevel × lvl) × [V3 khi đang hở] × [Last Stand]
-energyMax      = round(weapons.energyMax × (1 + energy_cell.energyMaxPerLevel × lvl))   // 28 → 32 → 36 → 41 → 45 → 50 (EP-09, +15%/cấp)
+energyMax      = round(weapons.energyMax × (1 + energy_cell.energyMaxPerLevel × lvl))   // 28 → 32 → 36 → 41 → 45 → 49 (EP-09, +15%/cấp; round(28 × 1,75) = 49)
 magnet         = magnet_range.magnetTilesPerLevel × lvl ô, tính từ thân Kai; Core Bit bay tới 12 ô/s (EP-09)
 khiên          : khiên C3 chặn trước, rồi Booster shield_cell
 ```
@@ -153,7 +171,7 @@ Với (b), hệ số **thường trực** (đo ở cấp 30, đã gồm Upgrade 
 **Hai ràng buộc thêm, có trong dữ liệu `player.json` → `storyPowerCap` và kiểm tra lúc nạp:**
 
 - `conditionalDamageMul = 2.6`: trường hợp xấu nhất có hiệu ứng `conditional` (Last Stand): 1,975 × 1,3 = 2,57 ≤ 2,6.
-- `effectiveHpMul = 3.75`: máu hiệu dụng ở cấp 30 với C1, Upgrade `armor_plating` tối đa và Thân Mk I: 2,484 / (0,8 × 0,85) = 3,65 ≤ 3,75. Ghi chú cho Alpha: Thân Mk II −20% sẽ ra 3,88, phải chọn lại số (ví dụ Mk II −15% kèm phản đòn).
+- `effectiveHpMul = 3.75`: máu hiệu dụng ở cấp 30 với C1, Upgrade `armor_plating` tối đa và Thân Mk I: 2,484 / (0,8 × 0,85) = 3,65 ≤ 3,75. **Thân Mk II (Alpha, chốt khi rà soát 14/11/2026):** Mk II **thay thế** Mk I, không cộng dồn: vẫn `damageTakenMul = 0.85`, thêm phản đòn 2 sát thương (`reflectDamage = 2`) `[PLACEHOLDER]`. Máu hiệu dụng giữ 3,65 ≤ 3,75 (bản cũ: Mk II −20% ra 3,88; GDD chính ghi −25% ra 4,14).
 
 Một hàm `statsFor(level, buildStats)` dùng chung cho StageWorld và phép kiểm tra lúc nạp, để số trong trận và số được kiểm tra không lệch.
 
@@ -173,7 +191,7 @@ Một hàm `statsFor(level, buildStats)` dùng chung cho StageWorld và phép ki
   - `stats`: biến đổi dữ liệu thuần `applyBuild(player, weapons, build) → { player, weapons }` (thời gian nạp đầy, trượt tường, máu, hồi năng lượng, bất tử lướt với đạn). Dùng ở **constructor, `setLevel()` và `retune()`** của StageWorld, để lên cấp giữa màn hay bảng `?tune=1` không xóa mất hiệu ứng.
   - `mechanics`: cờ và thông số cơ chế (lượt lướt trên không, nổ lan, trừng phạt, khiên, sượt đạn, module), chạy trong `BuildRuntime` thuộc StageWorld.
 - **`PlayerPhysics.absorbHit()`** cho khiên C3: bất tử 0,3 s, không bật lùi, không phát sự kiện `hurt` (không mất nạp, không kích tín hiệu `hurt` của hướng dẫn).
-- **WorldEvents mới:** `kaiShieldAbsorbed`, `kaiShieldReady`, `airDash`, `graze`, `burstHit`, `punishHit` (tiền tố `kaiShield` để không lẫn với `shieldBroken`/`shieldHit` của khiên Lính Kén). HUD đọc trạng thái khiên qua `HudModel`, không qua event bus. Sự kiện event bus cho Xưởng (`skill:learned`...) chỉ thêm khi có nơi nghe (M16).
+- **WorldEvents mới:** `kaiShieldAbsorbed`, `kaiShieldReady`, `airDash`, `graze`, `burst`, `punishHit` (tiền tố `kaiShield` để không lẫn với `shieldBroken`/`shieldHit` của khiên Lính Kén). HUD đọc trạng thái khiên qua `HudModel`, không qua event bus. Sự kiện event bus cho Xưởng (`skill:learned`...) chỉ thêm khi có nơi nghe (M16).
 - **Bản lưu** (nâng `SAVE_VERSION` lên 2; bản 1 nâng lên với giá trị trống; build cũ gặp bản 2 thì chỉ đọc, không ghi đè mất kỹ năng):
 
 ```text
@@ -244,9 +262,11 @@ Mọi số ở mục 2–3 nằm trong `skills.json`, `modules.json`, `armor.jso
 | Người chơi tự quay lại Xưởng | Số lần mở Xưởng không do hướng dẫn nhắc | ≥ 50% người chơi tự mở lại trước cuối MVP |
 | SP được dùng | SP còn lại khi vào Stage 2 | ≥ 70% người chơi tiêu hết SP trước Stage 2 |
 | Không phá trần | Test logic: hệ số thường trực ở cấp tối đa, trường hợp có điều kiện, máu hiệu dụng; mô phỏng 4 lối bắn (mục 3.2) | ≤ `storyPowerCap` trong dữ liệu; lối nạp đầy có build thấp hơn lối mạnh nhất không build |
-| Phòng thủ không thay được né | Mô phỏng: bot không né, có và không có nhánh Core đủ bậc, đấu Thorna ở Thường | Ở cấp 4 (cấp dự kiến cuối Stage 1), bot không né **thua** Thorna, kể cả build Core đủ bậc (6 SP, nhiều hơn số SP có trước khi hạ Thorna); khiên chặn tối đa một đòn mỗi lần hồi; máu tối đa chỉ thêm đúng phần C1. Đạt từ 14/11/2026 sau khi nâng máu Thorna 100 → 250: với 100 máu, bot không né thắng sau khoảng 15 s (đặc tả 60–90 s) |
+| Phòng thủ không thay được né | Mô phỏng: bot không né, có và không có nhánh Core đủ bậc, đấu Thorna ở Thường | Ở cấp 4 (cấp dự kiến cuối Stage 1), bot không né **thua** Thorna, kể cả build Core đủ bậc (6 SP, nhiều hơn số SP có trước khi hạ Thorna); khiên chặn tối đa một đòn mỗi lần hồi; máu tối đa chỉ thêm đúng phần C1. Đạt từ 14/11/2026 sau khi nâng máu Thorna 100 → 250: với 100 máu, bot không né thắng sau khoảng 15 s (mục tiêu cũ 60–90 s; nay 45–65 s với người né được, đặc tả Stage 1 mục 5) |
 | P3 không thành bất tử liên tục | Test logic, mẫu lướt đủ cú liên tục (chu kỳ đo được 50 bước: 15 bước lướt + 36 bước hồi tính từ bước lướt kết thúc) | Tỉ lệ thời gian bất tử với đạn ≤ gốc + 8 điểm % (gốc 6/50 = 12%; bậc 3: 10/50 = 20%) |
 | Khiên không "ăn" được đòn đỉnh | Mô phỏng Hoa Nở với khiên sẵn, Kai đứng yên dưới một hạt | Vẫn trúng hạt (18 máu ở Thường), khiên vẫn sẵn. Đổi ở ST-08-08: Hoa Nở rơi cả 12 hạt cùng lúc nên Kai đứng yên chỉ trúng đúng một hạt; tiêu chí cũ "trúng sau khi khiên vỡ" không thể đạt, nên hạt Hoa Nở xuyên khiên |
+
+**Rủi ro P3 với Dash Coil (rà soát 14/11/2026):** test P3 đo ở chu kỳ 50 bước, tức chưa có Dash Coil. Khi Dash Coil tối đa (−30% hồi lướt: 36 → 25 bước, chu kỳ 40 bước), gốc thành 6/40 = 15% và P3 bậc 3 thành 10/40 = 25%, tức +10 điểm, vượt ngưỡng +8. **Chốt:** trước khi bán Dash Coil (Story làm tác dụng Dash Coil), đo lại test này ở Dash Coil tối đa và nâng ngưỡng lên **+10 điểm %**. Không giảm Dash Coil.
 
 Nghiệm thu: test logic cho `applyBuild`, `BuildRuntime`, cộng dồn, sàn, trần, `normalizeBuild`, bản lưu 2; chạy thử trên PC và điện thoại theo quy tắc nhìn tận mắt.
 

@@ -2,7 +2,7 @@
   "_note": "Boss (GDD 9: mẫu 3 pha, telegraph ≥ 0,5 s, không đòn nào chết ngay ở Thường). Máu tính bằng phát Arc Cannon gốc; sát thương tính bằng máu người chơi (100 ở cấp 1). Mọi số là [PLACEHOLDER]. Thorna (đặc tả Prologue & Stage 1 mục 5) dùng bốn đòn riêng: thorns (Gai Quạt), lash (Dây Quất), roots (Rễ Trồi), bloom (Hoa Nở).",
   "gray": {
     "name": "Boss xám (thử nghiệm)",
-    "note": "Boss khung cho mốc Prototype, để thử cảm giác bắn - né - đọc telegraph. Thắng lần đầu nhận Vine Lash; đấu lại thì Vine Lash là điểm yếu (khoảnh khắc 'à, thì ra thế' của GDD 1.2). Thorna thật làm ở M6. Máu 100 như Thorna: bắn liên tục không né mất khoảng 23 giây, chơi thật có né nhắm 60-90 giây như đặc tả Thorna.",
+    "note": "Boss khung cho mốc Prototype, để thử cảm giác bắn - né - đọc telegraph. Thắng lần đầu nhận Vine Lash; đấu lại thì Vine Lash là điểm yếu (khoảnh khắc 'à, thì ra thế' của GDD 1.2). Thorna thật làm ở M6. Giữ 100 máu (Thorna nay 250) để so sánh các đợt chơi thử cổng Prototype; người chơi né được mất khoảng 25-40 giây (rà soát 14/11/2026).",
     "hp": 100,
     "sizePx": {
       "w": 28,

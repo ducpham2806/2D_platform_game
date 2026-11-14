@@ -8,30 +8,32 @@
 | --- | --- | --- |
 | Thời lượng | \~4 phút | \~10 phút (người chơi trung bình) |
 | Mục tiêu học | Chạy, nhảy, bắn, bắn nạp, lướt | Bám tường, né mẫu đòn, đọc telegraph, nhận vũ khí boss |
-| Kẻ địch | Drone Lính, Tháp Pháo Tập Sự | 5 loại (mục 4), mini-boss Bramble, boss Thorna |
-| Checkpoint | 1 (giữa màn) | 4 (sau mỗi đoạn A–D) |
+| Kẻ địch | Drone Lính, Tháp Pháo Tập Sự | 4 loại (Drone Lính, Bướm Sắt, Tháp Gai, Lính Kén; mục 4), mini-boss Bramble, boss Thorna |
+| Checkpoint | 1 (giữa màn) | 4 ở Thường (sau mỗi đoạn A–D); Thử thách bỏ CP1, Cốt truyện thêm checkpoint (`11-Do-kho.md` mục 2.4) |
 | Phần thưởng | Mở Hub Arkon, gặp Mira | Vine Lash, Memory Log 1, 1 Két giáp (cần Prism Beam), EXP |
 | Cấp khuyến nghị | 1 | 2–4 |
-| Độ khó | Thường | Thường |
+| Độ khó | Không có độ khó (số như Thường) | Cốt truyện, Thường, Thử thách (`11-Do-kho.md`); số trong tài liệu này là của Thường |
 
 ## 2. Prologue: Nova Prime bị tấn công
 
 Mục tiêu: người chơi thấy mình giỏi trong 30 giây đầu và biết đủ năm động tác cốt lõi trước khi ra khỏi phòng thí nghiệm. Không có chữ hướng dẫn dài: mỗi cơ chế được dạy bằng một tình huống, kèm biểu tượng nút hiện đúng lúc.
 
-| Thời điểm | Nhịp | Cơ chế dạy | Thiết kế |
-| --- | --- | --- | --- |
-| 0:00–0:20 | Kai tỉnh dậy | Chạy | Cảnh tỉnh ngắn, NOVA nói, biểu tượng nút di chuyển; không kẻ địch |
-| 0:20–0:45 | Khe sàn | Nhảy, nhảy biến thiên | Khe rộng 2 tile có sàn an toàn bên dưới (rơi nhẹ, không chết); 2 bục cao 1,5 tile và 1 bục 3,5 tile để thấy khác biệt khi nhấn lâu |
-| 0:45–1:10 | Hộp phế liệu | Bắn | Thùng chắn đường, bắn 2 phát để phá; Core Bit rơi ra |
-| 1:10–1:50 | Drone đầu tiên | Chiến đấu cơ bản | Drone Lính chậm, xuất hiện từ xa, **chưa gây sát thương** ở nhịp 1–3; thắng được ngay lần đầu |
-| 1:50–2:20 | Tường và drone bay | Nhảy + bắn trên không | Drone bay ở độ cao 3 tile; **checkpoint 1** ở cuối nhịp |
-| 2:20–2:50 | Khối chắn cam | Bắn nạp | Khối cần 1 phát nạp để phá; NOVA gợi ý giữ nút bắn; hiệu ứng ánh sáng rõ |
-| 2:50–3:05 | Hành lang đạn huấn luyện | Lướt | Hành lang hẹp buộc lướt qua khe đạn; đạn huấn luyện chỉ đẩy lùi, chưa gây sát thương |
-| 3:05–3:20 | Tháp pháo tập sự | Né theo nhịp | Sau một khoảng nghỉ ngắn; tháp bắn đạn lặp, telegraph 0,8 s; từ nhịp này kẻ địch gây sát thương thật (10 máu) |
-| 3:20–3:50 | Tiền sảnh | Cốt truyện | Cutscene ≤ 8 giây (bỏ qua được): Vex xuất hiện, bắn một phát vào cột |
-| 3:50–4:00 | Thoát ra | Chuyển cảnh | Kai rời phòng thí nghiệm; tiêu đề màn, mở Hub Arkon |
+Mã bước P01–P13 theo `07-Kich-ban-huong-dan.md` mục 3.2.
 
-**Quy tắc không thể thua (nhịp 1–3):** không có hố chết, kẻ địch gây 0 sát thương (chỉ đẩy lùi), người chơi chết ở nhịp 4 trở đi thì hồi sinh tại checkpoint trong 1 giây.
+| Thời điểm | Nhịp (mã bước) | Cơ chế dạy | Thiết kế |
+| --- | --- | --- | --- |
+| 0:00–0:20 | Kai tỉnh dậy (P01) | Chạy | Cảnh tỉnh ngắn, NOVA nói, biểu tượng nút di chuyển; không kẻ địch |
+| 0:20–0:45 | Khe sàn (P02–P03) | Nhảy, nhảy biến thiên | Khe rộng 2 tile có sàn an toàn bên dưới (rơi nhẹ, không chết); 2 bục cao 1,5 tile và 1 bục 3,5 tile để thấy khác biệt khi nhấn lâu |
+| 0:45–1:10 | Hộp phế liệu (P04) | Bắn | Thùng chắn đường, bắn 2 phát để phá; Core Bit rơi ra |
+| 1:10–1:50 | Drone đầu tiên (P05) | Chiến đấu cơ bản | Drone Lính chậm, xuất hiện từ xa, **chưa gây sát thương** (vô hại tới hết P09); thắng được ngay lần đầu |
+| 1:50–2:20 | Tường và drone bay (P06–P07) | Nhảy + bắn trên không | Drone bay ở độ cao 3 tile, vẫn vô hại; **checkpoint 1** ở cuối nhịp (P07) |
+| 2:20–2:50 | Khối chắn cam (P08) | Bắn nạp | Khối cần 1 phát nạp để phá; NOVA gợi ý giữ nút bắn; hiệu ứng ánh sáng rõ |
+| 2:50–3:05 | Hành lang đạn huấn luyện (P09) | Lướt | Hành lang hẹp buộc lướt qua khe đạn; đạn huấn luyện chỉ đẩy lùi, chưa gây sát thương |
+| 3:05–3:20 | Tháp pháo tập sự (P10–P11) | Không dạy thao tác mới: đọc telegraph, né bằng nhảy và lướt đã học | Sau một khoảng nghỉ ngắn; tháp bắn đạn lặp, telegraph 0,8 s; **từ P10 kẻ địch gây sát thương thật** (10 máu); vật phẩm hồi máu hiện sau lần mất máu đầu (P11) |
+| 3:20–3:50 | Tiền sảnh (P12) | Cốt truyện | Cutscene ≤ 8 giây (bỏ qua được): Vex xuất hiện, bắn một phát vào cột |
+| 3:50–4:00 | Thoát ra (P13) | Chuyển cảnh | Kai rời phòng thí nghiệm; tiêu đề màn, mở Hub Arkon |
+
+**Quy tắc vô hại (P01–P09, tới hết Hành lang đạn huấn luyện):** không có hố chết, kẻ địch và đạn huấn luyện gây 0 sát thương (chỉ đẩy lùi), nên không mất máu. Cờ `harmless` gắn theo đoạn trên bản đồ, phủ P01–P09. Sát thương thật bắt đầu từ P10 (Tháp pháo), nơi không dạy thao tác mới (GDD chính mục 12). Chết từ P10 trở đi thì hồi sinh tại checkpoint trong 1 giây.
 
 **Kịch bản thoại chính** (mỗi lần tối đa 3–4 dòng, có nút bỏ qua; giọng theo `08-Giong-nhan-vat.md`):
 
@@ -58,6 +60,8 @@ Chủ đề: khu vườn sinh học bị Eclipse biến dị, ánh sáng xanh l�
 **Cơ chế môi trường**
 
 - **Dây leo đu:** chu kỳ lắc 2,4 s, biên độ 3 tile; người chơi đứng trên được mang theo, nhảy khỏi dây được cộng 10% lực nhảy `[PLACEHOLDER]`.
+- **Thang và dây leo đứng yên (đoạn A):** leo 3 ô/s; không bắn được khi đang leo; nhảy rời thang hoặc dây được 2 ô `[PLACEHOLDER]`. **Cần Story** (chưa có trong dữ liệu; đề xuất `player.json → climb`).
+- **Platform dây di chuyển (đoạn B):** chạy 2 ô/s, dừng 0,5 s ở mỗi đầu mút `[PLACEHOLDER]`. **Cần Story** (chưa có trong dữ liệu; đề xuất `stages.json → mechanics.movingVine`).
 - **Bẫy gai (Thường):** gây 30 sát thương và đưa người chơi về ô an toàn gần nhất, có bất tử 1 giây; module Spike Guard miễn nhiễm. Gai không giết ngay.
 - **Phòng khóa:** cửa đóng khi vào, mở khi diệt hết kẻ địch; có biểu tượng đếm số kẻ địch còn lại.
 - **Hố rơi:** rơi khỏi màn hình thì mất 20 máu và về checkpoint gần nhất.
@@ -69,9 +73,11 @@ Chủ đề: khu vườn sinh học bị Eclipse biến dị, ánh sáng xanh l�
 | Memory Log 1 | Phòng bí mật đoạn B | Bám tường lên nhánh cao, không cần vũ khí |
 | Két giáp: Đầu Mk I | Phòng bí mật đoạn C | Cần **Prism Beam** (từ Stage 2: Prism Institute) để đốt rễ khô chắn phòng; quay lại sau |
 | Nano Cell | Phòng bí mật đoạn D | Lướt qua khe gai hẹp |
-| 5 Hạt Giống Phát Quang | Rải khắp màn, hiện trên bản đồ nhỏ sau khi nhận nhiệm vụ | Nhiệm vụ phụ của Mira sau Stage 1 |
+| 5 Hạt Giống Phát Quang | Rải trong đoạn A–D, mỗi hạt có cột sáng mờ nhìn thấy từ đường chính (MVP không có bản đồ nhỏ) | Nhiệm vụ phụ nhận ở Bảng Nhiệm Vụ, mở sau boss 3 (`15-Nhiem-vu-phu.md`); người chơi quay lại Stage 1 để nhặt |
 
 Phần thưởng nhiệm vụ phụ "Hạt giống thất lạc": 1 Data Chip và module Magnet Core.
+
+**Nano Cell** (luật đầy đủ ở GDD chính mục 5.3; mọi số `[PLACEHOLDER]`, **cần Story**, chưa có trong dữ liệu): đây là Nano Cell đầu tiên, tối đa 4 cho cả game. Mỗi cái hồi 40% máu tối đa (Nano Cell Cap tối đa: 80%). Dùng bằng nút riêng (hành động `heal`: phím H, tay cầm RT, chạm biểu tượng dưới thanh máu), khóa thao tác 0,4 s; đầy máu thì không dùng được. Nạp đầy khi vào màn mới; chết không nạp lại.
 
 ## 4. Kẻ địch
 
@@ -79,22 +85,22 @@ HP kẻ địch tính bằng số phát Arc Cannon ở sát thương gốc; máu
 
 | Kẻ địch | HP | Sát thương | Hành vi | Telegraph | EXP | Core Bit |
 | --- | --- | --- | --- | --- | --- | --- |
-| Drone Lính (Prologue) | 2 | 10 (0 ở nhịp 1–3) | Đi tuần 2 tile/s, bắn 1 viên khi người chơi trong 6 tile | Nhấp nháy đỏ 0,4 s | 4 | 1 |
+| Drone Lính (Prologue) | 2 | 10 (0 ở P01–P09) | Đi tuần 1,5 tile/s, bắn 1 viên khi người chơi trong 6 tile, hồi 2 s giữa các phát | Nhấp nháy đỏ 0,4 s | 4 | 1 |
 | Tháp Pháo Tập Sự | 4 | 10 | Cố định, bắn 1 viên mỗi 2 s | Sáng lên 0,8 s | 6 | 2 |
 | Drone Lính | 3 | 8 | Như trên, hồi 1,5 s giữa các phát | Nhấp nháy đỏ 0,4 s | 6 | 2 |
 | Bướm Sắt | 2 | 6 | Bay sóng sin biên độ 2 tile, thả hạt nổ mỗi 2,5 s | Phình ra 0,5 s | 8 | 3 |
 | Tháp Gai | 6 | 10 | Cố định, bắn 3 gai quạt 30° mỗi 2,2 s | Co lại 0,6 s | 10 | 4 |
 | Lính Kén | 8 | 12 | Khiên phía trước chặn đạn thường; bắn nạp phá khiên (2 phát); lao tới 3 tile | Khiên sáng 0,5 s trước khi lao | 14 | 6 |
-| Bramble Golem (mini-boss) | 60 | 15 (đập), 10 (hạt) | Pha 1: đập đất tạo sóng 2 bên; pha 2 (dưới 50%): thả 3 hạt nổ rồi lao | 0,7 s | 60 | 30 |
+| Bramble Golem (mini-boss) | 60 | 15 (đập), 10 (hạt) | Pha 1: đập đất tạo sóng 2 bên; pha 2 (dưới 50%): thả 3 hạt nổ rồi lao 4 tile | 0,7 s (đập, hạt); 0,5 s (lao) | 60 | 30 |
 
 Quy tắc chung: mọi đòn có telegraph ≥ 0,4 s; không có kẻ địch xuất hiện sát người chơi (khoảng cách xuất hiện ≥ 6 tile); kẻ địch rơi vật phẩm hồi máu theo xác suất 8% (không rơi khi người chơi đầy máu) `[PLACEHOLDER]`.
 
 Số liệu và hành vi nằm ở `03-Data/enemies.json` (game kiểm tra telegraph ≥ 0,4 s và không đòn nào chết ngay mỗi khi nạp dữ liệu). Cách hiểu khi làm M5 `[PLACEHOLDER]`:
 
-- **Drone Lính** bay lơ lửng đi tuần, bắn nhắm vào người chơi (Prologue cần drone bay cao 3 tile). Bản Prologue chậm hơn và có cờ "vô hại" đặt trên bản đồ cho nhịp 1–3.
+- **Drone Lính** bay lơ lửng đi tuần, bắn nhắm vào người chơi (Prologue cần drone bay cao 3 tile). Bản Prologue chậm hơn và có cờ "vô hại" (`harmless`) gắn theo đoạn trên bản đồ, phủ P01–P09 (mục 2).
 - **Lính Kén:** "2 phát" là 2 phát nạp đầy làm vỡ khiên; bắn từ phía sau thì trúng ngay. Người chơi đứng sau lưng quá 0,8 s thì nó quay lại. Nó không bước khỏi mép gờ.
 - **Core Bit** rơi thành tối đa 3 viên phải nhặt (để module Magnet Core có ý nghĩa), biến mất sau 10 s; EXP cộng ngay khi hạ. Viên hồi máu hồi 20 máu, biến mất sau 8 s.
-- Kẻ địch chỉ hoạt động khi người chơi cách trong 12 tile theo chiều ngang. Khi người chơi hồi sinh ở checkpoint, mọi kẻ địch dựng lại; Core Bit và EXP đã nhặt vẫn giữ.
+- Kẻ địch chỉ hoạt động khi người chơi cách trong 12 tile theo chiều ngang (`activeRangeTiles`) và 7 tile theo chiều dọc (`activeRangeTilesY 7`). Kẻ địch chỉ bắt đầu báo trước đòn khi nằm trong khung camera thu vào 1 tile mỗi cạnh (`attackRequiresOnScreen`), để Tháp Gai không bắn từ ngoài màn hình. Hai luật này **cần Story** (dữ liệu hiện chỉ có tầm ngang). Khi người chơi hồi sinh ở checkpoint, mọi kẻ địch dựng lại; Core Bit và EXP đã nhặt vẫn giữ. Kẻ địch đã hạ trong lượt vào màn này không cho lại Core Bit và EXP, chỉ còn rơi viên máu (`stages.json → mechanics.enemyRewardOncePerRun`).
 
 ## 5. Boss Thorna
 
@@ -102,15 +108,15 @@ Số liệu và hành vi nằm ở `03-Data/enemies.json` (game kiểm tra teleg
 
 | Thông số | Giá trị `[PLACEHOLDER]` |
 | --- | --- |
-| HP | 250 (đơn vị phát Arc Cannon gốc). Bản đầu ghi 100, đổi 14/11/2026: Arc Cannon bắn 7,5 phát/giây nên 100 máu chỉ là khoảng 15 s bắn, không khớp 60–90 s. Mô phỏng bot không né: 100 máu thì thắng sau 15 s; 250 máu thì thua ở cấp 4, kể cả build Core đủ bậc (`game/tests/power-cap.test.ts`) |
+| HP | 250 (đơn vị phát Arc Cannon gốc). Bản đầu ghi 100, đổi 14/11/2026: Arc Cannon bắn 7,5 phát/giây nên 100 máu chỉ là khoảng 15 s bắn, không khớp mục tiêu cũ 60–90 s. Mô phỏng bot không né: 100 máu thì thắng sau 15 s; 250 máu thì thua ở cấp 4, kể cả build Core đủ bậc (`game/tests/power-cap.test.ts`). Rà soát 14/11/2026 giữ 250 máu và đổi thời gian trận mục tiêu thành 45–65 s (dòng dưới) |
 | Đấu trường | 24 × 12 tile, 3 bục cao 3 tile; Thorna đứng bên phải và di chuyển chậm |
 | Điểm yếu | Ember Burst (từ Stage 8, dùng ở trận tái đấu trong Citadel): 2,5× sát thương và choáng 0,5 s. Lần đầu luôn đánh bằng Arc Cannon |
-| Thắng chỉ bằng Arc Cannon | Có, thời gian dự kiến 60–90 giây |
+| Thắng chỉ bằng Arc Cannon | Có, thời gian dự kiến 45–65 giây với người né được (cấp 4: 7,40 × 1,06 ≈ 7,84 sát thương/s, bắn 50–75% thời gian) |
 | Phần thưởng | Vũ khí Vine Lash, 120 EXP, 80 Core Bit, 1 SP |
 
 | Pha | Ngưỡng máu | Chiêu | Telegraph | Sát thương | Cách né |
 | --- | --- | --- | --- | --- | --- |
-| 1 | 100–60% | **Gai Quạt:** bắn 5 gai quạt 60° ngang tầm người, mỗi 2 s | Thân sáng xanh 0,5 s | 12 | Nhảy qua hoặc lướt |
+| 1 | 100–60% | **Gai Quạt:** bắn 5 gai quạt 60° ngang tầm người, mỗi 2 s | Thân sáng xanh 0,6 s (pha 3 tăng tốc 20% còn 0,5 s) | 12 | Nhảy qua hoặc lướt |
 | 1 | 100–60% | **Dây Quất:** vung dây ngang mặt đất, tầm 6 tile | Dây rung 0,6 s | 15 | Nhảy cao, đứng bục |
 | 2 | 60–30% | Giữ hai chiêu trên, thêm **Rễ Trồi:** 3 cột rễ mọc từ sàn, lần lượt trái sang phải | Vết nứt trên sàn 0,7 s | 15 | Di chuyển liên tục, lên bục |
 | 3 | Dưới 30% | Tốc độ +20% và **Hoa Nở** (đòn đỉnh): co lại 1 s, nở ra phát tán 12 hạt rơi sau 1,5 s | Co lại 1 s, hạt bay lên trước | 18 | Có 3 khe an toàn; sau đòn này Thorna choáng 2 s (cửa sổ tấn công) |
@@ -125,7 +131,7 @@ Số liệu và hành vi nằm ở `03-Data/enemies.json` (game kiểm tra teleg
 
 ## 6. Cân bằng
 
-Mốc EXP tích lũy theo công thức mục 6.1 của GDD chính: cấp 2 tại 40, cấp 3 tại \~145, cấp 4 tại \~331.
+Mốc EXP tích lũy theo công thức mục 6.1 của GDD chính (làm tròn từng cấp như code): cấp 2 tại 40, cấp 3 tại 146, cấp 4 tại 332. Ngân sách EXP các màn sau: `10-He-thong-RPG-Xuong.md` mục 0.
 
 | Chỉ số | Mục tiêu `[PLACEHOLDER]` |
 | --- | --- |
@@ -157,13 +163,14 @@ Quy tắc điều chỉnh: nếu quá 30% người thử chết ở cùng một 
 
 - [ ] Chạy, nhảy, lướt, bắn, bắn nạp đúng thông số mục 5.1 của GDD chính.
 - [ ] Prologue hoàn thành trong 3–5 phút bởi tester lần đầu, ≥ 90% không cần trợ giúp.
-- [ ] Nhịp 1–3 của Prologue không thể thua.
+- [ ] Prologue P01–P09 không mất máu (Drone và đạn huấn luyện chỉ đẩy lùi); sát thương thật bắt đầu từ P10.
 - [ ] Mỗi cơ chế mới có tình huống dạy riêng; biểu tượng nút đúng theo nền tảng (cảm ứng, bàn phím, tay cầm).
 - [ ] 4 checkpoint của Stage 1 hoạt động, hồi sinh ≤ 1,5 giây, giữ nguyên Core Bit và EXP.
 - [ ] Mọi đòn kẻ địch có telegraph ≥ 0,4 giây; đòn boss ≥ 0,5 giây.
 - [ ] Thorna đúng 3 pha tại 60% và 30% máu; Ember Burst gây 2,5× (kiểm tra bằng bản debug); thắng được chỉ với Arc Cannon.
 - [ ] Nhận được Vine Lash, Memory Log 1, Nano Cell; Két giáp chỉ mở được khi có Prism Beam.
+- [ ] Nano Cell dùng bằng nút `heal`, hồi 40% máu tối đa, khóa thao tác 0,4 s, không dùng được khi đầy máu, nạp đầy khi vào màn, không nạp lại khi chết (cần Story).
 - [ ] Bẫy gai gây 30 sát thương, đưa về ô an toàn, Spike Guard miễn nhiễm.
 - [ ] Cảm ứng: bố cục nút tùy chỉnh và được lưu; 60 FPS trên điện thoại tầm trung; Stage 1 tải ≤ 8 MB.
-- [ ] Thoát giữa màn rồi vào lại về đúng checkpoint; cloud save đồng bộ.
+- [ ] Thoát giữa màn rồi vào lại về đúng checkpoint; mã sao lưu khôi phục đúng checkpoint (MVP chỉ lưu cục bộ, cloud save ở Beta).
 - [ ] Với 10 playtester: số lần chết, thời lượng và EXP nằm trong ±25% mục tiêu ở mục 6.
