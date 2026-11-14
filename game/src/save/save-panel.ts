@@ -57,7 +57,8 @@ export function showSavePanel(
     try {
       save.importCode(importArea.value);
       importArea.value = '';
-      status.textContent = 'Đã nhập bản lưu.';
+      status.textContent = save.notice ? `Đã nhập bản lưu. ${save.notice}` : 'Đã nhập bản lưu.';
+      save.notice = undefined;
       refresh();
     } catch (e) {
       status.textContent = e instanceof SaveError ? e.message : String(e);

@@ -1,6 +1,6 @@
 # ST-08-02: Cây kỹ năng thuần, bản lưu 2, chuẩn hóa build
 
-- **Thuộc Epic:** EP-08 · **Ưu tiên:** P1 · **Trạng thái:** TODO
+- **Thuộc Epic:** EP-08 · **Ưu tiên:** P1 · **Trạng thái:** DONE (14/11/2026)
 - **Phụ thuộc:** ST-08-01
 - **Bằng chứng:** [x] Logic [x] Integration (bản lưu) [ ] Visual
 
@@ -32,7 +32,7 @@
 
 ## 4. Tiêu chí nghiệm thu
 
-- [ ] AC-1: Học V1 tốn 1 SP; V2 khóa tới khi V1 đủ bậc; học V2 hai lần thì đủ bậc; hết SP thì "Thiếu SP".
-- [ ] AC-2: Đặt lại nhánh hoàn đúng số bậc của nhánh; đặt lại tất cả hoàn hết.
-- [ ] AC-3: Bản lưu 1 đọc lên thành bản 2 trống; bản 2 với Σ bậc > SP được đặt lại và có thông báo; nút lạ bị bỏ.
-- [ ] AC-4: Bản lưu của phiên bản mới hơn vẫn chỉ đọc (không ghi đè mất kỹ năng).
+- [x] AC-1: Học V1 tốn 1 SP; V2 khóa tới khi V1 đủ bậc; học V2 hai lần thì đủ bậc; hết SP thì "Thiếu SP" (`tests/skill-tree.test.ts`).
+- [x] AC-2: Đặt lại nhánh hoàn đúng số bậc của nhánh; đặt lại tất cả = bản ghi trống.
+- [x] AC-3: Bản lưu 1 đọc lên thành bản 2 trống; Σ bậc > SP thì đặt lại cả cây kèm thông báo; nút lạ, bậc vượt tối đa, mất điều kiện tầng trước bị gỡ. Chuẩn hóa chạy khi mở bản lưu và khi nhập mã sao lưu (`SaveManager.open(store, now, normalize)`), ghi lại một lần; thông báo hiện một lần ở menu hoặc bảng Dữ liệu lưu.
+- [x] AC-4: Bản lưu của phiên bản mới hơn vẫn chỉ đọc (test cũ `save.test.ts` vẫn đạt với `SAVE_VERSION = 2`).

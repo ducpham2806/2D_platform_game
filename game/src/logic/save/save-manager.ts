@@ -28,9 +28,16 @@ export class MemorySaveStore implements SaveStore {
   }
 }
 
+/** Chuẩn hóa bản lưu theo dữ liệu cấu hình (ví dụ build M8); trả `save` cũ nếu không đổi. */
+export type SaveNormalizer = (save: SaveData) => { save: SaveData; notice: string | undefined };
+
+const IDENTITY: SaveNormalizer = (save) => ({ save, notice: undefined });
+
 export class SaveManager {
   /** Lỗi đọc/ghi gần nhất (để hiện cho người chơi); undefined = ổn. */
   lastError: string | undefined;
+  /** Thông báo cần hiện một lần (bản lưu được chuẩn hóa lại); người hiện xong thì xóa. */
+  notice: string | undefined;
   /**
    * Bản trên máy thuộc phiên bản game mới hơn: chơi bằng bản mặc định nhưng không ghi đè,
    * tránh làm mất dữ liệu thật.
@@ -45,27 +52,41 @@ export class SaveManager {
     data: SaveData,
     readOnly: boolean,
     error: string | undefined,
+    private readonly normalize: SaveNormalizer,
   ) {
     this.current = data;
     this.readOnly = readOnly;
     this.lastError = error;
+    const fixed = normalize(data);
+    if (fixed.save !== data) {
+      this.notice = fixed.notice;
+      this.commit(fixed.save, data.revision + 1);
+    }
   }
 
-  /** Mở kho và đọc bản lưu. Không đọc được thì bắt đầu bản mới (và ghi lại lỗi). */
-  static async open(store: SaveStore, now: () => number = Date.now): Promise<SaveManager> {
+  /**
+   * Mở kho và đọc bản lưu. Không đọc được thì bắt đầu bản mới (và ghi lại lỗi). `normalize`
+   * chạy ngay sau khi đọc (và sau mỗi lần nhập mã sao lưu); có sửa thì ghi lại một lần.
+   */
+  static async open(
+    store: SaveStore,
+    now: () => number = Date.now,
+    normalize: SaveNormalizer = IDENTITY,
+  ): Promise<SaveManager> {
     let text: string | null;
+    const make = (data: SaveData, readOnly: boolean, error: string | undefined): SaveManager =>
+      new SaveManager(store, now, data, readOnly, error, normalize);
     try {
       text = await store.read();
     } catch (e) {
-      return new SaveManager(store, now, defaultSave(), false, `Không đọc được dữ liệu lưu: ${e}`);
+      return make(defaultSave(), false, `Không đọc được dữ liệu lưu: ${e}`);
     }
-    if (text === null) return new SaveManager(store, now, defaultSave(), false, undefined);
+    if (text === null) return make(defaultSave(), false, undefined);
     try {
-      return new SaveManager(store, now, parseSave(JSON.parse(text)), false, undefined);
+      return make(parseSave(JSON.parse(text)), false, undefined);
     } catch (e) {
-      if (e instanceof SaveError)
-        return new SaveManager(store, now, defaultSave(), true, e.message);
-      return new SaveManager(store, now, defaultSave(), false, 'Dữ liệu lưu hỏng, bắt đầu lại.');
+      if (e instanceof SaveError) return make(defaultSave(), true, e.message);
+      return make(defaultSave(), false, 'Dữ liệu lưu hỏng, bắt đầu lại.');
     }
   }
 
@@ -91,8 +112,10 @@ export class SaveManager {
 
   /** Nhập mã sao lưu, thay hẳn bản hiện tại. Mã sai thì ném SaveError, bản hiện tại giữ nguyên. */
   importCode(code: string): void {
-    const save = decodeSaveCode(code);
-    this.commit(save, Math.max(save.revision, this.current.revision) + 1);
+    const decoded = decodeSaveCode(code);
+    const fixed = this.normalize(decoded);
+    this.notice = fixed.notice;
+    this.commit(fixed.save, Math.max(decoded.revision, this.current.revision) + 1);
   }
 
   /** Xóa tiến trình, về bản mới (revision vẫn tăng để cloud biết đây là bản mới hơn). */

@@ -1,19 +1,28 @@
 /**
  * Dữ liệu lưu của người chơi (M11, đặc tả Hub & Shop mục 8), bản cục bộ cho Vertical slice:
  * tiến trình (boss đã hạ, checkpoint và vật phẩm bí mật theo màn), nhân vật (EXP, vũ khí boss),
- * kho (Core Bit). Các nhóm còn lại của mục 8 (SP, kỹ năng, module, skin, nhiệm vụ...) thêm khi
- * làm module tương ứng, tăng SAVE_VERSION và viết bước nâng cấp trong `parseSave`.
+ * kho (Core Bit), kỹ năng đã học, module, loadout (bản 2, M8). Các nhóm còn lại của mục 8 (skin,
+ * nhiệm vụ...) thêm khi làm module tương ứng, tăng SAVE_VERSION và viết bước nâng cấp trong
+ * `parseSave`. SP không lưu: suy từ cấp và boss đã hạ trừ bậc đã học.
  *
  * Logic thuần: hàm nhận bản lưu cũ và trả bản mới, không sửa tại chỗ.
  */
 
-export const SAVE_VERSION = 1;
+/** Bản 2 (M8): thêm kỹ năng, module, loadout. Bản 1 đọc lên thành bản 2 với các phần này trống. */
+export const SAVE_VERSION = 2;
 
 export interface StageProgress {
   /** Checkpoint đã lưu (số thứ tự từ 1; 0 = điểm xuất phát). */
   checkpoint: number;
   /** Vật phẩm bí mật đã nhặt (theo `item` trên bản đồ). */
   secrets: string[];
+}
+
+/** Một bộ cấu hình (MVP chỉ dùng bộ 0; Alpha thêm preset không cần nâng bản lưu). */
+export interface Loadout {
+  modules: string[];
+  /** Bộ phận giáp đang tắt (bộ phận đã có suy từ bí mật đã nhặt). */
+  armorOff: string[];
 }
 
 export interface SaveData {
@@ -32,6 +41,12 @@ export interface SaveData {
     exp: number;
     /** Vũ khí boss đã nhận (Arc Cannon luôn có, không ghi). */
     weapons: string[];
+    /** Bậc đã học theo id nút kỹ năng (skills.json). */
+    skills: Record<string, number>;
+    /** Module đã nhận. */
+    modules: { owned: string[] };
+    loadouts: Loadout[];
+    activeLoadout: number;
   };
   inventory: {
     coreBits: number;
@@ -43,6 +58,10 @@ export interface SaveData {
   };
 }
 
+export function defaultLoadout(): Loadout {
+  return { modules: [], armorOff: [] };
+}
+
 export function defaultSave(): SaveData {
   return {
     version: SAVE_VERSION,
@@ -50,7 +69,14 @@ export function defaultSave(): SaveData {
     savedAt: 0,
     playTimeSec: 0,
     progress: { bossesDefeated: [], stages: {} },
-    character: { exp: 0, weapons: [] },
+    character: {
+      exp: 0,
+      weapons: [],
+      skills: {},
+      modules: { owned: [] },
+      loadouts: [defaultLoadout()],
+      activeLoadout: 0,
+    },
     inventory: { coreBits: 0 },
     tutorial: { done: [], off: false },
   };
@@ -75,6 +101,24 @@ function seconds(v: unknown): number {
 function names(v: unknown): string[] {
   if (!Array.isArray(v)) return [];
   return [...new Set(v.filter((x): x is string => typeof x === 'string' && x.length > 0))];
+}
+
+/** Bậc kỹ năng: số nguyên dương; khóa hoặc giá trị sai bị bỏ (kiểm theo dữ liệu ở normalizeBuild). */
+function parseSkills(v: unknown): Record<string, number> {
+  const out: Record<string, number> = {};
+  if (!isRecord(v)) return out;
+  for (const [id, rank] of Object.entries(v)) {
+    const r = count(rank);
+    if (id.length > 0 && r > 0) out[id] = r;
+  }
+  return out;
+}
+
+function parseLoadouts(v: unknown): Loadout[] {
+  const list = Array.isArray(v)
+    ? v.filter(isRecord).map((l) => ({ modules: names(l.modules), armorOff: names(l.armorOff) }))
+    : [];
+  return list.length > 0 ? list : [defaultLoadout()];
 }
 
 function parseStages(v: unknown): Record<string, StageProgress> {
@@ -103,6 +147,7 @@ export function parseSave(raw: unknown): SaveData {
   const character = isRecord(raw.character) ? raw.character : {};
   const inventory = isRecord(raw.inventory) ? raw.inventory : {};
   const tutorial = isRecord(raw.tutorial) ? raw.tutorial : {};
+  const loadouts = parseLoadouts(character.loadouts);
   return {
     version: SAVE_VERSION,
     revision: count(raw.revision),
@@ -112,7 +157,14 @@ export function parseSave(raw: unknown): SaveData {
       bossesDefeated: names(progress.bossesDefeated),
       stages: parseStages(progress.stages),
     },
-    character: { exp: count(character.exp), weapons: names(character.weapons) },
+    character: {
+      exp: count(character.exp),
+      weapons: names(character.weapons),
+      skills: parseSkills(character.skills),
+      modules: { owned: names(isRecord(character.modules) ? character.modules.owned : undefined) },
+      loadouts,
+      activeLoadout: Math.min(count(character.activeLoadout), loadouts.length - 1),
+    },
     inventory: { coreBits: count(inventory.coreBits) },
     tutorial: { done: names(tutorial.done), off: tutorial.off === true },
   };
@@ -180,6 +232,14 @@ export function addRewards(
     character: { ...save.character, exp: save.character.exp + exp },
     inventory: { ...save.inventory, coreBits: save.inventory.coreBits + coreBits },
   };
+}
+
+/** Thay bậc kỹ năng đã học (Xưởng); không đổi gì thì trả lại đúng bản cũ. */
+export function setSkills(save: SaveData, skills: Readonly<Record<string, number>>): SaveData {
+  const cur = save.character.skills;
+  const keys = new Set([...Object.keys(cur), ...Object.keys(skills)]);
+  if ([...keys].every((k) => cur[k] === skills[k])) return save;
+  return { ...save, character: { ...save.character, skills: { ...skills } } };
 }
 
 export function recordTutorialDone(save: SaveData, ids: readonly string[]): SaveData {

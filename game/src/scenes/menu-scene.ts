@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { LOGIC_WIDTH, SceneKey } from '../core/constants';
 import { getBus, getConfig, getSave } from '../core/phaser-services';
 import { characterProgress } from '../logic/rpg/progression';
+import { spentPoints } from '../logic/rpg/skill-tree';
 import { summarize } from '../logic/save/save-data';
 import { MUTED_STYLE, TEXT_STYLE, textButton } from './ui';
 
@@ -17,7 +18,8 @@ export class MenuScene extends Phaser.Scene {
     this.add
       .text(cx, 28, 'CYBER VANGUARD', { ...TEXT_STYLE, fontSize: '16px', color: '#4fd1ff' })
       .setOrigin(0.5);
-    const save = getSave(this).data;
+    const manager = getSave(this);
+    const save = manager.data;
     const saved = summarize(save);
     const config = getConfig(this);
     const progress = characterProgress(
@@ -30,10 +32,17 @@ export class MenuScene extends Phaser.Scene {
       .text(
         cx,
         44,
-        `bản Prototype · cấp ${progress.level} · SP ${progress.skillPoints} · boss đã hạ ${saved.bosses} · Core Bit ${saved.coreBits}`,
+        `bản Prototype · cấp ${progress.level} · SP còn ${Math.max(0, progress.skillPoints - spentPoints(save.character.skills))} · boss đã hạ ${saved.bosses} · Core Bit ${saved.coreBits}`,
         MUTED_STYLE,
       )
       .setOrigin(0.5);
+    if (manager.notice) {
+      // Bản lưu vừa được chuẩn hóa lại (ví dụ kỹ năng không còn hợp lệ): báo một lần.
+      this.add
+        .text(cx, 186, manager.notice, { ...MUTED_STYLE, fontSize: '8px', color: '#ffd166' })
+        .setOrigin(0.5, 1);
+      manager.notice = undefined;
+    }
 
     const enemies = (): void => {
       this.scene.start(SceneKey.Stage, { stage: 'enemies' });

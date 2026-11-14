@@ -70,7 +70,7 @@ describe('dữ liệu lưu', () => {
     expect(s.revision).toBe(0);
     expect(s.progress.bossesDefeated).toEqual(['thorna']);
     expect(s.progress.stages.a).toEqual({ checkpoint: 0, secrets: [] });
-    expect(s.character).toEqual({ exp: 50, weapons: [] });
+    expect(s.character).toEqual({ ...defaultSave().character, exp: 50, weapons: [] });
     expect(s.inventory.coreBits).toBe(0);
     expect(parseSave('rác')).toEqual(defaultSave());
   });
