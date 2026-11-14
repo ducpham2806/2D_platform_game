@@ -42,10 +42,29 @@ export function integerZoom(
   return Math.max(1, Math.floor(fit));
 }
 
+/** Vùng an toàn quanh canvas (px CSS); xem `CanvasInsets` trong `computeLayout`. */
+export interface CanvasInsets {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+}
+
+const NONE: CanvasInsets = { top: 0, right: 0, bottom: 0, left: 0 };
+
+/** px CSS → px thiết bị, làm tròn lên để không lấn vào vùng an toàn. */
+function devInset(css: number, ratio: number): number {
+  return Number.isFinite(css) && css > 0 ? Math.ceil(css * ratio - 1e-6) : 0;
+}
+
 /**
  * Bố cục canvas: chọn hệ số nguyên lớn nhất theo px **thiết bị** (`pixelRatio` =
  * `devicePixelRatio`), rồi quy ra px CSS. Viền tính theo px thiết bị rồi mới chia, để canvas bắt
  * đầu đúng biên một px thật (lệch nửa px thật thì trình duyệt làm nhòe hoặc lệch cỡ px).
+ *
+ * Vùng an toàn (QB-92, ST-11-01): canvas nằm trọn trong vùng trừ `left`, `right`, `top` (tai thỏ,
+ * góc bo che hình). `bottom` (thanh vuốt home) **không** trừ: nó chỉ nằm đè, không che hình, và
+ * trừ thì nhiều iPhone cầm ngang tụt một bậc phóng.
  */
 export function computeLayout(
   viewWidth: number,
@@ -53,20 +72,26 @@ export function computeLayout(
   logicWidth: number,
   logicHeight: number,
   pixelRatio = 1,
+  insets: CanvasInsets = NONE,
 ): ViewportLayout {
   const ratio = Number.isFinite(pixelRatio) && pixelRatio > 0 ? pixelRatio : 1;
   // Sai số dấu phẩy động (ví dụ 863 × 2,625) không được làm hụt mất một px thật.
   const devWidth = Math.floor(viewWidth * ratio + 1e-6);
   const devHeight = Math.floor(viewHeight * ratio + 1e-6);
-  const deviceZoom = integerZoom(devWidth, devHeight, logicWidth, logicHeight);
+  const left = devInset(insets.left, ratio);
+  const right = devInset(insets.right, ratio);
+  const top = devInset(insets.top, ratio);
+  const safeWidth = Math.max(0, devWidth - left - right);
+  const safeHeight = Math.max(0, devHeight - top);
+  const deviceZoom = integerZoom(safeWidth, safeHeight, logicWidth, logicHeight);
   const zoom = deviceZoom / ratio;
   return {
     zoom,
     deviceZoom,
     width: logicWidth * zoom,
     height: logicHeight * zoom,
-    offsetX: Math.max(0, Math.floor((devWidth - logicWidth * deviceZoom) / 2)) / ratio,
-    offsetY: Math.max(0, Math.floor((devHeight - logicHeight * deviceZoom) / 2)) / ratio,
+    offsetX: (left + Math.max(0, Math.floor((safeWidth - logicWidth * deviceZoom) / 2))) / ratio,
+    offsetY: (top + Math.max(0, Math.floor((safeHeight - logicHeight * deviceZoom) / 2))) / ratio,
     portrait: isPortrait(viewWidth, viewHeight),
   };
 }

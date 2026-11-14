@@ -1,3 +1,11 @@
+:root {
+  /* Vùng an toàn (tai thỏ, góc bo, thanh vuốt; QB-92, ST-11-01). Cần viewport-fit=cover. */
+  --sa-top: env(safe-area-inset-top, 0px);
+  --sa-right: env(safe-area-inset-right, 0px);
+  --sa-bottom: env(safe-area-inset-bottom, 0px);
+  --sa-left: env(safe-area-inset-left, 0px);
+}
+
 html,
 body {
   margin: 0;
@@ -134,11 +142,11 @@ body.portrait #rotate-overlay {
 .touch-editor {
   position: fixed;
   z-index: 6;
-  top: 12px;
-  left: 50%;
+  top: calc(12px + var(--sa-top));
+  left: calc(50% + (var(--sa-left) - var(--sa-right)) / 2);
   transform: translateX(-50%);
-  width: min(360px, calc(100vw - 32px));
-  max-height: calc(100vh - 24px);
+  width: min(360px, calc(100vw - 32px - var(--sa-left) - var(--sa-right)));
+  max-height: calc(100vh - 24px - var(--sa-top) - var(--sa-bottom));
   overflow-y: auto;
   box-sizing: border-box;
   padding: 12px 14px;
@@ -214,11 +222,11 @@ body.portrait #rotate-overlay {
 .cv-panel {
   position: fixed;
   z-index: 7;
-  top: 50%;
-  left: 50%;
+  top: calc(50% + (var(--sa-top) - var(--sa-bottom)) / 2);
+  left: calc(50% + (var(--sa-left) - var(--sa-right)) / 2);
   transform: translate(-50%, -50%);
-  width: min(420px, calc(100vw - 24px));
-  max-height: calc(100vh - 24px);
+  width: min(420px, calc(100vw - 24px - var(--sa-left) - var(--sa-right)));
+  max-height: calc(100vh - 24px - var(--sa-top) - var(--sa-bottom));
   overflow-y: auto;
   box-sizing: border-box;
   padding: 12px 14px;
@@ -298,7 +306,7 @@ body.portrait #rotate-overlay {
 }
 
 .cv-tuning {
-  width: min(520px, calc(100vw - 24px));
+  width: min(520px, calc(100vw - 24px - var(--sa-left) - var(--sa-right)));
 }
 
 .cv-tuning-group {
@@ -329,7 +337,7 @@ body.portrait #rotate-overlay {
   position: fixed;
   z-index: 6;
   top: 6px;
-  left: 50%;
+  left: calc(50% + (var(--sa-left) - var(--sa-right)) / 2);
   transform: translateX(-50%);
   min-width: 64px;
   min-height: 32px;
@@ -343,7 +351,7 @@ body.portrait #rotate-overlay {
 }
 
 .cv-results {
-  width: min(560px, calc(100vw - 24px));
+  width: min(560px, calc(100vw - 24px - var(--sa-left) - var(--sa-right)));
 }
 
 .cv-results p {
@@ -429,8 +437,8 @@ body.portrait #rotate-overlay {
 
 /* Xưởng Lắp Ráp, tab Kỹ năng (src/workshop, ADR-001). */
 .cv-panel.cv-workshop {
-  width: min(760px, calc(100vw - 16px));
-  max-height: calc(100vh - 16px);
+  width: min(760px, calc(100vw - 16px - var(--sa-left) - var(--sa-right)));
+  max-height: calc(100vh - 16px - var(--sa-top) - var(--sa-bottom));
   padding: 10px 12px;
 }
 
@@ -653,7 +661,7 @@ body.portrait #rotate-overlay {
 
 /* Màn Chuẩn bị, bản cắt MVP (src/prep, 01-GDD/11-Do-kho.md mục 2.1). */
 .cv-panel.cv-prep {
-  width: min(640px, calc(100vw - 16px));
+  width: min(640px, calc(100vw - 16px - var(--sa-left) - var(--sa-right)));
 }
 
 .cv-prep-cards {

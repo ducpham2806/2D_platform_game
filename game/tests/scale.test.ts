@@ -85,3 +85,45 @@ describe('computeLayout', () => {
     expect(computeLayout(390, 844, 320, 192).portrait).toBe(true);
   });
 });
+
+describe('computeLayout với vùng an toàn (QB-92, ST-11-01)', () => {
+  it('QB-92: không có vùng an toàn thì y như cũ', () => {
+    expect(
+      computeLayout(863, 360, 320, 192, 2.625, { top: 0, right: 0, bottom: 0, left: 0 }),
+    ).toEqual(computeLayout(863, 360, 320, 192, 2.625));
+  });
+
+  it('QB-92: iPhone 14 ngang giữ ×6, canvas nằm giữa hai vùng tai thỏ; thanh vuốt dưới không làm tụt bậc', () => {
+    const insets = { top: 0, right: 47, bottom: 21, left: 47 };
+    const layout = computeLayout(844, 390, 320, 192, 3, insets);
+    expect(layout.deviceZoom).toBe(6);
+    expect(layout.offsetX).toBeGreaterThanOrEqual(47);
+    expect(layout.offsetX + layout.width).toBeLessThanOrEqual(844 - 47 + 1e-9);
+    expect(layout.offsetY).toBeGreaterThanOrEqual(0);
+    expect(layout.offsetY + layout.height).toBeLessThanOrEqual(390 + 1e-9);
+  });
+
+  it('QB-92: tai thỏ một phía (Android) thì canvas căn giữa phần còn lại, không lấn vào tai thỏ', () => {
+    const insets = { top: 0, right: 0, bottom: 0, left: 120 };
+    const layout = computeLayout(863, 360, 320, 192, 2.625, insets);
+    expect(layout.offsetX).toBeGreaterThanOrEqual(120);
+    expect(layout.offsetX + layout.width).toBeLessThanOrEqual(863 + 1e-9);
+    // Vị trí canvas rơi đúng biên px thiết bị.
+    expect(Math.abs(layout.offsetX * 2.625 - Math.round(layout.offsetX * 2.625))).toBeLessThan(
+      1e-6,
+    );
+  });
+
+  it('QB-92: vùng an toàn lớn tới mức không còn chỗ cho bậc hiện tại thì hạ bậc phóng', () => {
+    const wide = computeLayout(863, 360, 320, 192, 2.625);
+    const narrow = computeLayout(863, 360, 320, 192, 2.625, {
+      top: 0,
+      right: 200,
+      bottom: 0,
+      left: 200,
+    });
+    expect(narrow.deviceZoom).toBeLessThan(wide.deviceZoom);
+    expect(narrow.offsetX).toBeGreaterThanOrEqual(200);
+    expect(narrow.offsetX + narrow.width).toBeLessThanOrEqual(863 - 200 + 1e-9);
+  });
+});

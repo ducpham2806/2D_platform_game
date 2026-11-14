@@ -1,4 +1,5 @@
 import type Phaser from 'phaser';
+import { readSafeAreaInsets } from '../input/safe-area';
 import { computeLayout, type ViewportLayout } from '../logic/scale';
 import { LOGIC_HEIGHT, LOGIC_WIDTH } from './constants';
 import type { GameEventBus } from './game-events';
@@ -18,7 +19,15 @@ function pixelRatio(): number {
 
 export function currentLayout(): ViewportLayout {
   const { width, height } = viewportSize();
-  return computeLayout(width, height, LOGIC_WIDTH, LOGIC_HEIGHT, pixelRatio());
+  // Vùng an toàn (tai thỏ, góc bo): canvas tránh trái, phải, trên (QB-92, ST-11-01).
+  return computeLayout(
+    width,
+    height,
+    LOGIC_WIDTH,
+    LOGIC_HEIGHT,
+    pixelRatio(),
+    readSafeAreaInsets(),
+  );
 }
 
 /**

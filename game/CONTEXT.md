@@ -114,7 +114,7 @@ Mỗi module một dòng; chi tiết ở file quyết định và Epic.
 
 - **M0 Dự án và công cụ:** Xong. dev/build/test/lint/format, alias `@/`, CI (lint, format, typecheck, test, build), Pages tự đăng khi `main` đổi.
 - **M1 Khung game:** Xong phần khung. Scale nguyên, nhắc xoay ngang, nạp + kiểm tra JSON, event bus; 60 FPS ở CPU chậm 4–6× (`gate-check`). Còn: nạp atlas khi có asset; đo trên điện thoại thật.
-- **M2 Đầu vào:** Xong. Bàn phím, tay cầm, cảm ứng (cần ảo, 6 nút, đa chạm, rung), đổi phím, chỉnh bố cục, tự bắn, hỗ trợ ngắm. Còn: thử tay cầm thật.
+- **M2 Đầu vào:** Xong. Vùng an toàn tai thỏ cho nút cảm ứng, canvas, bảng HTML (ST-11-01, QB-92). Bàn phím, tay cầm, cảm ứng (cần ảo, 6 nút, đa chạm, rung), đổi phím, chỉnh bố cục, tự bắn, hỗ trợ ngắm. Còn: thử tay cầm thật.
 - **M3 Nhân vật:** Xong logic. Chạy, nhảy biến thiên, coyote, buffer, lướt, dash-jump, bám/nhảy tường, bục một chiều, bị đánh, chết, rơi hố. Còn: sprite, hoạt ảnh (asset P0); leo thang (đặc tả 02 đoạn A, B).
 - **M4 Chiến đấu:** Xong. Arc Cannon 3 mức nạp, vũ khí boss theo dữ liệu (Vine Lash), điểm yếu, choáng, hit-stop. Còn: hành vi Prism Beam, Frost Shard, Gale Cutter (Stage 2–4).
 - **M5 Kẻ địch:** Xong cho Prologue, Stage 1 (5 loại + bản Thử thách); kẻ địch dựng lại sau khi Kai chết không trả thưởng lần nữa (QB-20). Còn: kẻ địch Stage 2–4 (EP-15), tầm dọc và chỉ bắn khi trên màn (QB-23), sprite.

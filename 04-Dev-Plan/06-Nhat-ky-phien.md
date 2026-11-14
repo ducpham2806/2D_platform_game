@@ -25,6 +25,16 @@ Mẫu:
 
 ---
 
+## 2026-11-14: ST-11-01 vùng an toàn cho nút cảm ứng, canvas, bảng HTML (bước đầu của G1)
+
+- **Nhánh / commit:** `ccr-9de01342-2046rb`; commit ST-11-01.
+- **Mục tiêu:** người dùng đồng ý làm bước đầu tiên của `00-Bat-dau.md`: sửa vùng an toàn (QB-92) trước khi phát link chơi thử G1.
+- **Đã làm:** Story `stories/EP-11-cong-prototype-dot-1.md`; `touch-layout.ts` (nút, cần ảo neo theo mép vùng an toàn), `scale.ts` (canvas tránh trái, phải, trên), `input/safe-area.ts` (đọc `env()` qua phần tử dò), `style.css` (bảng HTML trừ vùng an toàn).
+- **Quyết định:** canvas không tránh thanh vuốt dưới (chỉ đè, không che hình; tránh thì iPhone 14 tụt ×6 → ×5); nút tránh cả 4 phía.
+- **Kiểm tra:** 423 test (thêm 8), lint, format, build, docs-check đạt; `gate-flow` đạt; chạy thử iPhone 14 và Pixel 7 giả lập tai thỏ bằng CDP, 0 lỗi console (`qa/ST-11-01/`).
+- **Còn dở:** kiểm trên máy thật có tai thỏ ở buổi chơi thử.
+- **Tiếp theo:** người dùng merge và tag `gate-r1`, chơi thử 5 người; code tiếp (EP-13 lõi đo lường) ở nhánh mới.
+
 ## 2026-11-14: Rà soát toàn bộ tài liệu, quy tắc biên, tài liệu hệ thống còn thiếu, kế hoạch S9–S21
 
 - **Nhánh / commit:** `ccr-9de01342-2046rb`; `84ac8b2` (sửa code), `3ec2438` … commit đóng phiên (tài liệu).
@@ -69,20 +79,3 @@ Mẫu:
   - Chơi thử 5 người; PR #10 chưa merge (commit phiên này nằm cùng nhánh).
   - Đặt checkpoint theo độ khó lên bản đồ thật, chốt số mẫu đòn (sau cổng).
 - **Tiếp theo:** 1. Merge PR #10, chạy đợt chơi thử 1. 2. Tài liệu âm thanh MVP (M12) và đo lường MVP (M16). 3. Sau cổng: đặc tả Stage 2–4 kèm mẫu đòn Thử thách.
-
-## 2026-11-14: M9 Shop chỉ Upgrade (EP-09, Quầy Mira)
-
-- **Nhánh / commit:** `ccr-9de01342-2046rb`; `8f5e0c2` (Epic + ST-09-01), `4bb7d80` (ST-09-02), `7d42fe6` (ST-09-03), `d4ee4f4` (ST-09-04), commit tài liệu.
-- **Mục tiêu:** người dùng giao "làm tiếp game theo plan". Chơi thử cổng Prototype còn chờ người thật (PR #10 chưa merge), nên làm việc MVP kế tiếp không bị chặn: M9 Shop chỉ Upgrade.
-- **Đã làm:**
-  - Epic EP-09 + 4 Story; lấp 9 khoảng trống của đặc tả (mục "Khoảng trống" trong Epic).
-  - **ST-09-01:** lịch mở theo boss trong `shop.json`, giá theo cấp, mua/gỡ thuần.
-  - **ST-09-02:** bản lưu 3 (`inventory.upgrades`), chuẩn hóa, `SaveManager.transact`.
-  - **ST-09-03:** Arc Core, Armor Plating, Energy Cell, Magnet Range có tác dụng trong trận.
-  - **ST-09-04:** Quầy Mira (HTML) từ menu (phím Q, mở sau 2 boss), Mua → Xác nhận, Gỡ.
-- **File chính:** `03-Data/{shop,enemies}.json`, `game/src/core/shop-config.ts`, `game/src/logic/shop/*`, `game/src/shop/shop-panel.ts`, `game/src/scenes/{shop,menu}-scene.ts`, `logic/save/save-{data,manager}.ts`, `logic/rpg/build.ts`, `logic/world/{pickups,stage-world}.ts`.
-- **Quyết định (`[PLACEHOLDER]`, người dùng có thể đổi):** cấp 3 mở sau 5 boss; Energy Cell 28 → 31 → 34; nam châm tính từ thân Kai; MVP mở quầy từ menu; `?shop=1` để thử khi mới có 1 boss.
-- **Lỗi tìm thấy / đã sửa:** trên Pixel 7 ngang bảng một cột cao hơn màn, nút Mua bị đẩy xuống dưới (đổi sang hai cột); dòng phím ở menu bị cắt hai đầu.
-- **Kiểm tra:** 373 test (thêm 25), lint, format, build đạt; `gate-flow` đạt; chạy thử Chromium PC + Pixel 7, ảnh ở `04-Dev-Plan/qa/ST-09-04/`.
-- **Còn dở:** chơi thử 5 người; PR #10 chưa merge (commit phiên này nằm cùng nhánh); R04; Booster, Skin (Alpha).
-- **Tiếp theo:** 1. Merge PR #10, chạy đợt chơi thử 1. 2. "3 độ khó" của MVP: màn Chuẩn bị chọn độ khó (đặc tả Hub mục 3). 3. Tài liệu âm thanh và đo lường MVP.

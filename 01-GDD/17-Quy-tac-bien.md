@@ -139,7 +139,7 @@ Mỗi lúc chỉ **một** hộp ở giữa phía trên khung hình.
 | --- | --- | --- | --- |
 | QB-90 | App ẩn, trang ẩn, mất tay cầm | `visibilitychange`, `pagehide`, hoặc `gamepaddisconnected` khi thiết bị dùng gần nhất là tay cầm: mở menu tạm dừng; **không** tự chơi tiếp. Hiện code chỉ nhả phím và ghi bản lưu | Story MVP |
 | QB-91 | Đổi thiết bị nhập giữa chừng | Biểu tượng nút theo thiết bị dùng gần nhất; tay cầm PlayStation (theo `gamepad.id`) dùng ✕○□△. Câu hướng dẫn có bản riêng cho cảm ứng khi tên nút trùng hành động (S13) | Story MVP |
-| QB-92 | Tai thỏ, góc bo | Lớp nút cảm ứng, bảng HTML và lề HUD cộng `env(safe-area-inset-*)` | Story MVP |
+| QB-92 | Tai thỏ, góc bo, thanh vuốt hệ thống | Nút cảm ứng và cần ảo tránh cả 4 phía (neo theo mép vùng an toàn); canvas tránh trái, phải, trên (thanh vuốt dưới chỉ đè, không che hình, tránh thì tụt bậc phóng); bảng HTML tránh cả 4 phía. Đọc `env(safe-area-inset-*)` khi đổi kích thước, không mỗi khung | Code (ST-11-01, test `input-touch.test.ts`, `scale.test.ts`) |
 | QB-93 | Cầm dọc | Chỉ hỗ trợ màn ngang; lớp phủ "xoay ngang" che mọi scene và tự tạm dừng trận | Code (lớp phủ); Story MVP (tự tạm dừng) |
 | QB-94 | Phím tắt ở Hub | Ở Hub, Start của tay cầm mở Menu nhanh (không phải Tạm dừng); phím 1–0 chọn 10 ô | Story Hub (EP-14) |
 | QB-95 | Chơi với tốc độ game < 100% (tiếp cận) | Vẫn nhận đủ thưởng; lượt không vào bảng xếp hạng (khi có); đo lường không tính lượt đó vào chỉ số cân bằng điều khiển và dấu hiệu "hỏng" (MV7, H3, H4 của `13-Do-luong-MVP.md`) | Story MVP (ST-14-06, EP-13) |
@@ -252,5 +252,6 @@ Mỗi luật nhãn Code phải có (hoặc được thêm) một test Vitest man
 | Ngày | Thay đổi |
 | --- | --- |
 | 14/11/2026 | Bản 1.0: 77 luật từ rà soát; QB-20, QB-30, QB-65, QB-70…72, QB-82 đã code cùng ngày |
+| 14/11/2026 | QB-92 đã code (ST-11-01) |
 | 14/11/2026 | Bản 1.2 (sau duyệt Creative Director, Technical Director + Producer): sửa nhãn trạng thái theo code thật (QB-01, 11–13, 22, 41, 61, 70–72, 121, 132); sửa QB-12, 40, 70, 83; thêm QB-07, 18, 19, 24 (92 luật) |
 | 14/11/2026 | Bản 1.1: thêm QB-95…98 từ `13-Do-luong-MVP.md`, `14-Cai-dat-Tiep-can.md`; QB-140…146 (âm thanh) từ `12-Am-thanh.md` (88 luật) |

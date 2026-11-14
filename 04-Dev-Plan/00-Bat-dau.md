@@ -20,7 +20,7 @@
 
 Mỗi việc: viết Story trước (`/story-readiness`, mẫu Story của Game Studio Agent, nhúng mã `QB-xx`), rồi code.
 
-1. **Trước khi phát link G1:** safe-area cho lớp nút cảm ứng và HUD (QB-92), chạy thử Pixel 7 và iPhone giả lập; rồi đóng băng bản thử.
+1. ~~Safe-area (QB-92)~~ xong (ST-11-01, 14/11). Còn: người dùng merge và tag `gate-r1` (đóng băng bản thử), rồi phát link.
 2. EP-13 lõi đo lường (logger thuần, bộ đệm, xuất JSON): không chờ ADR-002, dùng được cho G2.
 3. Test khóa các luật đã code nhưng chưa test, gắn mã QB vào tên test; sửa QB-72 (dừng đồng hồ khi tạm dừng), QB-70 (gợi ý bị che thì hiện lại).
 4. EP-15: ST-15-14 (QB-14, QB-31), rồi ST-15-01a (dữ liệu Stage 2), ST-15-02.
