@@ -51,8 +51,10 @@ function finishTelegraph(boss: Boss, pool: ProjectilePool, ctx = PLAYER): void {
 }
 
 describe('Thorna: dữ liệu theo đặc tả mục 5', () => {
-  it('HP 100, 3 pha tại 60% và 30%, tốc độ +20% ở pha cuối', () => {
-    expect(data.hp).toBe(100);
+  it('HP 250, 3 pha tại 60% và 30%, tốc độ +20% ở pha cuối', () => {
+    // Đặc tả ghi 100; nâng lên 250 ngày 14/11/2026 vì 100 máu chỉ là ~15 s bắn (mô phỏng
+    // trong power-cap.test.ts), không khớp thời lượng 60–90 s của đặc tả.
+    expect(data.hp).toBe(250);
     expect(data.phases.map((p) => p.untilHpPct)).toEqual([60, 30, 0]);
     expect(data.phases.map((p) => p.speedMul)).toEqual([1, 1, 1.2]);
   });

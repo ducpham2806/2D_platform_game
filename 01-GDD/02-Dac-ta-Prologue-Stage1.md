@@ -102,7 +102,7 @@ Số liệu và hành vi nằm ở `03-Data/enemies.json` (game kiểm tra teleg
 
 | Thông số | Giá trị `[PLACEHOLDER]` |
 | --- | --- |
-| HP | 100 (đơn vị phát Arc Cannon gốc) |
+| HP | 250 (đơn vị phát Arc Cannon gốc). Bản đầu ghi 100, đổi 14/11/2026: Arc Cannon bắn 7,5 phát/giây nên 100 máu chỉ là khoảng 15 s bắn, không khớp 60–90 s. Mô phỏng bot không né: 100 máu thì thắng sau 15 s; 250 máu thì thua ở cấp 4, kể cả build Core đủ bậc (`game/tests/power-cap.test.ts`) |
 | Đấu trường | 24 × 12 tile, 3 bục cao 3 tile; Thorna đứng bên phải và di chuyển chậm |
 | Điểm yếu | Ember Burst (từ Stage 8, dùng ở trận tái đấu trong Citadel): 2,5× sát thương và choáng 0,5 s. Lần đầu luôn đánh bằng Arc Cannon |
 | Thắng chỉ bằng Arc Cannon | Có, thời gian dự kiến 60–90 giây |

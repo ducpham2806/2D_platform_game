@@ -44,7 +44,7 @@
 - [x] AC-2: Bậc 3 hồi đúng sau 2 bước dừng hình + 20 s × 60 bước tính từ lúc vỡ; mất máu giữa chừng không đặt lại. Chạm gai: khiên không chặn và không được làm mới. Rơi hố còn máu giữ đồng hồ; chết thì khiên sẵn. Đổi bậc khi đang hồi giữ thời gian đã hồi.
 - [x] AC-3 (đổi tiêu chí): Hoa Nở rơi cả 12 hạt cùng lúc, nên Kai đứng yên chỉ trúng đúng một hạt. "Trúng sau khi khiên vỡ" không thể đạt, nên hạt Hoa Nở xuyên khiên:
   - Đứng yên dưới hạt: trúng 18 máu, khiên vẫn sẵn.
-  - Bot không né (`power-cap.test.ts`): khiên chặn 1 đòn (≤ 1 + số lần hồi); tổng đòn chạm Kai lệch tối đa 1 so với không build; máu tối đa chỉ thêm phần C1. "Bot phòng thủ vẫn thua Thorna" không đạt vì Thorna đang quá dễ (cả bot không build cũng thắng sau 15 s); đã ghi ở cổng Prototype.
+  - Bot không né (`power-cap.test.ts`): khiên chặn 1 đòn (≤ 1 + số lần hồi); tổng đòn chạm Kai lệch tối đa 1 so với không build; máu tối đa chỉ thêm phần C1. "Bot phòng thủ vẫn thua Thorna" lúc làm Story chưa đạt vì Thorna quá dễ (cả bot không build cũng thắng sau 15 s). **Cập nhật cùng ngày:** máu Thorna 100 → 250 (cổng Prototype), bot phòng thủ thua ở cấp 4.
 - [x] AC-4: Chạy thử Chromium (bản lưu C1 + C2 + C3, màn Thorna), ảnh ở `04-Dev-Plan/qa/ST-08-08/`, không lỗi console:
   - `khien-san.png`: viền tím nhạt quanh Kai, vòng HUD đầy.
   - `khien-vo.png`: máu giữ 138/138, mảnh kính bay ra.

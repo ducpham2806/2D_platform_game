@@ -68,7 +68,7 @@ describe('mô hình HUD', () => {
     const world = thornaWorld();
     world.player.respawn((world.arena!.first + 3) * t, 11 * t);
     world.step(IDLE_INPUT);
-    world.boss!.hp = 50;
+    world.boss!.hp = world.boss!.data.hp / 2;
     const boss = buildHud(world).boss!;
     expect(boss.name).toBe(config.bosses.thorna!.name);
     expect(boss.frac).toBe(0.5);

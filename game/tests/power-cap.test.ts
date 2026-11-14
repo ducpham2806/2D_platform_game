@@ -143,19 +143,27 @@ describe('kỹ năng tăng tốc nạp không nâng DPS tối đa (GDD 10 mục 
   });
 });
 
-/** Bot không né (bám boss trong `keepTiles` ô, bắn liên tục) đấu Thorna; trả về kết cục. */
-function noDodgeFight(build: ReturnType<typeof computeBuild>, keepTiles: number) {
+/**
+ * Bot không né (bám boss trong `keepTiles` ô, bắn liên tục 7,5 phát/giây) đấu Thorna ở Thường;
+ * trả về kết cục. Mặc định cấp 4 (cấp dự kiến cuối Stage 1, đặc tả mục 6) và máu Thorna theo dữ liệu.
+ */
+function noDodgeFight(
+  build: ReturnType<typeof computeBuild>,
+  keepTiles: number,
+  level = 4,
+  bossHp = config.bosses.thorna!.hp,
+) {
   const world = new StageWorld({
     layout: buildStageLayout(STAGE_DEFS.thorna, T),
     tileSize: T,
     stepSec: DT,
     player: config.player,
     weapons: config.weapons,
-    boss: config.bosses.thorna!,
+    boss: { ...config.bosses.thorna!, hp: bossHp },
     difficulty: config.difficulties.find((d) => d.id === 'normal')!,
     seed: 3,
     mechanics: config.stages.mechanics,
-    level: 6,
+    level,
     build,
   });
   world.player.respawn((world.arena!.first + 3) * T, 11 * T);
@@ -195,27 +203,32 @@ function noDodgeFight(build: ReturnType<typeof computeBuild>, keepTiles: number)
 }
 
 describe('phòng thủ không thay được né (GDD 10 mục 8)', () => {
-  it('build Core: khiên chặn đúng một đòn mỗi lần hồi, số đòn chạm Kai gần như không đổi, máu thêm đúng C1', () => {
-    const recharge = computeBuild(config.skills, { C1: 1, C2: 2, C3: 3 }).shield!.rechargeSec;
+  const core = computeBuild(config.skills, { C1: 1, C2: 2, C3: 3 });
+
+  it('bot không né thua Thorna ở cấp 4, kể cả build Core đủ bậc; khiên chặn một đòn mỗi lần hồi', () => {
+    // Build Core đủ bậc cần 6 SP, nhiều hơn số SP có trước khi hạ Thorna: đây là giới hạn trên.
     for (const keep of [3, 8]) {
       const plain = noDodgeFight(computeBuild(config.skills, {}), keep);
-      const core = noDodgeFight(computeBuild(config.skills, { C1: 1, C2: 2, C3: 3 }), keep);
+      const tank = noDodgeFight(core, keep);
+      expect(plain.won).toBe(false);
+      expect(tank.won).toBe(false);
       expect(plain.absorbed).toBe(0);
-      expect(core.absorbed).toBeGreaterThanOrEqual(1);
-      expect(core.absorbed).toBeLessThanOrEqual(1 + Math.floor(core.sec / recharge));
-      // Khiên không bật lùi nên vị trí sau đó khác đi; số đòn chạm Kai lệch tối đa 1
-      // (bám 3 ô: 6 → 4 trúng + 1 chặn; bám 8 ô: 5 → 5 trúng + 1 chặn).
-      expect(Math.abs(core.hits + core.absorbed - plain.hits)).toBeLessThanOrEqual(1);
-      expect(core.hits).toBeGreaterThan(0);
-      expect(core.maxHp - plain.maxHp).toBe(18);
+      expect(tank.absorbed).toBeGreaterThanOrEqual(1);
+      expect(tank.absorbed).toBeLessThanOrEqual(
+        1 + Math.floor(tank.sec / core.shield!.rechargeSec),
+      );
+      expect(tank.maxHp).toBe(Math.round(plain.maxHp * core.maxHpMul));
     }
   });
 
-  it('ghi nhận cân bằng boss (cho cổng Prototype): bot không né thắng Thorna dưới 20 s', () => {
-    // Đặc tả Stage 1 dự kiến 60–90 s. Test này ghi lại hiện trạng để thấy ngay khi chỉnh Thorna;
-    // khi Thorna được cân bằng lại ở cổng Prototype thì đổi kỳ vọng.
-    const r = noDodgeFight(computeBuild(config.skills, {}), 3);
-    expect(r.won).toBe(true);
-    expect(r.sec).toBeLessThan(20);
+  it('máu Thorna 250: với 100 máu cũ, bot không né thắng sau khoảng 15 s (đặc tả 60–90 s)', () => {
+    // Lý do đổi máu (05-Cong-Prototype.md mục 5). Mức 250: bot không né sống 22–30 s rồi thua;
+    // người chơi né được, bắn 50–75% thời gian, cần khoảng 45–65 s.
+    const old = noDodgeFight(computeBuild(config.skills, {}), 3, 4, 100);
+    expect(old.won).toBe(true);
+    expect(old.sec).toBeLessThan(20);
+    const now = noDodgeFight(computeBuild(config.skills, {}), 8);
+    expect(now.won).toBe(false);
+    expect(now.sec).toBeGreaterThan(20);
   });
 });
