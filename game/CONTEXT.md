@@ -60,7 +60,8 @@ src/
   logic/hud/              M10: mô hình HUD từ StageWorld (máu, năng lượng, vũ khí, máu boss, Core Bit, EXP,
                           phòng khóa), con trỏ menu bỏ qua mục khóa, MenuNavigator (dọc/ngang, cần) (thuần)
   logic/tutorial/         TutorialManager (máy trạng thái bước theo tutorial.json, hàng đợi, bỏ qua khi đã làm
-                          được, gợi ý theo giây/thất bại, cancelOn) và TutorialSignals (StageWorld → tín hiệu) (thuần)
+                          được, gợi ý theo giây/thất bại, cancelOn, chuỗi `after` theo lượt QB-88) và TutorialSignals
+                          (StageWorld → tín hiệu) (thuần)
   core/tutorial-config.ts kiểm tra 03-Data/tutorial.json (tín hiệu hợp lệ, after, lời thoại ≤ maxTextChars)
   core/ui-config.ts       kiểm tra 03-Data/ui.json (hộp hội thoại, màn Kết quả)
   core/dialogue-config.ts kiểm tra 03-Data/dialogue_wardens.json (khóa, biến thể nối liền từ 0, độ dài câu, vi/en khớp)

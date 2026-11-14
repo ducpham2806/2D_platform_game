@@ -1,6 +1,6 @@
 # 17. Quy tắc biên (ngóc ngách của trò chơi)
 
-*Bản 1.2 · 14/11/2026 · Trạng thái: Approved (ủy quyền: người dùng giao toàn quyền quyết định; xem mục 19) · Nguồn: rà soát `/review-all-gdds` + `/consistency-check` ngày 14/11/2026 (4 báo cáo: lõi, kinh tế, giao diện và lời thoại, quy trình)*
+*Bản 1.3 · 14/11/2026 · Trạng thái: Approved (ủy quyền: người dùng giao toàn quyền quyết định; xem mục 19) · Nguồn: rà soát `/review-all-gdds` + `/consistency-check` ngày 14/11/2026 (4 báo cáo: lõi, kinh tế, giao diện và lời thoại, quy trình)*
 
 ## 0. Mục đích và cách dùng
 
@@ -132,6 +132,7 @@ Mỗi lúc chỉ **một** hộp ở giữa phía trên khung hình.
 | QB-85 | Gợi ý chỉ dựa vào màu | Câu nhắc màu (cam, xanh, vàng, đỏ) phải kèm hình dạng hoặc tư thế | Story MVP (lời trong `tutorial.json`) |
 | QB-86 | Hướng dẫn Hub khi điều kiện khác | R04 làm nổi món rẻ nhất **mua được** (Cốt truyện ≈ 262 Core Bit sau 2 boss: Magnet Range 200). R05 có hai biến thể: chưa có Prism Beam; đã lấy Két giáp | Story Hub (EP-14) |
 | QB-87 | Mỗi lần về Hub | Mở tối đa 1 hệ thống + 1 nhịp truyện. Tab Module mở khi nhận module đầu tiên | Story Hub (EP-14) |
+| QB-88 | Chuỗi hướng dẫn bị cắt (thoát, tải lại trang giữa chuỗi, ví dụ giữa trận boss) | Bước `after` chỉ nối khi bước đứng trước xong **trong lượt này**; bước đã lưu không làm bước sau hiện ngay đầu màn. Bước đã lưu mà điều kiện kích hoạt xảy ra lại (vào lại phòng boss) thì tính xong trong lượt, không hiện lại lời; phần còn dở của chuỗi chạy tiếp từ đó | Code (ST-21-01, `tutorial-manager.ts`, test QB-88) |
 
 ## 10. Nhập liệu, thiết bị, ứng dụng
 
@@ -254,4 +255,5 @@ Mỗi luật nhãn Code phải có (hoặc được thêm) một test Vitest man
 | 14/11/2026 | Bản 1.0: 77 luật từ rà soát; QB-20, QB-30, QB-65, QB-70…72, QB-82 đã code cùng ngày |
 | 14/11/2026 | QB-92 đã code (ST-11-01) |
 | 14/11/2026 | Bản 1.2 (sau duyệt Creative Director, Technical Director + Producer): sửa nhãn trạng thái theo code thật (QB-01, 11–13, 22, 41, 61, 70–72, 121, 132); sửa QB-12, 40, 70, 83; thêm QB-07, 18, 19, 24 (92 luật) |
+| 14/11/2026 | Bản 1.3: thêm QB-88 (chuỗi hướng dẫn khi chơi lại, lỗi PR #9 tìm ra), đã code ở ST-21-01 (93 luật) |
 | 14/11/2026 | Bản 1.1: thêm QB-95…98 từ `13-Do-luong-MVP.md`, `14-Cai-dat-Tiep-can.md`; QB-140…146 (âm thanh) từ `12-Am-thanh.md` (88 luật) |

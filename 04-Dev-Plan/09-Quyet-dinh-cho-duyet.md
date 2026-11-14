@@ -6,6 +6,11 @@ Người dùng giao toàn quyền quyết định (14/11/2026). Các quyết đ�
 
 1. **Kênh gửi dữ liệu đo lường cho cổng MVP** (`adr/ADR-002-do-luong-mvp.md`): đề xuất một bảng chỉ-ghi trên Supabase gói miễn phí; phương án khác là thu JSON bằng tay. Kèm hai lựa chọn: mặc định gửi hay chạm đồng ý một lần.
 2. **Pháp lý** trước đợt thử MVP: phiếu đồng ý, độ tuổi tối thiểu người thử (đề xuất 16).
+3. **Hướng đồ họa** (thêm 14/11; chặn ST-21-05 và asset P0, P1). GDD chính mục 14 ghi pixel art; ngày 13/11 (phiên của PR #9) anh nói muốn 2.5D: model 3D, lối chơi 2D. Ba lựa chọn:
+   - (a) **Giữ pixel art**, dùng bộ hình vẽ bằng mã của PR #9 làm nền rồi thay dần bằng hình vẽ tay. Rẻ nhất; ảnh để xem ở `qa/ST-21-05/` (so sánh với bản hình khối hiện tại). Cần chốt thêm: Kai cao 28 px (PR #9) hay 40 px (hướng dẫn asset).
+   - (b) **2.5D render sẵn:** dựng model 3D, render thành spritesheet, giữ Phaser và toàn bộ code. Cần công cụ 3D và người dựng model; đổi `05-Assets` (manifest, prompt), xem lại quyết định 320 × 192 + `pixelArt`.
+   - (c) **2.5D thời gian thực** bằng three.js: giữ `src/logic`, viết lại lớp scene. Đắt nhất, rủi ro tải (ngân sách 30 MB) và hiệu năng trên Android yếu.
+   Đề xuất: (a) cho MVP, vì G1 và G3 đo lối chơi, không đo hình; cân nhắc (b) sau cổng MVP khi có ngân sách asset.
 
 ## Gameplay lõi (GDD chính 0.8, `10`, `11`, `17`)
 
@@ -16,7 +21,7 @@ Người dùng giao toàn quyền quyết định (14/11/2026). Các quyết đ�
 - Khoảng cách checkpoint: Cốt truyện ≤ 90 s, Thường ≤ 150 s, Thử thách ≤ 270 s.
 - Kẻ địch dựng lại sau khi Kai chết không trả EXP, Core Bit lần nữa (đã code).
 - Năng lượng tối đa ở Energy Cell tối đa là 49 (không phải 50); hồi năng lượng sau 2 s.
-- Quy tắc biên: 92 luật ở `01-GDD/17-Quy-tac-bien.md` (ví dụ: boss và Kai hết máu cùng lúc thì thắng; một đòn qua hai ngưỡng pha thì kẹp; vũ khí bắn nhanh không khóa choáng boss mãi).
+- Quy tắc biên: 93 luật ở `01-GDD/17-Quy-tac-bien.md` (ví dụ: boss và Kai hết máu cùng lúc thì thắng; một đòn qua hai ngưỡng pha thì kẹp; vũ khí bắn nhanh không khóa choáng boss mãi).
 
 ## Stage 2–4 và nhiệm vụ phụ (`15`, `16`)
 

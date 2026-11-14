@@ -221,6 +221,42 @@ describe('chuỗi bước trận boss (dữ liệu thật)', () => {
     expect(m.completed.has('S13')).toBe(true);
     expect(m.reminders).toEqual([]);
   });
+
+  // QB-88: thoát hoặc tải lại trang giữa trận boss rồi vào lại màn (các bước trước boss đã lưu).
+  const beforeBoss = config.tutorial.steps
+    .filter((s) => s.stage === 'stage1' && !['S08', 'S09', 'S10', 'S13'].includes(s.id))
+    .map((s) => s.id);
+  const replay = (saved: string[]) => {
+    const m = new TutorialManager(config.tutorial, 'stage1', [...beforeBoss, ...saved]);
+    const started: string[] = [];
+    const run = (s: Set<string>, n = 1) => {
+      for (let i = 0; i < n; i += 1) {
+        const r = m.step(i === 0 ? s : sig(), 0, DT);
+        if (r.started) started.push(r.started);
+      }
+    };
+    return { started, run };
+  };
+
+  it('QB-88: đã lưu S08, S09 (thoát sau đổi pha): đầu màn không hiện S10; vào lại phòng boss thì S10 chạy tiếp', () => {
+    const { started, run } = replay(['S08', 'S09']);
+    run(sig(), 60 * 5);
+    expect(started).toEqual([]);
+    run(sig('bossGate'), 60);
+    expect(started).toEqual(['S10']);
+    run(sig('bossDefeated', 'weaponGranted'), 60);
+    expect(started).toEqual(['S10', 'S13']);
+  });
+
+  it('QB-88: đã lưu S08 (thoát trước đổi pha): đầu màn không hiện S09; vào lại phòng boss thì S09 hiện, không lặp S08', () => {
+    const { started, run } = replay(['S08']);
+    run(sig(), 60 * 5);
+    expect(started).toEqual([]);
+    run(sig('bossGate'), 60);
+    expect(started).toEqual(['S09']);
+    run(sig('bossPhase'), 60);
+    expect(started).toEqual(['S09', 'S10']);
+  });
 });
 
 describe('hướng dẫn trên màn thật', () => {
