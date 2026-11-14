@@ -22,7 +22,7 @@
     "drone_linh_prologue": {
       "name": "Drone Lính (Prologue)",
       "behavior": "drone",
-      "note": "Bản chậm của Prologue. Ở nhịp 1-3 đặt cờ harmless trên bản đồ: chỉ đẩy lùi, không mất máu.",
+      "note": "Bản chậm của Prologue. Ở các bước P01–P09 (tới hết Hành lang đạn) đặt cờ harmless trên bản đồ: chỉ đẩy lùi, không mất máu.",
       "hp": 2,
       "sizePx": {
         "w": 14,

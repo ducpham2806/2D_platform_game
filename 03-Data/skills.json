@@ -99,7 +99,7 @@
           "desc": "Năng lượng vũ khí Warden tự hồi nhanh hơn.",
           "ranks": [
             { "energyRegenMul": 1.25, "text": "Hồi năng lượng ×1,25" },
-            { "energyRegenMul": 1.5, "regenDelayMul": 0.67, "text": "Hồi ×1,5 và bắt đầu hồi sớm hơn (3 → 2 s)" }
+            { "energyRegenMul": 1.5, "regenDelayMul": 0.6667, "text": "Hồi ×1,5 và bắt đầu hồi sớm hơn (3 → 2 s)" }
           ]
         },
         {

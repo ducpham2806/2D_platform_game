@@ -18,7 +18,7 @@ describe('gom hiệu ứng build (GDD 10 mục 3.1)', () => {
     expect(full.wallSlideMul).toBe(0.6);
     expect(full.maxHpMul).toBe(1.15);
     expect(full.energyRegenMul).toBe(1.5);
-    expect(full.regenDelayMul).toBe(0.67);
+    expect(full.regenDelayMul).toBe(0.6667);
     expect(full.minFullChargeSec).toBe(config.skills.rules.minFullChargeSec);
     expect(computeBuild(config.skills, {}).effects).toEqual({});
     // Bậc vượt tối đa bị kẹp, nút lạ bị bỏ.
@@ -31,7 +31,7 @@ describe('gom hiệu ứng build (GDD 10 mục 3.1)', () => {
     expect(weapons.arcCannon.midCharge.timeSec).toBe(0.5);
     expect(player.wallSlideTilesPerSec).toBeCloseTo(1.2, 9);
     expect(weapons.energyRegen.perSec).toBe(1.5);
-    expect(weapons.energyRegen.afterNoFireSec).toBeCloseTo(2.01, 9);
+    expect(weapons.energyRegen.afterNoFireSec).toBeCloseTo(3 * 0.6667, 9); // 2 s (rà soát F16)
     expect(config.weapons.arcCannon.charge.timeSec).toBe(1.2);
     const floored = applyBuild(config.player, config.weapons, { ...full, fullChargeTimeMul: 0.3 });
     expect(floored.weapons.arcCannon.charge.timeSec).toBe(0.8);

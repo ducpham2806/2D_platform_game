@@ -97,7 +97,7 @@
   },
   "thorna": {
     "name": "Thorna",
-    "note": "Warden của Vườn Sinh Học (Stage 1). Đấu trường 24 × 12 ô, boss đứng bên phải và đi chậm về phía người chơi. Điểm yếu Ember Burst (từ Stage 8, dùng khi tái đấu); lần đầu thắng bằng Arc Cannon, 60-90 giây nếu có né. Thắng lần đầu nhận Vine Lash, 120 EXP, 80 Core Bit (1 SP tính ở hệ thống cấp, chưa làm). Gai Quạt báo trước 0,6 s (đặc tả ghi 0,5 s) để sau khi pha 3 tăng tốc 20% vẫn còn 0,5 s theo luật telegraph ≥ 0,5 s. hp 250 (đặc tả ghi 100, đổi 14/11/2026): Arc Cannon bắn 7,5 phát/giây nên 100 máu chỉ là ~15 s, không khớp 60-90 s; mô phỏng bot không né (tests/power-cap.test.ts) thắng 100 máu sau 15 s, thua 250 máu ở cấp 4. Chỉnh lại sau chơi thử.",
+    "note": "Warden của Vườn Sinh Học (Stage 1). Đấu trường 24 × 12 ô, boss đứng bên phải và đi chậm về phía người chơi. Điểm yếu Ember Burst (từ Stage 8, dùng khi tái đấu); lần đầu thắng bằng Arc Cannon, khoảng 45-65 giây nếu có né (250 máu, cân bằng 14/11/2026). Thắng lần đầu nhận Vine Lash, 120 EXP, 80 Core Bit (1 SP tính ở hệ thống cấp, chưa làm). Gai Quạt báo trước 0,6 s (đặc tả ghi 0,5 s) để sau khi pha 3 tăng tốc 20% vẫn còn 0,5 s theo luật telegraph ≥ 0,5 s. hp 250 (đặc tả ghi 100, đổi 14/11/2026): Arc Cannon bắn 7,5 phát/giây nên 100 máu chỉ là ~15 s, không khớp 60-90 s; mô phỏng bot không né (tests/power-cap.test.ts) thắng 100 máu sau 15 s, thua 250 máu ở cấp 4. Chỉnh lại sau chơi thử.",
     "hp": 250,
     "sizePx": {
       "w": 28,
