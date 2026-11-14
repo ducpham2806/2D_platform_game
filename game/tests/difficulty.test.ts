@@ -5,6 +5,7 @@ import { parseDifficulties, parseGameConfig } from '@/core/game-config';
 import {
   checkpointActive,
   defaultDifficulty,
+  difficultyHintText,
   type DifficultyRule,
   difficultyUnlocked,
   NO_DIFFICULTY_PROGRESS,
@@ -19,12 +20,17 @@ import {
   defaultSave,
   parseSave,
   recordBossDefeated,
+  recordCheckpoint,
   recordDifficultyChosen,
   recordDifficultyCleared,
+  savedCheckpoint,
   stageDifficulty,
+  stageProgress,
 } from '@/logic/save/save-data';
 import { MemorySaveStore, SaveManager } from '@/logic/save/save-manager';
-import { StageSave } from '@/logic/save/stage-save';
+import { StageSave, stageSaveSetup } from '@/logic/save/stage-save';
+import { layoutFromRows } from '@/logic/stage/layout';
+import { layoutFromTiled } from '@/logic/stage/tiled';
 import { StageWorld } from '@/logic/world/stage-world';
 import { IDLE_INPUT, noWorldEvents, type WorldEvents } from '@/logic/world/world-types';
 import { buildStageLayout, STAGE_DEFS } from '@/stages';
@@ -221,11 +227,10 @@ describe('áp độ khó vào trận và bản lưu 4 (ST-10-01)', () => {
     const m = await SaveManager.open(new MemorySaveStore());
     const run = { exp: 0, coreBits: 0 };
     const ev = { ...noWorldEvents(), bossDefeated: true };
-    new StageSave(m, 'thorna', 'thorna', { campaign: 'verdant_gardens', id: 'normal' }).step(
-      ev,
-      run,
-      0.016,
-    );
+    new StageSave(m, 'thorna', 'thorna', {
+      difficulty: 'normal',
+      clearsCampaign: 'verdant_gardens',
+    }).step(ev, run, 0.016);
     expect(stageDifficulty(m.data, 'verdant_gardens').cleared).toEqual(['normal']);
     new StageSave(m, 'golem', 'gray').step(ev, run, 0.016);
     expect(Object.keys(m.data.progress.difficulty)).toEqual(['verdant_gardens']);
@@ -331,5 +336,147 @@ describe('ST-10-02: thưởng boss theo độ khó, nâng bản lưu, mini-boss,
     );
     expect(view.stats[0]).toEqual({ label: 'Độ khó', value: 'Thường' });
     expect(view.rewards).toContain('Đã mở Thử thách cho màn này');
+  });
+});
+
+describe('ST-10-03: checkpoint theo độ khó, chết liên tiếp, gợi ý NOVA', () => {
+  const config = parseGameConfig(loadData());
+  const t = TILE_SIZE;
+  const DT = FIXED_STEP_MS / 1000;
+  const diff = (id: string) => config.difficulties.find((d) => d.id === id)!;
+  /** Phòng 40 ô: Kai ở cột 2, checkpoint ở cột 8, 16, 24 (CP1 không có ở Thử thách); hố cột 30–31. */
+  const ROWS = [
+    ...Array.from({ length: 10 }, () => `#${'.'.repeat(38)}#`),
+    `#.P.....C.......C.......C${'.'.repeat(14)}#`,
+    `${'#'.repeat(30)}..${'#'.repeat(8)}`,
+  ];
+  function world(id: string, startCheckpoint = 0): StageWorld {
+    const layout = layoutFromRows(ROWS, t);
+    layout.checkpoints[0]!.difficulties = ['story', 'normal'];
+    return new StageWorld({
+      layout,
+      tileSize: t,
+      stepSec: DT,
+      player: config.player,
+      weapons: config.weapons,
+      boss: config.bosses.gray!,
+      difficulty: diff(id),
+      seed: 1,
+      mechanics: config.stages.mechanics,
+      startCheckpoint,
+    });
+  }
+  const walk = (w: StageWorld, steps: number): WorldEvents[] =>
+    Array.from({ length: steps }, () => w.step({ ...IDLE_INPUT, moveX: 1 }));
+  const die = (w: StageWorld): WorldEvents => {
+    w.player.hp = 0;
+    w.player.state = 'dead';
+    const ev = w.step(IDLE_INPUT);
+    for (let i = 0; i < 90; i += 1) w.step(IDLE_INPUT);
+    return ev;
+  };
+
+  it('Thử thách đi qua CP1 (không có ở Thử thách) không ghi; CP2 ghi 2', () => {
+    const got = walk(world('challenge'), 260)
+      .map((e) => e.checkpoint)
+      .filter((c) => c !== undefined);
+    expect(got.slice(0, 2)).toEqual([2, 3]);
+    const normal = walk(world('normal'), 260)
+      .map((e) => e.checkpoint)
+      .filter((c) => c !== undefined);
+    expect(normal.slice(0, 3)).toEqual([1, 2, 3]);
+  });
+
+  it('xuất phát ở checkpoint gần nhất phía trước có ở độ khó đó', () => {
+    expect(world('challenge', 1).checkpointIndex).toBe(0);
+    expect(world('challenge', 2).checkpointIndex).toBe(2);
+    expect(world('normal', 1).checkpointIndex).toBe(1);
+  });
+
+  it('bản lưu: checkpoint theo độ khó; không mang từ dễ sang khó; bản 3 thành normal', () => {
+    let s = recordCheckpoint(defaultSave(), 'thorna', 3, 'story');
+    s = recordCheckpoint(s, 'thorna', 1, 'challenge');
+    const p = stageProgress(s, 'thorna');
+    expect(p.checkpointBy).toEqual({ story: 3, challenge: 1 });
+    expect(savedCheckpoint(p, ['story', 'normal', 'challenge'])).toBe(3);
+    expect(savedCheckpoint(p, ['challenge'])).toBe(1);
+    expect(savedCheckpoint(p, ['normal', 'challenge'])).toBe(1);
+    expect(recordCheckpoint(s, 'thorna', 2, 'story')).toBe(s);
+    const v3 = parseSave({ version: 3, progress: { stages: { thorna: { checkpoint: 2 } } } });
+    expect(stageProgress(v3, 'thorna').checkpointBy).toEqual({ normal: 2 });
+    expect(stageSaveSetup(s, 'thorna', 'thorna', ['challenge']).startCheckpoint).toBe(1);
+  });
+
+  it('đếm chết liên tiếp: chạm checkpoint thì về 0; rơi hố còn máu không tính', () => {
+    const w = world('normal');
+    die(w);
+    die(w);
+    expect(w.deathStreak).toBe(2);
+    walk(w, 80); // qua CP1
+    expect(w.checkpointIndex).toBe(1);
+    expect(w.deathStreak).toBe(0);
+    // Từ CP3 (cột 24) tới hố (cột 30–31) không còn checkpoint nào.
+    const near = world('normal', 3);
+    die(near);
+    let fell = false;
+    for (let i = 0; i < 400 && !fell; i += 1)
+      fell = near.step({ ...IDLE_INPUT, moveX: 1 }).fellInPit;
+    expect(fell).toBe(true);
+    expect(near.deathStreak).toBe(1);
+    die(near);
+    expect(near.deathStreak).toBe(2);
+    expect(near.deaths).toBe(2);
+  });
+
+  it('câu gợi ý theo độ khó, thêm vũ khí khắc chế khi có; dữ liệu đủ câu cho mọi độ khó', () => {
+    const hint = config.ui.difficultyHint;
+    expect(hint.deaths).toBe(3);
+    expect(difficultyHintText(hint, 'challenge')).toMatch(/Thường ở màn Chuẩn bị/);
+    expect(difficultyHintText(hint, 'normal')).toMatch(/Cốt truyện/);
+    expect(difficultyHintText(hint, 'story', 'Vine Lash')).toMatch(/Xưởng.*Hoặc thử Vine Lash\./);
+    const raw = structuredClone(loadData()) as Record<string, Record<string, unknown>>;
+    delete (raw.ui!.difficultyHint as { lines: Record<string, string> }).lines.story;
+    expect(() => parseGameConfig(raw)).toThrow('thiếu câu cho độ khó "story"');
+  });
+
+  it('Tiled: thuộc tính difficulties của checkpoint', () => {
+    const map = {
+      orientation: 'orthogonal',
+      infinite: false,
+      width: 4,
+      height: 3,
+      tilewidth: 16,
+      tileheight: 16,
+      tilesets: [{ firstgid: 1, tiles: [] }],
+      layers: [
+        {
+          type: 'tilelayer',
+          name: 'ground',
+          width: 4,
+          height: 3,
+          data: [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1],
+        },
+        {
+          type: 'objectgroup',
+          name: 'entities',
+          objects: [
+            { id: 1, type: 'spawn', x: 8, y: 31, point: true },
+            {
+              id: 2,
+              type: 'checkpoint',
+              x: 40,
+              y: 31,
+              point: true,
+              properties: [{ name: 'difficulties', type: 'string', value: 'story, normal' }],
+            },
+            { id: 3, type: 'checkpoint', x: 56, y: 31, point: true },
+          ],
+        },
+      ],
+    };
+    expect(layoutFromTiled(map, t).checkpoints).toEqual([
+      { col: 2, row: 1, difficulties: ['story', 'normal'] },
+      { col: 3, row: 1 },
+    ]);
   });
 });

@@ -51,12 +51,12 @@ describe('dữ liệu lưu', () => {
     expect(recordBossDefeated(s4, 'thorna')).toBe(s4);
     expect(addRewards(s4, { exp: -5, coreBits: 0 })).toBe(s4);
     // Hàm thuần: bản gốc không bị sửa.
-    expect(stageProgress(defaultSave(), 'a')).toEqual({ checkpoint: 0, secrets: [] });
+    expect(stageProgress(defaultSave(), 'a')).toEqual({ checkpointBy: {}, secrets: [] });
   });
 
   it('hoàn thành màn: về đầu màn, giữ bí mật', () => {
     const s = recordSecret(recordCheckpoint(defaultSave(), 'a', 2), 'a', 'x');
-    expect(stageProgress(completeStage(s, 'a'), 'a')).toEqual({ checkpoint: 0, secrets: ['x'] });
+    expect(stageProgress(completeStage(s, 'a'), 'a')).toEqual({ checkpointBy: {}, secrets: ['x'] });
   });
 
   it('hỏng từng phần thì phần đó về mặc định', () => {
@@ -69,7 +69,7 @@ describe('dữ liệu lưu', () => {
     });
     expect(s.revision).toBe(0);
     expect(s.progress.bossesDefeated).toEqual(['thorna']);
-    expect(s.progress.stages.a).toEqual({ checkpoint: 0, secrets: [] });
+    expect(s.progress.stages.a).toEqual({ checkpointBy: {}, secrets: [] });
     expect(s.character).toEqual({ ...defaultSave().character, exp: 50, weapons: [] });
     expect(s.inventory.coreBits).toBe(0);
     expect(parseSave('rác')).toEqual(defaultSave());
@@ -185,11 +185,14 @@ describe('lưu tiến trình trong màn', () => {
     saver.exit(run);
     expect(m.data.inventory.coreBits).toBe(9);
     expect(m.data.playTimeSec).toBeCloseTo(3 * DT);
-    expect(stageProgress(m.data, 'thorna')).toEqual({ checkpoint: 1, secrets: ['nano_cell'] });
+    expect(stageProgress(m.data, 'thorna')).toEqual({
+      checkpointBy: { normal: 1 },
+      secrets: ['nano_cell'],
+    });
     saver.step(ev({ bossDefeated: true, weaponGranted: 'Vine Lash' }), run, DT);
     expect(m.data.progress.bossesDefeated).toEqual(['thorna']);
     expect(m.data.character.weapons).toEqual(['Vine Lash']);
-    expect(stageProgress(m.data, 'thorna').checkpoint).toBe(0);
+    expect(stageProgress(m.data, 'thorna').checkpointBy).toEqual({});
   });
 
   it('vào lại màn: đúng checkpoint, có vũ khí đã nhận, bí mật đã nhặt không hiện lại', () => {

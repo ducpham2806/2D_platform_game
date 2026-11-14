@@ -12,6 +12,11 @@ export interface Cell {
   row: number;
 }
 
+/** Checkpoint; `difficulties` (chỉ bản đồ Tiled): chỉ có ở các độ khó này (GDD 11 mục 2.4). */
+export interface CheckpointSpawn extends Cell {
+  difficulties?: readonly string[];
+}
+
 export interface EnemySpawn extends Cell {
   /** id trong enemies.json. */
   enemy: string;
@@ -77,7 +82,7 @@ export interface StageLayout {
   /** Cửa phòng boss: một cột, nhiều hàng. */
   gate?: { col: number; rows: number[] };
   /** Theo thứ tự đi qua (cột tăng dần). */
-  checkpoints: Cell[];
+  checkpoints: CheckpointSpawn[];
   vines: VineSpawn[];
   rooms: RoomSpawn[];
   secrets: SecretSpawn[];

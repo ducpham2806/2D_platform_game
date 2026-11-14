@@ -16,8 +16,12 @@
 export const SAVE_VERSION = 4;
 
 export interface StageProgress {
-  /** Checkpoint đã lưu (số thứ tự từ 1; 0 = điểm xuất phát). */
-  checkpoint: number;
+  /**
+   * Checkpoint xa nhất đã chạm theo từng độ khó (số thứ tự từ 1 trên danh sách đầy đủ; không có
+   * = điểm xuất phát). Bản 4 (GDD 11 mục 2.4): không mang tiến độ từ độ khó dễ sang khó. Bản 3
+   * có một số `checkpoint` (khi đó luôn chơi Thường) đọc lên thành `checkpointBy.normal`.
+   */
+  checkpointBy: Record<string, number>;
   /** Vật phẩm bí mật đã nhặt (theo `item` trên bản đồ). */
   secrets: string[];
 }
@@ -154,7 +158,10 @@ function parseStages(v: unknown): Record<string, StageProgress> {
   if (!isRecord(v)) return out;
   for (const [id, raw] of Object.entries(v)) {
     if (!isRecord(raw)) continue;
-    out[id] = { checkpoint: count(raw.checkpoint), secrets: names(raw.secrets) };
+    let checkpointBy = parseLevels(raw.checkpointBy);
+    const legacy = count(raw.checkpoint);
+    if (!isRecord(raw.checkpointBy) && legacy > 0) checkpointBy = { normal: legacy };
+    out[id] = { checkpointBy, secrets: names(raw.secrets) };
   }
   return out;
 }
@@ -200,7 +207,7 @@ export function parseSave(raw: unknown): SaveData {
 }
 
 export function stageProgress(save: SaveData, stageId: string): StageProgress {
-  return save.progress.stages[stageId] ?? { checkpoint: 0, secrets: [] };
+  return save.progress.stages[stageId] ?? { checkpointBy: {}, secrets: [] };
 }
 
 function withStage(save: SaveData, stageId: string, next: StageProgress): SaveData {
@@ -210,11 +217,28 @@ function withStage(save: SaveData, stageId: string, next: StageProgress): SaveDa
   };
 }
 
-/** Lưu checkpoint của màn; chỉ tiến, không lùi (giống luật checkpoint trong màn). */
-export function recordCheckpoint(save: SaveData, stageId: string, index: number): SaveData {
+/** Lưu checkpoint của màn ở độ khó `difficulty`; chỉ tiến, không lùi (như luật checkpoint trong màn). */
+export function recordCheckpoint(
+  save: SaveData,
+  stageId: string,
+  index: number,
+  difficulty = 'normal',
+): SaveData {
   const cur = stageProgress(save, stageId);
-  if (index <= cur.checkpoint) return save;
-  return withStage(save, stageId, { ...cur, checkpoint: index });
+  if (index <= (cur.checkpointBy[difficulty] ?? 0)) return save;
+  return withStage(save, stageId, {
+    ...cur,
+    checkpointBy: { ...cur.checkpointBy, [difficulty]: index },
+  });
+}
+
+/**
+ * Checkpoint xuất phát khi vào màn: xa nhất trong các độ khó `allowed` (độ khó đang chọn và các
+ * độ khó khó hơn); không có `allowed` thì xét mọi độ khó.
+ */
+export function savedCheckpoint(progress: StageProgress, allowed?: readonly string[]): number {
+  const ids = allowed ?? Object.keys(progress.checkpointBy);
+  return Math.max(0, ...ids.map((id) => progress.checkpointBy[id] ?? 0));
 }
 
 export function recordSecret(save: SaveData, stageId: string, item: string): SaveData {
@@ -226,8 +250,8 @@ export function recordSecret(save: SaveData, stageId: string, item: string): Sav
 /** Hoàn thành màn (hạ boss): lần sau vào lại từ đầu màn; vật phẩm bí mật vẫn giữ. */
 export function completeStage(save: SaveData, stageId: string): SaveData {
   const cur = stageProgress(save, stageId);
-  if (cur.checkpoint === 0) return save;
-  return withStage(save, stageId, { ...cur, checkpoint: 0 });
+  if (Object.keys(cur.checkpointBy).length === 0) return save;
+  return withStage(save, stageId, { ...cur, checkpointBy: {} });
 }
 
 /** Tiến trình độ khó của màn chiến dịch `campaign`. */

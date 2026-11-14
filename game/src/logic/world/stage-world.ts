@@ -18,7 +18,7 @@ import {
   vanguardOf,
 } from '../rpg/build';
 import { BuildRuntime } from '../rpg/build-runtime';
-import { scaleReward } from '../difficulty/difficulty';
+import { checkpointActive, scaleReward, startCheckpointFor } from '../difficulty/difficulty';
 import { playerParams } from '../player/player-params';
 import { PlayerPhysics } from '../player/player-physics';
 import { createRng, type Rng } from '../rng';
@@ -106,6 +106,11 @@ export class StageWorld {
   checkpointIndex = 0;
   /** Số lần rơi hố còn sống (không tính vào `deaths`). */
   falls = 0;
+  /**
+   * Số lần chết liên tiếp kể từ checkpoint gần nhất (gợi ý NOVA, GDD 11 mục 2.5). Không tính rơi
+   * hố còn máu; chạm checkpoint hoặc vào đấu trường boss thì về 0. Khác `deaths` (màn Kết quả).
+   */
+  deathStreak = 0;
   /** Thời gian của lượt chơi màn (giây, tính cả lúc hit-stop và chờ hồi sinh; màn Kết quả). */
   elapsedSec = 0;
 
@@ -146,8 +151,13 @@ export class StageWorld {
     this.map = this.layout.map;
     this.rng = createRng(setup.seed);
     this.start = standPoint(this.layout.spawn, t);
-    const cps = this.layout.checkpoints;
-    this.checkpointIndex = Math.max(0, Math.min(cps.length, setup.startCheckpoint ?? 0));
+    // Checkpoint đã lưu là chỉ số trên danh sách đầy đủ; xuất phát ở checkpoint gần nhất phía
+    // trước có ở độ khó này (GDD 11 mục 2.4).
+    this.checkpointIndex = startCheckpointFor(
+      this.layout.checkpoints,
+      setup.difficulty.id,
+      Math.max(0, setup.startCheckpoint ?? 0),
+    );
     this.checkpoint = this.checkpointPoint();
     this.safe = this.checkpoint;
     // Sát thương gốc tính ở cấp 1, nên hệ số công = công hiện tại / công cấp 1.
@@ -428,6 +438,7 @@ export class StageWorld {
     if (pe.died || pl.state === 'dead') {
       ev.playerDied = true;
       this.deaths += 1;
+      this.deathStreak += 1;
       this.pitReturn = false;
       this.respawnTimer = mech.respawnSec;
     }
@@ -500,10 +511,13 @@ export class StageWorld {
     for (let i = this.checkpointIndex; i < cps.length; i += 1) {
       const cp = cps[i]!;
       if (pl.centerX < (cp.col + 0.5) * t || !pl.grounded) break;
+      // Checkpoint không có ở độ khó này: đi qua không ghi.
+      if (!checkpointActive(cp, this.setup.difficulty.id)) continue;
       this.checkpointIndex = i + 1;
       ev.checkpoint = i + 1;
     }
     if (ev.checkpoint !== undefined) {
+      this.deathStreak = 0;
       this.checkpoint = this.checkpointPoint();
       this.safe = this.checkpoint;
     }
@@ -560,6 +574,7 @@ export class StageWorld {
       this.boss?.activate();
       this.checkpoint = { x: (this.arena.first + 1.5) * t, y: this.start.y };
       ev.gateClosed = true;
+      this.deathStreak = 0;
     } else if (this.phase === 'won' && pl.box.x + pl.box.w < this.gateCol * t) {
       this.phase = 'explore';
       this.boss = this.makeBoss();

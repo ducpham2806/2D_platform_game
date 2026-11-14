@@ -309,6 +309,11 @@ export function checkDesignInvariants(config: GameConfig): string[] {
     }
   }
 
+  // Mỗi độ khó có câu gợi ý của NOVA (GDD 11 mục 2.5).
+  for (const d of config.difficulties)
+    if (config.ui.difficultyHint.lines[d.id] === undefined)
+      errors.push(`ui.difficultyHint.lines: thiếu câu cho độ khó "${d.id}"`);
+
   // Hệ số thưởng trong economy.json phải khớp difficulties.json.
   const economy = config.raw.economy;
   if (isObject(economy) && isObject(economy.difficultyRewardMul)) {

@@ -71,3 +71,17 @@ export function startCheckpointFor(
     if (checkpointActive(cps[i - 1]!, difficultyId)) return i;
   return 0;
 }
+
+/**
+ * Câu gợi ý của NOVA sau `deaths` lần chết liên tiếp (GDD 11 mục 2.5). `counterWeapon`: tên vũ khí
+ * khắc chế nên gợi ý thêm (đang ở phòng boss, đã có mà lúc chết không cầm); không có thì bỏ.
+ */
+export function difficultyHintText(
+  hint: { lines: Readonly<Record<string, string>>; weapon: string },
+  difficultyId: string,
+  counterWeapon?: string,
+): string {
+  const line = hint.lines[difficultyId] ?? '';
+  if (!counterWeapon) return line;
+  return `${line} ${hint.weapon.replace('{weapon}', counterWeapon)}`.trim();
+}

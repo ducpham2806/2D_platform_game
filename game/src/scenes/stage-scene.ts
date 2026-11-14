@@ -24,7 +24,11 @@ import {
 import { DialogueRunner } from '../logic/dialogue/dialogue-runner';
 import { buildHud } from '../logic/hud/hud-model';
 import { buildStageResult } from '../logic/result/stage-result';
-import { DEFAULT_DIFFICULTY, difficultyUnlocked } from '../logic/difficulty/difficulty';
+import {
+  DEFAULT_DIFFICULTY,
+  difficultyHintText,
+  difficultyUnlocked,
+} from '../logic/difficulty/difficulty';
 import { type BuildStats, computeBuild, EMPTY_BUILD } from '../logic/rpg/build';
 import { spentPoints } from '../logic/rpg/skill-tree';
 import { totalSkillPoints, WorkshopPanel, workshopUnlocked } from '../workshop/workshop-panel';
@@ -109,6 +113,16 @@ export class StageScene extends Phaser.Scene {
   private lockedAtStart: string[] = [];
   /** id màn chiến dịch khi boss của phòng này là boss chiến dịch của màn (ghi `cleared`). */
   private campaignBoss: string | undefined;
+  /**
+   * Gợi ý của NOVA sau nhiều lần chết liên tiếp (GDD 11 mục 2.5): hộp riêng, tối đa một lần mỗi
+   * lượt vào màn; chờ khi hộp hướng dẫn đang có lời.
+   */
+  private deathHint = {
+    box: undefined as TutorialBox | undefined,
+    used: false,
+    pending: undefined as string | undefined,
+    until: 0,
+  };
   /** Hội thoại đang mở: trận đứng yên tới khi đóng (người chơi bỏ qua được bất cứ lúc nào). */
   private dialogue: { runner: DialogueRunner; moment: BossDialogueMoment } | undefined;
   private dialogueBox?: DialogueBox;
@@ -178,7 +192,11 @@ export class StageScene extends Phaser.Scene {
     const tuned = tunedData(base);
     // Màn chơi thử (cổng Prototype) luôn bắt đầu như nhau để số liệu các phiên so sánh được.
     const save = this.def.playtest ? undefined : getSave(this);
-    const fromSave = save ? stageSaveSetup(save.data, this.def.id, bossId) : {};
+    // Checkpoint chỉ mang từ độ khó đang chọn hoặc khó hơn (thứ tự trong difficulties.json).
+    const allowed = config.difficulties
+      .slice(config.difficulties.findIndex((d) => d.id === difficulty.id))
+      .map((d) => d.id);
+    const fromSave = save ? stageSaveSetup(save.data, this.def.id, bossId, allowed) : {};
     this.savedCoreBits = save?.data.inventory.coreBits ?? 0;
     const defeated = save?.data.progress.bossesDefeated ?? [];
     const storyBosses = new Set(config.stages.stages.map((s) => s.boss));
@@ -227,12 +245,10 @@ export class StageScene extends Phaser.Scene {
     this.difficultyName = difficulty.name;
     this.lockedAtStart = save && campaignId ? this.lockedDifficulties(save, campaignId) : [];
     this.saver = save
-      ? new StageSave(
-          save,
-          this.def.id,
-          bossId,
-          campaignId ? { campaign: campaignId, id: difficulty.id } : undefined,
-        )
+      ? new StageSave(save, this.def.id, bossId, {
+          difficulty: difficulty.id,
+          ...(campaignId ? { clearsCampaign: campaignId } : {}),
+        })
       : undefined;
     this.save = save;
     if (save) {
@@ -304,6 +320,13 @@ export class StageScene extends Phaser.Scene {
       tut ? () => tut.manager.isEnabled : undefined,
       save !== undefined && workshopUnlocked(save, config),
     );
+    // Màn chơi thử (không bản lưu) không gợi ý, để số liệu các phiên so sánh được.
+    this.deathHint = {
+      box: save ? new TutorialBox(this) : undefined,
+      used: false,
+      pending: undefined,
+      until: 0,
+    };
     if (DEBUG) {
       this.input.keyboard?.on('keydown-T', () =>
         world.player.applyHit(DEBUG_HIT_DAMAGE, world.player.centerX + world.player.facing * 8),
@@ -355,6 +378,7 @@ export class StageScene extends Phaser.Scene {
       this.react(ev, world);
       this.checkLevelUp(ev, world);
       this.saver?.step(ev, world, FIXED_STEP_MS / 1000);
+      this.checkDeathHint(ev, world);
       this.stepTutorial(ev, world);
       this.playtest?.record(ev, FIXED_STEP_MS / 1000);
       this.tickResult(ev, world);
@@ -385,6 +409,7 @@ export class StageScene extends Phaser.Scene {
     if (view)
       this.tutorial?.box.show(view.speaker, formatGlyphs(view.text, ctx), view.hintLevel > 0);
     else this.tutorial?.box.hide();
+    this.drawDeathHint(time, talk !== undefined || view !== undefined || !!this.result?.isOpen);
     input.setTouchHighlight(view?.highlight);
     this.hud?.hint.setText(
       formatGlyphs(
@@ -574,6 +599,38 @@ export class StageScene extends Phaser.Scene {
             },
       }),
     );
+  }
+
+  /** Chết đủ số lần liên tiếp thì chuẩn bị câu gợi ý của NOVA (GDD 11 mục 2.5). */
+  private checkDeathHint(ev: WorldEvents, world: StageWorld): void {
+    const hint = this.deathHint;
+    if (!ev.playerDied || hint.used || !hint.box || this.save?.data.tutorial.off) return;
+    const config = getConfig(this);
+    const data = config.ui.difficultyHint;
+    if (world.deathStreak < data.deaths) return;
+    hint.used = true;
+    // Vũ khí khắc chế: đang ở phòng boss, đã có, mà lúc chết không cầm nó.
+    const weak = world.boss?.data.weakness;
+    const counter =
+      world.phase === 'boss' && weak && world.loadout.has(weak) && world.loadout.current.name !== weak
+        ? weak
+        : undefined;
+    hint.pending = difficultyHintText(data, this.difficultyId, counter);
+  }
+
+  /** Hiện gợi ý khi không có hội thoại, lời hướng dẫn hay màn Kết quả; tự tắt sau `showSec`. */
+  private drawDeathHint(time: number, busy: boolean): void {
+    const hint = this.deathHint;
+    if (!hint.box) return;
+    if (hint.pending && !busy) {
+      const speaker = getConfig(this).ui.dialogue.speakers.nova ?? 'NOVA';
+      hint.box.show(speaker, hint.pending, true);
+      hint.until = time + getConfig(this).ui.difficultyHint.showSec * 1000;
+      hint.pending = undefined;
+    } else if (hint.until > 0 && (time >= hint.until || busy)) {
+      hint.box.hide();
+      hint.until = 0;
+    }
   }
 
   /** Id các độ khó còn khóa ở màn chiến dịch `campaign` theo bản lưu. */

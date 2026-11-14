@@ -12,7 +12,7 @@ Producer đề xuất 11 Story nhỏ. Gộp còn 6, vì một số phần (dữ 
 | --- | --- | --- | --- | --- |
 | ST-10-01 | Lõi: dữ liệu độ khó, máu boss × enemyHp, thưởng × rewardMul, bản lưu 4 | | 1,5 ngày | DONE |
 | ST-10-02 | Màn Chuẩn bị (HTML), nối StageScene, Kết quả, menu tạm dừng; thưởng boss theo độ khó; nâng bản lưu 3 → 4; cờ `unlock` | 01 | 2 ngày | DONE |
-| ST-10-03 | Checkpoint theo độ khó (Tiled `difficulties`, tiến độ theo độ khó); gợi ý NOVA sau 3 lần chết | 02 | 1,5 ngày | |
+| ST-10-03 | Checkpoint theo độ khó (Tiled `difficulties`, tiến độ theo độ khó); gợi ý NOVA sau 3 lần chết | 02 | 1,5 ngày | DONE |
 | ST-10-04 | Khung bản Thử thách (`challenge`, `dataFor`, kiểm tra); 4 kẻ địch Stage 1 và Golem; chấm báo nhịp; kiểm không chết một đòn | 01 | 2,5 ngày | |
 | ST-10-05 | Thorna: đòn Rễ Đuổi (logic, kiểm tra telegraph, vẽ) | 04 | 1,5 ngày | |
 | ST-10-06 | QA: bot không né ở 3 độ khó, `gate-flow`, chạy thử Chromium | tất cả | 0,5 ngày | |
@@ -48,15 +48,19 @@ Thứ tự: 01 → 02 → 03 → 04 → 05 → 06. Tổng khoảng 9,5 ngày.
   - `?unlock=1` mở Thử thách. Không lỗi console; `gate-flow` đạt.
   - Ảnh: `04-Dev-Plan/qa/ST-10-02/`.
 
-## ST-10-03: Checkpoint theo độ khó, gợi ý NOVA
+## ST-10-03: Checkpoint theo độ khó, gợi ý NOVA (DONE)
 
 - **Bối cảnh:** GDD 11 mục 2.4, 2.5.
 - **File:** `logic/stage/{layout,tiled}.ts` (thuộc tính `difficulties`), `logic/world/stage-world.ts` (lọc, bộ đếm chết liên tiếp), `logic/save/{save-data,stage-save}.ts` (`checkpointBy`), `03-Data/ui.json` (`difficultyHint`), `core/ui-config.ts`, `scenes/stage-scene.ts` (hộp gợi ý riêng).
 - **Tiêu chí:**
-  - [ ] AC-1: Checkpoint `difficulties: "story,normal"` không có ở Thử thách: đi qua không ghi, không hồi sinh ở đó.
-  - [ ] AC-2: Đạt CP3 ở Thường rồi vào Cốt truyện: xuất phát CP3; vào Thử thách: từ đầu màn (chưa đạt gì ở Thử thách). Đạt CP2 ở Thử thách rồi vào Thường: xuất phát CP2.
-  - [ ] AC-3: Bản lưu 3 có `checkpoint: 2` thành `checkpointBy.normal = 2`.
-  - [ ] AC-4: Chết 3 lần liên tiếp: một câu NOVA đúng độ khó, tự tắt sau 6 s; rơi hố không tính; chạm checkpoint hoặc cửa đấu trường đóng thì đếm lại; tắt hướng dẫn thì không hiện.
+  - [x] AC-1: Checkpoint `difficulties: "story,normal"` không có ở Thử thách: đi qua không ghi, không hồi sinh ở đó.
+  - [x] AC-2: Đạt CP3 ở Thường rồi vào Cốt truyện: xuất phát CP3; vào Thử thách: từ đầu màn (chưa đạt gì ở Thử thách). Đạt CP2 ở Thử thách rồi vào Thường: xuất phát CP2.
+  - [x] AC-3: Bản lưu 3 có `checkpoint: 2` thành `checkpointBy.normal = 2`.
+  - [x] AC-4: Chết 3 lần liên tiếp: một câu NOVA đúng độ khó, tự tắt sau 6 s; rơi hố không tính; chạm checkpoint hoặc cửa đấu trường đóng thì đếm lại; tắt hướng dẫn thì không hiện.
+- **Kết quả:**
+  - 6 test trong `tests/difficulty.test.ts`.
+  - Chạy thử Chromium phòng Thorna: chết 3 lần thì hiện đúng câu Thường hoặc Thử thách, tắt sau 6 s, không lỗi console. Ảnh ở `04-Dev-Plan/qa/ST-10-03/`.
+  - Chưa đặt checkpoint theo độ khó lên bản đồ thật (chờ cổng Prototype).
 
 ## ST-10-04: Bản Thử thách của kẻ địch Stage 1 và Golem
 
