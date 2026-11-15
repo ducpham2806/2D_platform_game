@@ -93,10 +93,11 @@ export function resolvePlayerHits(
       }
     }
     if (boss && !p.hitIds.has(BOSS_ID) && distToBox(x, y, boss.box) <= r) {
+      const before = boss.hp;
       if (boss.takeHit({ amount, weak: false, stunSec: 0 })) {
         p.hitIds.add(BOSS_ID);
         ev.hitBoss = true;
-        onBossDamage?.(p.weapon, amount, false);
+        onBossDamage?.(p.weapon, before - boss.hp, false);
       }
     }
   };
@@ -149,6 +150,12 @@ export function resolvePlayerHits(
       hitStop = Math.max(hitStop, chargedStop);
     }
     if (!p.alive || !boss || p.hitIds.has(BOSS_ID) || !overlaps(p, boss.box)) continue;
+    if (boss.shifting) {
+      // Boss bất tử để đổi pha (QB-31): đạn mất như trúng khiên, không sát thương, không choáng.
+      p.alive = false;
+      ev.blocked = true;
+      continue;
+    }
     const raw = outgoingDamage({
       base: p.damage,
       kindMul: p.kindMul,
@@ -158,9 +165,11 @@ export function resolvePlayerHits(
       ...weaknessOf(weapons, p.weapon),
     });
     const hit = { ...raw, amount: raw.amount * punish(p, boss.exposed) };
+    const before = boss.hp;
     if (boss.takeHit(hit)) {
       ev.hitBoss = true;
-      onBossDamage?.(p.weapon, hit.amount, hit.weak);
+      // Sát thương thật (đòn kẹp pha chỉ trừ tới ngưỡng, QB-31).
+      onBossDamage?.(p.weapon, before - boss.hp, hit.weak);
       if (hit.weak) {
         ev.weakHit = true;
         hitStop = Math.max(hitStop, weapons.hitStopSteps.weakness);

@@ -117,6 +117,11 @@ export class ProjectilePool {
     this.items = this.items.filter((p) => p.alive);
   }
 
+  /** Bỏ mọi viên thỏa `match` (vd. đạn boss khi boss đổi pha, QB-31). */
+  removeWhere(match: (p: Projectile) => boolean): void {
+    this.items = this.items.filter((p) => !match(p));
+  }
+
   clear(owner?: Projectile['owner']): void {
     this.items = owner ? this.items.filter((p) => p.owner !== owner) : [];
   }

@@ -418,6 +418,10 @@ export class StageWorld {
     // Boss hết máu vì đạn của Kai trong bước này thì thắng ngay, trước khi xét đòn lên Kai
     // (trước đây cùng bước Kai chết thì boss được dựng lại đầy máu).
     if (this.phase === 'boss' && this.boss?.settleDefeat()) this.onBossDefeated(ev);
+    // Boss vừa kẹp pha (QB-31): xóa đạn boss trước khi xét đòn lên Kai. Đạn kẻ địch thường có
+    // `source`, giữ nguyên.
+    if (this.boss?.takeShotClear())
+      this.pool.removeWhere((p) => p.owner === 'enemy' && p.source === undefined);
     resolveEnemyHits(
       this.pool,
       this.field?.active(pl) ?? [],

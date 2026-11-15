@@ -136,6 +136,31 @@ export interface BossAttacks {
   stalk?: StalkAttack;
 }
 
+/** Luật chung mọi boss (`bosses.json → rules`; QB-14, QB-31). */
+export interface BossRules {
+  /** Hết choáng do điểm yếu thì chừng này giây không choáng lại. */
+  weakStunCooldownSec: number;
+  /** Một đòn vượt từ hai ngưỡng pha: kẹp máu, bất tử và đứng yên chừng này giây, xóa đạn boss. */
+  phaseShiftSec: number;
+}
+
+/** Khóa ở gốc `bosses.json` không phải boss. */
+const NOT_BOSS = 'rules';
+
+export function parseBossRules(value: unknown): BossRules {
+  const r = obj(value, 'bosses.rules');
+  const phaseShiftSec = num(r.phaseShiftSec, 'bosses.rules.phaseShiftSec', { min: 0 });
+  // Bất tử lâu thì người chơi tưởng đạn không trúng (GDD 9: không khóa người chơi lâu).
+  if (phaseShiftSec > 2)
+    throw new ConfigError(`bosses.rules.phaseShiftSec: tối đa 2 giây (đang là ${phaseShiftSec})`);
+  return {
+    weakStunCooldownSec: num(r.weakStunCooldownSec, 'bosses.rules.weakStunCooldownSec', {
+      min: 0,
+    }),
+    phaseShiftSec,
+  };
+}
+
 export interface BossData {
   id: string;
   name: string;
@@ -155,6 +180,7 @@ export interface BossData {
   walk?: { speedTilesPerSec: number; keepDistanceTiles: number };
   phases: BossPhaseData[];
   attacks: BossAttacks;
+  rules: BossRules;
 }
 
 /** Dữ liệu một đòn; ném lỗi nếu đòn có trong danh sách pha mà thiếu dữ liệu. */
@@ -279,7 +305,7 @@ function parseStalk(v: Json, p: string): StalkAttack {
   };
 }
 
-function parseBoss(id: string, value: unknown, p = `bosses.${id}`): BossData {
+function parseBoss(id: string, value: unknown, rules: BossRules, p = `bosses.${id}`): BossData {
   const b = obj(value, p);
   const raw = obj(b.attacks, `${p}.attacks`);
   const attacks: BossAttacks = {};
@@ -343,6 +369,7 @@ function parseBoss(id: string, value: unknown, p = `bosses.${id}`): BossData {
     minTelegraphSec: num(b.minTelegraphSec, `${p}.minTelegraphSec`, { min: 0 }),
     phases,
     attacks,
+    rules,
   };
   if (b.walk !== undefined) {
     const w = obj(b.walk, `${p}.walk`);
@@ -360,9 +387,10 @@ function parseBoss(id: string, value: unknown, p = `bosses.${id}`): BossData {
  */
 export function parseBossChallenges(value: unknown): Record<string, BossData> {
   const root = obj(value, 'bosses');
+  const rules = parseBossRules(root[NOT_BOSS]);
   const out: Record<string, BossData> = {};
   for (const [id, boss] of Object.entries(root)) {
-    if (id.startsWith('_')) continue;
+    if (id.startsWith('_') || id === NOT_BOSS) continue;
     const raw = obj(boss, `bosses.${id}`);
     if (raw.challenge === undefined) continue;
     const p = `bosses.${id}.challenge`;
@@ -370,17 +398,18 @@ export function parseBossChallenges(value: unknown): Record<string, BossData> {
     if ('id' in patch) throw new ConfigError(`${p}.id: bản Thử thách không được đổi id`);
     const base: Json = { ...raw };
     delete base.challenge;
-    out[id] = parseBoss(id, deepMerge(base, patch), p);
+    out[id] = parseBoss(id, deepMerge(base, patch), rules, p);
   }
   return out;
 }
 
 export function parseBosses(value: unknown): Record<string, BossData> {
   const root = obj(value, 'bosses');
+  const rules = parseBossRules(root[NOT_BOSS]);
   const out: Record<string, BossData> = {};
   for (const [id, boss] of Object.entries(root)) {
-    if (id.startsWith('_')) continue;
-    out[id] = parseBoss(id, boss);
+    if (id.startsWith('_') || id === NOT_BOSS) continue;
+    out[id] = parseBoss(id, boss, rules);
   }
   return out;
 }

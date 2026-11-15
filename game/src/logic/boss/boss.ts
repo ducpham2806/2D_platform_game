@@ -49,6 +49,12 @@ export class Boss {
   private timer = 0;
   private telegraphTotal = 0;
   private stun = 0;
+  /** Hồi choáng còn lại (QB-14): hết choáng thì chừng này giây không choáng lại. */
+  private stunCooldown = 0;
+  /** Bất tử khi kẹp pha (QB-31), giây còn lại. */
+  private shift = 0;
+  /** Vừa kẹp pha: StageWorld cần xóa đạn boss (`takeShotClear`). */
+  private shotClear = false;
   private cursor = 0;
   private shotsLeft = 0;
   private rootsSpawned = 0;
@@ -104,6 +110,23 @@ export class Boss {
     return this.stun > 0 || this.state === 'stunned';
   }
 
+  /** Đang bất tử để đổi pha sau khi kẹp máu (QB-31): đạn của Kai bị chặn. */
+  get shifting(): boolean {
+    return this.shift > 0;
+  }
+
+  /** Giây hồi choáng còn lại (QB-14). */
+  get stunCooldownSec(): number {
+    return this.stunCooldown;
+  }
+
+  /** Trả true một lần sau khi kẹp pha: người gọi xóa đạn boss trong pool (QB-31). */
+  takeShotClear(): boolean {
+    const clear = this.shotClear;
+    this.shotClear = false;
+    return clear;
+  }
+
   /** Bắt đầu trận (người chơi vào đấu trường). */
   activate(): void {
     if (this.state === 'waiting') this.enter('idle', this.data.idleSec);
@@ -121,12 +144,40 @@ export class Boss {
     return true;
   }
 
+  /**
+   * Nhận một đòn. Trả false khi đòn không vào (chưa đấu, đã chết, đang bất tử đổi pha).
+   * - QB-31: máu sau đòn rơi vào pha cách pha đang chơi từ 2 trở lên thì kẹp ở ngưỡng kết thúc pha
+   *   đang chơi (không cao hơn máu hiện có), bất tử `phaseShiftSec`, bỏ đòn đang dở, xóa đạn boss.
+   * - QB-14: choáng do điểm yếu chỉ bắt đầu khi không đang choáng và hết hồi choáng; trúng trong
+   *   lúc choáng không làm mới choáng. Sát thương ×điểm yếu không đổi.
+   */
   takeHit(hit: OutgoingHit): boolean {
-    if (this.state === 'dead' || this.state === 'waiting') return false;
-    this.hp = Math.max(0, this.hp - hit.amount);
+    if (this.state === 'dead' || this.state === 'waiting' || this.shift > 0) return false;
+    let hp = Math.max(0, this.hp - hit.amount);
+    const next = this.data.phases[this.phase];
+    if (next && this.phaseFor((hp / this.data.hp) * 100) >= this.phase + 2) {
+      hp = Math.min(this.hp, (next.untilHpPct / 100) * this.data.hp);
+      this.beginPhaseShift();
+    }
+    this.hp = hp;
     this.flash = 0.08;
-    if (hit.stunSec > 0) this.stun = Math.max(this.stun, hit.stunSec);
+    if (hit.stunSec > 0 && this.stun <= 0 && this.stunCooldown <= 0 && this.shift <= 0)
+      this.stun = hit.stunSec;
     return true;
+  }
+
+  private beginPhaseShift(): void {
+    this.shift = this.data.rules.phaseShiftSec;
+    this.shotClear = true;
+    this.stun = 0;
+    this.vx = 0;
+    this.attack = undefined;
+    this.telegraphProgress = 0;
+    this.rootXs = [];
+    this.rainCols = [];
+    this.stalkMarks = [];
+    this.stalkPending = [];
+    this.enter('idle', this.scaled(this.data.idleSec));
   }
 
   step(ctx: BossContext, pool: ProjectilePool, dt: number): BossEvents {
@@ -145,12 +196,21 @@ export class Boss {
       this.cursor = 0;
       ev.phaseChanged = true;
     }
-    if (this.stun > 0) {
-      this.stun = Math.max(0, this.stun - dt);
+    if (this.shift > 0) {
+      // Đổi pha sau khi kẹp máu: đứng yên, mọi đồng hồ đòn dừng (QB-31).
+      this.shift = Math.max(0, this.shift - dt);
       this.vx = 0;
       this.physics(dt, ev, pool);
       return ev;
     }
+    if (this.stun > 0) {
+      this.stun = Math.max(0, this.stun - dt);
+      if (this.stun === 0) this.stunCooldown = this.data.rules.weakStunCooldownSec;
+      this.vx = 0;
+      this.physics(dt, ev, pool);
+      return ev;
+    }
+    this.stunCooldown = Math.max(0, this.stunCooldown - dt);
     this.timer -= dt;
     this.think(ctx, pool, ev, dt);
     this.physics(dt, ev, pool);
