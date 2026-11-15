@@ -140,6 +140,8 @@ export interface BossAttacks {
 export interface BossRules {
   /** Hết choáng do điểm yếu thì chừng này giây không choáng lại. */
   weakStunCooldownSec: number;
+  /** Trần sát thương một đòn của boss màn n = base + perStage × (n − 1) (GDD 16 mục 2.2, Q5). */
+  maxAttackDamage: { base: number; perStage: number };
   /** Một đòn vượt từ hai ngưỡng pha: kẹp máu, bất tử và đứng yên chừng này giây, xóa đạn boss. */
   phaseShiftSec: number;
 }
@@ -161,7 +163,15 @@ export function parseBossRules(value: unknown): BossRules {
     throw new ConfigError(
       `bosses.rules.weakStunCooldownSec: tối đa 5 giây (đang là ${weakStunCooldownSec})`,
     );
-  return { weakStunCooldownSec, phaseShiftSec };
+  const cap = obj(r.maxAttackDamage, 'bosses.rules.maxAttackDamage');
+  return {
+    weakStunCooldownSec,
+    phaseShiftSec,
+    maxAttackDamage: {
+      base: num(cap.base, 'bosses.rules.maxAttackDamage.base', { min: 1 }),
+      perStage: num(cap.perStage, 'bosses.rules.maxAttackDamage.perStage', { min: 0 }),
+    },
+  };
 }
 
 export interface BossData {
@@ -415,6 +425,16 @@ export function parseBosses(value: unknown): Record<string, BossData> {
     out[id] = parseBoss(id, boss, rules);
   }
   return out;
+}
+
+/** Đòn mạnh nhất của boss (kể cả va chạm, sóng đất). */
+export function bossMaxDamage(boss: BossData): number {
+  return Math.max(boss.contactDamage, ...attackDamages(boss));
+}
+
+/** Trần sát thương một đòn của boss màn `stageIndex` (1 = Stage 1). */
+export function bossDamageCap(rules: BossRules, stageIndex: number): number {
+  return rules.maxAttackDamage.base + rules.maxAttackDamage.perStage * (stageIndex - 1);
 }
 
 /** Sát thương lớn nhất của từng đòn (kể cả sóng đất) để kiểm tra quy tắc. */

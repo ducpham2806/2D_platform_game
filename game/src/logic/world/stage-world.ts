@@ -24,6 +24,7 @@ import { PlayerPhysics } from '../player/player-physics';
 import { createRng, type Rng } from '../rng';
 import { type EnemyMarkers, layoutFromRows, type StageLayout } from '../stage/layout';
 import { Tile, type TileMap } from '../tilemap';
+import type { StageReward } from '../stage/stage-exp';
 import { EnemyField } from './enemy-field';
 import { type KaiDefense, resolveEnemyHits, resolvePlayerHits, type VanguardMods } from './hits';
 import { Barrier, LockedRoom, makeSecret, type Secret, standPoint, Vine } from './stage-mechanics';
@@ -48,6 +49,8 @@ export interface WorldSetup {
   mechanics: StageMechanics;
   /** Module Spike Guard: miễn nhiễm gai (M8 sẽ bật theo loadout). */
   spikeGuard?: boolean;
+  /** Hệ số thưởng kẻ địch thường của màn chiến dịch, trừ mini-boss (GDD 16 mục 2.1); không có thì 1. */
+  stageReward?: StageReward;
   /** Vào màn từ checkpoint đã lưu (số thứ tự từ 1; 0 hoặc không có = điểm xuất phát). */
   startCheckpoint?: number;
   /** Từ bản lưu (M11): vũ khí boss đã nhận, có ngay khi vào màn. */
@@ -214,6 +217,7 @@ export class StageWorld {
           setup.seed + 1,
           setup.difficulty.rewardMul,
           setup.mechanics.enemyRewardOncePerRun,
+          setup.stageReward,
         )
       : undefined;
     this.bossSpawn = layout.boss ? standPoint(layout.boss, t) : undefined;

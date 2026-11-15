@@ -19,6 +19,8 @@
       "armorCache": "head_mk1",
       "armorCacheRequiresWeapon": "Prism Beam",
       "coreBitBase": 225,
+      "expBudget": 332,
+      "enemyRewardMul": { "exp": 1, "coreBit": 1 },
       "segments": [
         "A",
         "B",
@@ -53,6 +55,8 @@
       "armorCache": "body_mk1",
       "armorCacheRequiresWeapon": "Frost Shard",
       "coreBitBase": 300,
+      "expBudget": 660,
+      "enemyRewardMul": { "exp": 1.8, "coreBit": 1.8 },
       "segments": [
         "A",
         "B",
@@ -87,6 +91,8 @@
       "armorCache": "arm_mk1",
       "armorCacheRequiresWeapon": "Gale Cutter",
       "coreBitBase": 375,
+      "expBudget": 1101,
+      "enemyRewardMul": { "exp": 3.0, "coreBit": 1.9 },
       "segments": [
         "A",
         "B",
@@ -121,6 +127,8 @@
       "armorCache": "leg_mk1",
       "armorCacheRequiresWeapon": "Quake Drill",
       "coreBitBase": 450,
+      "expBudget": 1602,
+      "enemyRewardMul": { "exp": 4.0, "coreBit": 2.0 },
       "segments": [
         "A",
         "B",
@@ -290,6 +298,26 @@
       "lengthTiles": 4,
       "platformWidthTiles": 2,
       "jumpBonus": 0.1
+    },
+    "minTelegraphSec": 0.5,
+    "laser": {
+      "_note": "Laser môi trường Stage 2 (01-GDD/16-Dac-ta-Stage2-4-nhap.md mục 3.3; dùng ở EP-15 ST-15-02). Mối nguy môi trường như gai: nhân damageTaken của độ khó, khiên C3 không chặn, không tính sượt đạn. Tia theo nhịp: chu kỳ periodSec, bật onSec, vạch báo warnSec trước khi bật (≥ mechanics.minTelegraphSec 0,5 s); mỗi lần bật trúng mỗi mục tiêu tối đa hitsPerActivation lần, bật lùi vuông góc knockbackTilesPerSec. Tia luôn bật xử lý như gai (về chỗ an toàn). hurtsEnemies: laser môi trường không gây sát thương kẻ địch (Q6). Mọi số là [PLACEHOLDER].",
+      "damage": 20,
+      "beamWidthPx": 4,
+      "knockbackTilesPerSec": 5,
+      "hitsPerActivation": 1,
+      "hurtsEnemies": false,
+      "pulse": { "periodSec": 3, "onSec": 1.2, "warnSec": 0.5 }
+    },
+    "mirror": {
+      "_note": "Gương 2 góc (45°, 135°), phản xạ cả hai mặt; đổi góc bằng đạn nạp từ toggleMinCharge trở lên (đạn thường bị gương hấp thụ), bỏ qua đạn trong lúc xoay rotateSec; tia dừng sau maxBounces lần phản xạ.",
+      "toggleMinCharge": "mid",
+      "rotateSec": 0.25,
+      "maxBounces": 4
+    },
+    "sensor": {
+      "_note": "Cảm biến quang: nhận tia liên tục holdSec thì mở cửa liên kết vĩnh viễn trong lượt chơi.",
+      "holdSec": 0.3
     },
     "minEnemySpawnTiles": 6,
     "enemyRewardOncePerRun": true,

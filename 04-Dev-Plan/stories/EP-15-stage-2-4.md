@@ -48,3 +48,57 @@
 
 - Sửa: `03-Data/bosses.json`, `game/src/core/boss-config.ts`, `game/src/logic/boss/boss.ts`, `game/src/logic/combat/projectiles.ts` (`removeWhere`), `game/src/logic/world/{hits,stage-world,world-types}.ts` (`bossImmune`), `game/src/scenes/stage/stage-renderer.ts` (trắng lúc bất tử), `game/tests/boss.test.ts`, `01-GDD/17-Quy-tac-bien.md` (QB-14, 31, mục 16), `01-GDD/16-Dac-ta-Stage2-4-nhap.md`, `01-GDD/13-Do-luong-MVP.md` (`dmg`), `04-Dev-Plan/05-Cong-Prototype.md`, `game/docs/quyet-dinh/ke-dich-boss.md`.
 - Tạo: `game/tests/boss-safety.test.ts`, `04-Dev-Plan/qa/ST-15-14/`.
+
+## ST-15-01a: Dữ liệu Stage 2 và khung kiểm tra chung
+
+- **Thuộc Epic:** EP-15 · **Ưu tiên:** P1 · **Trạng thái:** DONE (15/11/2026) · **Phụ thuộc:** không
+- **Bằng chứng:** [x] Config (`stages.json`, `weapons.json`, `bosses.json → rules`, `core/*-config.ts`) [x] Logic (Vitest `tests/stage-data.test.ts`, 14 test) [x] Không có thay đổi người chơi thấy (Stage 1 có `enemyRewardMul` = 1; Prism Beam chưa cấp được); `gate-flow` đạt
+
+### 1. User Story
+
+> **Là** người làm game, **tôi muốn** số liệu Stage 2–4 dùng chung (thưởng theo màn, cơ chế laser, Prism Beam) được nạp và kiểm lúc mở game, **để** các Story Stage 2 sau đó chỉ việc dùng số đã kiểm, và một chỉnh số sai (vũ khí quá mạnh, đòn chết một phát, EXP lệch cấp) bị chặn ngay.
+
+### 2. Bối cảnh (nhúng từ GDD 16 mục 2.1–2.3, 3.3, 3.7)
+
+- **Thưởng theo màn:** `expBudget` Stage 1–4 = 332 / 660 / 1.101 / 1.602 (mỗi màn +2 cấp theo `40 × L^1,4`: cấp 4 / 6 / 8 / 10, nằm trong cấp khuyến nghị màn kế). `enemyRewardMul {exp, coreBit}` = {1, 1} / {1,8, 1,8} / {3,0, 1,9} / {4,0, 2,0}. Thưởng kẻ địch = round(base × `enemyRewardMul` × `difficulty.rewardMul`), base > 0 thì ≥ 1; mini-boss, boss, rương không nhân. Σ EXP Thường của màn = `expBudget` ± 5% (kiểm khi màn có bản đồ).
+- **Boss:** đòn lớn nhất ≤ `18 + 2 × (n − 1)` (n là số màn): 18 / 20 / 22 / 24; Thử thách × 1,5 vẫn < 100.
+- **Vũ khí:** ngân sách = floor(`energyMax` / `energyCostOf28`) × `damageMul` × trúng mỗi lần, mục tiêu 14 ± 15%. Sức mạnh khắc chế = `damageMul` × trúng mỗi lần × `damageVsWeak` / `cooldownSec` ≥ 12/s. Vine Lash: 14 và 14,3/s; Prism Beam: 13,5 và 12,5/s.
+- **Cơ chế Stage 2:** `laser { damage 20, beamWidthPx 4, knockbackTilesPerSec 5, hitsPerActivation 1, hurtsEnemies false, pulse { periodSec 3, onSec 1,2, warnSec 0,5 } }`, `mirror { toggleMinCharge "mid", rotateSec 0,25, maxBounces 4 }`, `sensor { holdSec 0,3 }`.
+- **Prism Beam:** `beam` (`rangeTiles 12`, `widthPx 4`, `activeSec 0,12`, `cooldownSec 0,3`, `damageMul 1,5`, `maxBounces 3`), `energyCostOf28 3`.
+
+### 3. Quyết định
+
+- **Dời dữ liệu kẻ địch, mini-boss, boss Stage 2** (Gương Quang, Tháp Laser, Prism Sentinel, Lumen) sang Story làm hành vi của chúng (ST-15-06, 07, 09, 10). Lý do: `enemies.json`, `bosses.json` kiểm chặt hành vi và đòn (`laserTurret`, `beam`, `focus`, `bounces`, `bankShot` chưa có); thêm dữ liệu bây giờ buộc phải nới kiểm tra, trái quy tắc "dữ liệu mới phải có kiểm tra". Σ EXP Stage 2 vẫn kiểm được bằng hàm thuần với bảng 3.4 của GDD.
+- `stages.json`: `expBudget`, `enemyRewardMul` cho màn đã có đặc tả (1–4; không bắt buộc với 5–8). `mechanics.laser`, `mirror`, `sensor` nạp và kiểm, chưa dùng (ST-15-02).
+- `enemyRewardMul` nối luôn vào thưởng kẻ địch (`EnemyField`): một lần làm tròn trên tích `enemyRewardMul × rewardMul`. Stage 1 = 1 nên không đổi gì; phòng thử không thuộc màn chiến dịch dùng 1.
+- `weapons.json`: Prism Beam có `energyCostOf28 3` và `behavior.type = "beam"`. Loadout chỉ cho cầm vũ khí có hành vi **đã làm** (`sweep`); `beam` coi như chưa làm (không cấp được) tới ST-15-03.
+- Ngưỡng kiểm ở dữ liệu: `weapons.json → balance { budgetTarget 14, budgetTolerance 0.15, minCounterPerSec 12 }`; `bosses.json → rules.maxAttackDamage { base 18, perStage 2 }`.
+- Kiểm thêm lúc nạp (`checkDesignInvariants`): ngân sách và sức mạnh khắc chế của mọi vũ khí có hành vi; đòn boss ≤ trần theo màn (boss đã có dữ liệu, cả Thử thách × hệ số độ khó khó nhất vẫn < máu cấp 1); laser, gai, hố không chết một đòn ở độ khó khó nhất; cấp sau khi cộng dồn `expBudget` tới màn k nằm trong cấp khuyến nghị màn k+1; báo trước của laser theo nhịp ≥ 0,5 s.
+- Hàm thuần `stageExpTotal(enemies, mul, miniBossExp, bossExp)` và `checkStageExp` (± 5%), dùng khi màn có bản đồ (EP-17).
+
+### 3b. Sửa theo duyệt Technical Director + Producer (15/11, "Duyệt kèm sửa", 8 điểm đã áp)
+
+1. Mini-boss của màn không nhân `enemyRewardMul` (Golem, sau này Frost Titan đi qua `EnemyField`): `StageReward { mul, exempt: [campaign.miniBoss] }`; nếu không, Frost Titan cho 185 × 3,0 = 555 EXP.
+2. Hệ số tách `{exp, coreBit}`, nhân hệ số độ khó trước rồi làm tròn một lần (`base × (màn × độ khó)`, thứ tự cố định); lấy từ `def.campaign`, không phụ thuộc bản lưu.
+3. ST-15-10 (Lumen) thêm phụ thuộc 03: thắng Lumen khi Prism Beam chưa có hành vi thì không cấp được và bản lưu không ghi vũ khí.
+4. Màn đã có đặc tả (`expectedMin`) bắt buộc có `expBudget`, `enemyRewardMul`.
+5. `enemyRewardMul` ≥ 1 (GDD 16 mục 9).
+6. Sức mạnh khắc chế chỉ kiểm vũ khí có `cooldownSec` > 0 (Gale Cutter kiểm khi làm Terra).
+7. Báo trước tối thiểu của laser lấy từ dữ liệu (`mechanics.minTelegraphSec` 0,5), không viết cứng.
+8. GDD 16 mục 10: dòng 01a ghi phạm vi mới; 06, 07, 09, 10 nhận phần dữ liệu dời sang.
+
+- Gợi ý đã làm: `grant` dùng `PLAYABLE_BEHAVIORS`; đổi tên `ChargeLevel` ở cấu hình gương thành `MirrorCharge` (trùng tên trong `loadout.ts`). Ghi lại: ngân sách năng lượng kiểm ở `energyMax` gốc (28), Energy Cell tăng thêm là chủ ý.
+
+### 4. Tiêu chí nghiệm thu
+
+1. [x] Dữ liệu nạp được; mỗi trường mới có test lỗi dữ liệu.
+2. [x] Σ EXP Stage 2 theo bảng 3.4 (11, 18, 14, 25 mỗi con) + 110 + 241 = 660; lệch 11,4% thì báo lỗi, 3,8% thì đạt.
+3. [x] Thưởng kẻ địch: Lính Kén Stage 1 Cốt truyện 7 / 3, Stage 2 Thường 25 / 11, Stage 4 Thử thách 84 / 18; `EnemyField` nhân hệ số màn, Golem (mini-boss) không nhân.
+4. [x] Vine Lash 14 và 14,3/s, Prism Beam 13,5 và 12,5/s; `cooldownSec` 0,45 báo 8,3/s < 12; tiêu hao 2 báo vượt ngân sách.
+5. [x] Cộng dồn ra cấp 4 / 6 / 8 / 10; Stage 2 cho 3.000 EXP thì báo lỗi; trần đòn boss 18 / 20 / 22 / 24, Thorna 19 hoặc bản Thử thách va chạm 25 thì báo lỗi; laser 100 thì báo lỗi.
+6. [x] Prism Beam không cấp được; 541 test đạt, `gate-flow` đạt.
+
+### 5. File
+
+- Sửa: `03-Data/stages.json`, `03-Data/weapons.json`, `03-Data/bosses.json`, `game/src/core/game-config.ts` (`StageData`, kiểm tra), `game/src/core/stage-mechanics-config.ts`, `game/src/core/weapons-config.ts`, `game/src/core/boss-config.ts`, `game/src/logic/combat/loadout.ts`, `game/src/logic/world/{enemy-field,stage-world}.ts`, `game/src/scenes/stage-scene.ts` (truyền `stageReward`), `01-GDD/16-Dac-ta-Stage2-4-nhap.md` (bảng Story), `game/docs/quyet-dinh/man-choi.md`.
+- Tạo: `game/src/logic/stage/stage-exp.ts`, `game/tests/stage-data.test.ts`.

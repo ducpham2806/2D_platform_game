@@ -9,7 +9,7 @@ import {
 } from '../core/constants';
 import { wardenIds } from '../core/dialogue-config';
 import { enemiesFor } from '../core/enemy-config';
-import { bossFor, parseLevelRange } from '../core/game-config';
+import { bossFor, parseLevelRange, UNIT_REWARD_MUL } from '../core/game-config';
 import { getBus, getConfig, getInput, getSave } from '../core/phaser-services';
 import type { InputService } from '../input/input-service';
 import { FixedStep } from '../logic/fixed-step';
@@ -243,6 +243,16 @@ export class StageScene extends Phaser.Scene {
       // Thử thách: kẻ địch dùng bản Thử thách khi có (GDD 11 mục 2.6).
       enemies: enemiesFor(config.enemies, difficulty.newAttackPatterns),
       mechanics: config.stages.mechanics,
+      // Thưởng kẻ địch theo màn chiến dịch (GDD 16 mục 2.1; Stage 1 = 1), mini-boss không nhân.
+      // Theo `def.campaign`, không phụ thuộc bản lưu.
+      ...(campaign
+        ? {
+            stageReward: {
+              mul: campaign.enemyRewardMul ?? UNIT_REWARD_MUL,
+              exempt: [campaign.miniBoss],
+            },
+          }
+        : {}),
       ...fromSave,
       ...(rewardClaimed === undefined ? {} : { bossRewardClaimed: rewardClaimed }),
       level: this.levels

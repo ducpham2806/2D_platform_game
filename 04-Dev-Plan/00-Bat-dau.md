@@ -24,7 +24,7 @@ Mỗi việc: viết Story trước (`/story-readiness`, mẫu Story của Game 
 1. ~~Safe-area (QB-92)~~ xong (ST-11-01); bản thử đã khóa ở tag `gate-r1` và đăng Pages (14/11).
 2. EP-13 đo lường (`stories/EP-13-do-luong.md`): ~~ST-13-01 lõi~~, ~~ST-13-02a/b nối vào game~~, ~~ST-13-05a/b báo cáo cổng đủ chỉ số~~ xong (14/11; `npm run mvp-report`). ST-13-03, 04 chờ ADR-002; ST-13-06 sau 03–05.
 3. ~~Test khóa luật QB đã code (ST-QB-01), sửa QB-70…72 hộp chữ (EP-14 ST-14-08)~~ xong (15/11; tìm và sửa lỗi QB-24 Golem dựng lại).
-4. EP-15 (`stories/EP-15-stage-2-4.md`): ~~ST-15-14 boss an toàn (QB-14, QB-31)~~ xong (15/11); tiếp ST-15-01a (dữ liệu Stage 2), ST-15-02.
+4. EP-15 (`stories/EP-15-stage-2-4.md`): ~~ST-15-14 boss an toàn (QB-14, QB-31), ST-15-01a dữ liệu chung và khung kiểm tra~~ xong (15/11); tiếp ST-15-02 (laser, gương, cảm biến), rồi 15, 16.
 5. EP-12 AudioService (âm tạm lấy từ PR #9, ST-21-03); rồi phần EP-14 không đụng lớp nút cảm ứng (QB-90, QB-100, hộp chữ, chuỗi vi/en ST-21-06).
 6. EP-21: ST-21-02 smoke check (sau tag). ST-21-01 (QB-88) đã xong; ST-21-05 (hình vẽ bằng mã) bỏ.
 7. EP-22 đồ họa 2.5D (`stories/EP-22-do-hoa-25d.md`): ~~ST-22-01 demo~~ xong (14/11); tiếp ST-22-02 đo trên máy thật, ST-22-03 duyệt ADR-003.

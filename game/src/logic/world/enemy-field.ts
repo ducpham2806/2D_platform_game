@@ -6,7 +6,7 @@ import type { PlayerPhysics } from '../player/player-physics';
 import { createRng, type Rng } from '../rng';
 import type { EnemySpawn } from '../stage/layout';
 import type { TileMap } from '../tilemap';
-import { scaleReward } from '../difficulty/difficulty';
+import { enemyReward, NO_STAGE_REWARD, type StageReward } from '../stage/stage-exp';
 import { PickupPool } from './pickups';
 import type { WorldEvents } from './world-types';
 
@@ -38,6 +38,11 @@ export class EnemyField {
     private readonly rewardMul = 1,
     /** EXP, Core Bit chỉ nhận một lần cho mỗi kẻ địch trong lượt (stages.json → mechanics). */
     private readonly rewardOnce = false,
+    /**
+     * Hệ số thưởng theo màn (`stages.json → enemyRewardMul`, GDD 16 mục 2.1). Mini-boss của màn
+     * (`exempt`) không nhân: thưởng ghi thẳng trong dữ liệu.
+     */
+    private readonly stage: StageReward = NO_STAGE_REWARD,
   ) {
     const t = map.tileSize;
     this.rng = createRng(seed);
@@ -83,9 +88,11 @@ export class EnemyField {
       const paid = this.rewardOnce && this.rewarded.has(e.id);
       if (!paid) {
         this.rewarded.add(e.id);
-        this.exp += scaleReward(e.data.exp, this.rewardMul);
+        this.exp += enemyReward(e.data.exp, this.mulFor(e).exp, this.rewardMul);
       }
-      const coreBit = paid ? 0 : scaleReward(e.data.coreBit, this.rewardMul);
+      const coreBit = paid
+        ? 0
+        : enemyReward(e.data.coreBit, this.mulFor(e).coreBit, this.rewardMul);
       this.pickups.drop(e.centerX, e.centerY, coreBit, player.hp < player.maxHp, this.rng);
     }
   }
@@ -106,6 +113,10 @@ export class EnemyField {
       player.hp = Math.min(player.maxHp, player.hp + got.heal);
       ev.healed = player.hp - before;
     }
+  }
+
+  private mulFor(e: Enemy): { exp: number; coreBit: number } {
+    return this.stage.exempt.includes(e.data.id) ? { exp: 1, coreBit: 1 } : this.stage.mul;
   }
 
   /**

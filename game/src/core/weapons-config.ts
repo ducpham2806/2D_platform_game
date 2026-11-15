@@ -32,6 +32,42 @@ export interface SweepBehavior {
   cooldownSec: number;
 }
 
+/**
+ * Prism Beam (GDD 16 mục 3.7): tia tức thời theo `LaserPath`, xuyên mọi kẻ địch trên đường, phản xạ
+ * ở gương tối đa `maxBounces`. Dữ liệu có từ ST-15-01a; hành vi làm ở ST-15-03.
+ */
+export interface BeamBehavior {
+  type: 'beam';
+  rangeTiles: number;
+  widthPx: number;
+  damageMul: number;
+  activeSec: number;
+  cooldownSec: number;
+  maxBounces: number;
+}
+
+export type WeaponBehavior = SweepBehavior | BeamBehavior;
+
+/** Hành vi đã có code (Loadout cấp được); hành vi khác chỉ có dữ liệu. */
+export const PLAYABLE_BEHAVIORS: readonly WeaponBehavior['type'][] = ['sweep'];
+
+/**
+ * Số lần trúng một mục tiêu mỗi lần dùng (ngân sách năng lượng, GDD 16 mục 2.3). Roi và tia trúng
+ * mỗi mục tiêu một lần; Gale Cutter (đi và về, 2 lần) thêm khi có hành vi `boomerang`.
+ */
+export function hitsPerUse(_b: WeaponBehavior): number {
+  return 1;
+}
+
+/** Ngưỡng cân bằng vũ khí (`weapons.json → balance`). */
+export interface WeaponBalance {
+  /** Sát thương mỗi thanh năng lượng (đơn vị phát Arc Cannon) mục tiêu và độ lệch cho phép. */
+  budgetTarget: number;
+  budgetTolerance: number;
+  /** Sức mạnh khắc chế tối thiểu (sát thương/giây lên boss yếu). */
+  minCounterPerSec: number;
+}
+
 export interface BossWeaponData {
   name: string;
   from: string;
@@ -40,7 +76,7 @@ export interface BossWeaponData {
   weakStunSec: number;
   /** null: vũ khí chưa được làm (chưa có hành vi). */
   energyCost: number | null;
-  behavior: SweepBehavior | null;
+  behavior: WeaponBehavior | null;
 }
 
 export interface WeaponsData {
@@ -49,6 +85,7 @@ export interface WeaponsData {
   hitStopSteps: { charged: number; weakness: number };
   arcCannon: ArcCannonData;
   bossWeapons: BossWeaponData[];
+  balance: WeaponBalance;
 }
 
 function bool(value: unknown, path: string): boolean {
@@ -67,9 +104,22 @@ function chargeLevel(value: unknown, path: string): ChargeLevelData {
   };
 }
 
-function behavior(value: unknown, path: string): SweepBehavior | null {
+function behavior(value: unknown, path: string): WeaponBehavior | null {
   if (value === null || value === undefined) return null;
   const b: Json = obj(value, path);
+  if (b.type === 'beam') {
+    const maxBounces = num(b.maxBounces, `${path}.maxBounces`, { min: 0 });
+    if (!Number.isInteger(maxBounces)) throw new ConfigError(`${path}.maxBounces: cần số nguyên`);
+    return {
+      type: 'beam',
+      rangeTiles: num(b.rangeTiles, `${path}.rangeTiles`, { min: 1 }),
+      widthPx: num(b.widthPx, `${path}.widthPx`, { min: 1 }),
+      damageMul: num(b.damageMul, `${path}.damageMul`, { min: 0 }),
+      activeSec: num(b.activeSec, `${path}.activeSec`, { min: 0.02 }),
+      cooldownSec: num(b.cooldownSec, `${path}.cooldownSec`, { min: 0.05 }),
+      maxBounces,
+    };
+  }
   if (b.type !== 'sweep')
     throw new ConfigError(`${path}.type: hành vi "${String(b.type)}" chưa hỗ trợ`);
   return {
@@ -115,8 +165,17 @@ export function parseWeapons(value: unknown): WeaponsData {
       behavior: parsedBehavior,
     };
   });
+  const bal = obj(w.balance, 'weapons.balance');
+  const balance: WeaponBalance = {
+    budgetTarget: num(bal.budgetTarget, 'weapons.balance.budgetTarget', { min: 1 }),
+    budgetTolerance: num(bal.budgetTolerance, 'weapons.balance.budgetTolerance', { min: 0 }),
+    minCounterPerSec: num(bal.minCounterPerSec, 'weapons.balance.minCounterPerSec', { min: 0 }),
+  };
+  if (balance.budgetTolerance >= 1)
+    throw new ConfigError('weapons.balance.budgetTolerance: cần < 1 (tỷ lệ, 0,15 = ±15%)');
   return {
     energyMax,
+    balance,
     energyRegen: {
       perSec: num(regen.perSec, 'weapons.energyRegen.perSec', { min: 0 }),
       afterNoFireSec: num(regen.afterNoFireSec, 'weapons.energyRegen.afterNoFireSec', { min: 0 }),
@@ -161,4 +220,42 @@ export function parseWeapons(value: unknown): WeaponsData {
     },
     bossWeapons,
   };
+}
+
+/** Sát thương mỗi thanh năng lượng: floor(energyMax / tiêu hao) × damageMul × trúng mỗi lần. */
+export function energyBudget(w: BossWeaponData, energyMax: number): number | undefined {
+  if (!w.behavior || w.energyCost === null) return undefined;
+  return Math.floor(energyMax / w.energyCost) * w.behavior.damageMul * hitsPerUse(w.behavior);
+}
+
+/** Sức mạnh khắc chế: damageMul × trúng mỗi lần × damageVsWeak / cooldownSec (sát thương/giây). */
+export function counterPerSec(w: BossWeaponData): number | undefined {
+  const b = w.behavior;
+  if (!b || b.cooldownSec <= 0) return undefined;
+  return (b.damageMul * hitsPerUse(b) * w.damageVsWeak) / b.cooldownSec;
+}
+
+/**
+ * Ngân sách năng lượng 14 ± 15% và sức mạnh khắc chế ≥ 12/s cho mọi vũ khí đã có hành vi
+ * (GDD 16 mục 2.3), để không vũ khí nào áp đảo hay vô dụng trước boss yếu với nó.
+ */
+export function checkWeaponBalance(data: WeaponsData): string[] {
+  const errors: string[] = [];
+  const { budgetTarget, budgetTolerance, minCounterPerSec } = data.balance;
+  for (const w of data.bossWeapons) {
+    const budget = energyBudget(w, data.energyMax);
+    if (
+      budget !== undefined &&
+      Math.abs(budget - budgetTarget) > budgetTarget * budgetTolerance + 1e-9
+    )
+      errors.push(
+        `weapons.${w.name}: ngân sách ${budget} mỗi thanh lệch mục tiêu ${budgetTarget} quá ${budgetTolerance * 100}%`,
+      );
+    const counter = counterPerSec(w);
+    if (counter !== undefined && counter + 1e-9 < minCounterPerSec)
+      errors.push(
+        `weapons.${w.name}: sức mạnh khắc chế ${counter.toFixed(1)}/s < ${minCounterPerSec}/s`,
+      );
+  }
+  return errors;
 }

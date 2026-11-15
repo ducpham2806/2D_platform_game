@@ -1,4 +1,9 @@
-import type { ChargeLevelData, SweepBehavior, WeaponsData } from '../../core/weapons-config';
+import {
+  type ChargeLevelData,
+  PLAYABLE_BEHAVIORS,
+  type SweepBehavior,
+  type WeaponsData,
+} from '../../core/weapons-config';
 import type { ProjectilePool, ProjectileSpec } from './projectiles';
 
 export const ARC_CANNON = 'Arc Cannon';
@@ -95,13 +100,22 @@ export class WeaponLoadout {
   grant(name: string): boolean {
     if (this.slots.some((s) => s.name === name)) return false;
     const weapon = this.data.bossWeapons.find((w) => w.name === name);
-    if (!weapon?.behavior || weapon.energyCost === null) return false;
+    // Chỉ hành vi đã có code (Prism Beam có dữ liệu `beam` từ ST-15-01a, hành vi ở ST-15-03).
+    // `step()` chỉ biết roi (`sweep`); hành vi khác đi nhánh Arc Cannon nên phải chặn ở đây.
+    const b = weapon?.behavior;
+    if (
+      !b ||
+      b.type !== 'sweep' ||
+      !PLAYABLE_BEHAVIORS.includes(b.type) ||
+      weapon.energyCost === null
+    )
+      return false;
     this.slots.push({
       name,
-      kind: weapon.behavior.type,
+      kind: b.type,
       energy: this.data.energyMax,
       cost: weapon.energyCost,
-      behavior: weapon.behavior,
+      behavior: b,
     });
     return true;
   }

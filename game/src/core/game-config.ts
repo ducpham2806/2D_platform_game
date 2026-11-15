@@ -1,11 +1,19 @@
 import { type ControlsConfig, parseControls } from './controls-config';
 import { arr, ConfigError, isObject, num, obj, str } from './json-check';
 import { parsePlayer, type PlayerData } from './player-config';
-import { parseWeapons, type WeaponsData } from './weapons-config';
-import { type BossData, checkBossRules, parseBossChallenges, parseBosses } from './boss-config';
+import { checkWeaponBalance, parseWeapons, type WeaponsData } from './weapons-config';
+import {
+  type BossData,
+  bossDamageCap,
+  bossMaxDamage,
+  checkBossRules,
+  parseBossChallenges,
+  parseBosses,
+} from './boss-config';
 import { checkEnemyRules, type EnemiesData, parseEnemies } from './enemy-config';
 import { evaluateFormula } from '../logic/formula';
 import { computeBuild, statsFor } from '../logic/rpg/build';
+import { levelForExp } from '../logic/rpg/progression';
 import { parseStageMechanics, type StageMechanics } from './stage-mechanics-config';
 import { parseTutorial, type TutorialData } from './tutorial-config';
 import { parseUi, type UiData } from './ui-config';
@@ -47,6 +55,28 @@ export interface StageData {
   expectedMin?: number;
   /** Thời gian thắng boss theo thiết kế [ít nhất, nhiều nhất] giây (H4). */
   bossFightSec?: [number, number];
+  /** EXP của màn ở Thường (GDD 16 mục 2.1); chỉ màn đã có đặc tả. */
+  expBudget?: number;
+  /** Hệ số thưởng kẻ địch thường của màn (Q2); không có thì 1. */
+  enemyRewardMul?: RewardMul;
+}
+
+/** Hệ số thưởng tách EXP và Core Bit. */
+export interface RewardMul {
+  exp: number;
+  coreBit: number;
+}
+
+/** Hệ số thưởng mặc định (Stage 1, phòng thử không thuộc màn chiến dịch). */
+export const UNIT_REWARD_MUL: RewardMul = { exp: 1, coreBit: 1 };
+
+function rewardMul(value: unknown, p: string): RewardMul {
+  const m = obj(value, p);
+  return {
+    // GDD 16 mục 9: màn sau không cho ít hơn bậc Stage 1 (≥ 1).
+    exp: num(m.exp, `${p}.exp`, { min: 1 }),
+    coreBit: num(m.coreBit, `${p}.coreBit`, { min: 1 }),
+  };
 }
 
 export interface LevelSyncData {
@@ -142,7 +172,7 @@ export function parseStages(value: unknown): StagesData {
   const stages = arr(s.stages, 'stages.stages').map((item, i) => {
     const p = `stages.stages[${i}]`;
     const st = obj(item, p);
-    return {
+    const stage: StageData = {
       index: num(st.index, `${p}.index`, { min: 1 }),
       id: str(st.id, `${p}.id`),
       name: str(st.name, `${p}.name`),
@@ -161,7 +191,21 @@ export function parseStages(value: unknown): StagesData {
         ? { expectedMin: num(st.expectedMin, `${p}.expectedMin`, { min: 0.1 }) }
         : {}),
       ...(st.bossFightSec !== undefined ? { bossFightSec: fightRange(st.bossFightSec, p) } : {}),
+      ...(st.expBudget !== undefined
+        ? { expBudget: num(st.expBudget, `${p}.expBudget`, { min: 1 }) }
+        : {}),
+      ...(st.enemyRewardMul !== undefined
+        ? { enemyRewardMul: rewardMul(st.enemyRewardMul, `${p}.enemyRewardMul`) }
+        : {}),
     };
+    // Màn đã có đặc tả (có `expectedMin`) phải có thưởng theo màn, để kiểm EXP theo cấp không
+    // lặng lẽ tắt khi thiếu trường.
+    if (
+      st.expectedMin !== undefined &&
+      (st.expBudget === undefined || st.enemyRewardMul === undefined)
+    )
+      throw new ConfigError(`${p}: màn đã có đặc tả cần expBudget và enemyRewardMul`);
+    return stage;
   });
   const sync = obj(s.levelSync, 'stages.levelSync');
   if (typeof sync.enabled !== 'boolean')
@@ -400,10 +444,21 @@ export function checkDesignInvariants(config: GameConfig): string[] {
     }
   }
 
-  // Boss đã có dữ liệu phải khớp màn: thưởng là vũ khí của màn, điểm yếu là vũ khí của màn trước.
+  // Boss đã có dữ liệu phải khớp màn: thưởng là vũ khí của màn, điểm yếu là vũ khí của màn trước;
+  // đòn mạnh nhất (cả bản Thử thách) không quá trần của màn (GDD 16 mục 2.2).
   for (const stage of stages) {
     const bossData = config.bosses[stage.boss];
     if (!bossData) continue;
+    const cap = bossDamageCap(bossData.rules, stage.index);
+    for (const [label, b] of [
+      ['', bossData],
+      ['.challenge', config.bossesChallenge[bossData.id]],
+    ] as const) {
+      if (b && bossMaxDamage(b) > cap)
+        errors.push(
+          `bosses.${bossData.id}${label}: đòn ${bossMaxDamage(b)} vượt trần ${cap} của màn ${stage.index}`,
+        );
+    }
     if (bossData.reward !== stage.weaponGranted) {
       errors.push(
         `bosses.${bossData.id}.reward: ${bossData.reward} phải là weaponGranted của màn ${stage.index} (${stage.weaponGranted})`,
@@ -437,13 +492,40 @@ export function checkDesignInvariants(config: GameConfig): string[] {
   for (const [name, damage] of [
     ['spikes', mech.spikes.damage],
     ['pit', mech.pit.damage],
+    ['laser', mech.laser.damage],
   ] as const) {
     if (Math.round(damage * worstTaken) >= baseHp)
       errors.push(`stages.mechanics.${name}.damage: ${damage} giết ngay Kai cấp 1 (${baseHp} máu)`);
   }
 
+  // Vũ khí Warden: ngân sách năng lượng và sức mạnh khắc chế (GDD 16 mục 2.3).
+  errors.push(...checkWeaponBalance(config.weapons));
+
   // Cấp (GDD 6.1): EXP lên cấp dương ở mọi cấp.
   const lv = config.player.level;
+  // EXP theo màn (GDD 16 mục 2.1): có `expBudget` thì liền từ màn 1; cộng dồn tới màn k ra cấp nằm
+  // trong cấp khuyến nghị của màn k + 1 (mỗi màn khoảng +2 cấp).
+  let cumulative = 0;
+  stages.forEach((stage, i) => {
+    if (stage.expBudget === undefined) {
+      if (stages.slice(i + 1).some((s) => s.expBudget !== undefined))
+        errors.push(`stages.${stage.id}.expBudget: thiếu (các màn sau đã có)`);
+      return;
+    }
+    cumulative += stage.expBudget;
+    const next = stages[i + 1];
+    if (!next) return;
+    try {
+      const [lo, hi] = parseLevelRange(next.recommendedLevel);
+      const level = levelForExp(cumulative, lv).level;
+      if (level < lo || level > hi)
+        errors.push(
+          `stages.${stage.id}.expBudget: cộng dồn ${cumulative} EXP ra cấp ${level}, ngoài cấp khuyến nghị màn ${next.index} (${next.recommendedLevel})`,
+        );
+    } catch (e) {
+      errors.push((e as Error).message);
+    }
+  });
   for (let L = 1; L < lv.max; L += 1) {
     const need = evaluateFormula(lv.expFormula, { L });
     if (!(need >= 1)) errors.push(`player.level.expFormula: cấp ${L} cần ${need} EXP (phải ≥ 1)`);
