@@ -102,6 +102,11 @@ export class LockedRoom {
     });
   }
 
+  /** Kẻ địch xuất phát trong phòng. */
+  get members(): readonly Enemy[] {
+    return this.enemies;
+  }
+
   get remaining(): number {
     return this.enemies.filter((e) => e.alive).length;
   }

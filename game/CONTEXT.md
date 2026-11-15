@@ -68,7 +68,7 @@ src/
   scenes/stage/           vẽ màn chơi (renderer, kẻ địch, vật phẩm), HUD vẽ theo HudModel, menu tạm dừng,
                           hộp hội thoại, màn Kết quả, gắn công cụ chơi thử vào màn (stage-playtest.ts)
   logic/hud/              M10: mô hình HUD từ StageWorld (máu, năng lượng, vũ khí, máu boss, Core Bit, EXP,
-                          phòng khóa), con trỏ menu bỏ qua mục khóa, MenuNavigator (dọc/ngang, cần) (thuần)
+                          phòng khóa), con trỏ menu, MenuNavigator, hộp chữ QB-70…72 (text-boxes) (thuần)
   logic/tutorial/         TutorialManager (máy trạng thái bước theo tutorial.json, hàng đợi, bỏ qua khi đã làm
                           được, gợi ý theo giây/thất bại, cancelOn, chuỗi `after` theo lượt QB-88) và TutorialSignals
                           (StageWorld → tín hiệu) (thuần)
@@ -135,7 +135,7 @@ Mỗi module một dòng; chi tiết ở file quyết định và Epic.
 - **M7 Màn chơi:** Khung xong (Tiled, checkpoint theo độ khó, hố, gai, dây leo đu, phòng khóa, vật chắn, bí mật, camera khóa phòng). Còn: bản đồ thật Prologue/Stage 1 (sau cổng Prototype), Stage 2–4, thang, bệ dây di chuyển, parallax.
 - **M8 Hệ thống RPG:** Xong cấp, SP, cây kỹ năng 3 × 3 có hiệu ứng trong trận, Xưởng tab Kỹ năng, trần sức mạnh. Còn: Module, Két giáp (ST-08-09, bị chặn), âm thanh kỹ năng, loadout (Alpha).
 - **M9 Kinh tế và Shop:** Xong bản MVP chỉ Upgrade (Quầy Mira, giao dịch nguyên tử, hoàn số đã trả, gợi ý thu nhập theo màn có trong bản build và độ khó chọn lần cuối). Còn: Booster, Skin, Premium (Alpha).
-- **M10 Giao diện:** Xong HUD, menu tạm dừng, hội thoại boss, màn Kết quả, Xưởng, Quầy, màn Chuẩn bị; hộp chữ theo thứ tự ưu tiên (QB-70). Còn (EP-14): Hub dạng menu MVP, Cài đặt (`14-Cai-dat-Tiep-can.md`), chữ ≥ 16 sp và nút ≥ 48 dp, safe-area, tự tạm dừng, báo lỗi lưu, bỏ qua thoại giữ 0,6 s, i18n; ChoicePanel, thoại NPC, bản đồ nhỏ (Alpha).
+- **M10 Giao diện:** Xong HUD, menu tạm dừng, hội thoại boss, màn Kết quả, Xưởng, Quầy, màn Chuẩn bị; hộp chữ thuần (QB-70…72, ST-14-08: hiện lại, hủy, đồng hồ trận). Còn (EP-14): Hub dạng menu MVP, Cài đặt (`14-Cai-dat-Tiep-can.md`), chữ ≥ 16 sp và nút ≥ 48 dp, safe-area, tự tạm dừng, báo lỗi lưu, bỏ qua thoại giữ 0,6 s, i18n; ChoicePanel, thoại NPC, bản đồ nhỏ (Alpha).
 - **TUT Hướng dẫn:** Khung xong, 11 bước Stage 1. Còn: Prologue (sau cổng), giai đoạn Hub (R01–R06), gợi ý bậc 3–4.
 - **ĐK Ba độ khó:** Xong cho Stage 1 (EP-10). Còn: checkpoint theo độ khó trên bản đồ thật, chốt số mẫu đòn (sau cổng), Stage 2–4.
 - **M11 Lưu:** Xong lưu cục bộ, bản lưu 4, mã sao lưu. Còn: cloud (Beta).

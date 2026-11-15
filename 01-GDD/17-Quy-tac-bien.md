@@ -1,6 +1,6 @@
 # 17. Quy tắc biên (ngóc ngách của trò chơi)
 
-*Bản 1.4 · 14/11/2026 · Trạng thái: Approved (ủy quyền: người dùng giao toàn quyền quyết định; xem mục 19) · Nguồn: rà soát `/review-all-gdds` + `/consistency-check` ngày 14/11/2026 (4 báo cáo: lõi, kinh tế, giao diện và lời thoại, quy trình)*
+*Bản 1.5 · 15/11/2026 · Trạng thái: Approved (ủy quyền: người dùng giao toàn quyền quyết định; xem mục 19) · Nguồn: rà soát `/review-all-gdds` + `/consistency-check` ngày 14/11/2026 (4 báo cáo: lõi, kinh tế, giao diện và lời thoại, quy trình)*
 
 ## 0. Mục đích và cách dùng
 
@@ -25,7 +25,7 @@ Tài liệu GDD mô tả luật chính. File này gom các **tình huống biên
 | Mã | Tình huống | Luật | Tham số | Trạng thái |
 | --- | --- | --- | --- | --- |
 | QB-01 | Thời gian hồi lướt | Tính từ lúc cú lướt **kết thúc**, không từ lúc bấm | `player.json → dash` | Code (test `player-physics.test.ts`) |
-| QB-02 | Lướt qua gai hoặc rơi hố | Bất tử của lướt chỉ tránh đòn kẻ địch và boss; gai, hố vẫn gây sát thương | — | Code (chưa test) |
+| QB-02 | Lướt qua gai hoặc rơi hố | Bất tử của lướt chỉ tránh đòn kẻ địch và boss; gai, hố vẫn gây sát thương | — | Code (test `tests/qb-rules.test.ts`) |
 | QB-03 | Bị đánh khi đang lướt (sau khung bất tử) | Hủy lướt, mất tốc độ dash-jump, bật lùi như thường | — | Sau cổng (viết test) |
 | QB-04 | Chết khi đang lướt hoặc đang lơ lửng | Hồi sinh như thường; lượt lướt trên không được hồi | — | Sau cổng (viết test) |
 | QB-05 | Bắn khi leo thang, dây | Không bắn khi leo; nhảy rời thang cao 2 ô; leo 3 ô/s | `player.json → climb` (chưa có) | Sau cổng |
@@ -37,9 +37,9 @@ Tài liệu GDD mô tả luật chính. File này gom các **tình huống biên
 | Mã | Tình huống | Luật | Tham số | Trạng thái |
 | --- | --- | --- | --- | --- |
 | QB-10 | Đổi vũ khí khi đang nạp dở | Mất nạp. Nạp đầy được giữ 2 s sau khi đổi | `weapons.json` | Code |
-| QB-11 | Thả nút nạp khi đang cầm vũ khí boss | Không bắn gì (vũ khí boss không nạp) | — | Code (chưa test) |
-| QB-12 | Hết năng lượng giữa chừng | Không bắn; phát sự kiện `emptyWeapon` (tiếng "tạch", thanh năng lượng nháy 0,3 s); **không** tự đổi sang vũ khí khác | — | Code một phần (chưa test): chỉ hiện chữ 0,6 s (viết cứng ở Scene); tiếng "tạch" ở EP-12, nháy thanh ở EP-14 |
-| QB-13 | Năng lượng khi vào màn, chết, qua checkpoint | Tính riêng từng vũ khí. Đầy khi vào màn và khi chết; qua checkpoint **không** nạp lại | `refill` | Code (chưa test) |
+| QB-11 | Thả nút nạp khi đang cầm vũ khí boss | Không bắn gì (vũ khí boss không nạp) | — | Code (test `tests/qb-rules.test.ts`) |
+| QB-12 | Hết năng lượng giữa chừng | Không bắn; phát sự kiện `emptyWeapon` (tiếng "tạch", thanh năng lượng nháy 0,3 s); **không** tự đổi sang vũ khí khác | — | Code một phần: logic có test (`tests/qb-rules.test.ts`: không bắn, `emptyWeapon`, không tự đổi); chữ 0,6 s viết cứng ở Scene; tiếng "tạch" ở EP-12, nháy thanh ở EP-14 |
+| QB-13 | Năng lượng khi vào màn, chết, qua checkpoint | Tính riêng từng vũ khí. Đầy khi vào màn và khi chết; qua checkpoint **không** nạp lại | `refill` | Code (test `tests/qb-rules.test.ts`; "riêng từng vũ khí" chờ có vũ khí boss thứ hai) |
 | QB-14 | Vũ khí bắn nhanh khóa choáng boss liên tục | Trúng điểm yếu vẫn ×2,5 sát thương, nhưng sau khi hết choáng thì 1,5 s không choáng lại được. Choáng không xóa hạt Hoa Nở đã thả | `weakStunCooldownSec: 1.5` (chưa có) | Story MVP |
 | QB-15 | Đổi qua lại hai vũ khí khi có nhiều ô | Vũ khí xếp theo thứ tự màn. Giữ nút đổi ≥ 0,3 s: đổi qua lại hai vũ khí dùng gần nhất. Cảm ứng: vuốt lên trên nút đổi | `controls.json → quickSwapHoldSec` (chưa có) | Sau cổng (cần khi có ≥ 3 vũ khí) |
 | QB-16 | Vũ khí boss bắn vào khiên Lính Kén | Mỗi cú trúng tính 1 lần vào `shieldHits`, bất kể sát thương | `enemies.json` | Story Stage 2–4 |
@@ -53,8 +53,8 @@ Tài liệu GDD mô tả luật chính. File này gom các **tình huống biên
 | --- | --- | --- | --- | --- |
 | QB-20 | Chết để kẻ địch dựng lại rồi hạ lại (cày EXP, Core Bit) | Mỗi kẻ địch (theo id trên bản đồ) chỉ cho EXP và Core Bit **một lần mỗi lượt vào màn**; hạ lại chỉ có thể rơi viên máu | `stages.json → mechanics.enemyRewardOncePerRun: true` | Code |
 | QB-21 | Mini-boss báo trước quá nhanh | Mini-boss theo luật báo trước của boss: đòn nào cũng báo ≥ 0,5 s | `minTelegraphSec` cho mini-boss (chưa có) | Story MVP |
-| QB-22 | Spike Guard và đạn gai | Spike Guard chỉ miễn ô gai môi trường; đạn của Tháp Gai, Gai Quạt vẫn trúng | — | Code (chưa test; cờ `spikeGuard` chưa nối với module) |
-| QB-24 | Kai chết sau khi đã hạ mini-boss | Mini-boss đã hạ không dựng lại trong lượt vào màn (phòng khóa giữ trạng thái mở) | — | Cần kiểm code (Golem), viết test |
+| QB-22 | Spike Guard và đạn gai | Spike Guard chỉ miễn ô gai môi trường; đạn của Tháp Gai, Gai Quạt vẫn trúng | — | Code (test `tests/qb-rules.test.ts`; cờ `spikeGuard` chưa nối với module) |
+| QB-24 | Kai chết sau khi đã hạ mini-boss | Mini-boss đã hạ không dựng lại trong lượt vào màn (phòng khóa giữ trạng thái mở). Chung cho mọi kẻ địch của phòng khóa đã xong: hồi sinh ở checkpoint không dựng lại chúng (phòng đã mở không khóa lại được). Phòng còn khóa lúc chết thì mở cửa, kẻ địch trong phòng dựng lại đầy máu | — | Code (sửa 15/11: trước đó Golem dựng lại khi Kai chết; test `tests/qb-rules.test.ts`) |
 | QB-23 | Kẻ địch bắn từ ngoài màn hình | Tầm hoạt động có cả trục dọc (7 ô). Kẻ địch chỉ bắt đầu báo trước khi đã nằm trong khung camera thu vào 1 ô | `activeRangeTilesY: 7`, `attackRequiresOnScreen` (chưa có) | Story MVP |
 
 Tình huống biên riêng của từng màn và nhiệm vụ phụ: `15-Nhiem-vu-phu.md` mục 5; `16-Dac-ta-Stage2-4-nhap.md` mục 3.11, 4.11, 5.11.
@@ -66,7 +66,7 @@ Tình huống biên riêng của từng màn và nhiệm vụ phụ: `15-Nhiem-v
 | QB-30 | Đạn Kai hạ boss và đòn boss hạ Kai trong cùng một bước | Boss về 0 máu ở bước nào thì thắng ở bước đó; đòn boss trong bước đó không tính | — | Code (`settleDefeat`, test `thorna.test.ts`) |
 | QB-31 | Một đòn vượt qua hai ngưỡng pha | Máu kẹp ở ngưỡng kế tiếp; boss bất tử 0,6 s để đổi pha và xóa đạn boss | `phaseShiftSec: 0.6` (chưa có) | Story MVP |
 | QB-32 | Kai chết trong phòng boss | Boss đầy máu, về pha 1; đếm chết cho gợi ý về 0 khi vào lại đấu trường | — | Code |
-| QB-33 | Kai chết trong lúc đếm giờ trước màn Kết quả | Không mất trận thắng (boss đã chết, trận đã ghi) | — | Code (chưa test) |
+| QB-33 | Kai chết trong lúc đếm giờ trước màn Kết quả | Không mất trận thắng (boss đã chết, trận đã ghi) | — | Code (phần logic có test `tests/qb-rules.test.ts`; đếm giờ ở Scene không xóa khi chết) |
 | QB-34 | Thưởng boss khi đánh lại | Thưởng Core Bit và EXP của boss trả **một lần cho mỗi cặp boss–độ khó**; vũ khí boss chỉ trao lần thắng đầu tiên | `bosses.json → rewardCoreBit`, `rewardExp`; `progress.difficulty` | Code |
 
 ## 5. Checkpoint, chết, hồi sinh tại chỗ
@@ -74,7 +74,7 @@ Tình huống biên riêng của từng màn và nhiệm vụ phụ: `15-Nhiem-v
 | Mã | Tình huống | Luật | Tham số | Trạng thái |
 | --- | --- | --- | --- | --- |
 | QB-40 | Kích hoạt checkpoint | Chỉ khi Kai đứng trên mặt đứng được (ô đặc, bục một chiều, bệ mây đứng yên; không phải bục vỡ, bệ trôi) và đi qua; không đặt checkpoint trong vùng thử nhiệm vụ (`questZone`); chỉ tiến, không lùi. Màn dọc (Cirrus Tower): checkpoint là vùng chữ nhật trên Tiled, xét theo thứ tự | — | Code (màn ngang); vùng chữ nhật: Story Stage 4 |
-| QB-41 | Qua checkpoint | Không hồi máu, không nạp năng lượng; đặt lại đếm chết cho gợi ý | — | Code (chưa test phần máu, năng lượng) |
+| QB-41 | Qua checkpoint | Không hồi máu, không nạp năng lượng; đặt lại đếm chết cho gợi ý | — | Code (test `tests/qb-rules.test.ts`) |
 | QB-42 | Chết trước checkpoint đầu tiên | Về đầu màn | — | Code |
 | QB-43 | Rơi hố khi còn máu | Mất máu hố, về checkpoint gần nhất, giữ máu còn lại; hết máu thì tính là chết | `mechanics.pit` | Code |
 | QB-44 | Nhiều nguồn hồi sinh tại chỗ cùng có | Thứ tự: booster Second Chance (đã kích hoạt lúc vào màn) → module Second Wind → quảng cáo. Mỗi lượt vào màn tối đa 1 lần hồi sinh bằng quảng cáo | `adplacements.json` (chuẩn), `inPlaceRevivePerStage.order` | Alpha |
@@ -101,7 +101,7 @@ Luật chính ở GDD chính. Toàn bộ là Story MVP, số `[PLACEHOLDER]`.
 | Mã | Tình huống | Luật | Tham số | Trạng thái |
 | --- | --- | --- | --- | --- |
 | QB-60 | Lên cấp giữa trận | Máu hiện tại cộng phần máu tối đa vừa tăng | — | Code |
-| QB-61 | EXP và đồng bộ cấp | EXP nhận không giảm theo đồng bộ cấp | `stages.json → levelSync` | Code (chưa test) |
+| QB-61 | EXP và đồng bộ cấp | EXP nhận không giảm theo đồng bộ cấp | `stages.json → levelSync` | Code (test `tests/qb-rules.test.ts`) |
 | QB-62 | Ngưỡng Last Stand | 20% tính theo máu tối đa hiện tại (đã cộng cấp, build) | — | Alpha |
 | QB-63 | Cộng dồn tầm hút | Tầm = max(Magnet Pulse 6, Magnet Core 3 + cấp Magnet Range); không cộng hai nguồn | `shop.json → magnetTilesPerLevel` | Code (Magnet Range); Alpha (module) |
 | QB-64 | Thoát màn giữa chừng | Giữ checkpoint, Core Bit và EXP đã nhận. Hộp xác nhận ghi đúng như vậy; nút mặc định là Hủy | — | Code (ghi), Story MVP (hộp xác nhận chung) |
@@ -114,9 +114,9 @@ Mỗi lúc chỉ **một** hộp ở giữa phía trên khung hình.
 
 | Mã | Tình huống | Luật | Trạng thái |
 | --- | --- | --- | --- |
-| QB-70 | Nhiều hộp cùng muốn hiện | Thứ tự: **Hội thoại > Kết quả > Gợi ý chết > Hướng dẫn > Câu NOVA nhiệm vụ phụ > Báo ngắn** (Nhận vũ khí, Lên cấp, Nhiệm vụ xong). Hộp thấp hơn ẩn khi hộp cao hơn hiện, rồi hiện lại nếu còn hiệu lực | Code một phần (4 hộp đầu ở `stage-scene.ts`, chưa test; gợi ý chết bị che thì chưa hiện lại); Story MVP (hiện lại, câu nhiệm vụ, Báo ngắn, chuyển sang logic thuần) |
-| QB-71 | Hộp chờ quá lâu hoặc mất ngữ cảnh | Gợi ý chết bị hủy khi hạ boss hoặc qua checkpoint. Hộp chờ quá 10 s cũng hủy | Code (gợi ý chết, chưa test); Story MVP (10 s) |
-| QB-72 | Thời gian đọc | Hộp tự tắt sau max(3 s, số ký tự / 15). Gợi ý chết: max(`showSec`, ký tự / `charsPerSecRead`). Không đếm giờ khi tạm dừng hoặc có hội thoại | Code một phần (gợi ý chết, `ui.json → difficultyHint.charsPerSecRead`; menu tạm dừng chưa dừng đồng hồ); Story MVP (chung, dừng đồng hồ) |
+| QB-70 | Nhiều hộp cùng muốn hiện | Thứ tự: **Hội thoại > Kết quả > Gợi ý chết > Hướng dẫn > Câu NOVA nhiệm vụ phụ > Báo ngắn** (Nhận vũ khí, Lên cấp, Nhiệm vụ xong). Hộp thấp hơn ẩn khi hộp cao hơn hiện, rồi hiện lại nếu còn hiệu lực | Code (4 hộp đầu, `logic/hud/text-boxes.ts`, ST-14-08); Story MVP (câu nhiệm vụ, Báo ngắn: ST-14-09) |
+| QB-71 | Hộp chờ quá lâu hoặc mất ngữ cảnh | Gợi ý chết bị hủy (cả khi đang chờ lẫn đang hiện) khi hạ boss, qua checkpoint hoặc vào đấu trường (GDD 11 mục 2.5 coi như checkpoint), hoặc khi tắt hướng dẫn. Hộp bị che liền quá 10 s (`reading.maxWaitSec`) **lúc trận chạy** cũng hủy; trận đứng yên (hội thoại, tạm dừng) không tính là chờ, để hộp đi sau hội thoại không mất | Code (ST-14-08) |
+| QB-72 | Thời gian đọc | Hộp tự tắt sau max(`reading.minSec` 3 s, số ký tự / `reading.charsPerSec` 15). Gợi ý chết: max(`showSec` 6, ký tự / 15). Đếm bằng thời gian trận: không đếm khi tạm dừng, mở bảng Kỹ năng, có hội thoại hay bị hộp cao hơn che. Menu tạm dừng mở thì hộp ẩn, đóng thì hiện lại | Code (gợi ý chết, ST-14-08); Báo ngắn ở ST-14-09 |
 | QB-73 | Độ dài chữ | Hộp hướng dẫn tối đa 2 dòng, kiểm bằng **số dòng** đo theo phông thật, không chỉ số ký tự. Câu ghép có biến (tên vũ khí) kiểm với giá trị dài nhất | Code (câu ghép, `checkDesignInvariants`); Story MVP (số dòng) |
 | QB-74 | Cỡ chữ và nút trên điện thoại | Chữ ≥ 16 sp, nút ≥ 48 dp. Với hệ số phóng của Pixel 7, chữ canvas cần ≥ 11 px logic; nếu không được thì chuyển hộp chữ và menu sang lớp HTML (ADR-001) | Story MVP |
 
@@ -185,7 +185,7 @@ Nguồn: duyệt Technical Director cho `13-Do-luong-MVP.md` ngày 14/11/2026. B
 | Mã | Tình huống | Luật | Trạng thái |
 | --- | --- | --- | --- |
 | QB-120 | Nhìn trước | Camera lệch 3 ô theo hướng Kai nhìn; vùng chết 2 × 3 ô; chỉ dịch dọc khi Kai đứng đất hoặc lệch quá 4 ô. Hiện code: vùng chết 48 px ngang, bám mượt 0,2 | Sau cổng |
-| QB-121 | Phòng khóa, đấu trường | Camera khóa trong phòng khóa | Code (chưa test, nằm ở Scene) |
+| QB-121 | Phòng khóa, đấu trường | Camera khóa trong phòng khóa | Code (`logic/stage/camera-bounds.ts`, test `tests/qb-rules.test.ts`) |
 
 ### 13.1 Âm thanh
 
@@ -207,7 +207,7 @@ Chi tiết ở `12-Am-thanh.md` mục 5.8. Cue báo đòn của kẻ địch d�
 | --- | --- | --- | --- |
 | QB-130 | Món chưa có tác dụng | Không bán, dù đã tới mốc; thẻ ghi "Sắp có" | Code |
 | QB-131 | Gỡ Upgrade | Hoàn đúng số đã trả cho cấp cao nhất (`inventory.upgradePaid`) | Code |
-| QB-132 | Tab chưa mở | Nhãn ghi điều kiện mở theo lời người chơi, không ghi tên mốc nội bộ; tab Module: "khi nhận module đầu tiên" (QB-87) | Code (chưa test; chữ viết cứng ở `workshop-panel.ts`, chuyển sang chuỗi khi làm i18n) |
+| QB-132 | Tab chưa mở | Nhãn ghi điều kiện mở theo lời người chơi, không ghi tên mốc nội bộ; tab Module: "khi nhận module đầu tiên" (QB-87) | Code (`logic/rpg/workshop-model.ts` → `WORKSHOP_TABS`, test `tests/qb-rules.test.ts`; chuyển sang chuỗi khi làm i18n) |
 | QB-133 | Quầy Premium | Là tab thứ 4 của Quầy Mira; khu Cửa hàng Gem ở Hub là lối tắt tới tab đó | Alpha |
 | QB-134 | Booster nhận trước khi mở | Vào kho, ô hiện khóa; quảng cáo AD_BOOSTER chỉ cho booster đã mở | Alpha |
 
@@ -237,7 +237,7 @@ Mỗi trường dưới đây phải có kiểm tra trong `game/src/core/*-confi
 
 ## 17. Tiêu chí nghiệm thu
 
-Mỗi luật nhãn Code phải có (hoặc được thêm) một test Vitest mang mã luật trong tên test. Ngày 14/11/2026 chưa test nào mang mã QB (0/415): thêm dần khi một Story chạm module đó; các luật nhãn "chưa test" là việc nhỏ ưu tiên. Mỗi Story chạm luật nhãn Story phải:
+Mỗi luật nhãn Code phải có (hoặc được thêm) một test Vitest mang mã luật trong tên test. Ngày 14/11/2026 chưa test nào mang mã QB (0/415); 15/11/2026 có `tests/text-boxes.test.ts` (QB-70…72) và `tests/qb-rules.test.ts` (QB-02, 11, 12, 13, 22, 24, 33, 41, 61, 121, 132): thêm dần khi một Story chạm module đó; các luật nhãn "chưa test" là việc nhỏ ưu tiên. Mỗi Story chạm luật nhãn Story phải:
 
 1. Ghi mã `QB-xx` trong phần Bối cảnh của Story.
 2. Có test cho tình huống biên (không chỉ đường chính).
@@ -251,7 +251,7 @@ Mỗi luật nhãn Code phải có (hoặc được thêm) một test Vitest man
 | Kẻ địch: tầm dọc, chỉ bắn khi trên màn, báo trước mini-boss | QB-21, QB-23 | EP-15 (ST-15-15) |
 | Vũ khí Stage 2–4 gặp khiên, vô hiệu chồng nhau; gió khi bị đánh | QB-07, QB-18, QB-19 | EP-15, EP-17 |
 | Nano Cell và vật phẩm năng lượng | QB-17, QB-50…54 | EP-15 (ST-15-16, dữ liệu, logic thuần); nút cảm ứng ở EP-14 |
-| Hộp chữ: báo ngắn, hủy 10 s, thời gian đọc chung, đo số dòng | QB-70…73 | EP-14 |
+| Hộp chữ: báo ngắn, hủy 10 s, thời gian đọc chung, đo số dòng | QB-70…73 | EP-14 (ST-14-08 xong 14/11: thứ tự, hiện lại, hủy, thời gian đọc; còn Báo ngắn, câu nhiệm vụ ST-14-09, số dòng) |
 | Cỡ chữ, nút, safe-area, tự tạm dừng, biểu tượng tay cầm | QB-74, QB-90…93 | EP-14 |
 | Hội thoại: bỏ qua giữ 0,6 s; cờ `weaknessKnown`; Đổi độ khó trong menu tạm dừng | QB-80, QB-83, QB-84 | EP-14 |
 | Lưu: dải báo lỗi, chế độ không có kho | QB-100 | EP-14 |
@@ -259,7 +259,7 @@ Mỗi luật nhãn Code phải có (hoặc được thêm) một test Vitest man
 | Âm thanh: mở khóa, gộp, loại trừ, hạ boss, hồi sinh, tạm dừng, tốc độ | QB-140…146 | EP-12 |
 | Đo lường: bộ đệm, lô, khử trùng, lược đồ, phiên, lỗi lặp, tắt gửi, khung dài | QB-150…157 | EP-13 |
 | Di chuyển, camera, leo thang | QB-03…06, QB-15, QB-120 | EP-16 (sau cổng) |
-| Test khóa luật đã code nhưng chưa test (gắn mã QB vào tên test) | QB-02, 11, 13, 22, 24, 33, 41, 61, 71, 121 | Việc nhỏ ưu tiên, trước EP mới |
+| Test khóa luật đã code nhưng chưa test (gắn mã QB vào tên test) | QB-02, 11, 13, 22, 24, 33, 41, 61, 71, 121 | Xong 15/11/2026 (`04-Dev-Plan/stories/QB-khoa-luat.md`; QB-71 ở ST-14-08) |
 
 ## 19. Duyệt
 
@@ -273,4 +273,5 @@ Mỗi luật nhãn Code phải có (hoặc được thêm) một test Vitest man
 | 14/11/2026 | Bản 1.2 (sau duyệt Creative Director, Technical Director + Producer): sửa nhãn trạng thái theo code thật (QB-01, 11–13, 22, 41, 61, 70–72, 121, 132); sửa QB-12, 40, 70, 83; thêm QB-07, 18, 19, 24 (92 luật) |
 | 14/11/2026 | Bản 1.3: thêm QB-88 (chuỗi hướng dẫn khi chơi lại, lỗi PR #9 tìm ra), đã code ở ST-21-01 (93 luật) |
 | 14/11/2026 | Bản 1.4: thêm mục 10.1 Đo lường, QB-150…157 từ duyệt Technical Director cho GDD 13; QB-150, 153 đã code, QB-151, 155, 156 code phần lõi ở ST-13-01 (101 luật) |
+| 15/11/2026 | Bản 1.5: QB-70…72 code đủ ở ST-14-08 (hiện lại, hủy 10 s lúc trận chạy, đồng hồ trận, hủy khi vào đấu trường hoặc tắt hướng dẫn); test khóa QB-02, 11, 12, 13, 22, 24, 33, 41, 61, 121, 132; QB-24 có lỗi (Golem dựng lại), đã sửa và mở rộng cho kẻ địch của phòng khóa đã xong |
 | 14/11/2026 | Bản 1.1: thêm QB-95…98 từ `13-Do-luong-MVP.md`, `14-Cai-dat-Tiep-can.md`; QB-140…146 (âm thanh) từ `12-Am-thanh.md` (88 luật) |

@@ -108,9 +108,12 @@ export class EnemyField {
     }
   }
 
-  /** Người chơi hồi sinh ở checkpoint: mọi kẻ địch dựng lại, vật phẩm chưa nhặt mất đi. */
-  reset(): void {
-    for (const e of this.enemies) e.reset();
+  /**
+   * Người chơi hồi sinh ở checkpoint: kẻ địch dựng lại, vật phẩm chưa nhặt mất đi. `stayDown`: kẻ
+   * địch đã hạ không dựng lại (của phòng khóa đã xong, kể cả mini-boss; QB-24).
+   */
+  reset(stayDown?: ReadonlySet<Enemy>): void {
+    for (const e of this.enemies) if (e.alive || !stayDown?.has(e)) e.reset();
     this.pickups.clear();
   }
 }

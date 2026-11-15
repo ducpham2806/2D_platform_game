@@ -62,8 +62,8 @@ Ba độ khó cho cốt truyện: **Cốt truyện** (xem truyện, ít áp lự
 Thống nhất với kịch bản hướng dẫn D06 và S09: **3 lần chết liên tiếp**. GDD chính mục 11 sửa 5 thành 3.
 
 - **Đếm:** tăng khi chết thật. Không tính rơi hố còn máu, không tính hồi sinh tại chỗ (khi có). Đặt về 0 khi chạm checkpoint, hoặc khi vào đấu trường boss (cửa đóng đổi điểm hồi sinh nhưng không phát sự kiện checkpoint).
-- **Lần chết thứ 3:** NOVA hiện một câu ở hộp gợi ý riêng (không phụ thuộc màn có hướng dẫn hay không), tự tắt sau 6 s, không dừng game. Mỗi lượt vào màn tối đa một lần. Tắt hướng dẫn ở menu tạm dừng thì không hiện.
-- **Ưu tiên:** gợi ý chết đứng trên hộp hướng dẫn (hướng dẫn tạm ẩn rồi hiện lại), dưới hội thoại và màn Kết quả; hủy khi hạ boss hoặc qua checkpoint (`17-Quy-tac-bien.md` QB-70…72, sửa sau rà soát 14/11/2026: bản cũ chờ hộp trống nên không bao giờ hiện trong trận Thorna). Lời chuẩn của các câu gợi ý nằm ở `ui.json → difficultyHint.lines`; câu ghi trong tài liệu này chỉ là ý.
+- **Lần chết thứ 3:** NOVA hiện một câu ở hộp gợi ý riêng (không phụ thuộc màn có hướng dẫn hay không), tự tắt sau max(`showSec` 6 s, số ký tự / `reading.charsPerSec` 15) giây thời gian trận (QB-72: không đếm khi tạm dừng, có hội thoại hay bị hộp cao hơn che; ẩn khi menu tạm dừng mở, đóng menu thì hiện lại với thời gian còn lại), không dừng game. Mỗi lượt vào màn tối đa một lần. Tắt hướng dẫn ở menu tạm dừng thì không hiện, kể cả câu đang hiện.
+- **Ưu tiên:** gợi ý chết đứng trên hộp hướng dẫn (hướng dẫn tạm ẩn rồi hiện lại), dưới hội thoại và màn Kết quả; hủy khi hạ boss, qua checkpoint, vào đấu trường, hoặc bị che liền quá 10 s lúc trận chạy (`17-Quy-tac-bien.md` QB-70…72; ST-14-08, sửa sau rà soát 14/11/2026: bản cũ chờ hộp trống nên không bao giờ hiện trong trận Thorna). Lời chuẩn của các câu gợi ý nằm ở `ui.json → difficultyHint.lines`; câu ghi trong tài liệu này chỉ là ý.
 - **Câu (giọng NOVA, `ui.json → difficultyHint`):**
   - Thử thách: "Ba lần rồi. Đòn Thử thách khó đọc thật. Chế độ Thường ở màn Chuẩn bị, checkpoint vẫn giữ."
   - Thường: "Ba lần rồi. Tôi không chê đâu, chỉ gợi ý: chế độ Cốt truyện ở màn Chuẩn bị. Checkpoint vẫn giữ."
@@ -132,7 +132,7 @@ thưởng (từng nguồn)             = round(base × difficulty.rewardMul) ; b
   - shieldCharger: `attack.chainDashes = 0`, `chainTelegraphSec`;
   - golem: `attack.dash.endSlam = false`.
 - `bosses.json → thorna.attacks.stalk` (Rễ Đuổi) chỉ có trong khối `challenge`.
-- `ui.json → difficultyHint`: số lần chết (3), thời gian hiện (6 s), các câu NOVA.
+- `ui.json → difficultyHint`: số lần chết (3), thời gian hiện tối thiểu (6 s), các câu NOVA. Tốc độ đọc chung ở `ui.json → reading` (QB-72).
 - **Bản lưu 4:**
   - `progress.difficulty[campaignId] = { last, cleared }`;
   - `progress.stages[stageId].checkpointBy[difficultyId]` (checkpoint xa nhất theo độ khó; `checkpoint` cũ của bản 3 thành `checkpointBy.normal`).

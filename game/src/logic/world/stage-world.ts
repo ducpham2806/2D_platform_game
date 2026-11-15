@@ -648,7 +648,9 @@ export class StageWorld {
     this.pool.clear();
     this.loadout.refill();
     this.runtime.resetOnDeath();
-    this.field?.reset();
+    // Phòng khóa đã xong giữ trạng thái mở, nên kẻ địch của nó (kể cả mini-boss) không dựng lại.
+    const cleared = this.rooms.filter((r) => r.state === 'cleared').flatMap((r) => r.members);
+    this.field?.reset(new Set(cleared));
     for (const r of this.rooms) r.reset();
     if (this.phase === 'boss') {
       // Chết trong phòng boss: hồi sinh trong phòng, boss đầy máu, trận bắt đầu lại.

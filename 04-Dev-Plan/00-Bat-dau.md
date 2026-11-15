@@ -1,6 +1,6 @@
 # Bắt đầu phiên (đọc file này trước)
 
-*Cập nhật 14/11/2026. Giữ ≤ 60 dòng; sửa ở cuối mỗi phiên nếu mốc, việc chờ hay việc tiếp theo đổi.*
+*Cập nhật 15/11/2026. Giữ ≤ 60 dòng; sửa ở cuối mỗi phiên nếu mốc, việc chờ hay việc tiếp theo đổi.*
 
 ## Đang ở đâu
 
@@ -23,7 +23,7 @@ Mỗi việc: viết Story trước (`/story-readiness`, mẫu Story của Game 
 
 1. ~~Safe-area (QB-92)~~ xong (ST-11-01); bản thử đã khóa ở tag `gate-r1` và đăng Pages (14/11).
 2. EP-13 đo lường (`stories/EP-13-do-luong.md`): ~~ST-13-01 lõi~~, ~~ST-13-02a/b nối vào game~~, ~~ST-13-05a/b báo cáo cổng đủ chỉ số~~ xong (14/11; `npm run mvp-report`). ST-13-03, 04 chờ ADR-002; ST-13-06 sau 03–05.
-3. Test khóa các luật đã code nhưng chưa test, gắn mã QB vào tên test; sửa QB-72 (dừng đồng hồ khi tạm dừng), QB-70 (gợi ý bị che thì hiện lại).
+3. ~~Test khóa luật QB đã code (ST-QB-01), sửa QB-70…72 hộp chữ (EP-14 ST-14-08)~~ xong (15/11; tìm và sửa lỗi QB-24 Golem dựng lại).
 4. EP-15: ST-15-14 (QB-14, QB-31), rồi ST-15-01a (dữ liệu Stage 2), ST-15-02.
 5. EP-12 AudioService (âm tạm lấy từ PR #9, ST-21-03); rồi phần EP-14 không đụng lớp nút cảm ứng (QB-90, QB-100, hộp chữ, chuỗi vi/en ST-21-06).
 6. EP-21: ST-21-02 smoke check (sau tag). ST-21-01 (QB-88) đã xong; ST-21-05 (hình vẽ bằng mã) bỏ.

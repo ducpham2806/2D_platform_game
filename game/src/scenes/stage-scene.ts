@@ -24,9 +24,12 @@ import {
 } from '../logic/dialogue/boss-dialogue';
 import { DialogueRunner } from '../logic/dialogue/dialogue-runner';
 import { buildHud } from '../logic/hud/hud-model';
+import { type BoxKind, TimedBox, topBox } from '../logic/hud/text-boxes';
 import { buildStageResult } from '../logic/result/stage-result';
+import { cameraLockFor } from '../logic/stage/camera-bounds';
 import {
   DEFAULT_DIFFICULTY,
+  deathHintExpired,
   difficultyHintText,
   difficultyUnlocked,
 } from '../logic/difficulty/difficulty';
@@ -36,7 +39,7 @@ import { totalSkillPoints, WorkshopPanel, workshopUnlocked } from '../workshop/w
 import { LevelTracker, skillPoints, syncLevel } from '../logic/rpg/progression';
 import { recordTutorialDone, setTutorialOff, stageDifficulty } from '../logic/save/save-data';
 import type { SaveManager } from '../logic/save/save-manager';
-import { TutorialManager } from '../logic/tutorial/tutorial-manager';
+import { TutorialManager, type TutorialView } from '../logic/tutorial/tutorial-manager';
 import { TutorialSignals } from '../logic/tutorial/tutorial-signals';
 import { StageSave, stageSaveSetup } from '../logic/save/stage-save';
 import { StageWorld } from '../logic/world/stage-world';
@@ -128,14 +131,10 @@ export class StageScene extends Phaser.Scene {
   private campaignBoss: string | undefined;
   /**
    * Gợi ý của NOVA sau nhiều lần chết liên tiếp (GDD 11 mục 2.5): hộp riêng, tối đa một lần mỗi
-   * lượt vào màn; chờ khi hộp hướng dẫn đang có lời.
+   * lượt vào màn. Thứ tự và thời gian hiện theo QB-70…72 (`logic/hud/text-boxes.ts`).
    */
-  private deathHint = {
-    box: undefined as TutorialBox | undefined,
-    used: false,
-    pending: undefined as string | undefined,
-    until: 0,
-  };
+  private deathHint: { box: TutorialBox | undefined; used: boolean; timed: TimedBox | undefined } =
+    { box: undefined, used: false, timed: undefined };
   /** Hội thoại đang mở: trận đứng yên tới khi đóng (người chơi bỏ qua được bất cứ lúc nào). */
   private dialogue: { runner: DialogueRunner; moment: BossDialogueMoment } | undefined;
   /** Đo lượt này (EP-13); undefined khi đo lường tắt hoặc màn không thuộc chiến dịch. */
@@ -341,8 +340,7 @@ export class StageScene extends Phaser.Scene {
     this.deathHint = {
       box: save ? new TutorialBox(this) : undefined,
       used: false,
-      pending: undefined,
-      until: 0,
+      timed: save ? new TimedBox(config.ui.reading) : undefined,
     };
     this.telemetry = StageTelemetry.start(this, world, {
       def: this.def,
@@ -411,6 +409,7 @@ export class StageScene extends Phaser.Scene {
       this.saver?.step(ev, world, FIXED_STEP_MS / 1000);
       this.checkDeathHint(ev, world);
       this.stepTutorial(ev, world);
+      this.stepDeathHint();
       this.playtest?.record(ev, FIXED_STEP_MS / 1000);
       this.tickResult(ev, world);
     }
@@ -435,10 +434,7 @@ export class StageScene extends Phaser.Scene {
       const keys = input.device === 'touch' ? '' : formatGlyphs('{NHẢY} tiếp · {LƯỚT} bỏ qua', ctx);
       this.dialogueBox?.show(talk, keys);
     }
-    // Thứ tự hộp (17-Quy-tac-bien mục 8): hội thoại > Kết quả > gợi ý chết > hướng dẫn.
-    const busy = talk !== undefined || !!this.result?.isOpen;
-    const hinting = this.drawDeathHint(time, busy);
-    const view = busy || hinting ? undefined : this.tutorial?.manager.view;
+    const view = this.drawTextBoxes();
     if (view)
       this.tutorial?.box.show(view.speaker, formatGlyphs(view.text, ctx), view.hintLevel > 0);
     else this.tutorial?.box.hide();
@@ -484,6 +480,8 @@ export class StageScene extends Phaser.Scene {
       tut.manager.setEnabled(on);
       this.telemetry?.tutorialToggle(on);
       this.save?.update((s) => setTutorialOff(s, !on));
+      // Tắt hướng dẫn thì gợi ý chết cũng không hiện (GDD 07, GDD 11 mục 2.5), kể cả câu đang có.
+      if (!on) this.deathHint.timed?.cancel();
       return;
     }
     if (choice === 'quit') {
@@ -639,9 +637,9 @@ export class StageScene extends Phaser.Scene {
   /** Chết đủ số lần liên tiếp thì chuẩn bị câu gợi ý của NOVA (GDD 11 mục 2.5). */
   private checkDeathHint(ev: WorldEvents, world: StageWorld): void {
     const hint = this.deathHint;
-    // Mất ngữ cảnh (đã thắng boss, đã qua checkpoint): bỏ câu đang chờ.
-    if (hint.pending && (ev.bossDefeated || ev.checkpoint !== undefined)) hint.pending = undefined;
-    if (!ev.playerDied || hint.used || !hint.box || this.save?.data.tutorial.off) return;
+    // Mất ngữ cảnh (thắng boss, qua checkpoint, vào đấu trường): bỏ câu đang chờ hoặc đang hiện.
+    if (deathHintExpired(ev)) hint.timed?.cancel();
+    if (!ev.playerDied || hint.used || !hint.timed || this.save?.data.tutorial.off) return;
     const config = getConfig(this);
     const data = config.ui.difficultyHint;
     if (world.deathStreak < data.deaths) return;
@@ -656,30 +654,45 @@ export class StageScene extends Phaser.Scene {
         ? weak
         : undefined;
     const early = !this.save || !workshopUnlocked(this.save, config);
-    hint.pending = difficultyHintText(data, this.difficultyId, counter, early);
-    this.telemetry?.hint();
+    hint.timed.post(difficultyHintText(data, this.difficultyId, counter, early), data.showSec);
+  }
+
+  /** Hộp nào đang muốn hiện (QB-70); gợi ý chết chỉ khi còn hiệu lực. */
+  private boxWants(): Partial<Record<BoxKind, boolean>> {
+    return {
+      dialogue: this.dialogue !== undefined,
+      result: !!this.result?.isOpen,
+      deathHint: !!this.deathHint.timed?.active,
+      tutorial: this.tutorial?.manager.view !== undefined,
+    };
   }
 
   /**
-   * Hiện gợi ý khi không có hội thoại hay màn Kết quả; gợi ý được ưu tiên hơn lời hướng dẫn
-   * (hướng dẫn tạm ẩn trong lúc gợi ý hiện). Tự tắt sau max(showSec, số ký tự / tốc độ đọc).
-   * Trả true khi gợi ý đang hiện.
+   * Đếm giờ gợi ý chết cho một bước trận đang chạy (QB-71, QB-72). Bước trận đứng yên (menu tạm
+   * dừng, bảng Kỹ năng, hội thoại, Kết quả) không gọi hàm này, nên không đếm gì. Ghi đo lường ở bước
+   * đầu tiên câu thật sự hiện (GDD 13: `difficulty_hint` là lúc hiện, không phải lúc chuẩn bị).
    */
-  private drawDeathHint(time: number, busy: boolean): boolean {
+  private stepDeathHint(): void {
+    const timed = this.deathHint.timed;
+    if (!timed?.active) return;
+    const clock = topBox(this.boxWants()) === 'deathHint' ? 'free' : 'covered';
+    if (timed.step(FIXED_STEP_MS / 1000, clock)) this.telemetry?.hint();
+  }
+
+  /**
+   * Vẽ hộp chữ theo thứ tự QB-70 (hội thoại > Kết quả > gợi ý chết > hướng dẫn). Gợi ý chết ẩn khi
+   * menu tạm dừng hay bảng Kỹ năng mở (giữ nguyên thời gian còn lại). Trả lời hướng dẫn được hiện.
+   */
+  private drawTextBoxes(): TutorialView | undefined {
     const hint = this.deathHint;
-    if (!hint.box) return false;
-    const data = getConfig(this).ui.difficultyHint;
-    if (hint.pending && !busy) {
+    const top = topBox(this.boxWants());
+    const frozen = !!this.pause?.isOpen || this.workshop !== undefined;
+    const text = hint.timed?.text;
+    if (top === 'deathHint' && !frozen && text) {
       const speaker = getConfig(this).ui.dialogue.speakers.nova ?? 'NOVA';
-      hint.box.show(speaker, hint.pending, true);
-      const sec = Math.max(data.showSec, hint.pending.length / data.charsPerSecRead);
-      hint.until = time + sec * 1000;
-      hint.pending = undefined;
-    } else if (hint.until > 0 && (time >= hint.until || busy)) {
-      hint.box.hide();
-      hint.until = 0;
-    }
-    return hint.until > 0;
+      hint.box?.show(speaker, text, true);
+    } else hint.box?.hide();
+    return top === 'tutorial' ? this.tutorial?.manager.view : undefined;
   }
 
   /** Id các độ khó còn khóa ở màn chiến dịch `campaign` theo bản lưu. */
@@ -791,35 +804,11 @@ export class StageScene extends Phaser.Scene {
    * khóa đang đóng cửa, khóa camera trong phòng (gồm hai cột cửa).
    */
   private updateCamera(world: StageWorld): void {
-    const roomIndex = world.rooms.findIndex((r) => r.state === 'locked');
-    const lock =
-      world.phase === 'boss' && world.gateCol !== undefined
-        ? 'boss'
-        : roomIndex >= 0
-          ? `room${roomIndex}`
-          : undefined;
-    if (lock === this.cameraLock) return;
-    this.cameraLock = lock;
-    const camera = this.cameras.main;
-    const room = world.rooms[roomIndex];
-    if (lock === 'boss' && world.gateCol !== undefined) {
-      camera.setBounds(
-        world.gateCol * TILE_SIZE,
-        0,
-        (world.map.cols - world.gateCol) * TILE_SIZE,
-        world.map.heightPx,
-      );
-    } else if (room) {
-      const r = room.spawn;
-      camera.setBounds(
-        r.first * TILE_SIZE,
-        0,
-        (r.last - r.first + 1) * TILE_SIZE,
-        world.map.heightPx,
-      );
-    } else {
-      camera.setBounds(0, 0, world.map.widthPx, world.map.heightPx);
-    }
+    // Khung camera theo phòng khóa, đấu trường (QB-121, logic/stage/camera-bounds.ts).
+    const { key, bounds } = cameraLockFor(world, TILE_SIZE);
+    if (key === this.cameraLock) return;
+    this.cameraLock = key;
+    this.cameras.main.setBounds(bounds.x, bounds.y, bounds.w, bounds.h);
   }
 
   /** Khiên C3 vỡ: 8 mảnh kính bay ra quanh Kai rồi mờ dần (vẽ cả lúc Kai đang nhấp nháy). */
