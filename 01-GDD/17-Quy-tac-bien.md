@@ -40,7 +40,7 @@ Tài liệu GDD mô tả luật chính. File này gom các **tình huống biên
 | QB-11 | Thả nút nạp khi đang cầm vũ khí boss | Không bắn gì (vũ khí boss không nạp) | — | Code (test `tests/qb-rules.test.ts`) |
 | QB-12 | Hết năng lượng giữa chừng | Không bắn; phát sự kiện `emptyWeapon` (tiếng "tạch", thanh năng lượng nháy 0,3 s); **không** tự đổi sang vũ khí khác | — | Code một phần: logic có test (`tests/qb-rules.test.ts`: không bắn, `emptyWeapon`, không tự đổi); chữ 0,6 s viết cứng ở Scene; tiếng "tạch" ở EP-12, nháy thanh ở EP-14 |
 | QB-13 | Năng lượng khi vào màn, chết, qua checkpoint | Tính riêng từng vũ khí. Đầy khi vào màn và khi chết; qua checkpoint **không** nạp lại | `refill` | Code (test `tests/qb-rules.test.ts`; "riêng từng vũ khí" chờ có vũ khí boss thứ hai) |
-| QB-14 | Vũ khí bắn nhanh khóa choáng boss liên tục | Trúng điểm yếu vẫn ×2,5 sát thương, nhưng sau khi hết choáng thì 1,5 s không choáng lại được. Choáng không xóa hạt Hoa Nở đã thả | `weakStunCooldownSec: 1.5` (chưa có) | Story MVP |
+| QB-14 | Vũ khí bắn nhanh khóa choáng boss liên tục | Trúng điểm yếu vẫn ×2,5 sát thương, nhưng sau khi hết choáng thì 1,5 s không choáng lại được. Trúng trong lúc boss đang choáng (choáng điểm yếu hoặc choáng sau Mưa đạn, Hoa Nở) không làm mới, không kéo dài choáng. Choáng không xóa hạt Hoa Nở đã thả | `bosses.json → rules.weakStunCooldownSec` 1,5 | Code (ST-15-14, `tests/boss-safety.test.ts`) |
 | QB-15 | Đổi qua lại hai vũ khí khi có nhiều ô | Vũ khí xếp theo thứ tự màn. Giữ nút đổi ≥ 0,3 s: đổi qua lại hai vũ khí dùng gần nhất. Cảm ứng: vuốt lên trên nút đổi | `controls.json → quickSwapHoldSec` (chưa có) | Sau cổng (cần khi có ≥ 3 vũ khí) |
 | QB-16 | Vũ khí boss bắn vào khiên Lính Kén | Mỗi cú trúng tính 1 lần vào `shieldHits`, bất kể sát thương | `enemies.json` | Story Stage 2–4 |
 | QB-18 | Prism Beam gặp khiên Lính Kén | Tia dừng ở mặt trước khiên, tính 1 lần `shieldHits`, không xuyên | — | Story Stage 2–4 (EP-15) |
@@ -64,7 +64,7 @@ Tình huống biên riêng của từng màn và nhiệm vụ phụ: `15-Nhiem-v
 | Mã | Tình huống | Luật | Tham số | Trạng thái |
 | --- | --- | --- | --- | --- |
 | QB-30 | Đạn Kai hạ boss và đòn boss hạ Kai trong cùng một bước | Boss về 0 máu ở bước nào thì thắng ở bước đó; đòn boss trong bước đó không tính | — | Code (`settleDefeat`, test `thorna.test.ts`) |
-| QB-31 | Một đòn vượt qua hai ngưỡng pha | Máu kẹp ở ngưỡng kế tiếp; boss bất tử 0,6 s để đổi pha và xóa đạn boss | `phaseShiftSec: 0.6` (chưa có) | Story MVP |
+| QB-31 | Một đòn vượt qua hai ngưỡng pha | Máu kẹp ở ngưỡng kết thúc pha đang chơi (không cao hơn máu hiện có); boss bất tử, đứng yên `phaseShiftSec` (trắng suốt), bỏ đòn đang dở, xóa đạn boss ngay trong bước đó (đạn kẻ địch thường giữ). Chết tính là pha sau pha cuối: đòn chí mạng ở pha áp chót cũng kẹp. So với pha đang chơi (pha đổi ở bước sau): hai đòn cùng bước 100 → 55 → 25 thì đòn sau gây 0 và kẹp. Đạn Kai trúng lúc bất tử thì mất (sự kiện `bossImmune`, không phải `blocked` của khiên), không Trừng Phạt, nổ lan không trừ máu | `bosses.json → rules.phaseShiftSec` 0,6 | Code (ST-15-14, `tests/boss-safety.test.ts`) |
 | QB-32 | Kai chết trong phòng boss | Boss đầy máu, về pha 1; đếm chết cho gợi ý về 0 khi vào lại đấu trường | — | Code |
 | QB-33 | Kai chết trong lúc đếm giờ trước màn Kết quả | Không mất trận thắng (boss đã chết, trận đã ghi) | — | Code (phần logic có test `tests/qb-rules.test.ts`; đếm giờ ở Scene không xóa khi chết) |
 | QB-34 | Thưởng boss khi đánh lại | Thưởng Core Bit và EXP của boss trả **một lần cho mỗi cặp boss–độ khó**; vũ khí boss chỉ trao lần thắng đầu tiên | `bosses.json → rewardCoreBit`, `rewardExp`; `progress.difficulty` | Code |
@@ -221,8 +221,8 @@ Mỗi trường dưới đây phải có kiểm tra trong `game/src/core/*-confi
 
 | Trường | File | Giá trị đề xuất | Luật |
 | --- | --- | --- | --- |
-| `weakStunCooldownSec` | `bosses.json` (chung) | 1,5 | QB-14 |
-| `phaseShiftSec` | `bosses.json` (chung) | 0,6 | QB-31 |
+| `weakStunCooldownSec` | `bosses.json → rules` (đã có, ≤ 5) | 1,5 | QB-14 |
+| `phaseShiftSec` | `bosses.json → rules` (đã có, ≤ 2) | 0,6 | QB-31 |
 | `minTelegraphSec` (mini-boss) | `enemies.json` | 0,5 | QB-21 |
 | `activeRangeTilesY`, `attackRequiresOnScreen` | `enemies.json → rules` | 7, true | QB-23 |
 | `pickups.energyChance`, `pickups.energy` | `enemies.json` | 0,06; 4 | QB-17 |
@@ -247,7 +247,7 @@ Mỗi luật nhãn Code phải có (hoặc được thêm) một test Vitest man
 
 | Nhóm | Luật | Đưa vào epic |
 | --- | --- | --- |
-| Boss an toàn: kẹp pha, chống khóa choáng | QB-14, QB-31 | EP-15 (ST-15-14) |
+| Boss an toàn: kẹp pha, chống khóa choáng | QB-14, QB-31 | EP-15 (ST-15-14, xong 15/11) |
 | Kẻ địch: tầm dọc, chỉ bắn khi trên màn, báo trước mini-boss | QB-21, QB-23 | EP-15 (ST-15-15) |
 | Vũ khí Stage 2–4 gặp khiên, vô hiệu chồng nhau; gió khi bị đánh | QB-07, QB-18, QB-19 | EP-15, EP-17 |
 | Nano Cell và vật phẩm năng lượng | QB-17, QB-50…54 | EP-15 (ST-15-16, dữ liệu, logic thuần); nút cảm ứng ở EP-14 |
@@ -274,4 +274,5 @@ Mỗi luật nhãn Code phải có (hoặc được thêm) một test Vitest man
 | 14/11/2026 | Bản 1.3: thêm QB-88 (chuỗi hướng dẫn khi chơi lại, lỗi PR #9 tìm ra), đã code ở ST-21-01 (93 luật) |
 | 14/11/2026 | Bản 1.4: thêm mục 10.1 Đo lường, QB-150…157 từ duyệt Technical Director cho GDD 13; QB-150, 153 đã code, QB-151, 155, 156 code phần lõi ở ST-13-01 (101 luật) |
 | 15/11/2026 | Bản 1.5: QB-70…72 code đủ ở ST-14-08 (hiện lại, hủy 10 s lúc trận chạy, đồng hồ trận, hủy khi vào đấu trường hoặc tắt hướng dẫn); test khóa QB-02, 11, 12, 13, 22, 24, 33, 41, 61, 121, 132; QB-24 có lỗi (Golem dựng lại), đã sửa và mở rộng cho kẻ địch của phòng khóa đã xong |
+| 15/11/2026 | QB-14, QB-31 code ở ST-15-14 (sau duyệt Technical Director): không kéo dài choáng sau Mưa đạn, Hoa Nở; chết tính là pha sau pha cuối; hai đòn cùng bước; sự kiện `bossImmune` |
 | 14/11/2026 | Bản 1.1: thêm QB-95…98 từ `13-Do-luong-MVP.md`, `14-Cai-dat-Tiep-can.md`; QB-140…146 (âm thanh) từ `12-Am-thanh.md` (88 luật) |

@@ -41,6 +41,11 @@ export interface WorldEvents {
   swapped: boolean;
   hitTarget: boolean;
   blocked: boolean;
+  /**
+   * Đạn của Kai trúng boss đang bất tử đổi pha (QB-31): đạn mất, không sát thương. Tách khỏi
+   * `blocked` (khiên) để hướng dẫn S06 không tính là thất bại.
+   */
+  bossImmune: boolean;
   shieldBroken: boolean;
   /** Phát phá khiên làm mòn khiên Lính Kén nhưng chưa vỡ. */
   shieldHit: boolean;
@@ -96,6 +101,7 @@ export function noWorldEvents(): WorldEvents {
     swapped: false,
     hitTarget: false,
     blocked: false,
+    bossImmune: false,
     shieldBroken: false,
     shieldHit: false,
     hitEnemy: false,

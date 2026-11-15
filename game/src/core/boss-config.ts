@@ -153,12 +153,15 @@ export function parseBossRules(value: unknown): BossRules {
   // Bất tử lâu thì người chơi tưởng đạn không trúng (GDD 9: không khóa người chơi lâu).
   if (phaseShiftSec > 2)
     throw new ConfigError(`bosses.rules.phaseShiftSec: tối đa 2 giây (đang là ${phaseShiftSec})`);
-  return {
-    weakStunCooldownSec: num(r.weakStunCooldownSec, 'bosses.rules.weakStunCooldownSec', {
-      min: 0,
-    }),
-    phaseShiftSec,
-  };
+  const weakStunCooldownSec = num(r.weakStunCooldownSec, 'bosses.rules.weakStunCooldownSec', {
+    min: 0,
+  });
+  // Hồi choáng quá dài thì vũ khí khắc chế gần như không còn tác dụng choáng.
+  if (weakStunCooldownSec > 5)
+    throw new ConfigError(
+      `bosses.rules.weakStunCooldownSec: tối đa 5 giây (đang là ${weakStunCooldownSec})`,
+    );
+  return { weakStunCooldownSec, phaseShiftSec };
 }
 
 export interface BossData {

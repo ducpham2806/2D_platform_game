@@ -154,14 +154,19 @@ export class Boss {
   takeHit(hit: OutgoingHit): boolean {
     if (this.state === 'dead' || this.state === 'waiting' || this.shift > 0) return false;
     let hp = Math.max(0, this.hp - hit.amount);
-    const next = this.data.phases[this.phase];
-    if (next && this.phaseFor((hp / this.data.hp) * 100) >= this.phase + 2) {
-      hp = Math.min(this.hp, (next.untilHpPct / 100) * this.data.hp);
+    // Chết tính là "pha" sau pha cuối: một đòn từ pha áp chót xuống 0 cũng là bỏ qua pha cuối.
+    const landing = hp <= 0 ? this.data.phases.length : this.phaseFor((hp / this.data.hp) * 100);
+    const current = this.data.phases[this.phase];
+    if (current && landing >= this.phase + 2) {
+      // Nhích dưới ngưỡng một chút để số thực không làm boss kẹt lại pha cũ (ngưỡng như 33,3).
+      const threshold = (current.untilHpPct / 100) * this.data.hp * (1 - 1e-12);
+      hp = Math.min(this.hp, threshold);
       this.beginPhaseShift();
     }
     this.hp = hp;
     this.flash = 0.08;
-    if (hit.stunSec > 0 && this.stun <= 0 && this.stunCooldown <= 0 && this.shift <= 0)
+    // Choáng mới chỉ khi không đang choáng (kể cả choáng sau Mưa đạn, Hoa Nở) và hết hồi choáng.
+    if (hit.stunSec > 0 && !this.stunned && this.stunCooldown <= 0 && this.shift <= 0)
       this.stun = hit.stunSec;
     return true;
   }

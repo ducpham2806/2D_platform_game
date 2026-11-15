@@ -151,9 +151,9 @@ export function resolvePlayerHits(
     }
     if (!p.alive || !boss || p.hitIds.has(BOSS_ID) || !overlaps(p, boss.box)) continue;
     if (boss.shifting) {
-      // Boss bất tử để đổi pha (QB-31): đạn mất như trúng khiên, không sát thương, không choáng.
+      // Boss bất tử để đổi pha (QB-31): đạn mất, không sát thương, không choáng, không Trừng Phạt.
       p.alive = false;
-      ev.blocked = true;
+      ev.bossImmune = true;
       continue;
     }
     const raw = outgoingDamage({

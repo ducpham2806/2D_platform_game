@@ -811,7 +811,7 @@ Quy ước như EP-08 đến EP-10: Story ≤ 1–2 ngày, mỗi Story nhúng s�
 | ST-15-09 | Mini-boss Prism Sentinel và Gale Roc: lớp `Boss` + bộ chuyển cho `LockedRoom` (Q1 đã chốt; Frost Titan dùng `golem` ở ST-15-06). Gió đẩy của Vỗ Cánh nối vào `WindZone` ở ST-15-08b | 01c, 02, 14, 15 | 2,5 ngày |
 | ST-15-10 | Boss Lumen: `beam`, dịch chuyển, `focus` (Thử thách); mô phỏng bot | 02, 14 | 2 ngày |
 | ST-15-13 | Phòng thử ASCII cho phần trước cổng (kẻ địch, cơ chế, mini-boss, Lumen), nối màn Chuẩn bị và hội thoại boss; tín hiệu hướng dẫn mới. Phòng của 07, 08b, 11, 12 thêm trong chính các Story đó | 02–06, 08a, 09, 10 | 1,5 ngày |
-| ST-15-14 | **Boss an toàn:** `weakStunCooldownSec` 1,5 s chống khóa choáng (QB-14), `phaseShiftSec` 0,6 s khi một đòn vượt hai ngưỡng pha (QB-31); áp cả Thorna | 01a | 1 ngày |
+| ST-15-14 | **Boss an toàn:** `weakStunCooldownSec` 1,5 s chống khóa choáng (QB-14), `phaseShiftSec` 0,6 s khi một đòn vượt hai ngưỡng pha (QB-31); áp cả Thorna. **Xong 15/11/2026** (làm trước 01a: luật chung, `stories/EP-15-stage-2-4.md`) | 01a | 1 ngày |
 | ST-15-15 | **Kẻ địch:** mini-boss báo trước ≥ 0,5 s (QB-21); tầm hoạt động dọc 7 ô, chỉ báo trước và bắn khi đã trên màn (QB-23) | 01a | 1 ngày |
 | ST-15-16 | **Nano Cell và vật phẩm năng lượng** (QB-17, QB-50…54): dữ liệu và logic thuần; nút cảm ứng ở EP-14 | 01a | 1 ngày |
 

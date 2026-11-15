@@ -12,7 +12,8 @@ import { outgoingDamage } from '@/logic/combat/damage';
 import { ProjectilePool } from '@/logic/combat/projectiles';
 import { createRng } from '@/logic/rng';
 import { TileMap } from '@/logic/tilemap';
-import { IDLE_INPUT } from '@/logic/world/world-types';
+import { resolvePlayerHits } from '@/logic/world/hits';
+import { IDLE_INPUT, noWorldEvents } from '@/logic/world/world-types';
 import { StageWorld } from '@/logic/world/stage-world';
 import { THORNA_ROOM_ROWS } from '@/stages/thorna-room';
 import { loadData } from './helpers';
@@ -173,33 +174,140 @@ describe('QB-31: một đòn vượt hai ngưỡng pha', () => {
     expect(boss.phase).toBe(1);
   });
 
-  it('QB-31: đòn chí mạng từ pha đầu không giết boss mà kẹp ở ngưỡng đầu; ở pha áp chót thì chết', () => {
+  it('QB-31: đòn chí mạng không bỏ qua pha nào: pha đầu kẹp 60%, pha áp chót kẹp 30%, pha cuối thì chết', () => {
     const a = makeBoss();
     a.boss.step(PLAYER, a.pool, DT);
     a.boss.takeHit(plainHit(thorna.hp * 10));
     expect(pct(a.boss)).toBe(first);
     expect(a.boss.settleDefeat()).toBe(false);
+    // Pha áp chót: chết tính là pha sau pha cuối, nên đòn chí mạng cũng bị kẹp.
     const b = makeBoss();
     b.boss.hp = (thorna.hp * (second + 5)) / 100;
     b.boss.step(PLAYER, b.pool, DT);
     expect(b.boss.phase).toBe(1);
     b.boss.takeHit(plainHit(thorna.hp));
-    expect(b.boss.shifting).toBe(false);
-    expect(b.boss.settleDefeat()).toBe(true);
+    expect(pct(b.boss)).toBe(second);
+    expect(b.boss.shifting).toBe(true);
+    expect(b.boss.settleDefeat()).toBe(false);
+    // Pha cuối: chết bình thường.
+    const c = makeBoss();
+    c.boss.hp = (thorna.hp * second) / 200;
+    c.boss.step(PLAYER, c.pool, DT);
+    expect(c.boss.phase).toBe(2);
+    c.boss.takeHit(plainHit(thorna.hp));
+    expect(c.boss.shifting).toBe(false);
+    expect(c.boss.settleDefeat()).toBe(true);
   });
 
-  it('QB-31: hai đòn cùng bước, đòn đầu đã qua một ngưỡng: đòn sau không đẩy qua ngưỡng thứ hai', () => {
+  it('QB-31: hai đòn cùng bước (100 → 55 → 25): so với pha đang chơi, đòn sau kẹp nên gây 0', () => {
     const { boss, pool } = makeBoss();
     boss.step(PLAYER, pool, DT);
     boss.takeHit(plainHit(thorna.hp * 0.45));
     expect(pct(boss)).toBe(55);
     // Chưa bước nên boss vẫn ở pha đầu: đòn này kẹp, không hồi máu lên ngưỡng.
-    boss.takeHit(plainHit(thorna.hp * 0.4));
+    boss.takeHit(plainHit(thorna.hp * 0.3));
     expect(pct(boss)).toBe(55);
     expect(boss.shifting).toBe(true);
+    let changes = 0;
+    for (let i = 0; i < 60; i += 1) if (boss.step(PLAYER, pool, DT).phaseChanged) changes += 1;
+    expect(changes).toBe(1);
+    expect(boss.phase).toBe(1);
   });
 
-  it('QB-31: trong StageWorld: đạn boss bị xóa, đạn kẻ địch thường còn; đạn Kai trúng boss bị chặn', () => {
+  it('QB-31: theo độ khó (máu ×0,8, ×1,25): kẹp đúng ngưỡng', () => {
+    for (const d of config.difficulties) {
+      const { boss, pool } = makeBoss({ ...thorna, hp: thorna.hp * d.enemyHp });
+      boss.step(PLAYER, pool, DT);
+      boss.takeHit(plainHit(boss.data.hp * 0.9));
+      expect(pct(boss), d.id).toBe(first);
+      boss.step(PLAYER, pool, DT);
+      expect(boss.phase, d.id).toBe(1);
+    }
+  });
+
+  it('QB-31: Thử thách: đang đánh dấu Rễ Đuổi thì kẹp pha bỏ hết vệt', () => {
+    const challenge = config.bossesChallenge.thorna!;
+    const { boss, pool } = makeBoss(challenge);
+    boss.hp = (challenge.hp * (second + 5)) / 100;
+    for (let i = 0; i < 60 * 60 && boss.stalkMarks.length === 0; i += 1) {
+      boss.step(PLAYER, pool, DT);
+      pool.update(DT, ARENA);
+    }
+    expect(boss.stalkMarks.length).toBeGreaterThan(0);
+    boss.takeHit(plainHit(challenge.hp));
+    expect(boss.shifting).toBe(true);
+    expect(boss.stalkMarks).toEqual([]);
+    expect(boss.attack).toBeUndefined();
+  });
+
+  it('QB-14, QB-31: hồi choáng và bất tử đổi pha không ảnh hưởng nhau', () => {
+    const { boss, pool } = makeBoss();
+    boss.step(PLAYER, pool, DT);
+    boss.takeHit(weakHit());
+    while (boss.stunned) boss.step(PLAYER, pool, DT);
+    const cooldown = boss.stunCooldownSec;
+    expect(cooldown).toBe(rules.weakStunCooldownSec);
+    boss.takeHit(plainHit(thorna.hp * 0.8));
+    let steps = 0;
+    while (boss.shifting) {
+      boss.step(PLAYER, pool, DT);
+      steps += 1;
+    }
+    expect(steps * DT).toBeCloseTo(rules.phaseShiftSec, 5);
+    // Boss đứng yên lúc đổi pha nên hồi choáng không trôi; sau đó trôi tiếp.
+    expect(boss.stunCooldownSec).toBe(cooldown);
+    boss.step(PLAYER, pool, DT);
+    expect(boss.stunCooldownSec).toBeCloseTo(cooldown - DT, 9);
+  });
+
+  it('QB-31: đạn Kai lúc boss bất tử: mất, báo bossImmune (không phải blocked), không Trừng Phạt, nổ lan V2 không trừ máu', () => {
+    const { boss, pool } = makeBoss();
+    boss.step(PLAYER, pool, DT);
+    const shot = (kind: 'shot' | 'charged', damage: number) =>
+      pool.spawn({
+        owner: 'player',
+        kind,
+        x: boss.box.x + 2,
+        y: boss.box.y + 2,
+        w: 4,
+        h: 4,
+        vx: 0,
+        vy: 0,
+        damage,
+        kindMul: 1,
+        weapon: 'Arc Cannon',
+        pierceLeft: 0,
+        breaksShield: false,
+        maxDistance: 100,
+        ttl: 1,
+        attached: false,
+      });
+    // Hai viên nạp đầy cùng bước: viên đầu kẹp pha, viên sau (và nổ lan) bị chặn.
+    shot('charged', thorna.hp * 0.8);
+    shot('charged', thorna.hp * 0.8);
+    const ev = noWorldEvents();
+    const dealt: number[] = [];
+    resolvePlayerHits(
+      pool,
+      { targets: [], enemies: [], boss },
+      config.weapons,
+      1,
+      ev,
+      [],
+      { burstDamageMul: 1, burstRadiusPx: 200, punishMul: 3 },
+      (_w, amount) => dealt.push(amount),
+    );
+    expect(pct(boss)).toBe(first);
+    expect(ev.bossImmune).toBe(true);
+    expect(ev.blocked).toBe(false);
+    expect(ev.punishHit).toBe(false);
+    // Đo lường ghi máu thật bị trừ (tới ngưỡng), không ghi phần bị kẹp.
+    expect(dealt).toHaveLength(1);
+    expect(dealt[0]).toBeCloseTo((thorna.hp * (100 - first)) / 100, 6);
+    expect(pool.all.filter((p) => p.alive && p.owner === 'player')).toHaveLength(0);
+  });
+
+  it('QB-31: trong StageWorld: đạn boss bị xóa ngay bước kẹp (Kai không trúng), đạn kẻ địch thường còn, đổi pha báo một lần', () => {
     const world = new StageWorld({
       rows: THORNA_ROOM_ROWS,
       tileSize: t,
@@ -216,41 +324,53 @@ describe('QB-31: một đòn vượt hai ngưỡng pha', () => {
     const boss = world.boss!;
     expect(world.phase).toBe('boss');
     world.step(IDLE_INPUT);
-    // Đặt sẵn một viên đạn boss và một viên của kẻ địch thường ở góc trên, xa Kai.
-    const far = { x: 2 * t, y: t };
-    world.pool.spawn(enemyProjectile(t, 'enemyShot', far.x, far.y, { w: 4, h: 4 }, 0, 0, 5));
+    // Một viên đạn boss nằm đè lên Kai, một viên của kẻ địch thường ở góc trên, xa Kai.
+    const pl = world.player.box;
+    world.pool.spawn(enemyProjectile(t, 'enemyShot', pl.x + 2, pl.y + 4, { w: 4, h: 4 }, 0, 0, 5));
     world.pool.spawn({
-      ...enemyProjectile(t, 'enemyShot', far.x + t, far.y, { w: 4, h: 4 }, 0, 0, 5),
+      ...enemyProjectile(t, 'enemyShot', 2 * t, t, { w: 4, h: 4 }, 0, 0, 5),
       source: 'enemy:thap_gai',
     });
+    const hpKai = world.player.hp;
     boss.takeHit(plainHit(thorna.hp * 0.8));
-    world.step(IDLE_INPUT);
+    const first = world.step(IDLE_INPUT);
+    expect(first.playerHurt).toBe(false);
+    expect(world.player.hp).toBe(hpKai);
     const enemyShots = world.pool.all.filter((p) => p.owner === 'enemy');
     expect(enemyShots.map((p) => p.source)).toEqual(['enemy:thap_gai']);
-    // Đạn Kai bay vào boss lúc bất tử: mất, báo chặn, máu không đổi.
-    const hp = boss.hp;
-    world.pool.spawn({
-      owner: 'player',
-      kind: 'shot',
-      x: boss.box.x + 2,
-      y: boss.box.y + 2,
-      w: 4,
-      h: 4,
-      vx: 0,
-      vy: 0,
-      damage: 1,
-      kindMul: 1,
-      weapon: 'Arc Cannon',
-      pierceLeft: 0,
-      breaksShield: false,
-      maxDistance: 100,
-      ttl: 1,
-      attached: false,
-    });
-    const ev = world.step(IDLE_INPUT);
-    expect(boss.shifting).toBe(true);
-    expect(ev.blocked).toBe(true);
-    expect(boss.hp).toBe(hp);
+    let changes = first.bossPhaseChanged ? 1 : 0;
+    for (let i = 0; i < 60; i += 1) if (world.step(IDLE_INPUT).bossPhaseChanged) changes += 1;
+    expect(changes).toBe(1);
+  });
+});
+
+describe('QB-14: choáng riêng của boss (sau Mưa đạn, Hoa Nở)', () => {
+  it('QB-14: trúng điểm yếu lúc boss đang choáng sau Hoa Nở không kéo dài khoảng hở', () => {
+    const bloom = thorna.attacks.bloom!;
+    const measure = (hitAtStart: boolean): number => {
+      const { boss, pool } = makeBoss();
+      boss.hp = thorna.hp * 0.2;
+      for (let i = 0; i < 60 * 60; i += 1) {
+        const ev = boss.step(PLAYER, pool, DT);
+        pool.update(DT, ARENA);
+        if (ev.attackStarted === 'bloom') break;
+      }
+      for (let i = 0; i < 60 * 10 && boss.state !== 'stunned'; i += 1) {
+        boss.step(PLAYER, pool, DT);
+        pool.update(DT, ARENA);
+      }
+      expect(boss.state).toBe('stunned');
+      if (hitAtStart) boss.takeHit(weakHit());
+      let steps = 0;
+      while (boss.stunned && steps < 60 * 10) {
+        boss.step(PLAYER, pool, DT);
+        steps += 1;
+      }
+      return steps * DT;
+    };
+    const plain = measure(false);
+    expect(Math.abs(plain - bloom.stunAfterSec)).toBeLessThanOrEqual(DT + 1e-9);
+    expect(measure(true)).toBeCloseTo(plain, 5);
   });
 });
 

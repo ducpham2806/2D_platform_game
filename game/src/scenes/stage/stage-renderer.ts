@@ -153,7 +153,8 @@ function drawBoss(
     }
   } else {
     const color =
-      boss.flash > 0
+      // Nháy trắng khi trúng đòn, và trắng suốt lúc bất tử đổi pha (QB-31: đạn không vào).
+      boss.flash > 0 || boss.shifting
         ? 0xffffff
         : boss.stunned
           ? 0x9be7ff
