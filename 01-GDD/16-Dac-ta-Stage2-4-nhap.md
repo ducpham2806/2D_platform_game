@@ -594,7 +594,7 @@ Ghi chú: wireframe Stage 4 ghi bệ mây rơi ở D là "cơ chế" của đo�
 | Gió đổi hướng | Chu kỳ `cycleSec`; trước khi đổi `warnSec`: cờ quay, mũi tên ở mép màn hình đổi chiều; lực đổi dần trong `rampSec` | `wind.cycleSec = 4`, `wind.warnSec = 1,0`, `wind.rampSec = 0,3` |
 | Bệ mây | Bục một chiều (đứng từ trên, đi xuyên từ dưới, xuống bằng xuống + nhảy như bục một chiều có sẵn) | `cloud.oneWay = true` |
 | Bệ mây trôi | Đi qua lại giữa 2 điểm ghi trên bản đồ, chở Kai bằng `dx`, `dy` như dây leo | `cloud.drift.speedTilesPerSec = 1,5` |
-| Bệ mây tan (`CrumblePlatform`, `mode: "sink"`) | Dùng hai mốc báo nứt `crumble.warnAtSec` của băng vỡ, sau đó chìm xuống với tốc độ `sinkTilesPerSec`. Màu xám để phân biệt mây trắng | `crumble.sink.triggerSec = 0,8`, `sinkTilesPerSec = 3`, `respawnSec = 4` |
+| Bệ mây tan (`CrumblePlatform`, `mode: "sink"`) | Dùng hai mốc báo nứt `crumble.warnAtSec` của băng vỡ. Chở Kai khi chìm xuống, mất khi chạm nền hoặc ra khỏi đáy bản đồ. Tính thời gian mọc lại từ lúc bắt đầu chìm, chờ vị trí cũ trống. Màu xám để phân biệt mây trắng | `crumble.sink.triggerSec = 0,8`, `sinkTilesPerSec = 3`, `respawnSec = 4` |
 | Hố | Luật hố Stage 1 (20 sát thương, về checkpoint, không chết nếu còn máu) | `mechanics.pit` (có sẵn) |
 
 Kai trên không đi ngược gió còn 5,5 − 2,5 = 3,0 ô/s, xuôi gió 8,0 ô/s. Vì vậy khe nhảy ngược gió phải đo riêng sau cổng `[SAU CỔNG]`; luật thiết kế: khe đường chính ngược gió ≤ `safeGapTiles` đo **khi có gió ngược**.
@@ -810,7 +810,7 @@ Quy ước như EP-08 đến EP-10: Story ≤ 1–2 ngày, mỗi Story nhúng s�
 | ST-15-04 | **Xong 21/11/2026.** API vô hiệu QB-19, Frost Shard `shard` và `CoolantFlow`. Phòng thử băng cho mượn vũ khí, dùng ba bậc một chiều để lên gờ. **Điều kiện của Phase Step (ST-08-09)** | 01b | 2 ngày |
 | ST-15-05 | Gale Cutter (`boomerang`, hủy tối đa 2 đạn kẻ địch thường mỗi lần ném) và sương lạnh dùng `Barrier` (Két Stage 3). Xong 21/11/2026 | 01c | 1,5 ngày |
 | ST-15-06 | Gương Quang (`drone` và đạn dội), Người Tuyết Máy (`shieldCharger`), Tháp Băng (`turret` và đạn cong), Frost Titan (`golem` và sóng khi tảng đáp), kèm cấu hình Thử thách và phòng thử. Xong 22/11/2026 | 01a, 01b | 2 ngày |
-| ST-15-08a | `CrumblePlatform` (break, sink) và bệ mây trôi (đường hai điểm): phần cơ chế **không** đụng `player-physics` | 01b, 01c | 1 ngày |
+| ST-15-08a | `CrumblePlatform` (break, sink), bệ mây trôi theo hai điểm và phòng thử. Xong 22/11/2026 | 01b, 01c | 1 ngày |
 | ST-15-09 | Mini-boss Prism Sentinel và Gale Roc dùng lớp `Boss` và bộ chuyển cho `LockedRoom` (Q1). Gió đẩy của Vỗ Cánh nối vào `WindZone` ở ST-15-08b. Thêm dữ liệu Prism Sentinel (từ 01a) và Gale Roc (từ 01c) | 01c, 02, 14, 15 | 2,5 ngày |
 | ST-15-10 | Boss Lumen: `beam`, dịch chuyển, `focus` (Thử thách); mô phỏng bot; thêm dữ liệu Lumen (dời từ 01a). Phụ thuộc 03: thắng Lumen trước khi Prism Beam có hành vi thì Loadout không cấp và bản lưu không ghi vũ khí | 02, 03, 14 | 2 ngày |
 | ST-15-13 | Phòng thử ASCII cho phần trước cổng (kẻ địch, cơ chế, mini-boss, Lumen), nối màn Chuẩn bị và hội thoại boss; tín hiệu hướng dẫn mới. Phòng của 07, 08b, 11, 12 thêm trong chính các Story đó | 02–06, 08a, 09, 10 | 1,5 ngày |

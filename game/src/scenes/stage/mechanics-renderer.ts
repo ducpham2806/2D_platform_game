@@ -2,6 +2,7 @@ import type Phaser from 'phaser';
 import { GALE_CUTTER } from '../../logic/combat/loadout';
 import { laserBox } from '../../logic/stage/laser-path';
 import type { StageWorld } from '../../logic/world/stage-world';
+import { type CrumblePlatform, PLATFORM_DEPTH } from '../../logic/world/platforms';
 import { VINE_PLATFORM_THICKNESS } from '../../logic/world/stage-mechanics';
 import type { StageOptics } from '../../logic/world/stage-optics';
 
@@ -11,7 +12,10 @@ export function dynamicSolidCells(world: StageWorld): (col: number, row: number)
     ...world.barriers.map((b) => b.spawn),
     ...(world.optics?.doors.map((d) => d.spawn) ?? []),
   ];
-  return (c, r) => spans.some((s) => c >= s.first && c <= s.last && r >= s.top && r <= s.bottom);
+  const ice = world.crumbles.filter((p) => p.spawn.mode === 'break').map((p) => p.spawn);
+  return (c, r) =>
+    spans.some((s) => c >= s.first && c <= s.last && r >= s.top && r <= s.bottom) ||
+    ice.some((p) => r === p.row && c >= p.col && c < p.col + p.widthTiles);
 }
 
 /**
@@ -63,6 +67,13 @@ export function drawMechanics(
     g.fillStyle(0x7bd389, 1).fillRect(p.x, p.y, p.w, VINE_PLATFORM_THICKNESS);
   }
 
+  for (const c of world.cloudDrifts) {
+    const { x, y, w } = c.platform;
+    g.fillStyle(0xa3b9d5, 1).fillRect(x, y, w, PLATFORM_DEPTH);
+    g.fillStyle(0xebf6ff, 1).fillRect(x + 1, y, w - 2, 2);
+  }
+  for (const p of world.crumbles) drawCrumble(g, p, timeMs);
+
   for (const room of world.rooms) {
     if (room.state !== 'locked') continue;
     for (const d of room.spawn.doors) {
@@ -89,6 +100,36 @@ export function drawMechanics(
     const cy = y + h / 2;
     g.fillStyle(0x4fd1ff, pulse).fillTriangle(cx, y, x + w, cy, cx, y + h);
     g.fillStyle(0x4fd1ff, pulse).fillTriangle(cx, y, x, cy, cx, y + h);
+  }
+}
+
+function drawCrumble(g: Phaser.GameObjects.Graphics, slab: CrumblePlatform, timeMs: number): void {
+  const ice = slab.spawn.mode === 'break';
+  const { x, y, w } = slab.platform;
+  if (slab.state === 'broken') {
+    const age = slab.collapsedFor ?? 0;
+    if (!ice || age >= 0.35) return;
+    g.fillStyle(0x9cdefa, 1 - age / 0.35);
+    for (let i = 0; i < 5; i += 1) {
+      const px = x + ((i + 0.5) * w) / 5 + (i - 2) * 12 * age;
+      const py = y + 130 * age * age + i * 7 * age;
+      g.fillTriangle(px - 3, py, px + 4, py + 1, px, py + 5);
+    }
+    return;
+  }
+  const cracks = slab.cracks;
+  const shift = cracks === 3 && Math.floor(timeMs / 50) % 2 === 0 ? 1 : 0;
+  g.fillStyle(ice ? (cracks === 3 ? 0xe9f8ff : 0x94def9) : 0x91a0b9, 1).fillRect(
+    x + shift,
+    y,
+    w,
+    PLATFORM_DEPTH,
+  );
+  g.fillStyle(ice ? 0x3b79a1 : 0x66738c, 1).fillRect(x + shift, y + PLATFORM_DEPTH - 1, w, 1);
+  g.lineStyle(1, ice ? 0x183f66 : 0x344057, 1);
+  for (let i = 0; i < cracks; i += 1) {
+    const px = x + shift + ((i + 1) * w) / 4;
+    g.lineBetween(px, y, px - 3, y + 2).lineBetween(px - 3, y + 2, px + 2, y + 3);
   }
 }
 

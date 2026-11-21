@@ -1,4 +1,5 @@
 import { isObject, type Json } from '../../core/json-check';
+import { firstFlightHit } from '../combat/flight';
 import { Tile, TileMap } from '../tilemap';
 import {
   LASER_DIRECTIONS,
@@ -9,6 +10,8 @@ import {
 import {
   type BarrierSpawn,
   type Cell,
+  type CloudDriftSpawn,
+  type CrumbleSpawn,
   edgeDoorCells,
   type EnemySpawn,
   type OpticsLayout,
@@ -53,6 +56,8 @@ const OBJECT_CLASSES = [
   'lightSensor',
   'opticalDoor',
   'coolant',
+  'crumblePlatform',
+  'cloudDrift',
   'section',
 ] as const;
 type ObjectClass = (typeof OBJECT_CLASSES)[number];
@@ -407,6 +412,65 @@ function buildLayout(map: TileMap, objects: readonly TiledObject[]): StageLayout
     return region;
   });
 
+  const platformCells = new Map<number, TiledObject>();
+  const reservePlatform = (o: TiledObject, { col: first, row }: Cell, width: number): void => {
+    if (first < 0 || first + width > map.cols || row < 0 || row >= map.rows)
+      fail(label(o), 'bệ vượt ra ngoài bản đồ');
+    for (let col = first; col < first + width; col += 1) {
+      const key = row * map.cols + col;
+      const occupied = platformCells.get(key);
+      if (
+        map.get(col, row) !== Tile.Empty ||
+        doorCells.has(key) ||
+        overlapsBarrier(col, row) ||
+        opticalCells.has(key) ||
+        coolantCells.has(key) ||
+        (occupied !== undefined && occupied !== o)
+      )
+        fail(label(o), `ô bệ (${col}, ${row}) phải trống`);
+      platformCells.set(key, o);
+    }
+  };
+  const platformOrigin = (o: TiledObject) => {
+    if (
+      o.point ||
+      o.h !== t ||
+      ![o.x, o.y, o.w].every((px) => Number.isInteger(px / t)) ||
+      o.w <= 0
+    )
+      fail(label(o), 'bệ cần hình chữ nhật cao 1 ô, căn theo lưới');
+    const start = { col: o.x / t, row: o.y / t, widthTiles: o.w / t };
+    reservePlatform(o, start, start.widthTiles);
+    return start;
+  };
+  const crumbles: CrumbleSpawn[] = of('crumblePlatform').map((o) => {
+    const mode = propStr(o.props, 'mode', label(o));
+    if (mode !== 'break' && mode !== 'sink') fail(label(o), 'mode phải là break hoặc sink');
+    return { ...platformOrigin(o), mode };
+  });
+  const cloudDrifts: CloudDriftSpawn[] = of('cloudDrift').map((o) => {
+    const start = platformOrigin(o);
+    const col = propNum(o.props, 'endCol', label(o));
+    const row = propNum(o.props, 'endRow', label(o));
+    if (col === undefined || row === undefined || !Number.isInteger(col) || !Number.isInteger(row))
+      fail(label(o), 'endCol và endRow phải là tọa độ ô nguyên');
+    if (col === start.col && row === start.row) fail(label(o), 'hai đầu đường trôi phải khác nhau');
+    const end = { col, row };
+    reservePlatform(o, end, start.widthTiles);
+    if (
+      firstFlightHit(
+        map,
+        { x: o.x, y: o.y, w: o.w, h: 1 },
+        (col - start.col) * t,
+        (row - start.row) * t,
+        false,
+        (col, row) => doorCells.has(row * map.cols + col) || overlapsBarrier(col, row),
+      )
+    )
+      fail(label(o), 'đường trôi chạm khối đặc hoặc cửa');
+    return { ...start, end };
+  });
+
   return {
     map,
     spawn: cellOf(spawns[0]!),
@@ -433,6 +497,8 @@ function buildLayout(map: TileMap, objects: readonly TiledObject[]): StageLayout
     secrets,
     barriers,
     ...(coolant.length ? { coolant } : {}),
+    ...(crumbles.length ? { crumbles } : {}),
+    ...(cloudDrifts.length ? { cloudDrifts } : {}),
     ...(hasOptics ? { optics } : {}),
     sections,
   };
