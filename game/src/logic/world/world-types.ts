@@ -57,7 +57,7 @@ export interface WorldEvents {
   hitBoss: boolean;
   weakHit: boolean;
   playerHurt: boolean;
-  /** Nguồn đòn làm Kai mất máu trong bước này (`enemy:<id>`, `boss:<đòn>`, `spike`). */
+  /** Nguồn đòn làm Kai mất máu trong bước này (`enemy:<id>`, `boss:<đòn>`, `spike`, `laser`). */
   hurtBy: string | undefined;
   playerDied: boolean;
   /** Nguồn cú đánh cuối khi Kai chết (thêm `pit`); GDD 13 `death.cause`. */
@@ -79,6 +79,9 @@ export interface WorldEvents {
   roomCleared: boolean;
   /** Vật chắn (rễ khô) vừa vỡ. */
   barrierBroken: boolean;
+  mirrorToggled: boolean;
+  sensorActivated: boolean;
+  laserHit: boolean;
   /** Vật phẩm bí mật vừa nhặt (id vật phẩm). */
   secretFound: string | undefined;
   /** M8: vừa lướt trên không (P1); lượt lướt trên không vừa hồi. */
@@ -126,6 +129,9 @@ export function noWorldEvents(): WorldEvents {
     roomLocked: false,
     roomCleared: false,
     barrierBroken: false,
+    mirrorToggled: false,
+    sensorActivated: false,
+    laserHit: false,
     secretFound: undefined,
     airDash: false,
     airDashRestored: false,

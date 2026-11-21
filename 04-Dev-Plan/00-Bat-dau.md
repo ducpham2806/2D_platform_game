@@ -1,11 +1,11 @@
 # Bắt đầu phiên (đọc file này trước)
 
-*Cập nhật 15/11/2026. Giữ ≤ 60 dòng; sửa ở cuối mỗi phiên nếu mốc, việc chờ hay việc tiếp theo đổi.*
+*Cập nhật 21/11/2026. Giữ ≤ 60 dòng; sửa ở cuối mỗi phiên nếu mốc, việc chờ hay việc tiếp theo đổi.*
 
 ## Đang ở đâu
 
 - **Mốc:** Giai đoạn 1. Code Prototype và phần MVP không phụ thuộc cảm giác đã xong (EP-08, 09, 10). Bản thử G1 đã đăng (tag `gate-r1`). **Đang chờ người dùng chơi thử cổng Prototype (G1).**
-- **Nhánh làm việc:** `ccr-9de01342-2046rb`. PR #10 đã merge vào `main` (`eeb8ca1`, 14/11); nhánh tiếp tục từ đó, chỉ merge lại sau đợt thử G1. Chưa có tag nào.
+- **Nhánh làm việc:** `ccr-9de01342-2046rb`. `gate-r1` trỏ tới `eeb8ca1` (PR #10); `main` ở `c458643` (PR #11, chỉ tài liệu). Nhánh phát triển chờ xong đợt thử G1 mới merge.
 - **Kế hoạch:** `01-Ke-hoach-lam-viec.md` (sprint S9–S21, epic EP-11…EP-20, ba cổng G1, G2, G3).
 
 ## Chờ người dùng (đường găng)
@@ -24,7 +24,7 @@ Mỗi việc: viết Story trước (`/story-readiness`, mẫu Story của Game 
 1. ~~Safe-area (QB-92)~~ xong (ST-11-01); bản thử đã khóa ở tag `gate-r1` và đăng Pages (14/11).
 2. EP-13 đo lường (`stories/EP-13-do-luong.md`): ~~ST-13-01 lõi~~, ~~ST-13-02a/b nối vào game~~, ~~ST-13-05a/b báo cáo cổng đủ chỉ số~~ xong (14/11; `npm run mvp-report`). ST-13-03, 04 chờ ADR-002; ST-13-06 sau 03–05.
 3. ~~Test khóa luật QB đã code (ST-QB-01), sửa QB-70…72 hộp chữ (EP-14 ST-14-08)~~ xong (15/11; tìm và sửa lỗi QB-24 Golem dựng lại).
-4. EP-15 (`stories/EP-15-stage-2-4.md`): ~~ST-15-14 boss an toàn (QB-14, QB-31), ST-15-01a dữ liệu chung và khung kiểm tra~~ xong (15/11); tiếp ST-15-02 (laser, gương, cảm biến), rồi 15, 16.
+4. EP-15 (`stories/EP-15-stage-2-4.md`): ST-15-14 (an toàn boss), ST-15-01a (dữ liệu nền) và ST-15-02 (laser, gương, cảm biến) đã xong. Có phòng thử laser trong menu. ST-15-03 có thể dùng lại đường tia cho Prism Beam; ST-15-15/16 cũng có thể làm trước G1.
 5. EP-12 AudioService (âm tạm lấy từ PR #9, ST-21-03); rồi phần EP-14 không đụng lớp nút cảm ứng (QB-90, QB-100, hộp chữ, chuỗi vi/en ST-21-06).
 6. EP-21: ST-21-02 smoke check (sau tag). ST-21-01 (QB-88) đã xong; ST-21-05 (hình vẽ bằng mã) bỏ.
 7. EP-22 đồ họa 2.5D (`stories/EP-22-do-hoa-25d.md`): ~~ST-22-01 demo~~ xong (14/11); tiếp ST-22-02 đo trên máy thật, ST-22-03 duyệt ADR-003.

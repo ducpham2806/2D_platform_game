@@ -86,7 +86,7 @@ Người tổng hợp: tải bảng (JSON) và/hoặc JSON xuất tay ──▶ 
 | `stage_start` | Vào một màn (sau màn Chuẩn bị nếu có) | `stage`, `room` (StageDef), `difficulty`, `difficultyDefault`, `challengeOpen`, `run` (lần vào màn thứ mấy), `clearedBefore` (độ khó đã hạ boss), `fromCheckpoint`, `level`, `effLevel`, `skills` (chữ ký build, "V2P1C0"), `upgrades` ({id: cấp}), `weapons` (số vũ khí boss), `coreBits`, `device`, `gameSpeed`, `autoFire`, `aimAssist`; `audioMaster`, `audioSfx`, `audioAlert` (0–1), `audioMuted` (`12-Am-thanh.md`) | MV1–MV3, MV7, H1, H3, K4, DK1–DK3, S1 | 0 |
 | `section_enter` | Lần đầu vào một đoạn trong lượt | `stage`, `section` (A, B, C, D, `boss`…), `tRun` | H1; thời gian theo đoạn | 1 |
 | `checkpoint` | Chạm checkpoint mới | `stage`, `index`, `tRun` | Thời gian theo đoạn; H1 | 1 |
-| `death` | Chết thật, hoặc rơi hố (tính như nhật ký Prototype) | `stage`, `section`, `kind` (death, pit), `cause` (`enemy:<id>`, `boss:<đòn>`, `spike`, `pit`), `device`, `tRun`, `streak` | MV7, H1; đòn gây chết nhiều nhất | 1 |
+| `death` | Chết thật, hoặc rơi hố (tính như nhật ký Prototype) | `stage`, `section`, `kind` (death, pit), `cause` (`enemy:<id>`, `boss:<đòn>`, `spike`, `pit`, `laser`), `device`, `tRun`, `streak` | MV7, H1; đòn gây chết nhiều nhất | 1 |
 | `difficulty_hint` | Gợi ý NOVA sau 3 lần chết hiện (`11` mục 2.5) | `stage`, `difficulty`, `section` | DK; hiệu quả gợi ý | 1 |
 | `boss_start` | Cửa đấu trường đóng, hoặc hồi sinh trong phòng boss | `stage`, `boss`, `attempt`, `weaknessOwned`, `weaponsOwned` | MV6, H4 | 1 |
 | `boss_end` | Lượt đánh boss kết thúc | `boss`, `outcome` (win, death, exit), `fightSec`, `dmg` ({vũ khí: sát thương tính bằng phát Arc}; từ 15/11/2026 là máu boss thật bị trừ: không tính phần thừa của đòn kết liễu, đòn kẹp pha QB-31 chỉ tính tới ngưỡng, đạn trúng lúc boss bất tử tính 0), `weakHits`, `swaps`, `bossHpPct`, `device`, `gameSpeed` | MV6, H4; thời gian thắng boss | 0 |
@@ -457,7 +457,7 @@ grant execute on function public.delete_my_data(uuid) to anon;
 | `04-Dev-Plan/02-Module.md` | M16 tách "bản tối thiểu MVP" (sự kiện, điểm nhận, báo cáo) khỏi Remote Config; phụ thuộc: trước cổng MVP |
 | `04-Dev-Plan/07-Ban-do-he-thong.md` | Dòng M16: Tài liệu "Đủ (`13-Do-luong-MVP.md`)". Thêm tên sự kiện và thuộc tính chung vào danh mục tên chuẩn (mục 3) |
 | `03-Data` | `telemetry.json` (mới); `stages.json` thêm `expectedMin` mỗi màn và id đoạn trên bản đồ (A, B, C, D, `boss`); `bosses.json` thêm `designFightSec` (Thorna, Lumen, Cryo `[60, 90]`; Aeris `[75, 105]`); số lấy từ `02` mục 6 và `16-Dac-ta-Stage2-4-nhap.md` |
-| Code thuần | `StageWorld`: cộng sát thương lên boss theo vũ khí; nhớ nguồn của cú đánh cuối (`enemy:<id>`, `boss:<đòn>`, `spike`, `pit`); chữ ký build từ `character.skills` |
+| Code thuần | `StageWorld`: cộng sát thương lên boss theo vũ khí; nhớ nguồn của cú đánh cuối (`enemy:<id>`, `boss:<đòn>`, `spike`, `pit`, `laser`); chữ ký build từ `character.skills` |
 | `game/CONTEXT.md`, `game/docs/quyet-dinh/` | Dòng trạng thái M16; file quyết định mới `do-luong.md` |
 | `14-Cai-dat-Tiep-can.md` mục 3.6 | Mục Dữ liệu: trạng thái gửi, mã xóa, Tắt gửi và xóa, Xuất JSON (chỉ hiện ở bản `?mvp=`) |
 | `17-Quy-tac-bien.md` | Đã giải quyết 14/11: Epic đo lường là **EP-13** (kế hoạch S9), EP-16 là Vertical slice. Thêm luật biên mới: lượt có giảm tốc không tính MV7, H3, H4; trang ẩn ghi `stage_progress` |

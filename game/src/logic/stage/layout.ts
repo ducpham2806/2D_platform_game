@@ -1,4 +1,5 @@
 import { Tile, TileMap } from '../tilemap';
+import type { LaserDirection, MirrorAngle } from './laser-path';
 
 /**
  * Bố cục một màn (logic thuần): lưới ô và mọi đối tượng đặt sẵn, tính theo ô. Cùng một cấu trúc
@@ -57,13 +58,41 @@ export interface SecretSpawn extends Cell {
 }
 
 /** Vật chắn (rễ khô...) đặc như tường, chỉ vỡ khi trúng đúng vũ khí. Tính theo ô, gồm cả hai đầu. */
-export interface BarrierSpawn {
+export interface CellSpan {
   first: number;
   last: number;
   top: number;
   bottom: number;
+}
+
+export interface BarrierSpawn extends CellSpan {
   /** Tên vũ khí trong weapons.json (ví dụ "Prism Beam"). */
   requiresWeapon: string;
+}
+
+export interface LaserSpawn extends Cell {
+  direction: LaserDirection;
+  mode: 'always' | 'pulse';
+  phase: number;
+}
+
+export interface MirrorSpawn extends Cell {
+  angle: MirrorAngle;
+}
+
+export interface SensorSpawn extends Cell {
+  doorId: number;
+}
+
+export interface OpticalDoorSpawn extends CellSpan {
+  id: number;
+}
+
+export interface OpticsLayout {
+  lasers: LaserSpawn[];
+  mirrors: MirrorSpawn[];
+  sensors: SensorSpawn[];
+  doors: OpticalDoorSpawn[];
 }
 
 export interface SectionSpawn {
@@ -87,6 +116,7 @@ export interface StageLayout {
   rooms: RoomSpawn[];
   secrets: SecretSpawn[];
   barriers: BarrierSpawn[];
+  optics?: OpticsLayout;
   sections: SectionSpawn[];
 }
 

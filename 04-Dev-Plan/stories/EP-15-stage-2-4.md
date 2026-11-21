@@ -6,8 +6,8 @@
 | Mã        | Tên                                                                                                | Phụ thuộc                                              | Cỡ     | Trạng thái        |
 | --------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------ | ------ | ----------------- |
 | ST-15-14  | Boss an toàn: chống khóa choáng (QB-14), kẹp pha khi một đòn vượt hai ngưỡng (QB-31); áp cả Thorna | (01a chỉ để có boss Stage 2; phần luật làm trước được) | 1 ngày | DONE (15/11/2026) |
-| ST-15-01a | Dữ liệu Stage 2 và khung kiểm tra chung                                                            | —                                                      | 1 ngày | Chưa              |
-| ST-15-02  | Laser, gương, cảm biến ánh sáng                                                                    | 01a                                                    | 2 ngày | Chưa              |
+| ST-15-01a | Dữ liệu Stage 2 và khung kiểm tra chung                                                            | —                                                      | 1 ngày | DONE (15/11/2026) |
+| ST-15-02  | Laser, gương, cảm biến ánh sáng                                                                    | 01a                                                    | 2 ngày | DONE (21/11/2026) |
 
 ## ST-15-14: Boss an toàn (QB-14, QB-31)
 
@@ -102,3 +102,42 @@
 
 - Sửa: `03-Data/stages.json`, `03-Data/weapons.json`, `03-Data/bosses.json`, `game/src/core/game-config.ts` (`StageData`, kiểm tra), `game/src/core/stage-mechanics-config.ts`, `game/src/core/weapons-config.ts`, `game/src/core/boss-config.ts`, `game/src/logic/combat/loadout.ts`, `game/src/logic/world/{enemy-field,stage-world}.ts`, `game/src/scenes/stage-scene.ts` (truyền `stageReward`), `01-GDD/16-Dac-ta-Stage2-4-nhap.md` (bảng Story), `game/docs/quyet-dinh/man-choi.md`.
 - Tạo: `game/src/logic/stage/stage-exp.ts`, `game/tests/stage-data.test.ts`.
+
+## ST-15-02: Laser, gương và cảm biến ánh sáng
+
+- **Thuộc Epic:** EP-15 · **Ưu tiên:** P1 · **Trạng thái:** DONE (21/11/2026) · **Phụ thuộc:** ST-15-01a · **Engine:** Phaser 3.90.0.
+- **Bằng chứng:** 25 test cho logic, dữ liệu Tiled và tích hợp StageWorld; ảnh và quy trình phòng thử trong [QA ST-15-02](../qa/ST-15-02/README.md).
+
+### 1. User Story
+
+> **Là** người chơi Stage 2, **tôi muốn** nhìn được đường đi của laser và xoay gương bằng Arc Cannon, **để** né tia và dẫn ánh sáng tới cảm biến mở cửa.
+
+### 2. Bối cảnh
+
+- GDD 16 mục 3.3, 3.11, 3.12. Laser đi thẳng, dừng tại ô đặc, vật chắn, cửa đóng hoặc mép bản đồ. Gương `/` và `\` đổi hướng 90° từ cả hai mặt. Tia dội về nguồn hoặc vượt giới hạn phản xạ thì dừng. Vạch báo và sát thương dùng cùng đường tia.
+- `stages.json → mechanics`: laser 20 máu ở Thường (nhân `damageTaken`), tia 4 px, bật lùi vuông góc 5 ô/s, một lần trúng mỗi xung. Chu kỳ 3 s, bật 1,2 s, báo trước 0,5 s, lệch pha 0–1 theo nguồn. Tia luôn bật trả Kai về chỗ an toàn. Laser thuộc nhóm mối nguy môi trường (QB-02, QB-22): bỏ qua bất tử của lướt và khiên C3, không tính sượt đạn, không hại kẻ địch.
+- Đạn nạp vừa hoặc đầy đổi góc gương, đạn thường bị hấp thụ. Khóa đổi góc trong 0,25 s. Đường tia tính lại ở bước kế tiếp, cảm biến đang tích sáng đếm lại. Tối đa 4 lần phản xạ. Cảm biến nhận tia đang bật liên tục trong 0,3 s thì mở cửa trong cả lượt (QB-47). Hồi sinh đặt lại gương và tiến độ chưa đủ, cửa đã mở giữ nguyên (QB-42, QB-43).
+- `WorldEvents`: `mirrorToggled`, `sensorActivated`, `laserHit` cho hiệu ứng và âm thanh về sau.
+
+### 3. File và phạm vi
+
+- `logic/stage/laser-path.ts`, `logic/world/stage-optics.ts`: đường tia và trạng thái nguồn, gương, cảm biến, cửa.
+- `logic/stage/{layout,tiled}.ts`, `logic/world/{stage-world,world-types}.ts`, `logic/player/player-physics.ts`: khai báo Tiled, bước mô phỏng và sát thương môi trường.
+- `stages/`, `scenes/stage/mechanics-renderer.ts`, `maps/`: phòng thử laser và hình khối gỡ lỗi.
+- `tests/stage-optics.test.ts`: kiểm hình học, bảng thời gian, va chạm và luồng phòng thử.
+
+### 4. Tiêu chí nghiệm thu
+
+1. [x] Kiểm đường tia với 0, 1, 2, 4 phản xạ, vật chắn và vòng khép kín; hộp va chạm trùng đường báo.
+2. [x] Kiểm chu kỳ, lệch pha và thời lượng báo; một cú trúng mỗi xung, bật lùi vuông góc; tia luôn bật trả Kai tới chỗ đứng an toàn.
+3. [x] Kiểm đạn thường, tự bắn, đạn nạp và hai phát trong cùng bước; cảm biến cần đủ thời gian liên tục, cửa giữ mở sau hồi sinh.
+4. [x] Chạy qua phòng thử từ menu trên máy tính và Pixel 7 giả lập, lưu ảnh. Chạy test, lint, format, typecheck, build, docs-check và gate-flow.
+
+### 5. Ngoài phạm vi
+
+- ST-15-03 thêm vũ khí Prism Beam. ST-15-06, 07, 09, 10 thêm đòn địch dùng phản xạ. EP-17 làm bản đồ Stage 2 và kiểm đường chính sau G1.
+
+### 6. Đóng Story
+
+- Tự rà soát thay đổi. Bố trí góc gương và vị trí nguồn trong phòng thử là tham số; bố cục Stage 2 chốt ở ST-17-02.
+- Đã chơi thử Chromium trên PC và Pixel 7 giả lập. Bằng chứng chơi thử G1 với người thật được ghi ở cổng Prototype.

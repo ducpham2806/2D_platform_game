@@ -155,6 +155,7 @@ describe('kiểm lược đồ (GDD 13 mục 10 ý 2)', () => {
     expect(errs('death', (ev) => (ev.p.stage = 'Kai'))).toMatch(/không có trong danh mục stage/);
     expect(errs('death', (ev) => (ev.p.cause = 'enemy:rong_lua'))).toMatch(/danh mục enemy/);
     expect(errs('death', (ev) => (ev.p.cause = 'lava'))).toMatch(/cause/);
+    expect(errs('death', (ev) => (ev.p.cause = 'laser'))).toBe('');
     expect(errs('death', (ev) => (ev.p.kind = 'fall'))).toMatch(/kind.*enum/);
     expect(errs('death', (ev) => (ev.p.tRun = Number.NaN))).toMatch(/tRun.*hữu hạn/);
     expect(errs('death', (ev) => (ev.p.streak = 1.5))).toMatch(/streak.*nguyên/);

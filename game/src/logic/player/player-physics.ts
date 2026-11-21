@@ -204,7 +204,6 @@ export class PlayerPhysics {
     return this.iFrames > 0;
   }
 
-  /** Nhận sát thương từ một nguồn ở tọa độ X. Trả về false nếu đang bất tử. */
   /**
    * Khiên C3 chặn một đòn (StageWorld đã kiểm tra khiên sẵn và Kai không bất tử): không mất máu,
    * không bật lùi, không ngắt lướt, không phát `hurt` (giữ mức nạp, không kích tín hiệu `hurt` của
@@ -214,22 +213,33 @@ export class PlayerPhysics {
     this.iFrames = Math.max(this.iFrames, iFrameSec);
   }
 
+  /** Nhận sát thương từ một nguồn ở tọa độ X. Trả về false nếu đang bất tử. */
   applyHit(damage: number, sourceX: number): boolean {
     if (this.invulnerable) return false;
+    const away = sourceX > this.centerX ? -1 : 1;
+    return this.takeHit(damage, away * this.params.knockbackX, -this.params.knockbackY);
+  }
+
+  /** Mối nguy môi trường chỉ xét bất tử sau trúng đòn, giống gai (QB-02). */
+  applyHazardHit(damage: number, vx: number, vy: number): boolean {
+    if (this.state === 'dead' || this.iFrames > 0 || damage <= 0) return false;
+    return this.takeHit(damage, vx, vy);
+  }
+
+  private takeHit(damage: number, vx: number, vy: number): boolean {
     this.hp = Math.max(0, this.hp - damage);
     this.events.hurt = true;
     this.endDash();
     this.dashCarry = false;
     this.jumping = false;
-    const away: 1 | -1 = sourceX > this.centerX ? -1 : 1;
     if (this.hp <= 0) {
       this.state = 'dead';
       this.events.died = true;
       this.vx = 0;
       return true;
     }
-    this.vx = away * this.params.knockbackX;
-    this.vy = -this.params.knockbackY;
+    this.vx = vx;
+    this.vy = vy;
     this.hurtTime = this.params.hurtStunSec;
     this.iFrames = this.params.iFramesAfterHitSec;
     return true;

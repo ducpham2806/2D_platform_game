@@ -66,11 +66,15 @@ export class MenuScene extends Phaser.Scene {
     const golem = (): void => {
       this.scene.start(SceneKey.Prep, { stage: 'golem' });
     };
+    const optics = (): void => {
+      this.scene.start(SceneKey.Stage, { stage: 'optics' });
+    };
     textButton(this, cx, 58, 'Vào màn thử', () => this.scene.start(SceneKey.Stage));
     textButton(this, cx, 73, 'Phòng thử kẻ địch', enemies);
     textButton(this, cx, 88, 'Phòng thử màn chơi', mechanics);
     textButton(this, cx, 103, 'Boss Thorna', thorna);
-    textButton(this, cx, 118, 'Mini-boss Bramble Golem', golem);
+    textButton(this, cx - 65, 118, 'Mini-boss Bramble Golem', golem);
+    textButton(this, cx + 65, 118, 'Phòng thử laser', optics);
     textButton(this, cx - 52, 133, 'Hub Arkon', () => this.scene.start(SceneKey.Hub));
     // Xưởng mở sau boss chiến dịch đầu tiên (đặc tả Hub mục 5).
     const workshop = (): void => {
@@ -92,15 +96,10 @@ export class MenuScene extends Phaser.Scene {
     textButton(this, cx - 52, 163, 'Kết quả chơi thử', () => this.scene.start(SceneKey.Playtest));
     textButton(this, cx + 52, 163, 'Dữ liệu lưu', () => this.scene.start(SceneKey.Save));
     this.add
-      .text(
-        cx,
-        182,
-        'Phím: Enter màn thử · K · M · B · G · H · X Xưởng · Q Quầy Mira · C · R · S',
-        {
-          ...MUTED_STYLE,
-          fontSize: '8px',
-        },
-      )
+      .text(cx, 182, 'Phím: Enter màn thử · K · M · B · G · O Laser · H · X · Q · C · R · S', {
+        ...MUTED_STYLE,
+        fontSize: '8px',
+      })
       .setOrigin(0.5);
 
     const keyboard = this.input.keyboard;
@@ -113,6 +112,7 @@ export class MenuScene extends Phaser.Scene {
     keyboard?.once('keydown-M', mechanics);
     keyboard?.once('keydown-B', thorna);
     keyboard?.once('keydown-G', golem);
+    keyboard?.once('keydown-O', optics);
     keyboard?.once('keydown-X', workshop);
     keyboard?.once('keydown-Q', openShop);
   }

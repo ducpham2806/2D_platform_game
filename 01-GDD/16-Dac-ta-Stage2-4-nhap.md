@@ -390,10 +390,11 @@ Giọng NOVA (`08-Giong-nhan-vat.md`): thuật ngữ hệ thống trộn đùa, 
 
 ### 3.12 Tiêu chí nghiệm thu
 
-- [ ] `LaserPath`: vạch báo trước và hộp sát thương trùng nhau trong mọi test (0, 1, 2, 4 lần phản xạ; bị khối chặn; vòng khép kín).
-- [ ] Laser theo nhịp: báo trước ≥ 0,5 s; luôn bật không chặn đường chính (test đồ thị).
-- [ ] Gương chỉ đổi góc bằng đạn nạp vừa trở lên; tự bắn trên cảm ứng không xoay gương.
-- [ ] Cảm biến mở cửa sau 0,3 s nhận tia, cửa không đóng lại; hồi sinh trả gương về góc đầu.
+- [x] `LaserPath`: vạch báo trước và hộp sát thương dùng chung đường tia (kiểm 0, 1, 2, 4 lần phản xạ, ô đặc, vật chắn, vòng khép kín).
+- [x] Laser theo nhịp báo trước đủ 0,5 s, kể cả xung đầu với `phase` lệch.
+- [ ] Laser luôn bật không chặn đường chính (kiểm đồ thị bản đồ trong ST-17-02).
+- [x] Gương chỉ đổi góc bằng đạn nạp vừa trở lên; tự bắn trên cảm ứng không xoay gương.
+- [x] Cảm biến mở cửa sau 0,3 s nhận tia, cửa không đóng lại; hồi sinh trả gương về góc đầu.
 - [ ] 4 kẻ địch thường và bản Thử thách chạy đúng; telegraph ≥ 0,4 s; vạch ngắm Gương Quang vẽ đúng điểm nảy.
 - [ ] Prism Sentinel đổi pha ở 50%; phản đòn bằng gương gây 10 và choáng 1,5 s.
 - [ ] Lumen đổi pha ở 60% và 30%; Vine Lash 2,5× và choáng 0,5 s; bot không né thua ở cấp 7; Tiêu Điểm khóa ≥ 0,5 s ở pha 3.
@@ -802,7 +803,7 @@ Quy ước như EP-08 đến EP-10: Story ≤ 1–2 ngày, mỗi Story nhúng s�
 | ST-15-01a | Dữ liệu Stage 2 và khung kiểm tra chung: `enemies`, `bosses`, `weapons` (Prism Beam), `stages` (`expBudget`, `enemyRewardMul {exp, coreBit}`), `mechanics.laser`, `mirror`, `sensor`; ngân sách năng lượng, sức mạnh khắc chế ≥ 12, telegraph, không chết một đòn, Σ EXP = `expBudget` ± 5%. **Xong 15/11/2026, phạm vi đổi theo duyệt:** dữ liệu kẻ địch, mini-boss, boss Stage 2 (`enemies`, `bosses`) dời sang Story làm hành vi của chúng (06, 07, 09, 10), vì bộ kiểm dữ liệu từ chối hành vi, đòn chưa có; có `stages` (`expBudget`, `enemyRewardMul`, nối vào thưởng, mini-boss không nhân), `mechanics.laser/mirror/sensor`, Prism Beam (`beam`, chưa cấp được tới 03), kiểm ngân sách, sức mạnh khắc chế, trần đòn boss theo màn, laser không chết một đòn, EXP cộng dồn theo cấp khuyến nghị; Σ EXP ± 5% là hàm thuần (`logic/stage/stage-exp.ts`) dùng khi có bản đồ | | 1 ngày |
 | ST-15-01b | Dữ liệu Stage 3 (kẻ địch, Frost Titan, Cryo, Frost Shard, `ice`, `crumble`, `coolant`) | 01a | 0,5 ngày |
 | ST-15-01c | Dữ liệu Stage 4 (kẻ địch, Gale Roc, Aeris, Gale Cutter, `wind`, `cloud`) | 01a | 0,5 ngày |
-| ST-15-02 | `LaserPath` + `LaserEmitter` (luôn bật, theo nhịp) + `Mirror` 2 góc + `LightSensor` mở cửa; test vạch báo trước trùng hộp sát thương. Góc và vị trí gương là tham số, chốt sau cổng (ST-17-01) | 01a | 2 ngày |
+| ST-15-02 | `LaserPath`, `LaserEmitter`, gương 2 góc, cảm biến mở cửa, dữ liệu Tiled và phòng thử laser. Đường tia dùng chung cho báo trước và sát thương. Góc ban đầu và vị trí gương khai báo theo bản đồ, chốt bố cục Stage 2 sau G1 (ST-17-01) | 01a | 2 ngày |
 | ST-15-03 | Prism Beam (`beam`): bắn, phản xạ, xuyên, dừng ở khiên Lính Kén (QB-16, QB-18); `Barrier` nhận tia (rễ khô Két Stage 1) | 02 | 1,5 ngày |
 | ST-15-04 | Trạng thái vô hiệu `disabledSec` cho mọi hành vi kẻ địch (QB-19); Frost Shard (`shard`, đóng băng); `CoolantFlow` (Két Stage 2). **Điều kiện của Phase Step (ST-08-09)** | 01b | 2 ngày |
 | ST-15-05 | Gale Cutter (`boomerang`, hủy tối đa 2 đạn kẻ địch thường mỗi lần ném); sương lạnh = `Barrier` (Két Stage 3) | 01c | 1,5 ngày |

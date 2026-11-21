@@ -9,6 +9,7 @@ import { WeaponLoadout } from '../combat/loadout';
 import { ProjectilePool } from '../combat/projectiles';
 import { TrainingTarget } from '../combat/targets';
 import type { Enemy } from '../enemy/enemy';
+import { type Box, groundBelow, moveX } from '../player/collision';
 import {
   applyBuild,
   type BuildStats,
@@ -28,6 +29,7 @@ import type { StageReward } from '../stage/stage-exp';
 import { EnemyField } from './enemy-field';
 import { type KaiDefense, resolveEnemyHits, resolvePlayerHits, type VanguardMods } from './hits';
 import { Barrier, LockedRoom, makeSecret, type Secret, standPoint, Vine } from './stage-mechanics';
+import { StageOptics } from './stage-optics';
 import { noWorldEvents, type WorldEvents, type WorldInput, type WorldPhase } from './world-types';
 
 export interface WorldSetup {
@@ -102,6 +104,7 @@ export class StageWorld {
   readonly vines: Vine[];
   readonly rooms: LockedRoom[];
   readonly barriers: Barrier[];
+  readonly optics: StageOptics | undefined;
   readonly secrets: Secret[];
   /** Vật phẩm bí mật đã nhặt trong lượt chơi (StageSave ghi vào bản lưu). */
   readonly collected: string[] = [];
@@ -228,6 +231,7 @@ export class StageWorld {
     this.rooms = layout.rooms.map((r) => new LockedRoom(r, this.map));
     if (this.field) for (const r of this.rooms) r.bind(this.field.enemies, layout.enemies);
     this.barriers = layout.barriers.map((b) => new Barrier(b, this.map));
+    this.optics = layout.optics && new StageOptics(layout.optics, this.map, setup.mechanics);
     const taken = new Set(setup.takenSecrets ?? []);
     this.secrets = layout.secrets.map((s) => {
       const secret = makeSecret(s, t);
@@ -345,6 +349,7 @@ export class StageWorld {
     if (this.runtime.step(dt)) ev.kaiShieldReady = true;
 
     for (const v of this.vines) v.step(dt);
+    this.optics?.step(dt, ev);
 
     if (input.swapPrev || input.swapNext) {
       const before = this.loadout.index;
@@ -353,6 +358,8 @@ export class StageWorld {
     }
 
     const pl = this.player;
+    const previousX = pl.centerX;
+    const previousY = pl.box.y + pl.box.h / 2;
     const pe = pl.step(
       {
         moveX: input.moveX,
@@ -400,9 +407,15 @@ export class StageWorld {
       if (be.defeated) this.onBossDefeated(ev);
     }
     this.field?.step(pl, this.pool, dt);
-    this.pool.update(dt, this.map, (p) => {
-      for (const b of this.barriers) if (b.tryBreak(p)) ev.barrierBroken = true;
-    });
+    const optics = this.optics;
+    this.pool.update(
+      dt,
+      this.map,
+      (p) => {
+        for (const b of this.barriers) if (b.tryBreak(p)) ev.barrierBroken = true;
+      },
+      optics?.mirrors.length ? (p) => optics.absorbShot(p, ev) : undefined,
+    );
 
     const killed: Enemy[] = [];
     this.hitStop = resolvePlayerHits(
@@ -440,7 +453,7 @@ export class StageWorld {
       this.hitStop = Math.max(this.hitStop, this.build.shield?.hitStopSteps ?? 0);
     this.field?.updatePickups(pl, dt, ev, this.build.magnetTiles * this.setup.tileSize);
 
-    this.updateHazards(ev);
+    if (!this.updateLasers(ev, previousX, previousY)) this.updateHazards(ev);
     if (ev.hurtBy) this.lastHitCause = ev.hurtBy;
     this.updateSecrets(ev);
     this.updateRooms(ev);
@@ -477,6 +490,72 @@ export class StageWorld {
     return Math.max(1, Math.round(base * this.setup.difficulty.damageTaken));
   }
 
+  /** Laser môi trường dùng đường tia hiện tại, đi qua địch và bỏ qua khiên C3. */
+  private updateLasers(ev: WorldEvents, previousX: number, previousY: number): boolean {
+    const pl = this.player;
+    if (!this.optics || pl.state === 'dead') return false;
+    const { damage, knockbackTilesPerSec } = this.setup.mechanics.laser;
+    for (const laser of this.optics.lasers) {
+      const segment = laser.collision(pl.box);
+      if (!segment || !laser.canHit) continue;
+      let hurt: boolean;
+      if (laser.spawn.mode === 'always') {
+        const safe = this.laserReturnPoint();
+        hurt = pl.hitHazard(this.damageTaken(damage), safe.x, safe.y);
+      } else {
+        const speed = knockbackTilesPerSec * this.map.tileSize;
+        const vertical = segment.from.x === segment.to.x;
+        // Dùng phía trước khi Kai bước vào tia nếu tâm đang nằm ngay trên đường tia.
+        const offset = vertical
+          ? pl.centerX - segment.from.x
+          : pl.box.y + pl.box.h / 2 - segment.from.y;
+        const previous = vertical ? previousX - segment.from.x : previousY - segment.from.y;
+        const away = (offset || previous) > 0 ? 1 : -1;
+        hurt = pl.applyHazardHit(
+          this.damageTaken(damage),
+          vertical ? away * speed : 0,
+          vertical ? 0 : away * speed,
+        );
+      }
+      if (hurt) {
+        if (laser.spawn.mode === 'pulse') laser.registerHit();
+        ev.laserHit = true;
+        ev.playerHurt = true;
+        ev.hurtBy = 'laser';
+      }
+      if (hurt || laser.spawn.mode === 'always') return true;
+    }
+    return false;
+  }
+
+  private laserReturnPoint(): { x: number; y: number } {
+    const { w, h } = this.player.box;
+    const t = this.map.tileSize;
+    for (const point of [this.safe, this.checkpoint]) {
+      const base = { x: point.x - w / 2, y: point.y - h, w, h };
+      if (!this.inLaser(base)) return point;
+      // Gương có thể vừa hướng tia vào chỗ an toàn trước đó. Dò mặt sàn cùng phía tường.
+      const left = { ...base };
+      const right = { ...base };
+      let leftBlocked = false;
+      let rightBlocked = false;
+      while (!leftBlocked || !rightBlocked) {
+        leftBlocked ||= moveX(left, -t, this.map) !== 0;
+        rightBlocked ||= moveX(right, t, this.map) !== 0;
+        for (const box of [leftBlocked ? undefined : left, rightBlocked ? undefined : right]) {
+          if (!box || !groundBelow(box, this.map)) continue;
+          if (!this.map.overlapsHazard(box) && !this.inLaser(box))
+            return { x: box.x + w / 2, y: point.y };
+        }
+      }
+    }
+    return this.checkpoint;
+  }
+
+  private inLaser(box: Box): boolean {
+    return this.optics?.lasers.some((laser) => !!laser.collision(box)) ?? false;
+  }
+
   /** Gai: mất máu, về chỗ đứng an toàn. Ghi lại chỗ an toàn khi đứng vững trên nền thật. */
   private updateHazards(ev: WorldEvents): void {
     const pl = this.player;
@@ -497,7 +576,14 @@ export class StageWorld {
       }
       return;
     }
-    if (!pl.grounded || pl.onPlatform || pl.state === 'hurt' || this.map.overlapsHazard(b)) return;
+    if (
+      !pl.grounded ||
+      pl.onPlatform ||
+      pl.state === 'hurt' ||
+      this.map.overlapsHazard(b) ||
+      this.inLaser(b)
+    )
+      return;
     const t = this.map.tileSize;
     const row = Math.floor((pl.bottom + 0.5) / t);
     const firm = (x: number): boolean => {
@@ -644,6 +730,7 @@ export class StageWorld {
   private respawn(ev: WorldEvents): void {
     const pl = this.player;
     this.safe = this.checkpoint;
+    this.optics?.reset();
     if (this.pitReturn) {
       // Rơi hố còn máu: về checkpoint, giữ máu và mọi thứ khác.
       this.pitReturn = false;
