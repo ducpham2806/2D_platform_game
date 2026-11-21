@@ -14,6 +14,12 @@ function consume(p: Projectile, targetId: number): void {
   else p.alive = false;
 }
 
+/** Lưỡi bay tiếp sau khi bị khiên chặn, mỗi chiều chỉ xét mục tiêu một lần. */
+function block(p: Projectile, targetId: number): void {
+  if (p.boomerang) p.hitIds.add(targetId);
+  else p.alive = false;
+}
+
 /** Hệ số điểm yếu lấy từ chính vũ khí đang bắn (weapons.json). */
 export function weaknessOf(
   weapons: WeaponsData,
@@ -140,7 +146,7 @@ export function resolvePlayerHits(
       if (!p.alive || !t.alive || p.hitIds.has(t.id) || !overlaps(p, t.box)) continue;
       const result = t.hit(p, amountOf(p));
       if (result === 'blocked' || result === 'shieldBroken') {
-        p.alive = false;
+        block(p, t.id);
         if (result === 'blocked') ev.blocked = true;
         else ev.shieldBroken = true;
       } else {
@@ -153,7 +159,7 @@ export function resolvePlayerHits(
       if (!p.alive || !e.alive || p.hitIds.has(e.id) || !overlaps(p, e.box)) continue;
       const result = e.takeHit(p, amountOf(p) * punish(p, e.exposed));
       if (result === 'blocked' || result === 'shieldHit' || result === 'shieldBroken') {
-        p.alive = false;
+        block(p, e.id);
         ev[result] = true;
       } else {
         ev.hitEnemy = true;

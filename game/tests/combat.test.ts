@@ -17,6 +17,7 @@ const weapons = parseWeapons(loadData().weapons);
 const OPEN = TileMap.fromRows(['.'.repeat(60), '.'.repeat(60), '#'.repeat(60)], TILE_SIZE);
 const ctx = (patch: Partial<FireContext> = {}): FireContext => ({
   centerX: 40,
+  centerY: 20,
   top: 8,
   facing: 1,
   hurt: false,

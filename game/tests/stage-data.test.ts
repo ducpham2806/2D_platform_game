@@ -325,15 +325,15 @@ describe('vũ khí Warden: ngân sách năng lượng, sức mạnh khắc chế
     expect(() => parseWeapons(raw3)).toThrow(/weapons\.balance/);
   });
 
-  it('Loadout cấp Frost Shard, Prism Beam và Vine Lash; Gale Cutter chờ hành vi', () => {
+  it('Loadout cấp các vũ khí Warden đã có hành vi', () => {
     const loadout = new WeaponLoadout(config.weapons, TILE_SIZE);
     expect(loadout.grant('Prism Beam')).toBe(true);
     expect(loadout.has('Prism Beam')).toBe(true);
     expect(loadout.grant('Vine Lash')).toBe(true);
     expect(loadout.grant('Frost Shard')).toBe(true);
     expect(loadout.has('Frost Shard')).toBe(true);
-    expect(loadout.grant('Gale Cutter')).toBe(false);
-    expect(loadout.has('Gale Cutter')).toBe(false);
+    expect(loadout.grant('Gale Cutter')).toBe(true);
+    expect(loadout.has('Gale Cutter')).toBe(true);
   });
 });
 

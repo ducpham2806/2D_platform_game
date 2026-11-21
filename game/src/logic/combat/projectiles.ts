@@ -1,3 +1,5 @@
+import type { BoomerangBehavior } from '../../core/weapons-config';
+import type { Box } from '../player/collision';
 import type { TileMap } from '../tilemap';
 
 export type ProjectileKind =
@@ -6,6 +8,7 @@ export type ProjectileKind =
   | 'charged'
   | 'sweep'
   | 'shard'
+  | 'boomerang'
   | 'enemyShot'
   | 'shockwave'
   | 'drop'
@@ -13,6 +16,13 @@ export type ProjectileKind =
   | 'lash'
   | 'root'
   | 'seed';
+
+export interface BoomerangFlight {
+  speedPxPerSec: number;
+  phase: 'out' | 'turn' | 'return';
+  cancelKinds: BoomerangBehavior['cancelKinds'];
+  cancelsLeft: number;
+}
 
 /** Đạn, sóng, roi… mọi hộp gây sát thương có thời hạn. (x, y) là góc trên trái, px. */
 export interface Projectile {
@@ -34,10 +44,11 @@ export interface Projectile {
   breaksShield: boolean;
   weapon: string;
   /**
-   * Nguồn đòn của đạn địch cho đo lường (`enemy:<id kẻ địch>`); không có thì là đòn boss, tính
-   * theo loại đạn (`boss:<kind>`). GDD 13 mục 3, `death.cause`.
+   * Nguồn đòn cho đo lường (`enemy:<id kẻ địch>` hoặc `boss:<kind>` nếu không có tag).
    */
   source?: string;
+  /** Q4: nguồn là địch thường, gồm cả đạn còn bay sau khi địch bị hạ. */
+  fromRegularEnemy?: boolean;
   traveled: number;
   maxDistance: number;
   ttl: number;
@@ -47,8 +58,9 @@ export interface Projectile {
   gravity?: number;
   /** Vô hiệu kẻ địch thường khi đạn băng gây sát thương (QB-19). */
   freezeSec?: number;
+  boomerang?: BoomerangFlight;
   alive: boolean;
-  /** Đã trúng mục tiêu nào (mỗi viên chỉ trúng một mục tiêu một lần). */
+  /** Đã chạm mục tiêu nào trong lượt bay hiện tại. */
   hitIds: Set<number>;
 }
 
@@ -67,6 +79,51 @@ function overlapsSolid(p: Projectile, map: TileMap): boolean {
     for (let c = c0; c <= c1; c += 1) if (map.isSolid(c, r)) return true;
   }
   return false;
+}
+
+/** Chạm tường hoặc hết tầm thì bước kế tiếp bắt đầu chiều về, dùng sổ trúng riêng. */
+function stepBoomerang(
+  p: Projectile,
+  flight: BoomerangFlight,
+  dt: number,
+  map: TileMap,
+  player: Box,
+  onWall: ((p: Projectile) => void) | undefined,
+): void {
+  if (flight.phase === 'turn') {
+    flight.phase = 'return';
+    p.hitIds.clear();
+  }
+  const step = flight.speedPxPerSec * dt;
+  if (flight.phase === 'return') {
+    const dx = player.x + (player.w - p.w) / 2 - p.x;
+    const dy = player.y + (player.h - p.h) / 2 - p.y;
+    const distance = Math.hypot(dx, dy);
+    const ratio = distance > 0 ? Math.min(1, step / distance) : 0;
+    p.vx = (dx * ratio) / dt;
+    p.vy = (dy * ratio) / dt;
+    p.x += dx * ratio;
+    p.y += dy * ratio;
+    // Chiều về xuyên nền để đón được lưỡi ngay cả khi Kai đã rẽ qua một góc tường.
+    if (overlapsSolid(p, map)) onWall?.(p);
+    return;
+  }
+
+  const distance = Math.min(step, p.maxDistance - p.traveled);
+  const pieces = Math.max(1, Math.ceil(distance / (map.tileSize / 2)));
+  const dx = (Math.sign(p.vx) * distance) / pieces;
+  for (let i = 0; i < pieces; i += 1) {
+    const before = p.x;
+    p.x += dx;
+    if (overlapsSolid(p, map)) {
+      onWall?.(p);
+      p.x = before;
+      flight.phase = 'turn';
+      return;
+    }
+    p.traveled += Math.abs(dx);
+  }
+  if (p.traveled >= p.maxDistance - 1e-9) flight.phase = 'turn';
 }
 
 /** Quản lý mọi đạn đang bay. Đạn chết không bị xóa ngay mà để lại cho lần dọn sau mỗi bước. */
@@ -103,9 +160,10 @@ export class ProjectilePool {
     map: TileMap,
     onWall?: (p: Projectile) => void,
     absorb?: (p: Projectile) => boolean,
+    returnTarget?: Box,
   ): void {
     for (const p of this.items) {
-      if (!p.alive) continue;
+      if (!p.alive || p.boomerang) continue;
       p.ttl -= dt;
       if (p.ttl <= 1e-9) {
         p.alive = false;
@@ -133,7 +191,34 @@ export class ProjectilePool {
       }
       if (p.y > map.heightPx || p.x + p.w < 0 || p.x > map.widthPx) p.alive = false;
     }
+    if (returnTarget) {
+      for (const p of this.items) {
+        const flight = p.boomerang;
+        if (!p.alive || !flight) continue;
+        stepBoomerang(p, flight, dt, map, returnTarget, onWall);
+        this.cancelEnemyShots(p, flight);
+        if (flight.phase === 'return' && overlaps(p, returnTarget)) p.alive = false;
+      }
+    }
     this.items = this.items.filter((p) => p.alive);
+  }
+
+  private cancelEnemyShots(blade: Projectile, flight: BoomerangFlight): void {
+    if (flight.cancelsLeft <= 0) return;
+    for (const p of this.items) {
+      if (
+        !p.alive ||
+        p.owner !== 'enemy' ||
+        !p.fromRegularEnemy ||
+        (p.kind !== 'enemyShot' && p.kind !== 'bomb') ||
+        !flight.cancelKinds.includes(p.kind) ||
+        !overlaps(p, blade)
+      )
+        continue;
+      p.alive = false;
+      flight.cancelsLeft -= 1;
+      if (flight.cancelsLeft === 0) return;
+    }
   }
 
   /** Bỏ mọi viên thỏa `match` (vd. đạn boss khi boss đổi pha, QB-31). */

@@ -1,8 +1,10 @@
 import type {
   BeamBehavior,
+  BoomerangBehavior,
   ChargeLevelData,
   ShardBehavior,
   SweepBehavior,
+  WeaponBehavior,
   WeaponsData,
 } from '../../core/weapons-config';
 import type { ProjectilePool, ProjectileSpec } from './projectiles';
@@ -10,19 +12,18 @@ import type { ProjectilePool, ProjectileSpec } from './projectiles';
 export const ARC_CANNON = 'Arc Cannon';
 export const PRISM_BEAM = 'Prism Beam';
 export const FROST_SHARD = 'Frost Shard';
+export const GALE_CUTTER = 'Gale Cutter';
 
 /** Mức nạp: 0 chưa nạp, 1 nạp vừa, 2 nạp đầy. */
 export type ChargeLevel = 0 | 1 | 2;
 
-type PlayableWeaponBehavior = SweepBehavior | BeamBehavior | ShardBehavior;
-
 export interface WeaponSlot {
   name: string;
-  kind: 'buster' | PlayableWeaponBehavior['type'];
+  kind: 'buster' | WeaponBehavior['type'];
   /** Năng lượng còn lại (thanh energyMax); Arc Cannon không tốn năng lượng. */
   energy: number;
   cost: number;
-  behavior: PlayableWeaponBehavior | null;
+  behavior: WeaponBehavior | null;
 }
 
 export interface FireInput {
@@ -34,8 +35,9 @@ export interface FireInput {
 }
 
 export interface FireContext {
-  /** Tâm người chơi theo trục X và mép trên hộp, px. */
+  /** Tâm người chơi và mép trên hộp, px. */
   centerX: number;
+  centerY: number;
   top: number;
   facing: 1 | -1;
   /** Người chơi vừa bị đánh trong bước này: mất năng lượng nạp (GDD 5.1). */
@@ -44,7 +46,7 @@ export interface FireContext {
   aimTargets: ReadonlyArray<{ x: number; y: number }> | undefined;
 }
 
-export type FireKind = 'shot' | 'mid' | 'charged' | PlayableWeaponBehavior['type'];
+export type FireKind = 'shot' | 'mid' | 'charged' | WeaponBehavior['type'];
 
 export interface BeamShot {
   origin: { x: number; y: number };
@@ -117,7 +119,7 @@ export class WeaponLoadout {
     if (this.slots.some((s) => s.name === name)) return false;
     const weapon = this.data.bossWeapons.find((w) => w.name === name);
     const b = weapon?.behavior;
-    if (!b || b.type === 'boomerang' || weapon.energyCost === null) return false;
+    if (!b || weapon.energyCost === null) return false;
     this.slots.push({
       name,
       kind: b.type,
@@ -271,13 +273,14 @@ export class WeaponLoadout {
     const slot = this.current;
     const b = slot.behavior;
     if (!b || this.fireCooldown > 1e-9) return;
+    if (b.type === 'boomerang' && pool.count('player', ['boomerang']) >= b.maxOnScreen) return;
     if (slot.energy + 1e-9 < slot.cost) {
       events.empty = true;
       return;
     }
     slot.energy -= slot.cost;
     this.sinceBossWeapon = 0;
-    this.fireCooldown = b.cooldownSec;
+    this.fireCooldown = b.type === 'boomerang' ? 0 : b.cooldownSec;
     events.fired = b.type;
     if (b.type === 'beam') {
       // Bắt đầu từ tâm Kai để nòng súng không vượt qua mặt tường khi đứng sát.
@@ -289,7 +292,38 @@ export class WeaponLoadout {
         behavior: b,
       };
     } else if (b.type === 'shard') this.fireShard(ctx, pool, slot.name, b);
+    else if (b.type === 'boomerang') this.fireBoomerang(ctx, pool, slot.name, b);
     else this.fireSweep(ctx, pool, slot.name, b);
+  }
+
+  private fireBoomerang(
+    ctx: FireContext,
+    pool: ProjectilePool,
+    weapon: string,
+    b: BoomerangBehavior,
+  ): void {
+    const { w, h } = b.sizePx;
+    const speed = b.speedTilesPerSec * this.tileSize;
+    pool.spawn({
+      ...this.baseSpec(weapon),
+      kind: 'boomerang',
+      x: ctx.centerX - w / 2,
+      y: ctx.centerY - h / 2,
+      w,
+      h,
+      vx: ctx.facing * speed,
+      vy: 0,
+      kindMul: b.damageMul,
+      pierceLeft: Number.POSITIVE_INFINITY,
+      breaksShield: false,
+      maxDistance: b.outTiles * this.tileSize,
+      boomerang: {
+        speedPxPerSec: speed,
+        phase: 'out',
+        cancelKinds: b.cancelKinds,
+        cancelsLeft: b.maxCancelsPerThrow,
+      },
+    });
   }
 
   private fireShard(

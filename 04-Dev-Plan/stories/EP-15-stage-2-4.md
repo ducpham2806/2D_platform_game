@@ -12,6 +12,7 @@
 | ST-15-02  | Laser, gương, cảm biến ánh sáng                                                                    | 01a                                                    | 2 ngày | DONE (21/11/2026) |
 | ST-15-03  | Prism Beam phản xạ, xuyên địch và đốt rễ khô                                                       | 02                                                     | 1,5 ngày | DONE (21/11/2026) |
 | ST-15-04  | Frost Shard, vô hiệu theo QB-19 và dòng làm mát đóng băng                                         | 01b                                                    | 2 ngày | DONE (21/11/2026) |
+| ST-15-05  | Gale Cutter, hủy đạn Q4 và sương lạnh Két Tay Mk I                                               | 01c                                                    | 1,5 ngày | DONE (21/11/2026) |
 
 ## ST-15-14: Boss an toàn (QB-14, QB-31)
 
@@ -240,3 +241,25 @@ Phase Step gọi chung API khi triển khai ST-08-09. Mở khóa vũ khí qua Cr
 - [x] Nạp và kiểm cấu hình Gale Cutter, ngân sách hai chiều, loại đạn hợp lệ và mức tiêu hao. Loadout giữ điều kiện chỉ cấp hành vi đã chạy được.
 - [x] Nạp và kiểm `wind`, `cloud` và `crumble.sink`. Thời lượng gió phải có chỗ cho báo trước và đổi dần, bệ mây là một chiều.
 - [x] Ghi trong GDD rằng dữ liệu Chim Cắt Gió và Cối Xoáy đi cùng ST-15-07, Gale Roc cùng ST-15-09, Aeris cùng ST-15-12 để kiểm chung với hành vi tương ứng.
+
+## ST-15-05: Gale Cutter và sương lạnh Két Tay Mk I
+
+- **Thuộc Epic:** EP-15 · **Ưu tiên:** P1 · **Trạng thái:** DONE (21/11/2026) · **Phụ thuộc:** ST-15-01c · **Engine:** Phaser 3.90.0.
+- **Bằng chứng:** `game/tests/gale-cutter.test.ts` và [ảnh phòng thử](../qa/ST-15-05/README.md). Đã tự rà soát.
+
+### 1. User Story
+
+> **Là** người chơi cầm Gale Cutter, **tôi muốn** ném lưỡi bay qua địch rồi quay về, hủy đạn dọc đường và thổi tan sương lạnh, **để** vừa phòng thủ vừa mở lối tới Két Tay Mk I.
+
+### 2. Quy tắc GDD
+
+- GDD 16 mục 5.7, Q4. Dùng `weapons.json` từ ST-15-01c. Ném tốn 4/28 năng lượng. Lưỡi bay thẳng tối đa 6 ô với tốc độ 11 ô/s, quay đầu ở tường và xuyên địa hình trên đường về vị trí hiện tại của Kai. Mỗi mục tiêu nhận tối đa một lần trúng mỗi chiều. Tối đa một lưỡi trên màn theo cấu hình, ném lại sau khi đón hoặc lưỡi tan.
+- Một lần ném hủy tối đa hai viên thuộc nhóm đạn của địch thường và đúng loại `enemyShot` hoặc `bomb`. Hạn mức dùng chung cho cả chiều đi và về. Khiên và bất tử đổi pha vẫn xử lý theo luật hiện có (QB-14, QB-18, QB-31).
+- GDD 16 mục 4.8. Màn sương dùng vật chắn Tiled `barrier` với `requiresWeapon: "Gale Cutter"`. Phòng thử cho mượn vũ khí và giữ tiến trình trong lượt. Vị trí kho hạt giống trong bản đồ chiến dịch thuộc ST-17-03, phần thưởng từ Aeris thuộc ST-15-12.
+
+### 3. Nghiệm thu
+
+- [x] Lưỡi tính sát thương cả hai chiều, quay về Kai khi di chuyển, giữ giới hạn lưỡi khi đổi vũ khí, không trừ năng lượng khi ném không thành công (QB-11–13).
+- [x] Hủy đúng loại và nguồn, giới hạn hai viên cả lượt ném (Q4). Đạn hủy trong bước không đánh trúng Kai.
+- [x] Vật chắn vỡ khi Gale Cutter chạm, cho Kai đi qua và nhặt Két. Vũ khí khác bị chặn. Hồi sinh giữ lối đã mở.
+- [x] Chơi thử bằng bàn phím và cảm ứng giả lập. Có ảnh lưỡi đi, lưỡi về và lối mở.

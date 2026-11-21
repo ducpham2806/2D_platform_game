@@ -177,7 +177,11 @@ export abstract class Enemy {
       dirY * speed,
       this.harmless ? 0 : data.damage,
     );
-    const tagged = { ...spec, source: `enemy:${this.data.id}` };
+    const tagged = {
+      ...spec,
+      source: `enemy:${this.data.id}`,
+      fromRegularEnemy: this.data.behavior !== 'golem',
+    };
     ctx.pool.spawn(gravity > 0 ? { ...tagged, gravity } : tagged);
   }
 
