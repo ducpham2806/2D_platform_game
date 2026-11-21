@@ -1,6 +1,7 @@
 import type {
   BeamBehavior,
   ChargeLevelData,
+  ShardBehavior,
   SweepBehavior,
   WeaponsData,
 } from '../../core/weapons-config';
@@ -8,11 +9,12 @@ import type { ProjectilePool, ProjectileSpec } from './projectiles';
 
 export const ARC_CANNON = 'Arc Cannon';
 export const PRISM_BEAM = 'Prism Beam';
+export const FROST_SHARD = 'Frost Shard';
 
 /** Mức nạp: 0 chưa nạp, 1 nạp vừa, 2 nạp đầy. */
 export type ChargeLevel = 0 | 1 | 2;
 
-type PlayableWeaponBehavior = SweepBehavior | BeamBehavior;
+type PlayableWeaponBehavior = SweepBehavior | BeamBehavior | ShardBehavior;
 
 export interface WeaponSlot {
   name: string;
@@ -116,7 +118,6 @@ export class WeaponLoadout {
     const weapon = this.data.bossWeapons.find((w) => w.name === name);
     const b = weapon?.behavior;
     if (!b || weapon.energyCost === null) return false;
-    if (b.type !== 'sweep' && b.type !== 'beam') return false;
     this.slots.push({
       name,
       kind: b.type,
@@ -287,7 +288,33 @@ export class WeaponLoadout {
         damage: this.data.arcCannon.damage,
         behavior: b,
       };
-    } else this.fireSweep(ctx, pool, slot.name, b);
+    } else if (b.type === 'shard') this.fireShard(ctx, pool, slot.name, b);
+    else this.fireSweep(ctx, pool, slot.name, b);
+  }
+
+  private fireShard(
+    ctx: FireContext,
+    pool: ProjectilePool,
+    weapon: string,
+    b: ShardBehavior,
+  ): void {
+    const { w, h } = b.sizePx;
+    const muzzle = this.muzzle(ctx);
+    pool.spawn({
+      ...this.baseSpec(weapon),
+      kind: 'shard',
+      x: muzzle.x - w / 2,
+      y: muzzle.y - h / 2,
+      w,
+      h,
+      vx: ctx.facing * b.speedTilesPerSec * this.tileSize,
+      vy: 0,
+      kindMul: b.damageMul,
+      pierceLeft: 0,
+      breaksShield: false,
+      maxDistance: b.rangeTiles * this.tileSize,
+      freezeSec: b.freezeSec,
+    });
   }
 
   private fireSweep(

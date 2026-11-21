@@ -311,6 +311,10 @@ type GolemState = 'walk' | 'slamTelegraph' | 'bombTelegraph' | 'dashTelegraph' |
  * cao rơi quanh mình, báo trước lần nữa rồi lao `dashTiles` ô.
  */
 export class Golem extends Enemy {
+  protected override get disableImmune(): boolean {
+    return true;
+  }
+
   declare readonly data: GolemData;
   state: GolemState = 'walk';
   /** Tiến độ báo trước 0..1 để vẽ. */

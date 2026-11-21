@@ -10,6 +10,7 @@
 | ST-15-01b | Cấu hình Frost Shard, sàn trơn, bục băng vỡ và dòng chất làm mát                                  | 01a                                                    | 0,5 ngày | DONE (21/11/2026) |
 | ST-15-02  | Laser, gương, cảm biến ánh sáng                                                                    | 01a                                                    | 2 ngày | DONE (21/11/2026) |
 | ST-15-03  | Prism Beam phản xạ, xuyên địch và đốt rễ khô                                                       | 02                                                     | 1,5 ngày | DONE (21/11/2026) |
+| ST-15-04  | Frost Shard, vô hiệu theo QB-19 và dòng làm mát đóng băng                                         | 01b                                                    | 2 ngày | DONE (21/11/2026) |
 
 ## ST-15-14: Boss an toàn (QB-14, QB-31)
 
@@ -195,3 +196,26 @@
 - [x] Thêm cấu hình vào `03-Data/{weapons,stages}.json`, nối vào bộ kiểm tra khi nạp game. Mốc nứt theo thứ tự và nằm trước lúc vỡ; số bậc đông là số nguyên dương.
 - [x] Frost Shard tham gia kiểm ngân sách và sức mạnh khắc chế. Loadout chỉ cấp vũ khí sau khi hành vi có mã chạy.
 - [x] Dữ liệu Người Tuyết Máy, Tháp Băng và Frost Titan đi cùng ST-15-06 (hành vi và bản Thử thách); Cryo đi cùng ST-15-11 (`slickFloorSec`, `shatter` và mô phỏng). Giữ dữ liệu ứng viên trong đặc tả như ST-15-01a.
+
+## ST-15-04: Frost Shard, vô hiệu và dòng làm mát
+
+- **Thuộc Epic:** EP-15 · **Ưu tiên:** P1 · **Trạng thái:** DONE (21/11/2026) · **Phụ thuộc:** ST-15-01b · **Engine:** Phaser 3.90.0.
+
+### 1. User Story
+
+> **Là** người chơi cầm Frost Shard, **tôi muốn** dùng một phát đạn để đóng băng kẻ địch hoặc dòng chất làm mát, **để** có thời gian đi qua và mở đường lên Két Thân Mk I.
+
+### 2. Bối cảnh và quyết định
+
+- GDD 16 mục 3.8, 4.7: bắn thẳng, một mục tiêu, ×2 sát thương, 10 ô/s, tầm 10 ô, 4 năng lượng, hồi 0,4 s. Trúng địch thường làm vô hiệu 2 s; khiên Lính Kén chặn phía trước, giữ cách tính đòn khắc chế boss hiện có.
+- QB-19: `Enemy.disable` dùng `max(thời gian còn lại, thời gian mới)` cho đạn băng và choáng dùng chung. Kẻ địch thường dừng di chuyển, đếm nhịp tấn công và sát thương chạm thân trong lúc vô hiệu, vẫn nhận đòn; boss và mini-boss miễn. Đồng hồ hiệu lực tiếp tục khi ra khỏi tầm hoạt động. Hiệu ứng đóng băng có chỉ báo riêng để Phase Step dùng cùng API mà không hiện băng.
+- Tiled `coolant` là vùng ô trống. Frost Shard chạm dòng lỏng thì viên đạn bị giữ lại, tạo `coolant.frozenSteps` mặt đứng một chiều trải đều từ trên xuống, tồn tại tới hết lượt (QB-47). Giữ bậc khi chết/hồi sinh; dựng màn mới thì về dạng lỏng.
+
+### 3. Tiêu chí nghiệm thu
+
+- [x] Đạn dùng thông số từ dữ liệu, trừ năng lượng đúng và kiểm đạn chạm khiên, địch thường, mini-boss, boss, tường.
+- [x] Kiểm QB-19 theo cả hai thứ tự áp dụng, hiệu lực hết đúng thời gian, kẻ địch đóng băng không thành bục.
+- [x] Dòng lỏng vô hại. Chỉ Frost Shard làm đông, bậc đứng được và tồn tại khi hồi sinh.
+- [x] Tự rà soát và kiểm thử trên Chromium bằng bàn phím và Pixel 7 giả lập. Phòng thử cho mượn vũ khí và giữ tiến trình trong lượt. [Ảnh kiểm thử](../qa/ST-15-04/README.md)
+
+Phase Step gọi chung API khi triển khai ST-08-09. Mở khóa vũ khí qua Cryo ở ST-15-11, đặt Két Thân Mk I ở ST-17-02.

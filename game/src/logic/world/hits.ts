@@ -161,7 +161,8 @@ export function resolvePlayerHits(
         if (result === 'killed') {
           ev.enemyKilled = true;
           killed.push(e);
-        }
+        } else if (p.freezeSec !== undefined && e.disable(p.freezeSec, 'freeze'))
+          ev.enemyFrozen = true;
         explode(p, amountOf(p));
       }
       hitStop = Math.max(hitStop, chargedStop);
@@ -269,7 +270,7 @@ export function resolveEnemyHits(
     }
   }
   for (const e of enemies) {
-    if (!e.alive || !overlaps(e.box, player.box)) continue;
+    if (!e.alive || e.disabledSec > 0 || !overlaps(e.box, player.box)) continue;
     const amount = incomingDamage(e.contactDamage, damageTaken);
     if (absorbed(amount)) continue;
     if (player.applyHit(amount, e.centerX)) {

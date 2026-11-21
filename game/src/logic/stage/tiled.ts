@@ -52,6 +52,7 @@ const OBJECT_CLASSES = [
   'mirror',
   'lightSensor',
   'opticalDoor',
+  'coolant',
   'section',
 ] as const;
 type ObjectClass = (typeof OBJECT_CLASSES)[number];
@@ -387,6 +388,24 @@ function buildLayout(map: TileMap, objects: readonly TiledObject[]): StageLayout
     }),
   };
   const hasOptics = opticalCells.size > 0 || opticalDoors.length > 0;
+  const coolantCells = new Set<number>();
+  const coolant = of('coolant').map((o) => {
+    const region = span(o);
+    for (let row = region.top; row <= region.bottom; row += 1) {
+      for (let col = region.first; col <= region.last; col += 1) {
+        const key = row * map.cols + col;
+        if (
+          map.get(col, row) !== Tile.Empty ||
+          doorCells.has(key) ||
+          overlapsBarrier(col, row) ||
+          coolantCells.has(key)
+        )
+          fail(label(o), `ô dòng làm mát (${col}, ${row}) phải trống`);
+        coolantCells.add(key);
+      }
+    }
+    return region;
+  });
 
   return {
     map,
@@ -413,6 +432,7 @@ function buildLayout(map: TileMap, objects: readonly TiledObject[]): StageLayout
     rooms,
     secrets,
     barriers,
+    ...(coolant.length ? { coolant } : {}),
     ...(hasOptics ? { optics } : {}),
     sections,
   };

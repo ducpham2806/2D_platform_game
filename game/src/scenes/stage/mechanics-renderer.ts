@@ -24,6 +24,22 @@ export function drawMechanics(
 ): void {
   const t = world.map.tileSize;
   if (world.optics) drawOptics(g, world.optics, timeMs, t);
+  for (const flow of world.coolant) {
+    const b = flow.box;
+    if (flow.frozen) {
+      g.fillStyle(0x2d688a, 0.4).fillRect(b.x, b.y, b.w, b.h);
+      for (const row of flow.stepRows) {
+        g.fillStyle(0x82d9f3, 1).fillRect(b.x, row * t, b.w, 4);
+        g.fillStyle(0xc2f3ff, 1).fillRect(b.x, row * t, b.w, 1);
+      }
+    } else {
+      g.fillStyle(0x20678a, 0.65).fillRect(b.x, b.y, b.w, b.h);
+      const offset = Math.floor(timeMs / 45) % t;
+      g.fillStyle(0x58bfd9, 0.8);
+      for (let y = offset; y < b.h; y += t)
+        g.fillRect(b.x + b.w / 2 - 1, b.y + y, 2, Math.min(5, b.h - y));
+    }
+  }
   world.layout.checkpoints.forEach((cp, i) => {
     const reached = i < world.checkpointIndex;
     const x = cp.col * t + t / 2;

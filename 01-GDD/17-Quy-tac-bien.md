@@ -44,7 +44,7 @@ Tài liệu GDD mô tả luật chính. File này gom các **tình huống biên
 | QB-15 | Đổi qua lại hai vũ khí khi có nhiều ô | Vũ khí xếp theo thứ tự màn. Giữ nút đổi ≥ 0,3 s: đổi qua lại hai vũ khí dùng gần nhất. Cảm ứng: vuốt lên trên nút đổi | `controls.json → quickSwapHoldSec` (chưa có) | Sau cổng (cần khi có ≥ 3 vũ khí) |
 | QB-16 | Vũ khí boss bắn vào khiên Lính Kén | Mỗi cú trúng tính 1 lần vào `shieldHits`, bất kể sát thương | `enemies.json` | Story Stage 2–4 |
 | QB-18 | Prism Beam gặp khiên Lính Kén | Tia dừng ở mặt trước khiên, tính 1 lần `shieldHits` kể cả phát phá khiên. Tia gặp mặt sau xuyên tiếp | — | Code (ST-15-03, `tests/prism-beam.test.ts`) |
-| QB-19 | Frost Shard và Phase Step cùng làm vô hiệu một kẻ địch | Lấy `disabledSec` lớn hơn, không cộng dồn; boss và mini-boss miễn | `disabledSec` | Story Stage 2–4 (EP-15) |
+| QB-19 | Frost Shard và Phase Step cùng làm vô hiệu một kẻ địch | Lấy giá trị lớn hơn giữa `disabledSec` còn lại và thời gian mới. Boss và mini-boss miễn | `disabledSec` | API dùng chung và Frost Shard đã có (ST-15-04); Phase Step nối ở ST-08-09 |
 | QB-17 | Vật phẩm năng lượng rơi | Tỉ lệ 6%, hồi 4 năng lượng vào vũ khí đang cầm; đang cầm Arc Cannon thì nạp vũ khí boss có % thấp nhất; không rơi khi mọi vũ khí đầy | `pickups.energyChance 0.06`, `energy 4` (chưa có) | Story MVP |
 
 ## 3. Kẻ địch

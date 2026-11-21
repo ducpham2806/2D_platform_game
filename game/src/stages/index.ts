@@ -1,4 +1,5 @@
 import { ENEMY_ROOM } from './enemy-room';
+import { FROST_ROOM } from './frost-room';
 import { GOLEM_ROOM } from './golem-room';
 import { GRAY_BOX } from './gray-box';
 import { MECHANICS_ROOM } from './mechanics-room';
@@ -14,6 +15,7 @@ export const STAGE_DEFS = {
   enemies: ENEMY_ROOM,
   mechanics: MECHANICS_ROOM,
   optics: OPTICS_ROOM,
+  frost: FROST_ROOM,
   thorna: THORNA_ROOM,
   golem: GOLEM_ROOM,
 } as const satisfies Record<string, StageDef>;
