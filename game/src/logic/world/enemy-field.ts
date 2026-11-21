@@ -1,4 +1,5 @@
 import type { EnemiesData } from '../../core/enemy-config';
+import type { ExtraSolid } from '../combat/flight';
 import type { ProjectilePool } from '../combat/projectiles';
 import { createEnemy } from '../enemy/behaviors';
 import { type Enemy, isFlying } from '../enemy/enemy';
@@ -66,12 +67,13 @@ export class EnemyField {
     return this.enemies.filter((e) => this.isActive(e, player));
   }
 
-  step(player: PlayerPhysics, pool: ProjectilePool, dt: number): void {
+  step(player: PlayerPhysics, pool: ProjectilePool, dt: number, mirror?: ExtraSolid): void {
     const ctx = {
       playerX: player.centerX,
       playerY: player.box.y + player.box.h / 2,
       pool,
       map: this.map,
+      ...(mirror ? { mirror } : {}),
     };
     for (const e of this.enemies) e.step(ctx, dt, this.isActive(e, player));
   }

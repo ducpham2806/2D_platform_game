@@ -130,7 +130,7 @@ Mỗi module một dòng; chi tiết ở file quyết định và Epic.
 - **M2 Đầu vào:** Xong. Vùng an toàn tai thỏ cho nút cảm ứng, canvas, bảng HTML (ST-11-01, QB-92). Bàn phím, tay cầm, cảm ứng (cần ảo, 6 nút, đa chạm, rung), đổi phím, chỉnh bố cục, tự bắn, hỗ trợ ngắm. Còn: thử tay cầm thật.
 - **M3 Nhân vật:** Xong logic. Chạy, nhảy biến thiên, coyote, buffer, lướt, dash-jump, bám/nhảy tường, bục một chiều, bị đánh, chết, rơi hố. Còn: sprite, hoạt ảnh (asset P0); leo thang (đặc tả 02 đoạn A, B).
 - **M4 Chiến đấu:** Arc Cannon, Vine Lash, Prism Beam, Frost Shard (QB-19), Gale Cutter (Q4). Còn: Lumen, Cryo, Aeris cấp vũ khí.
-- **M5 Kẻ địch:** Xong cho Prologue, Stage 1 (5 loại + bản Thử thách); kẻ địch dựng lại sau khi Kai chết không trả thưởng lần nữa (QB-20). Thưởng theo màn (`enemyRewardMul`, ST-15-01a). Còn: kẻ địch Stage 2–4 (EP-15), tầm dọc và chỉ bắn khi trên màn (QB-23), sprite.
+- **M5 Kẻ địch:** Prologue, Stage 1 và bốn địch ST-15-06 đã chạy. Thưởng theo màn, trả một lần (QB-20). Còn: địch Stage 2/4, QB-21/23, sprite.
 - **M6 Boss:** Boss xám, Thorna và Bramble Golem; thắng nếu boss và Kai hết máu cùng bước (QB-30); chống khóa choáng và kẹp pha (QB-14, 31). Còn: Lumen, Cryo, Aeris, mini-boss và bản đồ đấu trường.
 - **M7 Màn chơi:** Khung Tiled, checkpoint, hố, gai, dây leo, cửa và bí mật. Phòng thử laser, băng và Gale Cutter. Gió và bệ mây có dữ liệu (ST-15-01c). Còn: bản đồ chiến dịch, thang, bệ dây di chuyển, parallax.
 - **M8 Hệ thống RPG:** Xong cấp, SP, cây kỹ năng 3 × 3 có hiệu ứng trong trận, Xưởng tab Kỹ năng, trần sức mạnh. Còn: Module, Két giáp (ST-08-09, bị chặn), âm thanh kỹ năng, loadout (Alpha).

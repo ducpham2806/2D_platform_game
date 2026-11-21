@@ -13,6 +13,7 @@
 | ST-15-03  | Prism Beam phản xạ, xuyên địch và đốt rễ khô                                                       | 02                                                     | 1,5 ngày | DONE (21/11/2026) |
 | ST-15-04  | Frost Shard, vô hiệu theo QB-19 và dòng làm mát đóng băng                                         | 01b                                                    | 2 ngày | DONE (21/11/2026) |
 | ST-15-05  | Gale Cutter, hủy đạn Q4 và sương lạnh Két Tay Mk I                                               | 01c                                                    | 1,5 ngày | DONE (21/11/2026) |
+| ST-15-06  | Gương Quang, Người Tuyết Máy, Tháp Băng và Frost Titan                                         | 01a, 01b                                               | 2 ngày | DONE (22/11/2026) |
 
 ## ST-15-14: Boss an toàn (QB-14, QB-31)
 
@@ -263,3 +264,22 @@ Phase Step gọi chung API khi triển khai ST-08-09. Mở khóa vũ khí qua Cr
 - [x] Hủy đúng loại và nguồn, giới hạn hai viên cả lượt ném (Q4). Đạn hủy trong bước không đánh trúng Kai.
 - [x] Vật chắn vỡ khi Gale Cutter chạm, cho Kai đi qua và nhặt Két. Vũ khí khác bị chặn. Hồi sinh giữ lối đã mở.
 - [x] Chơi thử bằng bàn phím và cảm ứng giả lập. Có ảnh lưỡi đi, lưỡi về và lối mở.
+
+## ST-15-06: Kẻ địch Viện Quang và Kho Lạnh
+
+- **Thuộc Epic:** EP-15 · **Ưu tiên:** P1 · **Trạng thái:** DONE (22/11/2026) · **Phụ thuộc:** ST-15-01a/b · **Engine:** Phaser 3.90.0.
+
+> **Là** người chơi, **tôi muốn** đọc được dấu hiệu đạn dội, cú trượt và điểm rơi của tảng băng, **để** chọn đường né và phản công ở độ khó Thường lẫn Thử thách.
+
+### Quy tắc GDD 16 mục 3.4, 3.11 và 4.4–4.5
+
+- Gương Quang dùng `drone`, đạn nảy một lần, coi ô gương như tường. Khi bị che, nhắm dội trần và vẽ điểm nảy. Song Tia thêm viên thẳng bên cạnh đường dội nếu có trần khả dụng.
+- Người Tuyết Máy dùng `shieldCharger` với 0 khiên. Trượt 5 ô, 8 ô/s, dừng trước mép. Trượt Dội thêm hai lần trượt có báo 0,45 s.
+- Tháp Băng dùng `turret` và hai mảnh đạn cong nhắm chỗ Kai khi hết báo. Góc 50°, trọng lực 20 ô/s², mảnh thứ hai xa thêm 2 ô trong tầm 9 ô. Loạt Nhắm Lại thêm loạt sau 0,4 s.
+- Frost Titan dùng `golem`, 80 máu, đổi pha lúc còn 50%, thưởng gốc 185 EXP và 50 Core Bit. Pha 1 giậm, pha 2 ném ba tảng rồi húc. Tảng Vỡ sinh hai sóng 1,5 ô, 5 ô/s và 8 sát thương khi chạm sàn.
+
+### Nghiệm thu
+
+- [x] Kiểm cấu hình của bốn loại và bốn biến thể lúc nạp. Kiểm thưởng Stage 2–3 và miễn vô hiệu của Frost Titan theo QB-19.
+- [x] Kiểm đường đạn và vạch báo, va chạm trần/tường/gương, ném cong và nhắm lại, cú trượt ở mép, tảng chỉ tạo sóng khi đáp sàn.
+- [x] Phòng thử cho cả hai độ khó, có ảnh Chromium PC và Pixel 7 giả lập. Bản đồ chiến dịch ở EP-17, QB-21 và QB-23 áp toàn game ở ST-15-15. [Ảnh kiểm thử](../qa/ST-15-06/README.md)

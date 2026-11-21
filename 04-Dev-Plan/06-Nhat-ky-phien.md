@@ -25,6 +25,15 @@ Mẫu:
 
 ---
 
+## 2026-11-22: ST-15-06 bốn kẻ địch Viện Quang và Kho Lạnh
+
+- **Nhánh:** `ccr-9de01342-2046rb`, từ `35fca2b`. G1 tiếp tục trên `main`.
+- **Đã làm:** Gương Quang dội trần khi bị che và vẽ hướng ngắm. Song Tia thêm viên thẳng nếu có đường dội. Người Tuyết Máy dùng 0 khiên, dừng ở mép và thêm hai cú Trượt Dội ở Thử thách.
+- **Địch Kho Lạnh:** Tháp Băng dùng góc ném 50°, có hai điểm rơi và nhắm lại ở loạt hai. Frost Titan giậm, ném ba tảng, húc và miễn vô hiệu. Tảng Vỡ sinh hai sóng khi đáp sàn hoặc bục một chiều. Hạ Titan mở phòng khóa và trả 185 EXP/50 Core Bit theo dữ liệu gốc.
+- **Quyết định:** dùng đường va chạm quét cho vạch dội và bóng đổ. Sửa vị trí phóng bom trong hành vi `golem` để bom không chạm sàn ngay lúc bắn. Mở hai chế độ phòng thử ở menu thường.
+- **Kiểm tra:** 669 test, build (typecheck), lint, format, docs-check và gate-flow đạt. Chromium PC Thường và Pixel 7 giả lập Thử thách, 0 lỗi console. [Ảnh](qa/ST-15-06/README.md).
+- **Tiếp theo:** ST-15-08a hoặc ST-15-15/16. Đặt địch trong bản đồ chiến dịch ở EP-17. QB-21 và QB-23 thống nhất ở ST-15-15.
+
 ## 2026-11-21: ST-15-05 Gale Cutter và sương lạnh Két Tay Mk I
 
 - **Nhánh:** `ccr-9de01342-2046rb`, từ `2ed9412`. G1 tiếp tục trên `main`.
@@ -44,13 +53,3 @@ Mẫu:
 - **Quyết định:** dữ liệu Chim Cắt Gió và Cối Xoáy đi cùng ST-15-07, Gale Roc cùng ST-15-09, Aeris cùng ST-15-12. Đo khắc chế Terra khi có hành vi ở Alpha.
 - **Kiểm tra:** 642 test, build (typecheck), lint, format, docs-check và gate-flow (PC, Pixel 7 giả lập, gộp nhật ký) đạt.
 - **Tiếp theo:** ST-15-05 ném và đón Gale Cutter, hủy đạn theo Q4 và mở sương lạnh ở Két Tay Mk I. Bệ mây ở ST-15-08a, gió ở ST-15-08b sau G1.
-
-## 2026-11-21: ST-15-04 Frost Shard, vô hiệu QB-19 và dòng làm mát
-
-- **Nhánh:** `ccr-9de01342-2046rb`, từ `850e7b2`. Bản thử G1 trên `main`.
-- **Đã làm:** cấp Frost Shard, đạn theo dữ liệu. `Enemy.disable` lấy thời gian còn lại hoặc thời gian mới lớn hơn (QB-19); vô hiệu dừng nhịp AI và sát thương chạm thân. Khiên Lính Kén vẫn chặn mặt trước. Boss và mini-boss miễn vô hiệu.
-- **Dòng làm mát:** class Tiled `coolant` chuyển thành ba bậc một chiều. Dòng lỏng vô hại, giữ viên Frost Shard lúc đông. Bậc tồn tại qua hồi sinh, đặt lại khi chơi lại.
-- **Phòng thử:** phím I hoặc chọn từ menu, mượn Frost Shard, tiến trình ở trong lượt. PC leo tới gờ thật. Ảnh PC và Pixel 7 giả lập ở `qa/ST-15-04/`.
-- **File chính:** `WeaponLoadout`, `Enemy`, `hits.ts`, `CoolantFlow`, map và renderer; 16 bài trong `game/tests/frost-shard.test.ts`.
-- **Kiểm tra:** 620 test, build (typecheck), lint, format, docs-check, gate-flow. Luồng phòng băng trên Chromium PC và Pixel 7 giả lập, 0 lỗi console.
-- **Tiếp theo:** Phase Step gọi API vô hiệu ở ST-08-09. Cryo cấp vũ khí ở ST-15-11, đặt Két Thân Mk I ở ST-17-02.

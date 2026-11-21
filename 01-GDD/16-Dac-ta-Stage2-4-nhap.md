@@ -809,7 +809,7 @@ Quy ước như EP-08 đến EP-10: Story ≤ 1–2 ngày, mỗi Story nhúng s�
 | ST-15-03 | Prism Beam (`beam`): bắn, phản xạ, xuyên, dừng ở khiên Lính Kén (QB-16, QB-18); `Barrier` nhận tia (rễ khô Két Stage 1) | 02 | 1,5 ngày |
 | ST-15-04 | **Xong 21/11/2026.** API vô hiệu QB-19, Frost Shard `shard` và `CoolantFlow`. Phòng thử băng cho mượn vũ khí, dùng ba bậc một chiều để lên gờ. **Điều kiện của Phase Step (ST-08-09)** | 01b | 2 ngày |
 | ST-15-05 | Gale Cutter (`boomerang`, hủy tối đa 2 đạn kẻ địch thường mỗi lần ném) và sương lạnh dùng `Barrier` (Két Stage 3). Xong 21/11/2026 | 01c | 1,5 ngày |
-| ST-15-06 | Kẻ địch dùng lại hành vi: Gương Quang (`drone` + `bounces`, `bankShot`), Người Tuyết Máy (dữ liệu), Tháp Băng (`turret` + `lob`), Frost Titan (`golem` + `landShockwave`), kèm bản Thử thách Thêm dữ liệu và bản Thử thách của các kẻ địch này (dời từ 01a) | 01a, 01b | 2 ngày |
+| ST-15-06 | Gương Quang (`drone` và đạn dội), Người Tuyết Máy (`shieldCharger`), Tháp Băng (`turret` và đạn cong), Frost Titan (`golem` và sóng khi tảng đáp), kèm cấu hình Thử thách và phòng thử. Xong 22/11/2026 | 01a, 01b | 2 ngày |
 | ST-15-08a | `CrumblePlatform` (break, sink) và bệ mây trôi (đường hai điểm): phần cơ chế **không** đụng `player-physics` | 01b, 01c | 1 ngày |
 | ST-15-09 | Mini-boss Prism Sentinel và Gale Roc dùng lớp `Boss` và bộ chuyển cho `LockedRoom` (Q1). Gió đẩy của Vỗ Cánh nối vào `WindZone` ở ST-15-08b. Thêm dữ liệu Prism Sentinel (từ 01a) và Gale Roc (từ 01c) | 01c, 02, 14, 15 | 2,5 ngày |
 | ST-15-10 | Boss Lumen: `beam`, dịch chuyển, `focus` (Thử thách); mô phỏng bot; thêm dữ liệu Lumen (dời từ 01a). Phụ thuộc 03: thắng Lumen trước khi Prism Beam có hành vi thì Loadout không cấp và bản lưu không ghi vũ khí | 02, 03, 14 | 2 ngày |

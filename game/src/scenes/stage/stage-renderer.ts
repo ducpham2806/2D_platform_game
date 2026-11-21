@@ -99,7 +99,8 @@ export function drawDynamic(
       drawBoomerang(g, p, timeMs);
       continue;
     }
-    g.fillStyle(PROJECTILE_COLORS[p.kind], p.kind === 'sweep' ? 0.6 : 1).fillRect(
+    const ice = p.source === 'enemy:thap_bang' || p.source === 'enemy:frost_titan';
+    g.fillStyle(ice ? 0x8fddf8 : PROJECTILE_COLORS[p.kind], p.kind === 'sweep' ? 0.6 : 1).fillRect(
       p.x,
       p.y,
       p.w,

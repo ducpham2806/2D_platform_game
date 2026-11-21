@@ -1,6 +1,7 @@
 import type { BoomerangBehavior } from '../../core/weapons-config';
 import type { Box } from '../player/collision';
 import type { TileMap } from '../tilemap';
+import { type ExtraSolid, firstFlightHit } from './flight';
 
 export type ProjectileKind =
   | 'shot'
@@ -56,6 +57,10 @@ export interface Projectile {
   attached: boolean;
   /** Trọng lực (px/s²) cho đạn rơi như hạt nổ của Bướm Sắt; không có thì bay thẳng. */
   gravity?: number;
+  /** Đạn dội coi ô gương như tường, kể cả khi đã hết lượt nảy. */
+  bouncesLeft?: number;
+  /** Đạn ném cong chạm bục một chiều lúc rơi. */
+  arc?: { onLand?: (p: Projectile) => void };
   /** Vô hiệu kẻ địch thường khi đạn băng gây sát thương (QB-19). */
   freezeSec?: number;
   boomerang?: BoomerangFlight;
@@ -79,6 +84,49 @@ function overlapsSolid(p: Projectile, map: TileMap): boolean {
     for (let c = c0; c <= c1; c += 1) if (map.isSolid(c, r)) return true;
   }
   return false;
+}
+
+function stepSpecialFlight(p: Projectile, dt: number, map: TileMap, mirror?: ExtraSolid): void {
+  const gravity = p.gravity ?? 0;
+  const initialVY = p.vy;
+  p.vy += gravity * dt;
+  let dx = p.vx * dt;
+  let dy = (initialVY + (gravity * dt) / 2) * dt;
+  while (p.alive) {
+    const distance = Math.hypot(dx, dy);
+    const range = p.maxDistance - p.traveled;
+    const ratio = distance > 0 ? Math.min(1, range / distance) : 1;
+    dx *= ratio;
+    dy *= ratio;
+    const hit = firstFlightHit(
+      map,
+      p,
+      dx,
+      dy,
+      p.arc !== undefined,
+      p.bouncesLeft !== undefined ? mirror : undefined,
+    );
+    const fraction = hit?.fraction ?? 1;
+    p.x += dx * fraction;
+    p.y += dy * fraction;
+    p.traveled += distance * ratio * fraction;
+    if (!hit) {
+      if (p.traveled >= p.maxDistance - 1e-9) p.alive = false;
+      return;
+    }
+    if (!p.bouncesLeft) {
+      p.alive = false;
+      if (hit.ny < 0 && dy > 0) p.arc?.onLand?.(p);
+      return;
+    }
+    p.bouncesLeft -= 1;
+    p.x += hit.nx * 1e-6;
+    p.y += hit.ny * 1e-6;
+    if (hit.nx) p.vx *= -1;
+    if (hit.ny) p.vy *= -1;
+    dx *= (1 - fraction) * (hit.nx ? -1 : 1);
+    dy *= (1 - fraction) * (hit.ny ? -1 : 1);
+  }
 }
 
 /** Chạm tường hoặc hết tầm thì bước kế tiếp bắt đầu chiều về, dùng sổ trúng riêng. */
@@ -161,8 +209,11 @@ export class ProjectilePool {
     onWall?: (p: Projectile) => void,
     absorb?: (p: Projectile) => boolean,
     returnTarget?: Box,
+    mirror?: ExtraSolid,
   ): void {
-    for (const p of this.items) {
+    // Sóng sinh khi tảng băng đáp được xét trúng ngay, bắt đầu dịch chuyển ở bước kế.
+    for (let i = 0, count = this.items.length; i < count; i += 1) {
+      const p = this.items[i]!;
       if (!p.alive || p.boomerang) continue;
       p.ttl -= dt;
       if (p.ttl <= 1e-9) {
@@ -170,6 +221,11 @@ export class ProjectilePool {
         continue;
       }
       if (p.attached) continue;
+      if (p.bouncesLeft !== undefined || p.arc) {
+        stepSpecialFlight(p, dt, map, mirror);
+        if (p.y > map.heightPx || p.x + p.w < 0 || p.x > map.widthPx) p.alive = false;
+        continue;
+      }
       if (p.gravity) p.vy += p.gravity * dt;
       const dx = p.vx * dt;
       const dy = p.vy * dt;

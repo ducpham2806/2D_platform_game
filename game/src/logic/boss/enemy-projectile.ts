@@ -63,21 +63,25 @@ export function spawnShockwaves(
   centerX: number,
   bottom: number,
   halfWidth: number,
-  wave: SlamAttack['shockwave'],
+  wave: SlamAttack['shockwave'] & { rangeTiles?: number },
   speedMul: number,
+  source?: string,
 ): void {
   for (const dir of [-1, 1] as const) {
-    pool.spawn(
-      enemyProjectile(
-        tileSize,
-        'shockwave',
-        centerX - wave.sizePx.w / 2 + dir * halfWidth,
-        bottom - wave.sizePx.h - 0.01,
-        wave.sizePx,
-        dir * wave.speedTilesPerSec * tileSize * speedMul,
-        0,
-        wave.damage,
-      ),
+    const spec = enemyProjectile(
+      tileSize,
+      'shockwave',
+      centerX - wave.sizePx.w / 2 + dir * halfWidth,
+      bottom - wave.sizePx.h - 0.01,
+      wave.sizePx,
+      dir * wave.speedTilesPerSec * tileSize * speedMul,
+      0,
+      wave.damage,
     );
+    pool.spawn({
+      ...spec,
+      ...(wave.rangeTiles === undefined ? {} : { maxDistance: wave.rangeTiles * tileSize }),
+      ...(source === undefined ? {} : { source }),
+    });
   }
 }

@@ -18,6 +18,16 @@ const PICKUP_BLINK_SEC = 2;
 
 function bodyColor(e: Enemy): number {
   const d = e.data;
+  switch (d.id) {
+    case 'guong_quang':
+      return 0x97dfe5;
+    case 'nguoi_tuyet_may':
+      return 0xb2d7f0;
+    case 'thap_bang':
+      return 0x4593bd;
+    case 'frost_titan':
+      return 0x396aa6;
+  }
   if (d.behavior === 'turret')
     return d.attack.count > 1 ? BODY_COLORS.spikeTurret : BODY_COLORS.turret;
   return BODY_COLORS[d.behavior];
@@ -41,8 +51,13 @@ export function drawEnemies(
     let { x, y, w, h } = b;
     let color = bodyColor(e);
     if (telegraphing) {
-      if (d.behavior === 'drone') color = blink ? 0xff6b6b : color;
-      else if (d.behavior === 'turret' && d.attack.count > 1) {
+      if (d.behavior === 'drone') color = blink ? (d.attack.bankShot ? 0xe5ffff : 0xff6b6b) : color;
+      else if (d.behavior === 'turret' && d.attack.lob) color = blink ? 0xb1f2ff : color;
+      else if (d.id === 'nguoi_tuyet_may') {
+        y += 3;
+        h -= 3;
+        color = blink ? 0xe5ffff : color;
+      } else if (d.behavior === 'turret' && d.attack.count > 1) {
         // Co lại trước khi bắn gai.
         x += 2;
         y += 3;
@@ -64,6 +79,12 @@ export function drawEnemies(
       if (telegraphing)
         color = Math.floor(timeMs / (140 - 90 * e.telegraphProgress)) % 2 === 0 ? 0xffa94d : color;
       if (e.state === 'dash') color = 0xff8787;
+    }
+    if (telegraphing) {
+      g.lineStyle(1, 0xb8f9ff, blink ? 0.85 : 0.5);
+      for (const { from, to } of e.aimLines) g.lineBetween(from.x, from.y, to.x, to.y);
+      for (const { x: markX, y: markY } of e.landingMarks)
+        g.fillStyle(0x71d7ff, blink ? 0.9 : 0.55).fillRect(markX - 5, markY - 2, 10, 2);
     }
     if (e.flash > 0) color = 0xffffff;
     g.fillStyle(color, e.harmless ? 0.6 : 1).fillRect(x, y, w, h);

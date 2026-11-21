@@ -475,7 +475,8 @@ export function checkDesignInvariants(config: GameConfig): string[] {
   // (GDD 11 mục 3.1); các màn đã làm có đủ dữ liệu kẻ địch.
   const hardestTaken = Math.max(...config.difficulties.map((d) => d.damageTaken));
   errors.push(...checkEnemyRules(config.enemies, baseHp, hardestTaken));
-  for (const stage of stages.filter((s) => s.index <= STAGES_WITH_ENEMY_DATA)) {
+  // Stage 3 đã đủ dữ liệu từ ST-15-06. Stage 2 còn Tháp Laser và Prism Sentinel.
+  for (const stage of stages.filter((s) => s.index <= STAGES_WITH_ENEMY_DATA || s.index === 3)) {
     if (!config.enemies.enemies[stage.miniBoss]) {
       errors.push(`stages.${stage.id}.miniBoss: "${stage.miniBoss}" chưa có trong enemies.json`);
     }
