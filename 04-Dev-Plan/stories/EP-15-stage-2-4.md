@@ -8,6 +8,7 @@
 | ST-15-14  | Boss an toàn: chống khóa choáng (QB-14), kẹp pha khi một đòn vượt hai ngưỡng (QB-31); áp cả Thorna | (01a chỉ để có boss Stage 2; phần luật làm trước được) | 1 ngày | DONE (15/11/2026) |
 | ST-15-01a | Dữ liệu Stage 2 và khung kiểm tra chung                                                            | —                                                      | 1 ngày | DONE (15/11/2026) |
 | ST-15-02  | Laser, gương, cảm biến ánh sáng                                                                    | 01a                                                    | 2 ngày | DONE (21/11/2026) |
+| ST-15-03  | Prism Beam phản xạ, xuyên địch và đốt rễ khô                                                       | 02                                                     | 1,5 ngày | DONE (21/11/2026) |
 
 ## ST-15-14: Boss an toàn (QB-14, QB-31)
 
@@ -141,3 +142,34 @@
 
 - Tự rà soát thay đổi. Bố trí góc gương và vị trí nguồn trong phòng thử là tham số; bố cục Stage 2 chốt ở ST-17-02.
 - Đã chơi thử Chromium trên PC và Pixel 7 giả lập. Bằng chứng chơi thử G1 với người thật được ghi ở cổng Prototype.
+
+## ST-15-03: Prism Beam
+
+- **Thuộc Epic:** EP-15 · **Ưu tiên:** P1 · **Phụ thuộc:** ST-15-02 · **Engine:** Phaser 3.90.0.
+- **Trạng thái:** DONE (21/11/2026) · **Bằng chứng:** 12 test và [ảnh phòng thử](../qa/ST-15-03/README.md).
+
+### 1. User Story
+
+> **Là** người chơi dùng Prism Beam, **tôi muốn** tia xuyên mục tiêu và dội qua gương, **để** đánh theo góc và mở lối bị chắn bằng ánh sáng.
+
+### 2. Bối cảnh
+
+- GDD 16 mục 3.7: dùng `LaserPath`, xuyên từng mục tiêu đúng một lần mỗi phát. Tầm tổng qua các đoạn 12 ô, rộng 4 px, vẽ 0,12 s, hồi 0,3 s, sát thương ×1,5, tối đa 3 lần phản xạ; số lấy từ `weapons.json`. Tốn 3/28 năng lượng (QB-11…13); điểm yếu Cryo ×2,5, choáng 0,5 s (QB-14, QB-31).
+- Tia dừng ở mặt trước khiên Lính Kén, tính một lần `shieldHits` kể cả cú làm vỡ khiên. Đánh mặt sau xuyên tiếp (QB-16, QB-18). Tia phản xạ giữ nguyên góc gương và bỏ qua Kai.
+- Cảm biến nhận một xung Prism Beam đủ để mở cửa trong lượt (QB-47). Chu kỳ 0,3 s và độ dài xung 0,12 s không thể đáp ứng thời gian sáng liên tục 0,3 s của laser môi trường. Rễ khô nhận tia khi đường tia tới mặt chắn và mở lối để lần sau bắn qua.
+
+### 3. Phạm vi
+
+- `WeaponLoadout`, `LaserPath`, xử lý trúng đòn, `StageWorld`, `StageOptics`, `Barrier`, renderer và phòng thử laser.
+- Phòng thử cho mượn Prism Beam trong lượt. Việc nhận vũ khí từ Lumen và bố cục Stage 2 thuộc ST-15-10 và ST-17-02.
+
+### 4. Tiêu chí nghiệm thu
+
+- [x] Kiểm năng lượng, hồi bắn, bắn dội qua 1–3 gương, tổng tầm, mỗi mục tiêu một lần và tự dội về.
+- [x] Kiểm khiên mặt trước/mặt sau, báo sát thương boss, tường, rễ khô và cảm biến sau gương.
+- [x] Kiểm luồng bàn phím và Pixel 7 giả lập, chụp ảnh. Test, lint, format, build, docs-check và gate-flow đạt.
+
+### 5. Đóng Story
+
+- Tự rà soát và kiểm luồng trên Chromium. Vệt tia được giữ ở vị trí bắn để thể hiện đúng đường va chạm của phát đó.
+- Prism Beam cho mượn ở phòng thử trong lượt. Mở khóa trong chiến dịch qua Lumen ở ST-15-10.

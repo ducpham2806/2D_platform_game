@@ -8,6 +8,7 @@ import { overlaps, type Projectile } from '../combat/projectiles';
 import type { Box } from '../player/collision';
 import {
   laserBox,
+  type LaserDirection,
   type LaserPath,
   type LaserSegment,
   type MirrorAngle,
@@ -171,6 +172,11 @@ class LightSensor {
     }
     this.litSec += dt;
     if (this.litSec + EPS < this.holdSec) return false;
+    return this.activate();
+  }
+
+  activate(): boolean {
+    if (this.door.open) return false;
     this.door.unlock();
     return true;
   }
@@ -237,6 +243,22 @@ export class StageOptics {
     return true;
   }
 
+  trace(
+    origin: { x: number; y: number },
+    direction: LaserDirection,
+    maxBounces: number,
+    rangePx?: number,
+  ): LaserPath {
+    return traceLaser(this.map, origin, direction, this.mirrorAt, maxBounces, rangePx);
+  }
+
+  /** Một xung từ vũ khí mở cửa; laser môi trường vẫn phải chiếu liên tục đủ thời gian giữ. */
+  receiveBeam(boxes: readonly Box[], ev: WorldEvents): void {
+    for (const sensor of this.sensors)
+      if (boxes.some((box) => overlaps(sensor.box, box)) && sensor.activate())
+        ev.sensorActivated = true;
+  }
+
   reset(): void {
     for (const mirror of this.mirrors) mirror.reset();
     for (const sensor of this.sensors) sensor.reset();
@@ -244,20 +266,13 @@ export class StageOptics {
     this.refreshPaths();
   }
 
+  private readonly mirrorAt = (col: number, row: number): MirrorAngle | undefined =>
+    this.mirrorByCell.get(row * this.map.cols + col)?.angle;
+
   private refreshPaths(): void {
     this.mapRevision = this.map.revision;
-    const mirrorAt = (col: number, row: number): MirrorAngle | undefined =>
-      this.mirrorByCell.get(row * this.map.cols + col)?.angle;
     for (const laser of this.lasers) {
-      laser.setPath(
-        traceLaser(
-          this.map,
-          laser.center,
-          laser.spawn.direction,
-          mirrorAt,
-          this.rules.mirror.maxBounces,
-        ),
-      );
+      laser.setPath(this.trace(laser.center, laser.spawn.direction, this.rules.mirror.maxBounces));
     }
   }
 }

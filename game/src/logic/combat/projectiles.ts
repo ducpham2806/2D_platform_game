@@ -51,6 +51,9 @@ export interface Projectile {
 
 export type ProjectileSpec = Omit<Projectile, 'id' | 'traveled' | 'alive' | 'hitIds'>;
 
+/** Phần của đòn dùng để xét hướng trúng và tác dụng lên khiên. */
+export type ShieldContact = Pick<Projectile, 'vx' | 'x' | 'w' | 'breaksShield'>;
+
 function overlapsSolid(p: Projectile, map: TileMap): boolean {
   const t = map.tileSize;
   const c0 = Math.floor(p.x / t);

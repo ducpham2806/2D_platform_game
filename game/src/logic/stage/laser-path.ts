@@ -18,6 +18,10 @@ export interface LaserSegment {
 
 export type LaserPath = readonly LaserSegment[];
 
+export function laserVector({ from, to }: LaserSegment): Point {
+  return { x: Math.sign(to.x - from.x), y: Math.sign(to.y - from.y) };
+}
+
 const EPS = 1e-9;
 const VECTOR: Readonly<Record<LaserDirection, Point>> = {
   right: { x: 1, y: 0 },

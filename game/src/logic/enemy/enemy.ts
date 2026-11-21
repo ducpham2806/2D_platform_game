@@ -1,5 +1,5 @@
 import type { EnemyData, EnemyProjectileData } from '../../core/enemy-config';
-import type { Projectile, ProjectilePool } from '../combat/projectiles';
+import type { ProjectilePool, ShieldContact } from '../combat/projectiles';
 import { enemyProjectile } from '../boss/enemy-projectile';
 import type { Box } from '../player/collision';
 import type { TileMap } from '../tilemap';
@@ -90,7 +90,7 @@ export abstract class Enemy {
   }
 
   /** Đạn hoặc roi của người chơi trúng. Lớp có khiên ghi đè `shieldCheck`. */
-  takeHit(p: Projectile, amount: number): EnemyHitResult {
+  takeHit(p: ShieldContact, amount: number): EnemyHitResult {
     const shield = this.shieldCheck(p);
     if (shield) return shield;
     this.hp = Math.max(0, this.hp - amount);
@@ -118,7 +118,7 @@ export abstract class Enemy {
   protected abstract behave(ctx: EnemyContext, dt: number): void;
   protected abstract resetBehavior(): void;
 
-  protected shieldCheck(_p: Projectile): EnemyHitResult | undefined {
+  protected shieldCheck(_p: ShieldContact): EnemyHitResult | undefined {
     return undefined;
   }
 

@@ -1,4 +1,5 @@
 import map from '../../maps/optics-test.json';
+import { PRISM_BEAM } from '../logic/combat/loadout';
 import type { TiledStageDef } from './stage-def';
 
 export const OPTICS_ROOM: TiledStageDef = {
@@ -7,4 +8,5 @@ export const OPTICS_ROOM: TiledStageDef = {
   name: 'Phòng thử laser',
   map,
   playtest: false,
+  practiceWeapons: [PRISM_BEAM],
 };

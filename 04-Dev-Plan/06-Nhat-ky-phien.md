@@ -25,6 +25,15 @@ Mẫu:
 
 ---
 
+## 2026-11-21: ST-15-03 Prism Beam
+
+- **Nhánh:** `ccr-9de01342-2046rb`, từ `995085b`. Bản chơi thử G1 ở `main`.
+- **Đã làm:** Prism Beam dùng lại `LaserPath`; cắt tia theo khiên ở QB-16/18, xuyên mục tiêu đúng một lần, đốt rễ khô và dội vào cảm biến. Đo lường ghi sát thương boss thật và giữ luật QB-14/31.
+- **File chính:** `WeaponLoadout`, `beam-hits.ts`, `StageWorld`, `StageOptics`, `Barrier`, renderer và `tests/prism-beam.test.ts`.
+- **Quyết định:** một xung Prism Beam đủ mở cảm biến; nguồn môi trường vẫn dùng `sensor.holdSec`. Phòng thử laser cho mượn vũ khí trong lượt.
+- **Kiểm tra:** 578 test; typecheck, lint, format, build, docs-check và gate-flow đạt. Chromium trên PC và Pixel 7 giả lập: mở cửa, tốn 3 năng lượng, 0 lỗi console; đốt rễ phòng M7 trên PC. Ảnh ở `qa/ST-15-03/`.
+- **Còn dở:** nhận Prism Beam từ Lumen ở ST-15-10. Việc tiếp theo có thể là ST-15-01b, rồi ST-15-04 (Frost Shard, vô hiệu, dòng làm mát), hoặc ST-15-15/16.
+
 ## 2026-11-21: ST-15-02 laser, gương và cảm biến Stage 2
 
 - **Nhánh:** `ccr-9de01342-2046rb`, từ `83f6d6b`. Giữ bản thử G1 trên `main`.
@@ -46,15 +55,3 @@ Mẫu:
 - **Kiểm tra:** 541 test, typecheck, lint, format, build, docs-check đạt; `gate-flow` đạt.
 - **Còn dở:** không.
 - **Tiếp theo:** em: ST-15-02 (LaserPath, LaserEmitter, Mirror, LightSensor). Người dùng (khi rảnh): chơi thử G1 trên `gate-r1`, ADR-002, Vercel.
-
-## 2026-11-15: EP-15 ST-15-14 boss an toàn (QB-14 chống khóa choáng, QB-31 kẹp pha)
-
-- **Nhánh / commit:** `ccr-9de01342-2046rb` (không merge vào `main` trong đợt thử G1); `a4cc397` (bản đầu) + commit chốt sau duyệt.
-- **Mục tiêu:** mục 4 của `00-Bat-dau.md`; người dùng bảo cứ làm tiếp, việc của người dùng (G1, ADR-002, Vercel) để sau.
-- **Đã làm:** `bosses.json → rules {weakStunCooldownSec 1.5, phaseShiftSec 0.6}`. Boss: choáng điểm yếu chỉ bắt đầu khi không đang choáng và hết hồi choáng; một đòn rơi cách pha đang chơi ≥ 2 (chết tính là một pha) thì kẹp ở ngưỡng, bất tử đứng yên 0,6 s (vẽ trắng), bỏ đòn dở; StageWorld xóa đạn boss cùng bước; đạn Kai lúc bất tử phát `bossImmune`. Đo lường `dmg` = máu thật bị trừ.
-- **File chính:** `game/src/logic/boss/boss.ts`, `game/src/logic/world/{hits,stage-world,world-types}.ts`, `game/src/core/boss-config.ts`, `03-Data/bosses.json`, `game/tests/boss-safety.test.ts` (16 test), `stories/EP-15-stage-2-4.md` (mới), GDD 13, 16, 17, `05-Cong-Prototype.md`, `qa/ST-15-14/`.
-- **Duyệt:** Technical Director "kèm sửa", 8 điểm đã áp: không kéo dài choáng sau Hoa Nở; chết là một pha (pha áp chót cũng kẹp); ghi luật hai đòn cùng bước; `bossImmune` thay `blocked` (S06 đếm `blocked` là thất bại); đo lường; ghi khác biệt với `gate-r1`; thêm test biên.
-- **Lỗi tìm thấy / đã sửa:** trước đây trúng điểm yếu lúc choáng làm mới choáng, nên Vine Lash (hồi 0,35 s) khóa choáng boss xám mãi; trúng điểm yếu lúc choáng sau Hoa Nở kéo dài khoảng hở 0,5 s.
-- **Kiểm tra:** 527 test, typecheck, lint, format, build, docs-check đạt; chạy thử Chromium (kẹp 60%, pha 2, trắng 0,6 s, 0 lỗi console); `gate-flow` đạt.
-- **Còn dở:** hit-stop, rung ở mọi phát điểm yếu lúc hồi choáng (quyết ở mô phỏng ST-15-10…12).
-- **Tiếp theo:** em: ST-15-01a (dữ liệu Stage 2, khung kiểm tra chung), rồi ST-15-02. Người dùng (khi rảnh): chơi thử G1 trên bản `gate-r1`, chọn ADR-002, trả lời Vercel.

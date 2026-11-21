@@ -1,6 +1,6 @@
 import type { WeaponsData } from '../../core/weapons-config';
 import type { Boss } from '../boss/boss';
-import { incomingDamage, outgoingDamage } from '../combat/damage';
+import { incomingDamage, outgoingDamage, type OutgoingHit } from '../combat/damage';
 import { overlaps, type Projectile, type ProjectilePool } from '../combat/projectiles';
 import type { TrainingTarget } from '../combat/targets';
 import type { Enemy } from '../enemy/enemy';
@@ -15,7 +15,7 @@ function consume(p: Projectile, targetId: number): void {
 }
 
 /** Hệ số điểm yếu lấy từ chính vũ khí đang bắn (weapons.json). */
-function weaknessOf(
+export function weaknessOf(
   weapons: WeaponsData,
   weapon: string,
 ): { weakMul: number; weakStunSec: number } {
@@ -25,6 +25,24 @@ function weaknessOf(
 
 /** Boss có id âm để không trùng id bia/kẻ địch trong hitIds của đạn. */
 const BOSS_ID = -1;
+
+export type BossDamageObserver = (weapon: string, amount: number, weak: boolean) => void;
+
+/** Ghi sát thương thật, kể cả đòn bị kẹp pha (QB-31). */
+export function damageBoss(
+  boss: Boss,
+  hit: OutgoingHit,
+  weapon: string,
+  ev: WorldEvents,
+  observer?: BossDamageObserver,
+): boolean {
+  const before = boss.hp;
+  if (!boss.takeHit(hit)) return false;
+  ev.hitBoss = true;
+  if (hit.weak) ev.weakHit = true;
+  observer?.(weapon, before - boss.hp, hit.weak);
+  return true;
+}
 
 /** Hiệu ứng Vanguard của build (M8): nổ lan (V2) và Đòn Trừng Phạt (V3). */
 export interface VanguardMods {
@@ -68,7 +86,7 @@ export function resolvePlayerHits(
   killed: Enemy[],
   vanguard: VanguardMods = NO_VANGUARD,
   /** Đo lường: sát thương lên boss theo vũ khí (đơn vị phát Arc Cannon), có trúng điểm yếu. */
-  onBossDamage?: (weapon: string, amount: number, weak: boolean) => void,
+  onBossDamage?: BossDamageObserver,
 ): number {
   const { targets, enemies, boss } = hitTargets;
   let hitStop = 0;
@@ -92,14 +110,13 @@ export function resolvePlayerHits(
         killed.push(e);
       }
     }
-    if (boss && !p.hitIds.has(BOSS_ID) && distToBox(x, y, boss.box) <= r) {
-      const before = boss.hp;
-      if (boss.takeHit({ amount, weak: false, stunSec: 0 })) {
-        p.hitIds.add(BOSS_ID);
-        ev.hitBoss = true;
-        onBossDamage?.(p.weapon, before - boss.hp, false);
-      }
-    }
+    if (
+      boss &&
+      !p.hitIds.has(BOSS_ID) &&
+      distToBox(x, y, boss.box) <= r &&
+      damageBoss(boss, { amount, weak: false, stunSec: 0 }, p.weapon, ev, onBossDamage)
+    )
+      p.hitIds.add(BOSS_ID);
   };
   /** V3: hệ số Đòn Trừng Phạt cho đạn nạp đầy trúng mục tiêu đang hở. */
   const punish = (p: Projectile, exposed: boolean): number => {
@@ -165,15 +182,8 @@ export function resolvePlayerHits(
       ...weaknessOf(weapons, p.weapon),
     });
     const hit = { ...raw, amount: raw.amount * punish(p, boss.exposed) };
-    const before = boss.hp;
-    if (boss.takeHit(hit)) {
-      ev.hitBoss = true;
-      // Sát thương thật (đòn kẹp pha chỉ trừ tới ngưỡng, QB-31).
-      onBossDamage?.(p.weapon, before - boss.hp, hit.weak);
-      if (hit.weak) {
-        ev.weakHit = true;
-        hitStop = Math.max(hitStop, weapons.hitStopSteps.weakness);
-      }
+    if (damageBoss(boss, hit, p.weapon, ev, onBossDamage)) {
+      if (hit.weak) hitStop = Math.max(hitStop, weapons.hitStopSteps.weakness);
       hitStop = Math.max(hitStop, chargedStop);
       consume(p, BOSS_ID);
       explode(p, amountOf(p));
