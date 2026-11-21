@@ -191,7 +191,9 @@ describe('QB-11, QB-12, QB-13: vũ khí boss và năng lượng', () => {
     const world = withVineLash();
     // Bắn mỗi 0,5 s (hơn hồi chiêu, kém thời gian chờ tự hồi năng lượng) tới khi hết.
     const every = Math.round(0.5 / DT);
-    expect(every * DT).toBeGreaterThan(vine.behavior!.cooldownSec);
+    const behavior = vine.behavior;
+    if (behavior?.type !== 'sweep') throw new Error('Vine Lash cần hành vi sweep');
+    expect(every * DT).toBeGreaterThan(behavior.cooldownSec);
     expect(every * DT).toBeLessThan(config.weapons.energyRegen.afterNoFireSec);
     const evs = runUntil(world, tapEvery(every), (e) => e.emptyWeapon);
     expect(evs.filter((e) => e.fired === 'sweep')).toHaveLength(Math.floor(energyMax / cost));

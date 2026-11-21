@@ -25,3 +25,6 @@ Hố, gai, checkpoint, dây leo, phòng khóa, vật chắn, bí mật, bản đ
 
 - **Frost Shard và dòng làm mát (ST-15-04, 21/11/2026).** Đạn băng gây sát thương một lần và gọi `Enemy.disable` theo QB-19 nếu địch còn sống. `disabledSec` lấy thời gian lớn hơn, đồng hồ chạy ngoài tầm AI. Trong lúc vô hiệu, địch không đi, tấn công hay gây sát thương chạm thân. Lính Kén vẫn có khiên. Golem miễn vô hiệu; boss dùng choáng điểm yếu riêng.
   - Frost Shard chạm vùng dòng lỏng thì dừng và đặt các ô `OneWay` trên các hàng chia đều. Dòng đã đông cho đạn đi qua. Các bậc giữ qua hồi sinh, làm mới khi chơi lại. Phòng thử dùng vùng trống Tiled; vị trí lối Két Thân Mk I chốt cùng bản đồ Stage 2.
+
+- **Dữ liệu Stage 4 (ST-15-01c, 21/11/2026).** `mechanics.wind` kiểm mốc báo trước và thời gian đổi dần trong mỗi chu kỳ. `mechanics.cloud` mô tả bệ một chiều và tốc độ trôi. `crumble.sink` dùng chung hai mốc nứt với băng vỡ, cả hai phải xảy ra trước khi bệ chìm. Bệ dùng từ ST-15-08a và gió từ ST-15-08b.
+- **Cấu hình Gale Cutter (ST-15-01c).** `boomerang` có hai lượt trúng mỗi lần ném và được kiểm ngân sách 14 sát thương/thanh. `cancelKinds` chỉ nhận `enemyShot` và `bomb`. ST-15-05 cấp vũ khí, kiểm quyền sở hữu của đạn theo Q4 và phá sương ở Két Tay Mk I (Stage 3). Đo sức mạnh khắc chế theo chu kỳ đón lưỡi khi làm Terra ở Alpha.

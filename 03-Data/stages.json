@@ -326,14 +326,35 @@
       "hurtUsesNormalFriction": true
     },
     "crumble": {
-      "_note": "Bục băng vỡ Stage 3. Bắt đầu nứt khi Kai đứng lên; warnAtSec là hai mốc nứt tiếp theo trước khi vỡ tại triggerSec. Mọc lại sau respawnSec khi có chỗ. [PLACEHOLDER]",
+      "_note": "Bục băng vỡ Stage 3 và bệ mây tan Stage 4. Bắt đầu nứt khi Kai đứng lên; warnAtSec là hai mốc nứt tiếp theo trước khi vỡ hoặc chìm. Mọc lại sau respawnSec khi có chỗ. [PLACEHOLDER]",
       "triggerSec": 1,
       "warnAtSec": [0.4, 0.7],
-      "respawnSec": 4
+      "respawnSec": 4,
+      "sink": {
+        "triggerSec": 0.8,
+        "sinkTilesPerSec": 3,
+        "respawnSec": 4
+      }
     },
     "coolant": {
       "_note": "Dòng chất làm mát ở Két Thân Mk I, Stage 2 (đặc tả mục 3.8). Frost Shard làm đông thành frozenSteps bậc trong lượt. Hành vi triển khai ở ST-15-04.",
       "frozenSteps": 3
+    },
+    "wind": {
+      "_note": "Gió Stage 4 (GDD 16 mục 5.3, QB-07). warnSec báo trước khi đổi hướng; rampSec là thời gian chuyển dần sang hướng mới. Chốt sau G1. [PLACEHOLDER]",
+      "forceTilesPerSec": 2.5,
+      "groundMul": 0.5,
+      "dashIgnores": true,
+      "wallSlideIgnores": true,
+      "hurtIgnores": true,
+      "cycleSec": 4,
+      "warnSec": 1,
+      "rampSec": 0.3
+    },
+    "cloud": {
+      "_note": "Bệ mây một chiều Stage 4 (GDD 16 mục 5.3). Bệ trôi dùng drift; bệ tan dùng crumble.sink. [PLACEHOLDER]",
+      "oneWay": true,
+      "drift": { "speedTilesPerSec": 1.5 }
     },
     "minEnemySpawnTiles": 6,
     "enemyRewardOncePerRun": true,

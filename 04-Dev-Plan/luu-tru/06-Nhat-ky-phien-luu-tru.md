@@ -4,6 +4,15 @@ Các mục cũ chuyển từ `04-Dev-Plan/06-Nhat-ky-phien.md`, mới nhất ở
 
 ---
 
+## 2026-11-21: ST-15-03 Prism Beam
+
+- **Nhánh:** `ccr-9de01342-2046rb`, từ `995085b`. Bản chơi thử G1 ở `main`.
+- **Đã làm:** Prism Beam dùng lại `LaserPath`; cắt tia theo khiên ở QB-16/18, xuyên mục tiêu đúng một lần, đốt rễ khô và dội vào cảm biến. Đo lường ghi sát thương boss thật và giữ luật QB-14/31.
+- **File chính:** `WeaponLoadout`, `beam-hits.ts`, `StageWorld`, `StageOptics`, `Barrier`, renderer và `tests/prism-beam.test.ts`.
+- **Quyết định:** một xung Prism Beam đủ mở cảm biến; nguồn môi trường vẫn dùng `sensor.holdSec`. Phòng thử laser cho mượn vũ khí trong lượt.
+- **Kiểm tra:** 578 test; typecheck, lint, format, build, docs-check và gate-flow đạt. Chromium trên PC và Pixel 7 giả lập: mở cửa, tốn 3 năng lượng, 0 lỗi console; đốt rễ phòng M7 trên PC. Ảnh ở `qa/ST-15-03/`.
+- **Còn dở:** nhận Prism Beam từ Lumen ở ST-15-10. Việc tiếp theo có thể là ST-15-01b, rồi ST-15-04 (Frost Shard, vô hiệu, dòng làm mát), hoặc ST-15-15/16.
+
 ## 2026-11-21: ST-15-02 laser, gương và cảm biến Stage 2
 
 - **Nhánh:** `ccr-9de01342-2046rb`, từ `83f6d6b`. Giữ bản thử G1 trên `main`.

@@ -117,7 +117,7 @@ export class WeaponLoadout {
     if (this.slots.some((s) => s.name === name)) return false;
     const weapon = this.data.bossWeapons.find((w) => w.name === name);
     const b = weapon?.behavior;
-    if (!b || weapon.energyCost === null) return false;
+    if (!b || b.type === 'boomerang' || weapon.energyCost === null) return false;
     this.slots.push({
       name,
       kind: b.type,

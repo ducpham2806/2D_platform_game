@@ -67,14 +67,26 @@ export interface ShardBehavior {
   freezeSec: number;
 }
 
-export type WeaponBehavior = SweepBehavior | BeamBehavior | ShardBehavior;
+/** Cấu hình Gale Cutter (GDD 16 mục 5.7, Q4); hành vi trong ST-15-05. */
+export interface BoomerangBehavior {
+  type: 'boomerang';
+  outTiles: number;
+  speedTilesPerSec: number;
+  sizePx: SizePx;
+  damageMul: number;
+  maxOnScreen: number;
+  maxCancelsPerThrow: number;
+  cancelKinds: readonly ('enemyShot' | 'bomb')[];
+}
+
+export type WeaponBehavior = SweepBehavior | BeamBehavior | ShardBehavior | BoomerangBehavior;
 
 /**
  * Số lần trúng một mục tiêu mỗi lần dùng (ngân sách năng lượng, GDD 16 mục 2.3). Roi, tia và đạn
- * băng trúng mỗi mục tiêu một lần; Gale Cutter đi và về (2 lần) khi có hành vi `boomerang`.
+ * băng trúng mỗi mục tiêu một lần; Gale Cutter trúng ở cả chiều đi lẫn chiều về.
  */
-export function hitsPerUse(_b: WeaponBehavior): number {
-  return 1;
+export function hitsPerUse(b: WeaponBehavior): number {
+  return b.type === 'boomerang' ? 2 : 1;
 }
 
 /** Ngưỡng cân bằng vũ khí (`weapons.json → balance`). */
@@ -147,6 +159,30 @@ function behavior(value: unknown, path: string): WeaponBehavior | null {
       damageMul: num(b.damageMul, `${path}.damageMul`, { min: 0 }),
       cooldownSec: num(b.cooldownSec, `${path}.cooldownSec`, { min: 0.05 }),
       freezeSec: positiveNum(b.freezeSec, `${path}.freezeSec`),
+    };
+  }
+  if (b.type === 'boomerang') {
+    const maxOnScreen = num(b.maxOnScreen, `${path}.maxOnScreen`, { min: 1 });
+    const maxCancelsPerThrow = num(b.maxCancelsPerThrow, `${path}.maxCancelsPerThrow`, { min: 0 });
+    if (!Number.isSafeInteger(maxOnScreen))
+      throw new ConfigError(`${path}.maxOnScreen: cần số nguyên`);
+    if (!Number.isSafeInteger(maxCancelsPerThrow))
+      throw new ConfigError(`${path}.maxCancelsPerThrow: cần số nguyên`);
+    const cancelKinds = arr(b.cancelKinds, `${path}.cancelKinds`).map((kind, i) => {
+      if (kind === 'enemyShot' || kind === 'bomb') return kind;
+      throw new ConfigError(`${path}.cancelKinds[${i}]: cần enemyShot hoặc bomb`);
+    });
+    if (new Set(cancelKinds).size !== cancelKinds.length)
+      throw new ConfigError(`${path}.cancelKinds: loại đạn không được lặp`);
+    return {
+      type: 'boomerang',
+      outTiles: positiveNum(b.outTiles, `${path}.outTiles`),
+      speedTilesPerSec: positiveNum(b.speedTilesPerSec, `${path}.speedTilesPerSec`),
+      sizePx: size(b.sizePx, `${path}.sizePx`),
+      damageMul: num(b.damageMul, `${path}.damageMul`, { min: 0 }),
+      maxOnScreen,
+      maxCancelsPerThrow,
+      cancelKinds,
     };
   }
   if (b.type !== 'sweep')
@@ -260,16 +296,16 @@ export function energyBudget(w: BossWeaponData, energyMax: number): number | und
   return Math.floor(energyMax / w.energyCost) * w.behavior.damageMul * hitsPerUse(w.behavior);
 }
 
-/** Sức mạnh khắc chế: damageMul × trúng mỗi lần × damageVsWeak / cooldownSec (sát thương/giây). */
+/** Sức mạnh khắc chế theo cooldownSec. Gale Cutter cần đo chu kỳ đón lưỡi khi đấu Terra. */
 export function counterPerSec(w: BossWeaponData): number | undefined {
   const b = w.behavior;
-  if (!b || b.cooldownSec <= 0) return undefined;
+  if (!b || b.type === 'boomerang' || b.cooldownSec <= 0) return undefined;
   return (b.damageMul * hitsPerUse(b) * w.damageVsWeak) / b.cooldownSec;
 }
 
 /**
- * Ngân sách năng lượng 14 ± 15% và sức mạnh khắc chế ≥ 12/s cho mọi vũ khí có cấu hình hành vi
- * (GDD 16 mục 2.3), để không vũ khí nào áp đảo hay vô dụng trước boss yếu với nó.
+ * Ngân sách năng lượng 14 ± 15% cho vũ khí đã có cấu hình hành vi và sức mạnh khắc chế
+ * ≥ 12/s cho vũ khí dùng cooldownSec (GDD 16 mục 2.3).
  */
 export function checkWeaponBalance(data: WeaponsData): string[] {
   const errors: string[] = [];

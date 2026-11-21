@@ -8,6 +8,7 @@
 | ST-15-14  | Boss an toàn: chống khóa choáng (QB-14), kẹp pha khi một đòn vượt hai ngưỡng (QB-31); áp cả Thorna | (01a chỉ để có boss Stage 2; phần luật làm trước được) | 1 ngày | DONE (15/11/2026) |
 | ST-15-01a | Dữ liệu Stage 2 và khung kiểm tra chung                                                            | —                                                      | 1 ngày | DONE (15/11/2026) |
 | ST-15-01b | Cấu hình Frost Shard, sàn trơn, bục băng vỡ và dòng chất làm mát                                  | 01a                                                    | 0,5 ngày | DONE (21/11/2026) |
+| ST-15-01c | Cấu hình Gale Cutter, gió và bệ mây                                                             | 01a                                                    | 0,5 ngày | DONE (21/11/2026) |
 | ST-15-02  | Laser, gương, cảm biến ánh sáng                                                                    | 01a                                                    | 2 ngày | DONE (21/11/2026) |
 | ST-15-03  | Prism Beam phản xạ, xuyên địch và đốt rễ khô                                                       | 02                                                     | 1,5 ngày | DONE (21/11/2026) |
 | ST-15-04  | Frost Shard, vô hiệu theo QB-19 và dòng làm mát đóng băng                                         | 01b                                                    | 2 ngày | DONE (21/11/2026) |
@@ -219,3 +220,23 @@
 - [x] Tự rà soát và kiểm thử trên Chromium bằng bàn phím và Pixel 7 giả lập. Phòng thử cho mượn vũ khí và giữ tiến trình trong lượt. [Ảnh kiểm thử](../qa/ST-15-04/README.md)
 
 Phase Step gọi chung API khi triển khai ST-08-09. Mở khóa vũ khí qua Cryo ở ST-15-11, đặt Két Thân Mk I ở ST-17-02.
+
+## ST-15-01c: Dữ liệu Gale Cutter và cơ chế Stage 4
+
+- **Thuộc Epic:** EP-15 · **Ưu tiên:** P1 · **Trạng thái:** DONE (21/11/2026) · **Phụ thuộc:** ST-15-01a · **Engine:** Phaser 3.90.0.
+
+### 1. User Story
+
+> **Là** người phát triển ST-15-05, **tôi muốn** đọc dữ liệu Gale Cutter đã qua kiểm tra khi mở game, **để** triển khai đường bay, hủy đạn và mở màn sương lạnh từ cấu hình chung.
+
+### 2. Bối cảnh
+
+- GDD 16 mục 2.3 và 5.7, Q4. Gale Cutter `boomerang` tốn 4/28 năng lượng, bay ra 6 ô với tốc độ 11 ô/s, rộng 12 × 12 px, ×1 sát thương mỗi chiều và tối đa một lưỡi trên màn. Mỗi lượt có ngân sách 14 sát thương/thanh, tính cả chiều đi và về. Terra ở Alpha đo sức mạnh khắc chế theo chu kỳ đón lưỡi thực tế. Vũ khí chưa được cấp trước ST-15-05.
+- Cấu hình hủy tối đa 2 viên mỗi lần ném, chỉ gồm `enemyShot` và `bomb`. ST-15-05 kiểm nguồn đạn thuộc kẻ địch thường (Q4) và dùng `Barrier` để phá sương lạnh ở Két Tay Mk I (Stage 3).
+- GDD 16 mục 5.3, QB-07. Gió 2,5 ô/s, trên đất ×0,5, bỏ qua khi lướt, bám tường hoặc bị đánh. Đổi hướng theo chu kỳ 4 s, báo trước 1 s, đổi dần trong 0,3 s. Bệ mây một chiều, bệ trôi 1,5 ô/s. Bệ tan bắt đầu chìm sau 0,8 s, tốc độ 3 ô/s, mọc lại sau 4 s. Hai mốc báo nứt của `crumble` áp dụng cả vỡ và chìm.
+
+### 3. Phạm vi và nghiệm thu
+
+- [x] Nạp và kiểm cấu hình Gale Cutter, ngân sách hai chiều, loại đạn hợp lệ và mức tiêu hao. Loadout giữ điều kiện chỉ cấp hành vi đã chạy được.
+- [x] Nạp và kiểm `wind`, `cloud` và `crumble.sink`. Thời lượng gió phải có chỗ cho báo trước và đổi dần, bệ mây là một chiều.
+- [x] Ghi trong GDD rằng dữ liệu Chim Cắt Gió và Cối Xoáy đi cùng ST-15-07, Gale Roc cùng ST-15-09, Aeris cùng ST-15-12 để kiểm chung với hành vi tương ứng.
