@@ -1,5 +1,15 @@
 /** Kiểu và kiểm tra weapons.json (logic thuần). */
-import { arr, ConfigError, type Json, num, obj, size, type SizePx, str } from './json-check';
+import {
+  arr,
+  ConfigError,
+  type Json,
+  num,
+  obj,
+  positiveNum,
+  size,
+  type SizePx,
+  str,
+} from './json-check';
 
 export type { SizePx } from './json-check';
 
@@ -46,11 +56,22 @@ export interface BeamBehavior {
   maxBounces: number;
 }
 
-export type WeaponBehavior = SweepBehavior | BeamBehavior;
+/** Frost Shard (GDD 16 mục 4.7, QB-19); dùng từ ST-15-04. */
+export interface ShardBehavior {
+  type: 'shard';
+  speedTilesPerSec: number;
+  rangeTiles: number;
+  sizePx: SizePx;
+  damageMul: number;
+  cooldownSec: number;
+  freezeSec: number;
+}
+
+export type WeaponBehavior = SweepBehavior | BeamBehavior | ShardBehavior;
 
 /**
- * Số lần trúng một mục tiêu mỗi lần dùng (ngân sách năng lượng, GDD 16 mục 2.3). Roi và tia trúng
- * mỗi mục tiêu một lần; Gale Cutter (đi và về, 2 lần) thêm khi có hành vi `boomerang`.
+ * Số lần trúng một mục tiêu mỗi lần dùng (ngân sách năng lượng, GDD 16 mục 2.3). Roi, tia và đạn
+ * băng trúng mỗi mục tiêu một lần; Gale Cutter đi và về (2 lần) khi có hành vi `boomerang`.
  */
 export function hitsPerUse(_b: WeaponBehavior): number {
   return 1;
@@ -71,7 +92,7 @@ export interface BossWeaponData {
   weakBoss: string[];
   damageVsWeak: number;
   weakStunSec: number;
-  /** null: vũ khí chưa được làm (chưa có hành vi). */
+  /** null nếu chưa có dữ liệu tiêu hao. */
   energyCost: number | null;
   behavior: WeaponBehavior | null;
 }
@@ -117,6 +138,17 @@ function behavior(value: unknown, path: string): WeaponBehavior | null {
       maxBounces,
     };
   }
+  if (b.type === 'shard') {
+    return {
+      type: 'shard',
+      speedTilesPerSec: num(b.speedTilesPerSec, `${path}.speedTilesPerSec`, { min: 1 }),
+      rangeTiles: num(b.rangeTiles, `${path}.rangeTiles`, { min: 1 }),
+      sizePx: size(b.sizePx, `${path}.sizePx`),
+      damageMul: num(b.damageMul, `${path}.damageMul`, { min: 0 }),
+      cooldownSec: num(b.cooldownSec, `${path}.cooldownSec`, { min: 0.05 }),
+      freezeSec: positiveNum(b.freezeSec, `${path}.freezeSec`),
+    };
+  }
   if (b.type !== 'sweep')
     throw new ConfigError(`${path}.type: hành vi "${String(b.type)}" chưa hỗ trợ`);
   return {
@@ -147,9 +179,12 @@ export function parseWeapons(value: unknown): WeaponsData {
     const b = obj(item, p);
     const cost = b.energyCostOf28;
     const parsedBehavior = behavior(b.behavior, `${p}.behavior`);
-    if (parsedBehavior && (typeof cost !== 'number' || cost <= 0 || cost > energyMax)) {
+    if (
+      parsedBehavior &&
+      (typeof cost !== 'number' || !Number.isFinite(cost) || cost <= 0 || cost > energyMax)
+    ) {
       throw new ConfigError(
-        `${p}.energyCostOf28: vũ khí đã có hành vi thì cần mức tiêu hao trong (0, ${energyMax}]`,
+        `${p}.energyCostOf28: vũ khí có cấu hình hành vi cần mức tiêu hao trong (0, ${energyMax}]`,
       );
     }
     return {
@@ -233,7 +268,7 @@ export function counterPerSec(w: BossWeaponData): number | undefined {
 }
 
 /**
- * Ngân sách năng lượng 14 ± 15% và sức mạnh khắc chế ≥ 12/s cho mọi vũ khí đã có hành vi
+ * Ngân sách năng lượng 14 ± 15% và sức mạnh khắc chế ≥ 12/s cho mọi vũ khí có cấu hình hành vi
  * (GDD 16 mục 2.3), để không vũ khí nào áp đảo hay vô dụng trước boss yếu với nó.
  */
 export function checkWeaponBalance(data: WeaponsData): string[] {

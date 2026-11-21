@@ -145,7 +145,7 @@ Bậc base của kẻ địch mới lấy theo kẻ địch Stage 1 cùng vai tr
 
 ### 2.3 Vũ khí Warden: ngân sách năng lượng
 
-`weapons.json` hiện chỉ Vine Lash có `behavior` (`sweep`). Ba vũ khí mới giữ cùng **ngân sách sát thương mỗi thanh năng lượng** để không vũ khí nào áp đảo:
+Vũ khí Warden dùng cùng **ngân sách sát thương mỗi thanh năng lượng**. `weapons.json` đã có cấu hình hành vi cho Vine Lash, Prism Beam và Frost Shard. Bộ kiểm cân bằng đọc cấu hình Frost Shard từ ST-15-01b, còn Loadout cấp vũ khí từ ST-15-04.
 
 ```text
 ngân sách = floor(energyMax / energyCostOf28) × damageMul × hitsPerUse        mục tiêu 14 ± 15%
@@ -153,7 +153,7 @@ ngân sách = floor(energyMax / energyCostOf28) × damageMul × hitsPerUse      
   trúng điểm yếu: choáng weakStunSec 0,5 s, rồi weakStunCooldownSec 1,5 s không choáng lại (QB-14)
 
 sức mạnh khắc chế = damageMul × trúng mỗi lần × damageVsWeak (2,5) / cooldownSec ≥ 12 sát thương/s
-  (≈ 1,6 × Arc Cannon 7,5 phát/s); kiểm lúc nạp cho vũ khí có boss yếu trong các màn đã có dữ liệu boss
+  (≈ 1,6 × Arc Cannon 7,5 phát/s); kiểm lúc nạp cho vũ khí có cấu hình hành vi và hồi bắn > 0
 ```
 
 | Vũ khí | `energyCostOf28` | Số lần / thanh | `damageMul` | Trúng / lần | Ngân sách | Vs boss yếu | `cooldownSec` → sức mạnh khắc chế |
@@ -801,7 +801,7 @@ Quy ước như EP-08 đến EP-10: Story ≤ 1–2 ngày, mỗi Story nhúng s�
 | Mã | Tên | Phụ thuộc | Cỡ |
 | --- | --- | --- | --- |
 | ST-15-01a | Dữ liệu Stage 2 và khung kiểm tra chung: `enemies`, `bosses`, `weapons` (Prism Beam), `stages` (`expBudget`, `enemyRewardMul {exp, coreBit}`), `mechanics.laser`, `mirror`, `sensor`; ngân sách năng lượng, sức mạnh khắc chế ≥ 12, telegraph, không chết một đòn, Σ EXP = `expBudget` ± 5%. **Xong 15/11/2026, phạm vi đổi theo duyệt:** dữ liệu kẻ địch, mini-boss, boss Stage 2 (`enemies`, `bosses`) dời sang Story làm hành vi của chúng (06, 07, 09, 10), vì bộ kiểm dữ liệu từ chối hành vi, đòn chưa có; có `stages` (`expBudget`, `enemyRewardMul`, nối vào thưởng, mini-boss không nhân), `mechanics.laser/mirror/sensor`, Prism Beam (`beam`, chưa cấp được tới 03), kiểm ngân sách, sức mạnh khắc chế, trần đòn boss theo màn, laser không chết một đòn, EXP cộng dồn theo cấp khuyến nghị; Σ EXP ± 5% là hàm thuần (`logic/stage/stage-exp.ts`) dùng khi có bản đồ | | 1 ngày |
-| ST-15-01b | Dữ liệu Stage 3 (kẻ địch, Frost Titan, Cryo, Frost Shard, `ice`, `crumble`, `coolant`) | 01a | 0,5 ngày |
+| ST-15-01b | **Xong 21/11/2026.** Cấu hình và kiểm Frost Shard, `ice`, `crumble`, `coolant`. Người Tuyết Máy, Tháp Băng và Frost Titan đi cùng ST-15-06; dữ liệu Cryo đi cùng ST-15-11 để kiểm cùng hành vi | 01a | 0,5 ngày |
 | ST-15-01c | Dữ liệu Stage 4 (kẻ địch, Gale Roc, Aeris, Gale Cutter, `wind`, `cloud`) | 01a | 0,5 ngày |
 | ST-15-02 | `LaserPath`, `LaserEmitter`, gương 2 góc, cảm biến mở cửa, dữ liệu Tiled và phòng thử laser. Đường tia dùng chung cho báo trước và sát thương. Góc ban đầu và vị trí gương khai báo theo bản đồ, chốt bố cục Stage 2 sau G1 (ST-17-01) | 01a | 2 ngày |
 | ST-15-03 | Prism Beam (`beam`): bắn, phản xạ, xuyên, dừng ở khiên Lính Kén (QB-16, QB-18); `Barrier` nhận tia (rễ khô Két Stage 1) | 02 | 1,5 ngày |
@@ -822,7 +822,7 @@ Quy ước như EP-08 đến EP-10: Story ≤ 1–2 ngày, mỗi Story nhúng s�
 | --- | --- | --- | --- |
 | ST-15-08b | Sàn trơn (gia tốc, ma sát theo loại ô) và `WindZone` trong `player-physics`, kèm `wind.hurtIgnores` (QB-07) | Qua cổng, 01b, 01c | 1,5 ngày |
 | ST-15-07 | Kẻ địch hành vi mới: Tháp Laser (`laserTurret`), Chim Cắt Gió (`diver`), Cối Xoáy (`fan`), kèm bản Thử thách. Tháp Laser chỉ cần ST-15-02, có thể tách làm sớm nếu thiếu việc trước cổng Thêm dữ liệu Tháp Laser, Chim Cắt Gió, Cối Xoáy (dời từ 01a) | 02, 08b, 01c | 2,5 ngày |
-| ST-15-11 | Boss Cryo: `slam.slickFloorSec`, `shatter` (Thử thách); mô phỏng bot | 08a, 08b, 14 | 2 ngày |
+| ST-15-11 | Boss Cryo: dữ liệu Cryo, `slam.slickFloorSec`, `shatter` (Thử thách); mô phỏng bot | 04, 08a, 08b, 14 | 2 ngày |
 | ST-15-12 | Boss Aeris: bay, `shot.aim`, `gust`, `rain` + hút, `twister` (Thử thách); mô phỏng bot. Tầm với Aeris (độ cao bay 3–6 ô, lốc ≤ 2,5 ô) là tham số, chốt ở ST-17-01 | 08b, 14 | 2,5 ngày |
 | ST-17-01 | Đo metric thật bằng thang khe trong phòng thử (có và không có gió, trên băng); chốt `ice.*`, `wind.*`, `crumble.triggerSec`, góc gương, độ cao bay và lốc Aeris, khe né đòn boss | Qua cổng, ST-15-08b, ST-15-13 | 1 ngày |
 | ST-17-02 | Bản đồ Tiled Stage 2 (A–D, phòng boss, checkpoint theo độ khó gồm CP3b, CP-S3, bí mật, Két, Gương Rối); test đồ thị đường chính chỉ cần bộ động tác gốc + Arc Cannon | ST-17-01; EP-16 (Tiled, camera QB-120); Story checkpoint vùng chữ nhật (QB-40); tài liệu truyện Memory Log 2–4 (Q10) | 2 ngày |

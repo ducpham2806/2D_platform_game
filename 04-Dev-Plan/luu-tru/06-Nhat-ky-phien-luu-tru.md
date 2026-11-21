@@ -4,6 +4,19 @@ Các mục cũ chuyển từ `04-Dev-Plan/06-Nhat-ky-phien.md`, mới nhất ở
 
 ---
 
+## 2026-11-15: EP-15 ST-15-01a dữ liệu Stage 2 dùng chung và khung kiểm tra
+
+- **Nhánh / commit:** `ccr-9de01342-2046rb` (không merge vào `main` trong đợt thử G1); commit ST-15-01a.
+- **Mục tiêu:** người dùng bảo làm tiếp: ST-15-01a (GDD 16 mục 2.1–2.3, 3.3, 3.7).
+- **Đã làm:** `stages.json` `expBudget` 332/660/1.101/1.602, `enemyRewardMul` (nối vào thưởng kẻ địch, mini-boss không nhân, một lần làm tròn), `mechanics.minTelegraphSec/laser/mirror/sensor`; Prism Beam (`beam`, chưa cấp được); `weapons.json → balance`; `bosses.json → rules.maxAttackDamage`. Kiểm lúc nạp: ngân sách năng lượng, sức mạnh khắc chế, trần đòn boss theo màn, laser không chết một đòn, EXP cộng dồn theo cấp khuyến nghị. `logic/stage/stage-exp.ts` (Σ EXP ± 5%).
+- **File chính:** `03-Data/{stages,weapons,bosses}.json`, `game/src/core/{game-config,stage-mechanics-config,weapons-config,boss-config}.ts`, `game/src/logic/stage/stage-exp.ts`, `game/src/logic/world/{enemy-field,stage-world}.ts`, `game/src/logic/combat/loadout.ts`, `game/tests/stage-data.test.ts` (14 test), GDD 16 mục 10, `stories/EP-15-stage-2-4.md`.
+- **Quyết định:** dữ liệu Gương Quang, Tháp Laser, Prism Sentinel, Lumen dời sang Story làm hành vi (06, 07, 09, 10) vì bộ kiểm từ chối hành vi chưa có; ST-15-10 thêm phụ thuộc 03 (Prism Beam phải cấp được trước khi thắng Lumen).
+- **Duyệt:** Technical Director + Producer "kèm sửa", 8 điểm đã áp (mini-boss không nhân, hệ số theo `def.campaign`, bắt buộc với màn có đặc tả, ≥ 1, báo trước từ dữ liệu…).
+- **Lỗi tìm thấy / đã sửa:** bản nháp nhân cả mini-boss (Frost Titan sẽ cho 555 EXP thay vì 185).
+- **Kiểm tra:** 541 test, typecheck, lint, format, build, docs-check đạt; `gate-flow` đạt.
+- **Còn dở:** không.
+- **Tiếp theo:** em: ST-15-02 (LaserPath, LaserEmitter, Mirror, LightSensor). Người dùng (khi rảnh): chơi thử G1 trên `gate-r1`, ADR-002, Vercel.
+
 ## 2026-11-15: EP-15 ST-15-14 boss an toàn (QB-14 chống khóa choáng, QB-31 kẹp pha)
 
 - **Nhánh / commit:** `ccr-9de01342-2046rb` (không merge vào `main` trong đợt thử G1); `a4cc397` (bản đầu) + commit chốt sau duyệt.

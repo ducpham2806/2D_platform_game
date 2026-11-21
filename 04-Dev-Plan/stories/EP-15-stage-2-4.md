@@ -7,6 +7,7 @@
 | --------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------ | ------ | ----------------- |
 | ST-15-14  | Boss an toàn: chống khóa choáng (QB-14), kẹp pha khi một đòn vượt hai ngưỡng (QB-31); áp cả Thorna | (01a chỉ để có boss Stage 2; phần luật làm trước được) | 1 ngày | DONE (15/11/2026) |
 | ST-15-01a | Dữ liệu Stage 2 và khung kiểm tra chung                                                            | —                                                      | 1 ngày | DONE (15/11/2026) |
+| ST-15-01b | Cấu hình Frost Shard, sàn trơn, bục băng vỡ và dòng chất làm mát                                  | 01a                                                    | 0,5 ngày | DONE (21/11/2026) |
 | ST-15-02  | Laser, gương, cảm biến ánh sáng                                                                    | 01a                                                    | 2 ngày | DONE (21/11/2026) |
 | ST-15-03  | Prism Beam phản xạ, xuyên địch và đốt rễ khô                                                       | 02                                                     | 1,5 ngày | DONE (21/11/2026) |
 
@@ -173,3 +174,24 @@
 
 - Tự rà soát và kiểm luồng trên Chromium. Vệt tia được giữ ở vị trí bắn để thể hiện đúng đường va chạm của phát đó.
 - Prism Beam cho mượn ở phòng thử trong lượt. Mở khóa trong chiến dịch qua Lumen ở ST-15-10.
+
+## ST-15-01b: Dữ liệu Frost Shard và cơ chế băng
+
+- **Thuộc Epic:** EP-15 · **Ưu tiên:** P1 · **Trạng thái:** DONE (21/11/2026) · **Phụ thuộc:** ST-15-01a · **Engine:** Phaser 3.90.0.
+- **Bằng chứng:** kiểm thử dữ liệu và kiểm hồi quy Loadout trong `game/tests/stage-data.test.ts`.
+
+### 1. User Story
+
+> **Là** người phát triển ST-15-04, **tôi muốn** đọc cấu hình băng đã được kiểm tra khi nạp game, **để** triển khai Frost Shard và dòng chất làm mát từ dữ liệu chung.
+
+### 2. Bối cảnh
+
+- GDD 16 mục 2.3, 3.8, 4.3, 4.7. Frost Shard có hành vi dữ liệu `shard`: tốc độ 10 ô/s, tầm 10 ô, kích thước 8 × 6 px, sát thương ×2, hồi bắn 0,4 s, đóng băng 2 s, tiêu hao 4/28. Sức mạnh khắc chế Aeris ×2,5 và choáng 0,5 s. Ngân sách 14 sát thương/thanh và 12,5 sát thương/giây khi khắc chế.
+- `ice` dùng gia tốc 12 và giảm tốc 6 ô/s², bị đánh dùng ma sát thường. `crumble` kích hoạt sau 1 s, mốc nứt 0,4 / 0,7 s, mọc lại 4 s. `coolant.frozenSteps = 3` (Két Thân Mk I, Stage 2).
+- QB-19: ST-15-04 dùng `freezeSec` cho trạng thái `disabledSec`, lấy thời gian lớn hơn khi gặp Phase Step, boss và mini-boss miễn. ST-15-01b chỉ nạp và kiểm dữ liệu.
+
+### 3. Phạm vi và nghiệm thu
+
+- [x] Thêm cấu hình vào `03-Data/{weapons,stages}.json`, nối vào bộ kiểm tra khi nạp game. Mốc nứt theo thứ tự và nằm trước lúc vỡ; số bậc đông là số nguyên dương.
+- [x] Frost Shard tham gia kiểm ngân sách và sức mạnh khắc chế. Loadout chỉ cấp vũ khí sau khi hành vi có mã chạy.
+- [x] Dữ liệu Người Tuyết Máy, Tháp Băng và Frost Titan đi cùng ST-15-06 (hành vi và bản Thử thách); Cryo đi cùng ST-15-11 (`slickFloorSec`, `shatter` và mô phỏng). Giữ dữ liệu ứng viên trong đặc tả như ST-15-01a.

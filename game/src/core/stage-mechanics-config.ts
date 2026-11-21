@@ -1,4 +1,4 @@
-import { ConfigError, num, obj } from './json-check';
+import { arr, ConfigError, num, obj, positiveNum } from './json-check';
 
 /** Cơ chế màn chơi (M7), `stages.json` → `mechanics`. Xem ghi chú trong file dữ liệu. */
 export interface StageMechanics {
@@ -22,6 +22,20 @@ export interface StageMechanics {
   laser: LaserMechanics;
   mirror: MirrorMechanics;
   sensor: { holdSec: number };
+  /** Sàn trơn Stage 3 (GDD 16 mục 4.3; dùng từ ST-15-08b). */
+  ice: {
+    accelTilesPerSec2: number;
+    decelTilesPerSec2: number;
+    hurtUsesNormalFriction: boolean;
+  };
+  /** Bục băng vỡ (GDD 16 mục 4.3; dùng từ ST-15-08a). */
+  crumble: {
+    triggerSec: number;
+    warnAtSec: readonly [number, number];
+    respawnSec: number;
+  };
+  /** Dòng làm mát ở Két giáp Stage 2 (GDD 16 mục 3.8; dùng từ ST-15-04). */
+  coolant: { frozenSteps: number };
 }
 
 export interface LaserMechanics {
@@ -97,6 +111,32 @@ function parseMirror(value: unknown, p: string): MirrorMechanics {
   };
 }
 
+function parseIce(value: unknown, p: string): StageMechanics['ice'] {
+  const ice = obj(value, p);
+  return {
+    accelTilesPerSec2: positiveNum(ice.accelTilesPerSec2, `${p}.accelTilesPerSec2`),
+    decelTilesPerSec2: positiveNum(ice.decelTilesPerSec2, `${p}.decelTilesPerSec2`),
+    hurtUsesNormalFriction: bool(ice.hurtUsesNormalFriction, `${p}.hurtUsesNormalFriction`),
+  };
+}
+
+function parseCrumble(value: unknown, p: string): StageMechanics['crumble'] {
+  const crumble = obj(value, p);
+  const triggerSec = num(crumble.triggerSec, `${p}.triggerSec`, { min: 0.5 });
+  const warnings = arr(crumble.warnAtSec, `${p}.warnAtSec`);
+  if (warnings.length !== 2)
+    throw new ConfigError(`${p}.warnAtSec: cần đúng hai mốc nứt sau lúc kích hoạt`);
+  const first = positiveNum(warnings[0], `${p}.warnAtSec[0]`);
+  const second = num(warnings[1], `${p}.warnAtSec[1]`);
+  if (first >= second || second >= triggerSec)
+    throw new ConfigError(`${p}.warnAtSec: hai mốc phải tăng dần và trước triggerSec`);
+  return {
+    triggerSec,
+    warnAtSec: [first, second],
+    respawnSec: num(crumble.respawnSec, `${p}.respawnSec`, { min: 0 }),
+  };
+}
+
 export function parseStageMechanics(value: unknown): StageMechanics {
   const p = 'stages.mechanics';
   const m = obj(value, p);
@@ -128,6 +168,11 @@ export function parseStageMechanics(value: unknown): StageMechanics {
     mirror: parseMirror(m.mirror, `${p}.mirror`),
     sensor: {
       holdSec: num(obj(m.sensor, `${p}.sensor`).holdSec, `${p}.sensor.holdSec`, { min: 0 }),
+    },
+    ice: parseIce(m.ice, `${p}.ice`),
+    crumble: parseCrumble(m.crumble, `${p}.crumble`),
+    coolant: {
+      frozenSteps: int(obj(m.coolant, `${p}.coolant`).frozenSteps, `${p}.coolant.frozenSteps`, 1),
     },
     enemyRewardOncePerRun: (() => {
       if (typeof m.enemyRewardOncePerRun !== 'boolean')
