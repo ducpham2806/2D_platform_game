@@ -68,7 +68,7 @@ export class TutorialSignals {
       for (const kind of world.lockedRoom?.kinds ?? []) s.add(`roomLocked:${kind}`);
     }
     if (ev.roomCleared) s.add('roomCleared');
-    if (ev.secretFound !== undefined) s.add('secret');
+    if (ev.secretsFound.length > 0) s.add('secret');
     if (ev.spikeHit) s.add('spike');
     if (ev.fellInPit) s.add('pit');
     if (ev.playerDied) s.add('death');

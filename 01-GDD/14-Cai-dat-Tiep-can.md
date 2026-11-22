@@ -216,7 +216,7 @@ mức thường: sp = 16, minPx = 9      mức lớn: sp = 20, minPx = 12
 ### 4.5 Tự tiến thoại
 
 ```text
-chờ (s) = m × min(10; max(3; n / r))   n: số ký tự câu (hoặc trang); r = 15 ký tự/s (tốc độ đọc chung, QB-72); m = 1 (vừa), 1,5 (chậm)
+chờ (s) = m × min(maxSec; max(minSec; n / r))   n: số ký tự câu (hoặc trang); r = reading.charsPerSec 15 ký tự/s, minSec = reading.minSec 3 (tốc độ đọc chung, QB-72); maxSec = settings.autoAdvance.maxSec 10; m = 1 (vừa), slowMul 1,5 (chậm)
 ```
 
 Đồng hồ chờ bắt đầu khi câu đã hiện hết (chữ hiện 40 ký tự/s, `ui.json → dialogue.charsPerSec`).
@@ -227,7 +227,7 @@ chờ (s) = m × min(10; max(3; n / r))   n: số ký tự câu (hoặc trang); 
 | 70 ký tự | 1,75 s | 4,7 s | 7 s |
 | 140 ký tự (dài nhất, vi) | 3,5 s | 9,3 s | 14 s |
 
-- Vừa: 15 ký tự/s, khoảng 200 tiếng/phút; Chậm: 10 ký tự/s. Cùng tốc độ đọc với hộp tự tắt (QB-72), nên chỉ có một số để chỉnh.
+- Vừa: 15 ký tự/s, khoảng 200 tiếng/phút; Chậm: 10 ký tự/s. Cùng tốc độ đọc và mức tối thiểu với hộp tự tắt (`ui.json → reading`, có từ ST-14-08), nên chỉ có một số để chỉnh. **Không** dùng `reading.maxWaitSec` (10 s) làm trần chờ: đó là thời hạn hủy hộp bị che (QB-71), trùng số nhưng khác nghĩa.
 - Bấm vẫn như cũ (QB-80: một lần bấm hiện hết câu; Bỏ qua hoặc giữ Lướt 0,6 s đóng cả đoạn); sang câu mới thì đồng hồ đặt lại.
 - Đồng hồ dừng khi tạm dừng hoặc tab ẩn (tab ẩn thì mở menu tạm dừng, QB-90).
 - Câu cuối của đoạn trước trận boss tự đóng xong thì trận đứng yên thêm 1,0 s, hiện "Sẵn sàng", để người chơi không bị đánh khi chưa nhìn lại màn.
@@ -361,7 +361,7 @@ Ngoại lệ: `tutorial.off` vẫn ở bản lưu (gắn tiến trình, đã có
 | GDD chính mục 15 | "Lưu game": cài đặt ở localStorage (đọc đồng bộ), không ở IndexedDB |
 | GDD chính mục 3.6 | Ngoại lệ "không tự đóng theo giờ": tự tiến thoại khi người chơi bật |
 | Wireframe `Access`, `Graphics`, `SettingsControls`, `Touch`, `Gamepad`, `PSettings`, `Account` | Tab: Tiếp cận, Hiển thị, Dữ liệu, thêm Ngôn ngữ; rung màn hình 3 mức chỉ ở Tiếp cận (bỏ khỏi Graphics); Tương tác = W/↑ (không phải E); thêm Độ nhạy cần ở Touch, Gamepad; Phụ đề cỡ lớn đổi thành Cỡ chữ hội thoại |
-| `03-Data/ui.json` | Khối mới `settings` (lựa chọn, mặc định, `textSp`, `textMinPx`, `dialogueMaxHeightFrac`, `autoAdvance { minSec, maxSec, slowMul, fightReadySec }`, `reducedFlash`), `palette`, `colorblind` (kèm `minDeltaE`), `shake`; chuyển `difficultyHint.charsPerSecRead` thành tốc độ đọc chung (`reading.charsPerSec`, QB-72); `feedback` thêm rung chạm nút 8 ms và mẫu rung tay cầm; kiểm tra ở `core/ui-config.ts` |
+| `03-Data/ui.json` | Khối mới `settings` (lựa chọn, mặc định, `textSp`, `textMinPx`, `dialogueMaxHeightFrac`, `autoAdvance { maxSec, slowMul, fightReadySec }`, `reducedFlash`), `palette`, `colorblind` (kèm `minDeltaE`), `shake`; tự tiến thoại đọc `reading.charsPerSec` và `reading.minSec` (khối `reading` đã có từ ST-14-08, thay `difficultyHint.charsPerSecRead`; QB-72); `feedback` thêm rung chạm nút 8 ms và mẫu rung tay cầm; kiểm tra ở `core/ui-config.ts` |
 | `03-Data/controls.json` | `touch.stick.deadzoneBySensitivity` (thay `deadzone`), `gamepad.deadzoneBySensitivity` (thay `stickDeadzone`), `downAxisThreshold`; kiểm tra ở `core/controls-config.ts` |
 | `03-Data/weapons.json` | `arcCannon.aimAssist { bandPx: 12, maxSlope: 0.25 }`; kiểm tra ở config vũ khí |
 | `game/src/style.css` | `.cv-panel` chữ 16 px; nút `.cv-panel button`, `.touch-editor button` 40 → 48 px; `.touch-editor-row` 36 → 48 px |

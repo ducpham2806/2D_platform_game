@@ -620,7 +620,7 @@ Vị trí, hạn mức, luồng và kỹ thuật quảng cáo chi tiết (hồi 
 
 ## 14. Định hướng nghệ thuật và âm thanh
 
-- **Phong cách:** pixel art độ phân giải cao, bảng màu neon trên nền tối cho Nova Prime; mỗi màn một bảng màu chủ đạo dễ phân biệt.
+- **Phong cách:** pixel art độ phân giải cao, bảng màu neon trên nền tối cho Nova Prime; mỗi màn một bảng màu chủ đạo dễ phân biệt. **Đang đổi (14/11/2026):** người dùng chọn 2.5D thời gian thực (three.js, model 3D, lối chơi 2D); mục này sửa sau khi duyệt `04-Dev-Plan/adr/ADR-003-do-hoa-25d-threejs.md` (demo `game/demo-25d.html`).
 - **Nhân vật:** Kai có hình dạng rõ ràng ở khoảng cách nhỏ (cần dễ nhìn trên màn hình điện thoại 6 inch).
 - **Âm nhạc:** chiptune pha synth, mỗi màn một chủ đề. MVP: một bản nhạc boss chung 3 lớp, mỗi pha thêm một lớp; nhạc riêng từng boss từ Alpha. Chi tiết âm thanh MVP (94 id âm, 5 bus, cue báo đòn): `12-Am-thanh.md`.
 - **SFX:** mỗi vũ khí có âm sắc riêng; âm thanh báo hiệu đòn boss (cảnh báo bằng âm thanh).

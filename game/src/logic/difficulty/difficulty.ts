@@ -88,3 +88,16 @@ export function difficultyHintText(
   if (!counterWeapon) return line;
   return `${line} ${hint.weapon.replace('{weapon}', counterWeapon)}`.trim();
 }
+
+/**
+ * Gợi ý chết hết ngữ cảnh trong bước này (QB-71): hạ boss, qua checkpoint, hoặc vào đấu trường
+ * (GDD 11 mục 2.5 coi lúc vào đấu trường như checkpoint: đếm chết về 0). Câu đang chờ hay đang
+ * hiện đều bỏ.
+ */
+export function deathHintExpired(ev: {
+  bossDefeated: boolean;
+  checkpoint?: unknown;
+  gateClosed: boolean;
+}): boolean {
+  return ev.bossDefeated || ev.checkpoint !== undefined || ev.gateClosed;
+}

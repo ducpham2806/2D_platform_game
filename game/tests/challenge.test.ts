@@ -58,9 +58,17 @@ const raw = (): RawEnemies => structuredClone(data.enemies) as RawEnemies;
 
 describe('bản Thử thách của kẻ địch (GDD 11 mục 2.6, ST-10-04)', () => {
   it('ghép đúng: chỉ khác trường của khối challenge; Thường dùng bản gốc', () => {
-    expect(Object.keys(base.challenge).sort()).toEqual(
-      ['bramble_golem', 'buom_sat', 'drone_linh', 'linh_ken', 'thap_gai'].sort(),
-    );
+    expect(Object.keys(base.challenge).sort()).toEqual([
+      'bramble_golem',
+      'buom_sat',
+      'drone_linh',
+      'frost_titan',
+      'guong_quang',
+      'linh_ken',
+      'nguoi_tuyet_may',
+      'thap_bang',
+      'thap_gai',
+    ]);
     expect(enemiesFor(base, false)).toBe(base);
     const drone = hard.enemies.drone_linh!;
     expect(drone.behavior === 'drone' && drone.attack.burst).toEqual({ count: 2, gapSec: 0.25 });

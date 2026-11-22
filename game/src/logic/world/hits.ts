@@ -1,6 +1,6 @@
 import type { WeaponsData } from '../../core/weapons-config';
 import type { Boss } from '../boss/boss';
-import { incomingDamage, outgoingDamage } from '../combat/damage';
+import { incomingDamage, outgoingDamage, type OutgoingHit } from '../combat/damage';
 import { overlaps, type Projectile, type ProjectilePool } from '../combat/projectiles';
 import type { TrainingTarget } from '../combat/targets';
 import type { Enemy } from '../enemy/enemy';
@@ -14,8 +14,14 @@ function consume(p: Projectile, targetId: number): void {
   else p.alive = false;
 }
 
+/** Lưỡi bay tiếp sau khi bị khiên chặn, mỗi chiều chỉ xét mục tiêu một lần. */
+function block(p: Projectile, targetId: number): void {
+  if (p.boomerang) p.hitIds.add(targetId);
+  else p.alive = false;
+}
+
 /** Hệ số điểm yếu lấy từ chính vũ khí đang bắn (weapons.json). */
-function weaknessOf(
+export function weaknessOf(
   weapons: WeaponsData,
   weapon: string,
 ): { weakMul: number; weakStunSec: number } {
@@ -25,6 +31,24 @@ function weaknessOf(
 
 /** Boss có id âm để không trùng id bia/kẻ địch trong hitIds của đạn. */
 const BOSS_ID = -1;
+
+export type BossDamageObserver = (weapon: string, amount: number, weak: boolean) => void;
+
+/** Ghi sát thương thật, kể cả đòn bị kẹp pha (QB-31). */
+export function damageBoss(
+  boss: Boss,
+  hit: OutgoingHit,
+  weapon: string,
+  ev: WorldEvents,
+  observer?: BossDamageObserver,
+): boolean {
+  const before = boss.hp;
+  if (!boss.takeHit(hit)) return false;
+  ev.hitBoss = true;
+  if (hit.weak) ev.weakHit = true;
+  observer?.(weapon, before - boss.hp, hit.weak);
+  return true;
+}
 
 /** Hiệu ứng Vanguard của build (M8): nổ lan (V2) và Đòn Trừng Phạt (V3). */
 export interface VanguardMods {
@@ -67,6 +91,8 @@ export function resolvePlayerHits(
   ev: WorldEvents,
   killed: Enemy[],
   vanguard: VanguardMods = NO_VANGUARD,
+  /** Đo lường: sát thương lên boss theo vũ khí (đơn vị phát Arc Cannon), có trúng điểm yếu. */
+  onBossDamage?: BossDamageObserver,
 ): number {
   const { targets, enemies, boss } = hitTargets;
   let hitStop = 0;
@@ -90,12 +116,13 @@ export function resolvePlayerHits(
         killed.push(e);
       }
     }
-    if (boss && !p.hitIds.has(BOSS_ID) && distToBox(x, y, boss.box) <= r) {
-      if (boss.takeHit({ amount, weak: false, stunSec: 0 })) {
-        p.hitIds.add(BOSS_ID);
-        ev.hitBoss = true;
-      }
-    }
+    if (
+      boss &&
+      !p.hitIds.has(BOSS_ID) &&
+      distToBox(x, y, boss.box) <= r &&
+      damageBoss(boss, { amount, weak: false, stunSec: 0 }, p.weapon, ev, onBossDamage)
+    )
+      p.hitIds.add(BOSS_ID);
   };
   /** V3: hệ số Đòn Trừng Phạt cho đạn nạp đầy trúng mục tiêu đang hở. */
   const punish = (p: Projectile, exposed: boolean): number => {
@@ -119,7 +146,7 @@ export function resolvePlayerHits(
       if (!p.alive || !t.alive || p.hitIds.has(t.id) || !overlaps(p, t.box)) continue;
       const result = t.hit(p, amountOf(p));
       if (result === 'blocked' || result === 'shieldBroken') {
-        p.alive = false;
+        block(p, t.id);
         if (result === 'blocked') ev.blocked = true;
         else ev.shieldBroken = true;
       } else {
@@ -132,7 +159,7 @@ export function resolvePlayerHits(
       if (!p.alive || !e.alive || p.hitIds.has(e.id) || !overlaps(p, e.box)) continue;
       const result = e.takeHit(p, amountOf(p) * punish(p, e.exposed));
       if (result === 'blocked' || result === 'shieldHit' || result === 'shieldBroken') {
-        p.alive = false;
+        block(p, e.id);
         ev[result] = true;
       } else {
         ev.hitEnemy = true;
@@ -140,12 +167,19 @@ export function resolvePlayerHits(
         if (result === 'killed') {
           ev.enemyKilled = true;
           killed.push(e);
-        }
+        } else if (p.freezeSec !== undefined && e.disable(p.freezeSec, 'freeze'))
+          ev.enemyFrozen = true;
         explode(p, amountOf(p));
       }
       hitStop = Math.max(hitStop, chargedStop);
     }
     if (!p.alive || !boss || p.hitIds.has(BOSS_ID) || !overlaps(p, boss.box)) continue;
+    if (boss.shifting) {
+      // Boss bất tử để đổi pha (QB-31): đạn mất, không sát thương, không choáng, không Trừng Phạt.
+      p.alive = false;
+      ev.bossImmune = true;
+      continue;
+    }
     const raw = outgoingDamage({
       base: p.damage,
       kindMul: p.kindMul,
@@ -155,12 +189,8 @@ export function resolvePlayerHits(
       ...weaknessOf(weapons, p.weapon),
     });
     const hit = { ...raw, amount: raw.amount * punish(p, boss.exposed) };
-    if (boss.takeHit(hit)) {
-      ev.hitBoss = true;
-      if (hit.weak) {
-        ev.weakHit = true;
-        hitStop = Math.max(hitStop, weapons.hitStopSteps.weakness);
-      }
+    if (damageBoss(boss, hit, p.weapon, ev, onBossDamage)) {
+      if (hit.weak) hitStop = Math.max(hitStop, weapons.hitStopSteps.weakness);
       hitStop = Math.max(hitStop, chargedStop);
       consume(p, BOSS_ID);
       explode(p, amountOf(p));
@@ -241,18 +271,39 @@ export function resolveEnemyHits(
     }
     if (player.applyHit(amount, p.x + p.w / 2)) {
       ev.playerHurt = true;
+      ev.hurtBy = p.source ?? `boss:${p.kind}`;
       p.alive = false;
     }
   }
+  for (const pulse of boss?.beam.pulses ?? []) {
+    if (pulse.hitPlayer || !pulse.boxes.some((box) => overlaps(box, player.box))) continue;
+    const amount = incomingDamage(pulse.damage, damageTaken);
+    if (absorbed(amount)) pulse.hitPlayer = true;
+    else {
+      // Bật ra xa tim tia, với đoạn dọc lấy đúng x của đường tia.
+      const box = pulse.boxes.find((box) => overlaps(box, player.box))!;
+      if (player.applyHit(amount, box.x + box.w / 2)) {
+        pulse.hitPlayer = true;
+        ev.playerHurt = true;
+        ev.hurtBy = boss?.source ?? 'boss:beam';
+      }
+    }
+  }
   for (const e of enemies) {
-    if (!e.alive || !overlaps(e.box, player.box)) continue;
+    if (!e.alive || e.disabledSec > 0 || !overlaps(e.box, player.box)) continue;
     const amount = incomingDamage(e.contactDamage, damageTaken);
     if (absorbed(amount)) continue;
-    if (player.applyHit(amount, e.centerX)) ev.playerHurt = true;
+    if (player.applyHit(amount, e.centerX)) {
+      ev.playerHurt = true;
+      ev.hurtBy = `enemy:${e.data.id}`;
+    }
   }
   if (boss && boss.state !== 'dead' && boss.state !== 'waiting' && overlaps(boss.box, player.box)) {
     const amount = incomingDamage(boss.touchDamage, damageTaken);
     if (absorbed(amount)) return;
-    if (player.applyHit(amount, boss.centerX)) ev.playerHurt = true;
+    if (player.applyHit(amount, boss.centerX)) {
+      ev.playerHurt = true;
+      ev.hurtBy = boss.source ?? 'boss:touch';
+    }
   }
 }

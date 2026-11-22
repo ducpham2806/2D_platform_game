@@ -1,11 +1,17 @@
 {
-  "_note": "Kẻ địch thường của Prologue và Stage 1 (đặc tả Prologue & Stage 1 mục 4, GDD 9). Máu tính bằng phát Arc Cannon gốc (nhân enemyHp của độ khó); sát thương tính bằng máu người chơi (100 ở cấp 1, nhân damageTaken). Mini-boss Bramble Golem làm cùng boss (M6). Mọi số là [PLACEHOLDER].",
+  "_note": "Kẻ địch của Prologue và Stage 1–3 (đặc tả Prologue & Stage 1 mục 4 và GDD 16). Máu tính bằng phát Arc Cannon gốc, nhân enemyHp của độ khó. Sát thương tính bằng máu người chơi (100 ở cấp 1), nhân damageTaken. Mọi số là [PLACEHOLDER].",
   "rules": {
     "minTelegraphSec": 0.4,
+    "minMiniBossTelegraphSec": 0.5,
     "minSpawnDistanceTiles": 6,
     "activeRangeTiles": 12,
+    "activeRangeTilesY": 7,
+    "attackRequiresOnScreen": true,
+    "attackScreenInsetTiles": 1,
     "pickups": {
       "healChance": 0.08,
+      "energyChance": 0.06,
+      "energy": 4,
       "heal": 20,
       "healLifetimeSec": 8,
       "coreBitLifetimeSec": 10,
@@ -273,6 +279,180 @@
         "attack": {
           "dash": {
             "endSlam": true
+          }
+        }
+      }
+    },
+    "guong_quang": {
+      "name": "Gương Quang",
+      "behavior": "drone",
+      "hp": 3,
+      "sizePx": {
+        "w": 14,
+        "h": 12
+      },
+      "contactDamage": 8,
+      "exp": 6,
+      "coreBit": 2,
+      "moveSpeedTilesPerSec": 2,
+      "patrolRangeTiles": 3,
+      "attack": {
+        "rangeTiles": 7,
+        "telegraphSec": 0.5,
+        "cooldownSec": 1.8,
+        "bankShot": true,
+        "projectile": {
+          "speedTilesPerSec": 7,
+          "damage": 8,
+          "sizePx": {
+            "w": 6,
+            "h": 4
+          },
+          "bounces": 1
+        }
+      },
+      "challenge": {
+        "note": "Song Tia",
+        "attack": {
+          "dualShot": true
+        }
+      }
+    },
+    "nguoi_tuyet_may": {
+      "name": "Người Tuyết Máy",
+      "behavior": "shieldCharger",
+      "hp": 6,
+      "sizePx": {
+        "w": 16,
+        "h": 20
+      },
+      "contactDamage": 12,
+      "exp": 10,
+      "coreBit": 4,
+      "shieldHits": 0,
+      "moveSpeedTilesPerSec": 0.8,
+      "patrolRangeTiles": 3,
+      "attack": {
+        "rangeTiles": 6,
+        "telegraphSec": 0.5,
+        "dashTiles": 5,
+        "dashSpeedTilesPerSec": 8,
+        "recoverSec": 1.2,
+        "cooldownSec": 0,
+        "turnDelaySec": 0.35
+      },
+      "challenge": {
+        "note": "Trượt Dội",
+        "attack": {
+          "chainDashes": 2,
+          "chainTelegraphSec": 0.45
+        }
+      }
+    },
+    "thap_bang": {
+      "name": "Tháp Băng",
+      "behavior": "turret",
+      "hp": 6,
+      "sizePx": {
+        "w": 16,
+        "h": 18
+      },
+      "contactDamage": 10,
+      "exp": 10,
+      "coreBit": 4,
+      "attack": {
+        "intervalSec": 2.6,
+        "telegraphSec": 0.6,
+        "count": 2,
+        "spreadDeg": 0,
+        "projectile": {
+          "speedTilesPerSec": 0,
+          "damage": 10,
+          "sizePx": {
+            "w": 6,
+            "h": 6
+          }
+        },
+        "lob": {
+          "aimAtPlayer": true,
+          "elevationDeg": 50,
+          "gravityTilesPerSec2": 20,
+          "spreadTiles": 2,
+          "maxRangeTiles": 9
+        }
+      },
+      "challenge": {
+        "note": "Loạt Nhắm Lại",
+        "attack": {
+          "volleys": 2,
+          "volleyGapSec": 0.4
+        }
+      }
+    },
+    "frost_titan": {
+      "name": "Frost Titan",
+      "behavior": "golem",
+      "hp": 80,
+      "sizePx": {
+        "w": 28,
+        "h": 30
+      },
+      "contactDamage": 12,
+      "exp": 185,
+      "coreBit": 50,
+      "moveSpeedTilesPerSec": 0.7,
+      "phase2HpPct": 50,
+      "attack": {
+        "cooldownSec": 1.4,
+        "slam": {
+          "telegraphSec": 0.8,
+          "recoverSec": 1,
+          "shockwave": {
+            "speedTilesPerSec": 6,
+            "damage": 15,
+            "sizePx": {
+              "w": 10,
+              "h": 10
+            }
+          }
+        },
+        "bombs": {
+          "telegraphSec": 0.7,
+          "count": 3,
+          "spreadFactor": 1.2,
+          "lobSpeedTilesPerSec": 2,
+          "gravityTilesPerSec2": 30,
+          "recoverSec": 0.5,
+          "projectile": {
+            "speedTilesPerSec": 4,
+            "damage": 12,
+            "sizePx": {
+              "w": 8,
+              "h": 8
+            }
+          }
+        },
+        "dash": {
+          "telegraphSec": 0.5,
+          "dashTiles": 5,
+          "dashSpeedTilesPerSec": 9,
+          "recoverSec": 1.2,
+          "damage": 15
+        }
+      },
+      "challenge": {
+        "note": "Tảng Vỡ",
+        "attack": {
+          "bombs": {
+            "landShockwave": {
+              "speedTilesPerSec": 5,
+              "damage": 8,
+              "sizePx": {
+                "w": 8,
+                "h": 6
+              },
+              "rangeTiles": 1.5
+            }
           }
         }
       }

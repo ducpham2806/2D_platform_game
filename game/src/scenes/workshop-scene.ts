@@ -3,6 +3,7 @@ import { LOGIC_WIDTH, SceneKey } from '../core/constants';
 import { getBus, getConfig, getInput, getSave } from '../core/phaser-services';
 import { WorkshopPanel } from '../workshop/workshop-panel';
 import { TEXT_STYLE } from './ui';
+import { getTelemetry } from './telemetry/telemetry-service';
 
 /** Xưởng Lắp Ráp mở từ menu hoặc màn Kết quả (M8, ADR-001): bảng HTML phủ lên canvas. */
 export class WorkshopScene extends Phaser.Scene {
@@ -24,6 +25,7 @@ export class WorkshopScene extends Phaser.Scene {
     input.setGameplayActive(false);
     this.panel = new WorkshopPanel(getSave(this), getConfig(this), {
       onClose: () => this.scene.start(SceneKey.Menu),
+      onTelemetry: (name, props) => getTelemetry(this)?.log(name, props),
     });
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       this.panel?.destroy();

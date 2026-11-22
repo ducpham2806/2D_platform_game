@@ -26,6 +26,8 @@ const CHAR_TO_TILE: Readonly<Record<string, Tile>> = {
 };
 
 export class TileMap {
+  private edits = 0;
+
   private constructor(
     readonly cols: number,
     readonly rows: number,
@@ -79,6 +81,11 @@ export class TileMap {
     return this.rows * this.tileSize;
   }
 
+  /** Đổi khi hình học của lưới thay đổi (cửa mở/đóng, vật chắn vỡ). */
+  get revision(): number {
+    return this.edits;
+  }
+
   /** Ngoài hai cạnh trái/phải coi như tường; trên và dưới bản đồ là trống (rơi xuống hố). */
   get(col: number, row: number): Tile {
     if (col < 0 || col >= this.cols) return Tile.Solid;
@@ -89,7 +96,11 @@ export class TileMap {
   /** Đổi một ô (ví dụ đóng/mở cửa phòng boss). Ngoài bản đồ thì bỏ qua. */
   set(col: number, row: number, tile: Tile): void {
     if (col < 0 || col >= this.cols || row < 0 || row >= this.rows) return;
-    this.tiles[row * this.cols + col] = tile;
+    const index = row * this.cols + col;
+    if (this.tiles[index] !== tile) {
+      this.tiles[index] = tile;
+      this.edits += 1;
+    }
   }
 
   isSolid(col: number, row: number): boolean {

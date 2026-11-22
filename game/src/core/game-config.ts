@@ -1,17 +1,26 @@
 import { type ControlsConfig, parseControls } from './controls-config';
 import { arr, ConfigError, isObject, num, obj, str } from './json-check';
 import { parsePlayer, type PlayerData } from './player-config';
-import { parseWeapons, type WeaponsData } from './weapons-config';
-import { type BossData, checkBossRules, parseBossChallenges, parseBosses } from './boss-config';
+import { checkWeaponBalance, parseWeapons, type WeaponsData } from './weapons-config';
+import {
+  type BossData,
+  bossDamageCap,
+  bossMaxDamage,
+  checkBossRules,
+  parseBossChallenges,
+  parseBosses,
+} from './boss-config';
 import { checkEnemyRules, type EnemiesData, parseEnemies } from './enemy-config';
 import { evaluateFormula } from '../logic/formula';
 import { computeBuild, statsFor } from '../logic/rpg/build';
+import { levelForExp } from '../logic/rpg/progression';
 import { parseStageMechanics, type StageMechanics } from './stage-mechanics-config';
 import { parseTutorial, type TutorialData } from './tutorial-config';
 import { parseUi, type UiData } from './ui-config';
 import { parseSkills, type SkillsData } from './skills-config';
 import { type EconomyData, parseEconomy, parseShop, type ShopData } from './shop-config';
 import { parseWardenDialogue, type WardenDialogueData } from './dialogue-config';
+import { parseTelemetryOptional, type TelemetryConfig } from './telemetry-config';
 
 export { ConfigError } from './json-check';
 export { parsePlayer, type PlayerData } from './player-config';
@@ -38,8 +47,38 @@ export interface StageData {
   armorCacheRequiresWeapon: string;
   coreBitBase: number;
   checkpoints: number;
+  /** Màn có một Nano Cell trong khu bí mật (QB-50). */
+  nanoCell?: boolean;
   /** id kẻ địch thường của màn (enemies.json). */
   enemies: string[];
+  /** Đoạn của màn theo thứ tự (đoạn kẹt H1 của báo cáo MVP; bản đồ thật phải khớp). */
+  segments: string[];
+  /** Thời gian hoàn thành dự kiến (phút, H3); chỉ màn đã có đặc tả. */
+  expectedMin?: number;
+  /** Thời gian thắng boss theo thiết kế [ít nhất, nhiều nhất] giây (H4). */
+  bossFightSec?: [number, number];
+  /** EXP của màn ở Thường (GDD 16 mục 2.1); chỉ màn đã có đặc tả. */
+  expBudget?: number;
+  /** Hệ số thưởng kẻ địch thường của màn (Q2); không có thì 1. */
+  enemyRewardMul?: RewardMul;
+}
+
+/** Hệ số thưởng tách EXP và Core Bit. */
+export interface RewardMul {
+  exp: number;
+  coreBit: number;
+}
+
+/** Hệ số thưởng mặc định (Stage 1, phòng thử không thuộc màn chiến dịch). */
+export const UNIT_REWARD_MUL: RewardMul = { exp: 1, coreBit: 1 };
+
+function rewardMul(value: unknown, p: string): RewardMul {
+  const m = obj(value, p);
+  return {
+    // GDD 16 mục 9: màn sau không cho ít hơn bậc Stage 1 (≥ 1).
+    exp: num(m.exp, `${p}.exp`, { min: 1 }),
+    coreBit: num(m.coreBit, `${p}.coreBit`, { min: 1 }),
+  };
 }
 
 export interface LevelSyncData {
@@ -113,8 +152,21 @@ export interface GameConfig {
   shop: ShopData;
   /** Thu Core Bit theo màn (M9, economy.json; phần còn lại vẫn ở `raw`). */
   economy: EconomyData;
+  /**
+   * Đo lường đợt thử MVP (M16 bản tối thiểu, telemetry.json). Không bắt buộc: thiếu hoặc lỗi thì
+   * undefined (đo lường tắt, lý do ở `telemetryError`), game vẫn chạy.
+   */
+  telemetry: TelemetryConfig | undefined;
+  telemetryError: string | undefined;
   /** Các file chưa có module dùng (shop, economy, modules, endgame…), giữ nguyên dạng thô. */
   raw: Readonly<Record<string, unknown>>;
+}
+
+function fightRange(value: unknown, p: string): [number, number] {
+  const r = arr(value, `${p}.bossFightSec`);
+  if (r.length !== 2) throw new ConfigError(`${p}.bossFightSec: cần [ít nhất, nhiều nhất]`);
+  const lo = num(r[0], `${p}.bossFightSec[0]`, { min: 1 });
+  return [lo, num(r[1], `${p}.bossFightSec[1]`, { min: lo })];
 }
 
 export function parseStages(value: unknown): StagesData {
@@ -122,7 +174,9 @@ export function parseStages(value: unknown): StagesData {
   const stages = arr(s.stages, 'stages.stages').map((item, i) => {
     const p = `stages.stages[${i}]`;
     const st = obj(item, p);
-    return {
+    if (st.nanoCell !== undefined && typeof st.nanoCell !== 'boolean')
+      throw new ConfigError(`${p}.nanoCell: cần boolean`);
+    const stage: StageData = {
       index: num(st.index, `${p}.index`, { min: 1 }),
       id: str(st.id, `${p}.id`),
       name: str(st.name, `${p}.name`),
@@ -135,8 +189,28 @@ export function parseStages(value: unknown): StagesData {
       armorCacheRequiresWeapon: str(st.armorCacheRequiresWeapon, `${p}.armorCacheRequiresWeapon`),
       coreBitBase: num(st.coreBitBase, `${p}.coreBitBase`, { min: 0 }),
       checkpoints: num(st.checkpoints, `${p}.checkpoints`, { min: 1 }),
+      ...(st.nanoCell === undefined ? {} : { nanoCell: st.nanoCell }),
       enemies: arr(st.enemies, `${p}.enemies`).map((e, j) => str(e, `${p}.enemies[${j}]`)),
+      segments: arr(st.segments, `${p}.segments`).map((e, j) => str(e, `${p}.segments[${j}]`)),
+      ...(st.expectedMin !== undefined
+        ? { expectedMin: num(st.expectedMin, `${p}.expectedMin`, { min: 0.1 }) }
+        : {}),
+      ...(st.bossFightSec !== undefined ? { bossFightSec: fightRange(st.bossFightSec, p) } : {}),
+      ...(st.expBudget !== undefined
+        ? { expBudget: num(st.expBudget, `${p}.expBudget`, { min: 1 }) }
+        : {}),
+      ...(st.enemyRewardMul !== undefined
+        ? { enemyRewardMul: rewardMul(st.enemyRewardMul, `${p}.enemyRewardMul`) }
+        : {}),
     };
+    // Màn đã có đặc tả (có `expectedMin`) phải có thưởng theo màn, để kiểm EXP theo cấp không
+    // lặng lẽ tắt khi thiếu trường.
+    if (
+      st.expectedMin !== undefined &&
+      (st.expBudget === undefined || st.enemyRewardMul === undefined)
+    )
+      throw new ConfigError(`${p}: màn đã có đặc tả cần expBudget và enemyRewardMul`);
+    return stage;
   });
   const sync = obj(s.levelSync, 'stages.levelSync');
   if (typeof sync.enabled !== 'boolean')
@@ -270,6 +344,20 @@ export function checkDesignInvariants(config: GameConfig): string[] {
     if (stage.index !== i + 1) errors.push(`stages: index phải liên tục từ 1 (gặp ${stage.index})`);
   });
 
+  const nanoStages = stages.filter((stage) => stage.nanoCell).map((stage) => stage.index);
+  if (nanoStages.join(',') !== '1,3,5,7' || nanoStages.length !== config.player.nanoCell.max)
+    errors.push('stages.nanoCell: cần một Nano Cell ở mỗi màn 1/3/5/7 (QB-50)');
+  const nanoUpgrade = config.shop.upgrades.nano_cell_cap;
+  if (nanoUpgrade && nanoUpgrade.maxLevel !== 4)
+    errors.push('shop.nano_cell_cap: cần tối đa bốn cấp (QB-54)');
+  if (
+    nanoUpgrade &&
+    config.player.nanoCell.healPct *
+      (1 + (nanoUpgrade.nanoCellHealPerLevel ?? 0) * nanoUpgrade.maxLevel) >
+      1
+  )
+    errors.push('shop.nano_cell_cap: Nano Cell không được hồi hơn 100% máu tối đa');
+
   // Vòng khắc chế: vũ khí của màn k là điểm yếu của boss màn k+1, màn cuối khép vòng về màn 1.
   stages.forEach((stage, i) => {
     const next = stages[(i + 1) % stages.length];
@@ -354,6 +442,10 @@ export function checkDesignInvariants(config: GameConfig): string[] {
   // GDD 11 mục 3.1), điểm yếu là vũ khí có thật; bản Thử thách giữ ngưỡng pha như bản gốc.
   const baseHp = evaluateFormula(config.player.level.hp, { L: 1 });
   const worstBossTaken = Math.max(...config.difficulties.map((d) => d.damageTaken));
+  for (const boss of [...Object.values(config.bosses), ...Object.values(config.bossesChallenge)]) {
+    if (boss.roomFlight && boss.minTelegraphSec < config.enemies.rules.minMiniBossTelegraphSec)
+      errors.push(`bosses.${boss.id}.minTelegraphSec: mini-boss phòng khóa dưới ngưỡng QB-21`);
+  }
   for (const boss of Object.values(config.bossesChallenge)) {
     errors.push(...checkBossRules(boss, baseHp, worstBossTaken).map((e) => `Thử thách ${e}`));
     const basePhases = config.bosses[boss.id]?.phases ?? [];
@@ -370,15 +462,26 @@ export function checkDesignInvariants(config: GameConfig): string[] {
   }
   for (const boss of Object.values(config.bosses)) {
     errors.push(...checkBossRules(boss, baseHp, worstBossTaken));
-    if (!config.weapons.bossWeapons.some((w) => w.name === boss.weakness)) {
+    if (!boss.roomFlight && !config.weapons.bossWeapons.some((w) => w.name === boss.weakness)) {
       errors.push(`bosses.${boss.id}.weakness: không có vũ khí ${boss.weakness}`);
     }
   }
 
-  // Boss đã có dữ liệu phải khớp màn: thưởng là vũ khí của màn, điểm yếu là vũ khí của màn trước.
+  // Boss đã có dữ liệu phải khớp màn: thưởng là vũ khí của màn, điểm yếu là vũ khí của màn trước;
+  // đòn mạnh nhất (cả bản Thử thách) không quá trần của màn (GDD 16 mục 2.2).
   for (const stage of stages) {
     const bossData = config.bosses[stage.boss];
     if (!bossData) continue;
+    const cap = bossDamageCap(bossData.rules, stage.index);
+    for (const [label, b] of [
+      ['', bossData],
+      ['.challenge', config.bossesChallenge[bossData.id]],
+    ] as const) {
+      if (b && bossMaxDamage(b) > cap)
+        errors.push(
+          `bosses.${bossData.id}${label}: đòn ${bossMaxDamage(b)} vượt trần ${cap} của màn ${stage.index}`,
+        );
+    }
     if (bossData.reward !== stage.weaponGranted) {
       errors.push(
         `bosses.${bossData.id}.reward: ${bossData.reward} phải là weaponGranted của màn ${stage.index} (${stage.weaponGranted})`,
@@ -395,9 +498,10 @@ export function checkDesignInvariants(config: GameConfig): string[] {
   // (GDD 11 mục 3.1); các màn đã làm có đủ dữ liệu kẻ địch.
   const hardestTaken = Math.max(...config.difficulties.map((d) => d.damageTaken));
   errors.push(...checkEnemyRules(config.enemies, baseHp, hardestTaken));
-  for (const stage of stages.filter((s) => s.index <= STAGES_WITH_ENEMY_DATA)) {
-    if (!config.enemies.enemies[stage.miniBoss]) {
-      errors.push(`stages.${stage.id}.miniBoss: "${stage.miniBoss}" chưa có trong enemies.json`);
+  // Stage 3 đã đủ dữ liệu từ ST-15-06. Stage 2 còn Tháp Laser.
+  for (const stage of stages.filter((s) => s.index <= STAGES_WITH_ENEMY_DATA || s.index === 3)) {
+    if (!config.enemies.enemies[stage.miniBoss] && !config.bosses[stage.miniBoss]?.roomFlight) {
+      errors.push(`stages.${stage.id}.miniBoss: "${stage.miniBoss}" thiếu dữ liệu mini-boss`);
     }
     for (const id of stage.enemies) {
       if (!config.enemies.enemies[id]) {
@@ -412,13 +516,40 @@ export function checkDesignInvariants(config: GameConfig): string[] {
   for (const [name, damage] of [
     ['spikes', mech.spikes.damage],
     ['pit', mech.pit.damage],
+    ['laser', mech.laser.damage],
   ] as const) {
     if (Math.round(damage * worstTaken) >= baseHp)
       errors.push(`stages.mechanics.${name}.damage: ${damage} giết ngay Kai cấp 1 (${baseHp} máu)`);
   }
 
+  // Vũ khí Warden: ngân sách năng lượng và sức mạnh khắc chế (GDD 16 mục 2.3).
+  errors.push(...checkWeaponBalance(config.weapons));
+
   // Cấp (GDD 6.1): EXP lên cấp dương ở mọi cấp.
   const lv = config.player.level;
+  // EXP theo màn (GDD 16 mục 2.1): có `expBudget` thì liền từ màn 1; cộng dồn tới màn k ra cấp nằm
+  // trong cấp khuyến nghị của màn k + 1 (mỗi màn khoảng +2 cấp).
+  let cumulative = 0;
+  stages.forEach((stage, i) => {
+    if (stage.expBudget === undefined) {
+      if (stages.slice(i + 1).some((s) => s.expBudget !== undefined))
+        errors.push(`stages.${stage.id}.expBudget: thiếu (các màn sau đã có)`);
+      return;
+    }
+    cumulative += stage.expBudget;
+    const next = stages[i + 1];
+    if (!next) return;
+    try {
+      const [lo, hi] = parseLevelRange(next.recommendedLevel);
+      const level = levelForExp(cumulative, lv).level;
+      if (level < lo || level > hi)
+        errors.push(
+          `stages.${stage.id}.expBudget: cộng dồn ${cumulative} EXP ra cấp ${level}, ngoài cấp khuyến nghị màn ${next.index} (${next.recommendedLevel})`,
+        );
+    } catch (e) {
+      errors.push((e as Error).message);
+    }
+  });
   for (let L = 1; L < lv.max; L += 1) {
     const need = evaluateFormula(lv.expFormula, { L });
     if (!(need >= 1)) errors.push(`player.level.expFormula: cấp ${L} cần ${need} EXP (phải ≥ 1)`);
@@ -468,6 +599,7 @@ export function parseGameConfig(files: Readonly<Record<string, unknown>>): GameC
   }
   const enemies = parseEnemies(files.enemies);
   const ui = parseUi(files.ui);
+  const tel = parseTelemetryOptional(files.telemetry);
   const config: GameConfig = {
     player: parsePlayer(files.player),
     weapons: parseWeapons(files.weapons),
@@ -483,6 +615,8 @@ export function parseGameConfig(files: Readonly<Record<string, unknown>>): GameC
     skills: parseSkills(files.skills),
     shop: parseShop(files.shop),
     economy: parseEconomy(files.economy),
+    telemetry: tel.telemetry,
+    telemetryError: tel.error,
     raw: { ...files },
   };
   const errors = checkDesignInvariants(config);

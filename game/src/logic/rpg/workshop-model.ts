@@ -11,6 +11,27 @@ import {
   spentPoints,
 } from './skill-tree';
 
+/** Tab của Xưởng; `lockedHint` là điều kiện mở theo lời người chơi (QB-132), tab đã mở thì không có. */
+export interface WorkshopTab {
+  id: 'skills' | 'module' | 'armor' | 'skins' | 'loadout';
+  name: string;
+  lockedHint: string | undefined;
+}
+
+/** MVP chỉ có tab Kỹ năng; các tab khác hiện khóa kèm điều kiện mở (chuyển sang chuỗi khi làm i18n). */
+export const WORKSHOP_TABS: readonly WorkshopTab[] = [
+  { id: 'skills', name: 'Kỹ năng', lockedHint: undefined },
+  { id: 'module', name: 'Module', lockedHint: 'khi nhận module đầu tiên' },
+  { id: 'armor', name: 'Giáp', lockedHint: 'khi có Két giáp' },
+  { id: 'skins', name: 'Tủ skin', lockedHint: 'mở sau boss 5' },
+  { id: 'loadout', name: 'Loadout', lockedHint: 'mở sau boss 5' },
+];
+
+/** Nhãn tab: tên, kèm điều kiện mở nếu còn khóa. */
+export function workshopTabLabel(tab: WorkshopTab): string {
+  return tab.lockedHint === undefined ? tab.name : `${tab.name} · ${tab.lockedHint}`;
+}
+
 export interface WorkshopNodeView {
   id: string;
   name: string;

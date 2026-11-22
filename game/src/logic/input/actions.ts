@@ -11,6 +11,7 @@ export const ACTIONS = [
   'swapNext',
   'pause',
   'interact',
+  'heal',
 ] as const;
 export type Action = (typeof ACTIONS)[number];
 
@@ -33,6 +34,7 @@ export const ACTION_LABELS: Readonly<Record<Action, string>> = {
   swapNext: 'Vũ khí sau',
   pause: 'Tạm dừng',
   interact: 'Tương tác',
+  heal: 'Dùng Nano Cell',
 };
 
 /**

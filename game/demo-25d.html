@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0b1f1c" />
+    <title>Cyber Vanguard · Demo 2.5D</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #0b1f1c;
+        overflow: hidden;
+        font-family:
+          system-ui,
+          -apple-system,
+          'Segoe UI',
+          Roboto,
+          sans-serif;
+        color: #e6fff4;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: none;
+      }
+      #view canvas {
+        display: block;
+      }
+      .hud {
+        position: fixed;
+        top: calc(10px + env(safe-area-inset-top, 0px));
+        left: calc(12px + env(safe-area-inset-left, 0px));
+        right: calc(12px + env(safe-area-inset-right, 0px));
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        pointer-events: none;
+      }
+      .bar {
+        height: 12px;
+        border: 2px solid #4fd1ff;
+        border-radius: 3px;
+        background: rgba(5, 16, 14, 0.7);
+        overflow: hidden;
+        box-shadow: 0 0 10px rgba(79, 209, 255, 0.4);
+      }
+      .bar > div {
+        height: 100%;
+        transition: width 0.12s;
+      }
+      #hp {
+        width: 180px;
+      }
+      #hp-fill {
+        background: linear-gradient(90deg, #3fe28f, #9dffcf);
+      }
+      #boss {
+        flex: 1;
+        max-width: 420px;
+        margin: 0 auto;
+        border-color: #ff8a5c;
+        box-shadow: 0 0 12px rgba(255, 120, 80, 0.45);
+        visibility: hidden;
+      }
+      #boss-fill {
+        background: linear-gradient(90deg, #ff5d5d, #ffa94d);
+      }
+      #fps {
+        font:
+          12px ui-monospace,
+          monospace;
+        opacity: 0.7;
+        min-width: 90px;
+        text-align: right;
+      }
+      #banner {
+        position: fixed;
+        top: 22%;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: clamp(18px, 4vw, 40px);
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-shadow: 0 0 18px rgba(93, 255, 154, 0.8);
+        transition: opacity 0.4s;
+        pointer-events: none;
+      }
+      #help {
+        position: fixed;
+        bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 12px;
+        opacity: 0.6;
+        pointer-events: none;
+      }
+      #touch {
+        display: none;
+      }
+      @media (pointer: coarse) {
+        #help {
+          display: none;
+        }
+        #touch {
+          display: block;
+        }
+      }
+      #touch button {
+        position: fixed;
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        border: 2px solid rgba(79, 209, 255, 0.7);
+        background: rgba(10, 30, 30, 0.45);
+        color: #e6fff4;
+        font:
+          600 13px system-ui,
+          sans-serif;
+        touch-action: none;
+      }
+      #touch button.on {
+        background: rgba(79, 209, 255, 0.35);
+      }
+      #touch [data-btn='left'] {
+        left: calc(20px + env(safe-area-inset-left, 0px));
+        bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+      }
+      #touch [data-btn='right'] {
+        left: calc(96px + env(safe-area-inset-left, 0px));
+        bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+      }
+      #touch [data-btn='dash'] {
+        right: calc(172px + env(safe-area-inset-right, 0px));
+        bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+      }
+      #touch [data-btn='shoot'] {
+        right: calc(96px + env(safe-area-inset-right, 0px));
+        bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+      }
+      #touch [data-btn='jump'] {
+        right: calc(20px + env(safe-area-inset-right, 0px));
+        bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+      }
+    </style>
+  </head>
+  <body>
+    <div id="view"></div>
+    <div class="hud">
+      <div id="hp" class="bar"><div id="hp-fill"></div></div>
+      <div id="boss" class="bar"><div id="boss-fill"></div></div>
+      <div id="fps"></div>
+    </div>
+    <div id="banner"></div>
+    <div id="help">A/D hoặc ←/→ di chuyển · K hoặc Space nhảy · J bắn (giữ để nạp) · L lướt</div>
+    <div id="touch">
+      <button type="button" data-btn="left">◀</button>
+      <button type="button" data-btn="right">▶</button>
+      <button type="button" data-btn="dash">Lướt</button>
+      <button type="button" data-btn="shoot">Bắn</button>
+      <button type="button" data-btn="jump">Nhảy</button>
+    </div>
+    <script type="module" src="/src/demo25d/main.ts"></script>
+  </body>
+</html>

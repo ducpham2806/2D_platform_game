@@ -28,6 +28,12 @@ export function num(value: unknown, path: string, opts: { min?: number } = {}): 
   return value;
 }
 
+export function positiveNum(value: unknown, path: string): number {
+  const n = num(value, path);
+  if (n <= 0) throw new ConfigError(`${path}: phải > 0 (đang là ${n})`);
+  return n;
+}
+
 export function str(value: unknown, path: string): string {
   if (typeof value !== 'string' || value.length === 0) {
     throw new ConfigError(`${path}: cần một chuỗi khác rỗng`);

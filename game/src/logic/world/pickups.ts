@@ -4,11 +4,11 @@ import type { Box } from '../player/collision';
 import type { Rng } from '../rng';
 import type { TileMap } from '../tilemap';
 
-/** Vật phẩm rơi khi hạ kẻ địch: Core Bit (phải nhặt) và viên hồi máu (đặc tả mục 4). */
+/** Vật phẩm rơi khi hạ kẻ địch. */
 export interface Pickup {
   id: number;
-  kind: 'coreBit' | 'heal';
-  /** Số Core Bit, hoặc số máu hồi. */
+  kind: 'coreBit' | 'heal' | 'energy';
+  /** Số Core Bit, máu hoặc năng lượng hồi. */
   value: number;
   x: number;
   y: number;
@@ -59,6 +59,18 @@ export class PickupPool {
     if (playerHurt && rng() < r.healChance) {
       this.spawn('heal', r.heal, x, y, 0, r.healLifetimeSec);
     }
+  }
+
+  dropEnergy(x: number, y: number, rng: Rng): void {
+    if (rng() < this.rules.energyChance)
+      this.spawn(
+        'energy',
+        this.rules.energy,
+        x,
+        y,
+        POP_SIDE * this.tileSize,
+        this.rules.healLifetimeSec,
+      );
   }
 
   private spawn(
@@ -149,13 +161,21 @@ export class PickupPool {
     this.items = this.items.filter((p) => p.pulled || (p.ttl > 1e-9 && p.y < map.heightPx));
   }
 
-  /** Nhặt mọi vật phẩm chạm hộp người chơi; trả về tổng Core Bit và máu hồi. */
-  collect(box: Box): { coreBit: number; heal: number } {
-    const got = { coreBit: 0, heal: 0 };
+  /** Viên năng lượng vẫn nằm trên sàn nếu vũ khí đích đã đầy. */
+  collect(
+    box: Box,
+    restoreEnergy?: (amount: number) => number,
+  ): { coreBit: number; heal: number; energy: number } {
+    const got = { coreBit: 0, heal: 0, energy: 0 };
     this.items = this.items.filter((p) => {
       if (!overlaps(p, box)) return true;
       if (p.kind === 'coreBit') got.coreBit += p.value;
-      else got.heal += p.value;
+      else if (p.kind === 'heal') got.heal += p.value;
+      else {
+        const restored = restoreEnergy?.(p.value) ?? 0;
+        if (restored <= 0) return true;
+        got.energy += restored;
+      }
       return false;
     });
     return got;

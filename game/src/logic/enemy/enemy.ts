@@ -1,5 +1,6 @@
 import type { EnemyData, EnemyProjectileData } from '../../core/enemy-config';
-import type { Projectile, ProjectilePool } from '../combat/projectiles';
+import type { ExtraSolid, FlightLine, FlightPoint } from '../combat/flight';
+import type { ProjectilePool, ProjectileSpec, ShieldContact } from '../combat/projectiles';
 import { enemyProjectile } from '../boss/enemy-projectile';
 import type { Box } from '../player/collision';
 import type { TileMap } from '../tilemap';
@@ -11,6 +12,9 @@ export interface EnemyContext {
   playerY: number;
   pool: ProjectilePool;
   map: TileMap;
+  mirror?: ExtraSolid;
+  /** QB-23 xét hộp hiện tại, kể cả khi địch vừa di chuyển trong bước. */
+  attackAllowed?: (box: Box) => boolean;
 }
 
 export type EnemyHitResult = 'hit' | 'killed' | 'blocked' | 'shieldHit' | 'shieldBroken';
@@ -35,6 +39,8 @@ export abstract class Enemy {
   flash = 0;
   /** Đang báo trước đòn (telegraph): scene vẽ nhấp nháy/phình/co theo loại. */
   telegraphing = false;
+  aimLines: readonly FlightLine[] = [];
+  landingMarks: readonly FlightPoint[] = [];
   /**
    * Số nhịp của đòn đang báo trước (viên, loạt, hạt, cú lao); > 1 thì scene vẽ một chấm mỗi nhịp
    * (bản Thử thách, GDD 11 mục 2.6).
@@ -42,6 +48,8 @@ export abstract class Enemy {
   beats = 1;
   /** Vị trí góc trên trái lúc xuất hiện. */
   protected readonly home: { x: number; y: number };
+  private disabledTime = 0;
+  private frozenTime = 0;
 
   constructor(
     readonly id: number,
@@ -77,6 +85,26 @@ export abstract class Enemy {
     return this.harmless ? 0 : this.data.contactDamage;
   }
 
+  get disabledSec(): number {
+    return this.disabledTime;
+  }
+
+  get frozen(): boolean {
+    return this.frozenTime > 0;
+  }
+
+  protected get disableImmune(): boolean {
+    return false;
+  }
+
+  /** QB-19: hai nguồn vô hiệu dùng chung đồng hồ; nguồn ngắn hơn không kéo dài hiệu lực. */
+  disable(sec: number, effect: 'stun' | 'freeze' = 'stun'): boolean {
+    if (this.disableImmune || !this.alive || !Number.isFinite(sec) || sec <= 0) return false;
+    this.disabledTime = Math.max(this.disabledTime, sec);
+    if (effect === 'freeze') this.frozenTime = Math.max(this.frozenTime, sec);
+    return true;
+  }
+
   /** Về trạng thái ban đầu (người chơi hồi sinh ở checkpoint). */
   reset(): void {
     this.box.x = this.home.x;
@@ -84,13 +112,17 @@ export abstract class Enemy {
     this.hp = this.maxHp;
     this.flash = 0;
     this.telegraphing = false;
+    this.aimLines = [];
+    this.landingMarks = [];
     this.beats = 1;
     this.facing = -1;
+    this.disabledTime = 0;
+    this.frozenTime = 0;
     this.resetBehavior();
   }
 
   /** Đạn hoặc roi của người chơi trúng. Lớp có khiên ghi đè `shieldCheck`. */
-  takeHit(p: Projectile, amount: number): EnemyHitResult {
+  takeHit(p: ShieldContact, amount: number): EnemyHitResult {
     const shield = this.shieldCheck(p);
     if (shield) return shield;
     this.hp = Math.max(0, this.hp - amount);
@@ -110,15 +142,37 @@ export abstract class Enemy {
     return this.hp <= 0 ? 'killed' : 'hit';
   }
 
-  step(ctx: EnemyContext, dt: number): void {
-    this.flash = Math.max(0, this.flash - dt);
-    if (this.alive) this.behave(ctx, dt);
+  step(ctx: EnemyContext, dt: number, active = true): void {
+    this.flash = active ? Math.max(0, this.flash - dt) : 0;
+    const disabled = this.disabledTime > 0;
+    this.disabledTime = this.disabledTime > dt + 1e-9 ? this.disabledTime - dt : 0;
+    this.frozenTime = this.frozenTime > dt + 1e-9 ? this.frozenTime - dt : 0;
+    if (!this.alive) return;
+    if (!active) {
+      this.cancelAttack(dt);
+      return;
+    }
+    if (disabled) this.canAttack(ctx, dt);
+    else this.behave(ctx, dt);
+  }
+
+  /** Khi rời vùng hợp lệ, phần đòn chưa diễn ra phải báo lại từ đầu. */
+  protected canAttack(ctx: EnemyContext, dt: number): boolean {
+    if (ctx.attackAllowed?.(this.box) !== false) return true;
+    this.cancelAttack(dt);
+    return false;
+  }
+
+  protected cancelAttack(_dt: number): void {
+    this.telegraphing = false;
+    if (this.aimLines.length) this.aimLines = [];
+    if (this.landingMarks.length) this.landingMarks = [];
   }
 
   protected abstract behave(ctx: EnemyContext, dt: number): void;
   protected abstract resetBehavior(): void;
 
-  protected shieldCheck(_p: Projectile): EnemyHitResult | undefined {
+  protected shieldCheck(_p: ShieldContact): EnemyHitResult | undefined {
     return undefined;
   }
 
@@ -136,21 +190,40 @@ export abstract class Enemy {
     gravity = 0,
   ): void {
     const t = this.tileSize;
-    const { w, h } = data.sizePx;
     const speed = data.speedTilesPerSec * t;
     const startX = kind === 'bomb' ? this.centerX : this.centerX + dirX * (this.box.w / 2);
     const startY = kind === 'bomb' ? this.box.y + this.box.h : this.centerY;
+    ctx.pool.spawn(
+      this.makeShot(data, { x: startX, y: startY }, dirX * speed, dirY * speed, kind, gravity),
+    );
+  }
+
+  protected makeShot(
+    data: EnemyProjectileData,
+    from: FlightPoint,
+    vx: number,
+    vy: number,
+    kind: 'enemyShot' | 'bomb',
+    gravity = 0,
+  ): ProjectileSpec {
+    const { w, h } = data.sizePx;
     const spec = enemyProjectile(
-      t,
+      this.tileSize,
       kind,
-      startX - w / 2,
-      startY - h / 2,
+      from.x - w / 2,
+      from.y - h / 2,
       data.sizePx,
-      dirX * speed,
-      dirY * speed,
+      vx,
+      vy,
       this.harmless ? 0 : data.damage,
     );
-    ctx.pool.spawn(gravity > 0 ? { ...spec, gravity } : spec);
+    return {
+      ...spec,
+      source: `enemy:${this.data.id}`,
+      fromRegularEnemy: this.data.behavior !== 'golem',
+      ...(data.bounces === undefined ? {} : { bouncesLeft: data.bounces }),
+      ...(gravity > 0 ? { gravity } : {}),
+    };
   }
 
   /**

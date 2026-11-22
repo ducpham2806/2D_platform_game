@@ -1,4 +1,5 @@
 import { Tile, TileMap } from '../tilemap';
+import type { LaserDirection, MirrorAngle } from './laser-path';
 
 /**
  * Bố cục một màn (logic thuần): lưới ô và mọi đối tượng đặt sẵn, tính theo ô. Cùng một cấu trúc
@@ -37,6 +38,20 @@ export interface VineSpawn extends Cell {
   phase: number;
 }
 
+/** Mép trái và mặt trên của bệ, tọa độ ô từ 0. */
+export interface PlatformSpawn extends Cell {
+  widthTiles: number;
+}
+
+export interface CrumbleSpawn extends PlatformSpawn {
+  mode: 'break' | 'sink';
+}
+
+export interface CloudDriftSpawn extends PlatformSpawn {
+  /** Mép trái và mặt trên ở đầu còn lại của đường trôi. */
+  end: Cell;
+}
+
 /**
  * Phòng khóa: hai cột mép trái/phải (`first`, `last`) chứa cửa, hàng `top`..`bottom`. Vào hẳn bên
  * trong thì cửa đóng tới khi hạ hết kẻ địch xuất phát trong phòng.
@@ -47,6 +62,8 @@ export interface RoomSpawn {
   top: number;
   bottom: number;
   doors: Cell[];
+  /** Mini-boss chạy bằng Boss (Q1), lấy cấu hình từ bosses.json. */
+  miniBoss?: Cell & { id: string };
 }
 
 /** Vật phẩm bí mật nhặt một lần (Memory Log, Nano Cell, Hạt Giống, Két giáp...). */
@@ -57,13 +74,41 @@ export interface SecretSpawn extends Cell {
 }
 
 /** Vật chắn (rễ khô...) đặc như tường, chỉ vỡ khi trúng đúng vũ khí. Tính theo ô, gồm cả hai đầu. */
-export interface BarrierSpawn {
+export interface CellSpan {
   first: number;
   last: number;
   top: number;
   bottom: number;
+}
+
+export interface BarrierSpawn extends CellSpan {
   /** Tên vũ khí trong weapons.json (ví dụ "Prism Beam"). */
   requiresWeapon: string;
+}
+
+export interface LaserSpawn extends Cell {
+  direction: LaserDirection;
+  mode: 'always' | 'pulse';
+  phase: number;
+}
+
+export interface MirrorSpawn extends Cell {
+  angle: MirrorAngle;
+}
+
+export interface SensorSpawn extends Cell {
+  doorId: number;
+}
+
+export interface OpticalDoorSpawn extends CellSpan {
+  id: number;
+}
+
+export interface OpticsLayout {
+  lasers: LaserSpawn[];
+  mirrors: MirrorSpawn[];
+  sensors: SensorSpawn[];
+  doors: OpticalDoorSpawn[];
 }
 
 export interface SectionSpawn {
@@ -87,6 +132,11 @@ export interface StageLayout {
   rooms: RoomSpawn[];
   secrets: SecretSpawn[];
   barriers: BarrierSpawn[];
+  /** Vùng dòng làm mát; các ô trống cho tới khi đóng băng. */
+  coolant?: CellSpan[];
+  crumbles?: CrumbleSpawn[];
+  cloudDrifts?: CloudDriftSpawn[];
+  optics?: OpticsLayout;
   sections: SectionSpawn[];
 }
 

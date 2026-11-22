@@ -1,4 +1,5 @@
 /** Kiểm tra 03-Data/ui.json (thông số giao diện M10: hộp hội thoại, màn Kết quả). Logic thuần. */
+import type { ReadingRules } from '../logic/hud/text-boxes';
 import { ConfigError, num, obj, str } from './json-check';
 
 export const LOCALES = ['vi', 'en'] as const;
@@ -23,9 +24,8 @@ export interface FeedbackTier {
 /** Gợi ý của NOVA khi chết liên tiếp (01-GDD/11-Do-kho.md mục 2.5). */
 export interface DifficultyHintUi {
   deaths: number;
-  /** Hiện ít nhất chừng này giây; câu dài thì max(showSec, số ký tự / charsPerSecRead). */
+  /** Hiện ít nhất chừng này giây; câu dài thì max(showSec, số ký tự / reading.charsPerSec). */
   showSec: number;
-  charsPerSecRead: number;
   /** Câu theo id độ khó đang chơi. */
   lines: Readonly<Record<string, string>>;
   /** Câu thêm về vũ khí khắc chế; `{weapon}` là tên vũ khí. */
@@ -35,6 +35,8 @@ export interface DifficultyHintUi {
 export interface UiData {
   dialogue: DialogueUi;
   difficultyHint: DifficultyHintUi;
+  /** Tốc độ đọc chung của hộp chữ (QB-70…72). */
+  reading: ReadingRules;
   result: { delaySec: number };
   /** Ba bậc phản hồi (GDD 10 mục 6). */
   feedback: {
@@ -51,6 +53,19 @@ function tier(value: unknown, path: string): FeedbackTier {
     shakeMs: num(t.shakeMs, `${path}.shakeMs`, { min: 0 }),
     shakeIntensity: num(t.shakeIntensity, `${path}.shakeIntensity`, { min: 0 }),
   };
+}
+
+function parseReading(value: unknown): ReadingRules {
+  const r = obj(value, 'ui.reading');
+  const charsPerSec = num(r.charsPerSec, 'ui.reading.charsPerSec', { min: 5 });
+  const minSec = num(r.minSec, 'ui.reading.minSec', { min: 1 });
+  const maxWaitSec = num(r.maxWaitSec, 'ui.reading.maxWaitSec', { min: 0 });
+  // Chờ ngắn hơn thời gian hiện tối thiểu thì gần như mọi hộp bị che đều mất (QB-71).
+  if (maxWaitSec < minSec)
+    throw new ConfigError(
+      `ui.reading.maxWaitSec: phải ≥ minSec (${minSec}), đang là ${maxWaitSec}`,
+    );
+  return { charsPerSec, minSec, maxWaitSec };
 }
 
 export function parseUi(value: unknown): UiData {
@@ -93,6 +108,12 @@ export function parseUi(value: unknown): UiData {
     if (lines[id].length > maxChars.vi)
       throw new ConfigError(`ui.difficultyHint.lines.${id}: dài quá ${maxChars.vi} ký tự`);
   }
+  const reading = parseReading(u.reading);
+  const showSec = num(h.showSec, 'ui.difficultyHint.showSec', { min: 1 });
+  if (showSec < reading.minSec)
+    throw new ConfigError(
+      `ui.difficultyHint.showSec: phải ≥ reading.minSec (${reading.minSec}), đang là ${showSec}`,
+    );
   const weapon = str(h.weapon, 'ui.difficultyHint.weapon');
   if (!weapon.includes('{weapon}'))
     throw new ConfigError('ui.difficultyHint.weapon: cần chỗ {weapon}');
@@ -100,11 +121,11 @@ export function parseUi(value: unknown): UiData {
     feedback,
     difficultyHint: {
       deaths,
-      showSec: num(h.showSec, 'ui.difficultyHint.showSec', { min: 1 }),
-      charsPerSecRead: num(h.charsPerSecRead, 'ui.difficultyHint.charsPerSecRead', { min: 5 }),
+      showSec,
       lines,
       weapon,
     },
+    reading,
     dialogue: { charsPerSec, inputGraceSec, maxChars, speakers },
     result: { delaySec: num(r.delaySec, 'ui.result.delaySec', { min: 0 }) },
   };

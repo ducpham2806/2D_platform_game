@@ -8,6 +8,7 @@ import { shopModel } from '../shop/shop-panel';
 import { workshopUnlocked } from '../workshop/workshop-panel';
 import { summarize } from '../logic/save/save-data';
 import { MUTED_STYLE, TEXT_STYLE, textButton } from './ui';
+import { telemetryMenuReady } from './telemetry/telemetry-service';
 
 /** Màn hình chính tạm thời (wireframe Main). Không đăng nhập, không quảng cáo. */
 export class MenuScene extends Phaser.Scene {
@@ -17,6 +18,7 @@ export class MenuScene extends Phaser.Scene {
 
   create(): void {
     getBus(this).emit('scene:changed', { key: SceneKey.Menu });
+    telemetryMenuReady(this);
     const cx = LOGIC_WIDTH / 2;
     this.add
       .text(cx, 28, 'CYBER VANGUARD', { ...TEXT_STYLE, fontSize: '16px', color: '#4fd1ff' })
@@ -64,11 +66,32 @@ export class MenuScene extends Phaser.Scene {
     const golem = (): void => {
       this.scene.start(SceneKey.Prep, { stage: 'golem' });
     };
-    textButton(this, cx, 58, 'Vào màn thử', () => this.scene.start(SceneKey.Stage));
-    textButton(this, cx, 73, 'Phòng thử kẻ địch', enemies);
-    textButton(this, cx, 88, 'Phòng thử màn chơi', mechanics);
-    textButton(this, cx, 103, 'Boss Thorna', thorna);
-    textButton(this, cx, 118, 'Mini-boss Bramble Golem', golem);
+    const optics = (): void => {
+      this.scene.start(SceneKey.Stage, { stage: 'optics' });
+    };
+    const frost = (): void => {
+      this.scene.start(SceneKey.Stage, { stage: 'frost' });
+    };
+    const gale = (): void => {
+      this.scene.start(SceneKey.Stage, { stage: 'gale' });
+    };
+    const platforms = (): void => {
+      this.scene.start(SceneKey.Stage, { stage: 'platforms' });
+    };
+    const tryEnemies = (difficulty: 'normal' | 'challenge'): void => {
+      this.scene.start(SceneKey.Stage, { stage: 'prismFrostEnemies', difficulty });
+    };
+    textButton(this, cx - 65, 58, 'Vào màn thử', () => this.scene.start(SceneKey.Stage));
+    textButton(this, cx + 65, 58, 'Thử thách S2–3', () => tryEnemies('challenge'));
+    textButton(this, cx - 65, 73, 'Phòng thử kẻ địch', enemies);
+    textButton(this, cx + 65, 73, 'Phòng thử Gale Cutter', gale);
+    textButton(this, cx - 65, 88, 'Phòng thử màn chơi', mechanics);
+    textButton(this, cx + 65, 88, 'Địch S2–3', () => tryEnemies('normal'));
+    textButton(this, 53, 103, 'Boss Thorna', thorna);
+    textButton(this, cx, 103, 'Phòng thử băng', frost);
+    textButton(this, 267, 103, 'Bục băng và mây', platforms);
+    textButton(this, cx - 65, 118, 'Mini-boss Bramble Golem', golem);
+    textButton(this, cx + 65, 118, 'Phòng thử laser', optics);
     textButton(this, cx - 52, 133, 'Hub Arkon', () => this.scene.start(SceneKey.Hub));
     // Xưởng mở sau boss chiến dịch đầu tiên (đặc tả Hub mục 5).
     const workshop = (): void => {
@@ -89,17 +112,11 @@ export class MenuScene extends Phaser.Scene {
         .setOrigin(0.5);
     textButton(this, cx - 52, 163, 'Kết quả chơi thử', () => this.scene.start(SceneKey.Playtest));
     textButton(this, cx + 52, 163, 'Dữ liệu lưu', () => this.scene.start(SceneKey.Save));
-    this.add
-      .text(
-        cx,
-        182,
-        'Phím: Enter màn thử · K · M · B · G · H · X Xưởng · Q Quầy Mira · C · R · S',
-        {
-          ...MUTED_STYLE,
-          fontSize: '8px',
-        },
-      )
-      .setOrigin(0.5);
+    const tryMiniBoss = (difficulty: 'normal' | 'challenge'): void => {
+      this.scene.start(SceneKey.Stage, { stage: 'miniBossRoom', difficulty });
+    };
+    textButton(this, cx - 65, 178, 'Mini-boss S2–4', () => tryMiniBoss('normal'));
+    textButton(this, cx + 65, 178, 'Mini-boss Thử thách', () => tryMiniBoss('challenge'));
 
     const keyboard = this.input.keyboard;
     keyboard?.once('keydown-ENTER', () => this.scene.start(SceneKey.Stage));
@@ -111,6 +128,10 @@ export class MenuScene extends Phaser.Scene {
     keyboard?.once('keydown-M', mechanics);
     keyboard?.once('keydown-B', thorna);
     keyboard?.once('keydown-G', golem);
+    keyboard?.once('keydown-O', optics);
+    keyboard?.once('keydown-I', frost);
+    keyboard?.once('keydown-V', gale);
+    keyboard?.once('keydown-P', platforms);
     keyboard?.once('keydown-X', workshop);
     keyboard?.once('keydown-Q', openShop);
   }

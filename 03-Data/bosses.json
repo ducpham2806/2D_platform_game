@@ -1,5 +1,11 @@
 {
   "_note": "Boss (GDD 9: mẫu 3 pha, telegraph ≥ 0,5 s, không đòn nào chết ngay ở Thường). Máu tính bằng phát Arc Cannon gốc; sát thương tính bằng máu người chơi (100 ở cấp 1). Mọi số là [PLACEHOLDER]. Thorna (đặc tả Prologue & Stage 1 mục 5) dùng bốn đòn riêng: thorns (Gai Quạt), lash (Dây Quất), roots (Rễ Trồi), bloom (Hoa Nở).",
+  "rules": {
+    "_note": "Luật chung mọi boss (01-GDD/17-Quy-tac-bien.md QB-14, QB-31; EP-15 ST-15-14). weakStunCooldownSec: hết choáng do trúng điểm yếu thì chừng này giây không choáng lại (vũ khí bắn nhanh không khóa choáng boss); trúng trong lúc choáng không làm mới choáng. phaseShiftSec: một đòn làm máu nhảy qua từ hai ngưỡng pha thì máu kẹp ở ngưỡng kế tiếp, boss bất tử và đứng yên chừng này giây, bỏ đòn đang dở, xóa đạn boss. maxAttackDamage: đòn mạnh nhất của boss màn n (kể cả va chạm, bản Thử thách) ≤ base + perStage × (n − 1) = 18 / 20 / 22 / 24 (01-GDD/16-Dac-ta-Stage2-4-nhap.md mục 2.2, Q5).",
+    "weakStunCooldownSec": 1.5,
+    "phaseShiftSec": 0.6,
+    "maxAttackDamage": { "base": 18, "perStage": 2 }
+  },
   "gray": {
     "name": "Boss xám (thử nghiệm)",
     "note": "Boss khung cho mốc Prototype, để thử cảm giác bắn - né - đọc telegraph. Thắng lần đầu nhận Vine Lash; đấu lại thì Vine Lash là điểm yếu (khoảnh khắc 'à, thì ra thế' của GDD 1.2). Thorna thật làm ở M6. Giữ 100 máu (Thorna nay 250) để so sánh các đợt chơi thử cổng Prototype; người chơi né được mất khoảng 25-40 giây (rà soát 14/11/2026).",
@@ -245,6 +251,173 @@
           ]
         }
       ]
+    }
+  },
+  "prism_sentinel": {
+    "name": "Prism Sentinel",
+    "hp": 70,
+    "sizePx": {
+      "w": 32,
+      "h": 26
+    },
+    "contactDamage": 12,
+    "rewardExp": 110,
+    "rewardCoreBit": 40,
+    "idleSec": 0.65,
+    "minTelegraphSec": 0.5,
+    "roomFlight": {
+      "minHeightTiles": 3,
+      "maxHeightTiles": 3,
+      "liftTilesPerSec": 7,
+      "bobPeriodSec": 3.0
+    },
+    "walk": {
+      "speedTilesPerSec": 0.8,
+      "keepDistanceTiles": 5
+    },
+    "phases": [
+      {
+        "untilHpPct": 50,
+        "speedMul": 1,
+        "attacks": [
+          "thorns",
+          "charge"
+        ]
+      },
+      {
+        "untilHpPct": 0,
+        "speedMul": 1,
+        "attacks": [
+          "beam",
+          "thorns"
+        ]
+      }
+    ],
+    "attacks": {
+      "thorns": {
+        "telegraphSec": 0.7,
+        "count": 3,
+        "spreadDeg": 30,
+        "speedTilesPerSec": 7,
+        "damage": 10,
+        "recoverSec": 0.45,
+        "sizePx": {
+          "w": 5,
+          "h": 5
+        }
+      },
+      "charge": {
+        "telegraphSec": 0.7,
+        "speedTilesPerSec": 9,
+        "retreatTiles": 0.5,
+        "damage": 15,
+        "recoverSec": 0.55
+      },
+      "beam": {
+        "telegraphSec": 0.8,
+        "activeSec": 0.5,
+        "widthPx": 4,
+        "maxBounces": 1,
+        "damage": 15,
+        "selfHitDamage": 10,
+        "selfHitStunSec": 1.5,
+        "recoverSec": 0.5
+      }
+    },
+    "challenge": {
+      "attacks": {
+        "beam": {
+          "pulseGapSec": 0.4
+        }
+      }
+    }
+  },
+  "gale_roc": {
+    "name": "Gale Roc",
+    "hp": 90,
+    "sizePx": {
+      "w": 32,
+      "h": 26
+    },
+    "contactDamage": 12,
+    "rewardExp": 270,
+    "rewardCoreBit": 60,
+    "idleSec": 0.65,
+    "minTelegraphSec": 0.5,
+    "roomFlight": {
+      "minHeightTiles": 4,
+      "maxHeightTiles": 6,
+      "liftTilesPerSec": 7,
+      "bobPeriodSec": 3.0
+    },
+    "phases": [
+      {
+        "untilHpPct": 50,
+        "speedMul": 1,
+        "attacks": [
+          "dive",
+          "gust"
+        ]
+      },
+      {
+        "untilHpPct": 0,
+        "speedMul": 1,
+        "attacks": [
+          "rain",
+          "dive"
+        ]
+      }
+    ],
+    "attacks": {
+      "dive": {
+        "telegraphSec": 0.7,
+        "followUpTelegraphSec": 0.5,
+        "speedTilesPerSec": 11,
+        "damage": 15,
+        "recoverSec": 1.0
+      },
+      "gust": {
+        "telegraphSec": 0.7,
+        "count": 3,
+        "spreadDeg": 30,
+        "speedTilesPerSec": 7,
+        "damage": 10,
+        "recoverSec": 0.45,
+        "sizePx": {
+          "w": 5,
+          "h": 5
+        },
+        "activeSec": 1.2,
+        "pushTilesPerSec": 4
+      },
+      "rain": {
+        "telegraphSec": 0.8,
+        "count": 8,
+        "activeSec": 1.1,
+        "fallSpeedTilesPerSec": 10,
+        "damage": 12,
+        "safeGaps": 2,
+        "gapWidthTiles": 2,
+        "stunAfterSec": 1.0,
+        "sizePx": {
+          "w": 5,
+          "h": 9
+        }
+      }
+    },
+    "challenge": {
+      "attacks": {
+        "dive": {
+          "shockwave": {
+            "speedTilesPerSec": 6,
+            "damage": 10,
+            "sizePx": {
+              "w": 9,
+              "h": 7
+            }
+          }
+        }
+      }
     }
   }
 }

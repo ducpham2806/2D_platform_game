@@ -121,7 +121,12 @@ describe('thẻ Quầy Mira hiện tác dụng bằng số thật (duyệt EP-09
       effectNow: 'không hút',
       effectNext: 'hút trong 1 ô',
     });
-    expect(card(m, 'nano_cell_cap')).toMatchObject({ comingSoon: true, effectNext: undefined });
+    expect(card(m, 'nano_cell_cap')).toMatchObject({
+      comingSoon: false,
+      state: 'locked',
+      effectNow: 'hồi 40% máu tối đa',
+      effectNext: 'hồi 50% máu tối đa',
+    });
     // Hoàn theo số đã trả.
     const paid = buildShop(config, {
       levels: { arc_core: 1 },

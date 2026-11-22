@@ -203,6 +203,9 @@ describe('điểm yếu và hạ boss', () => {
   it('hết máu: báo hạ boss đúng một lần rồi đứng yên', () => {
     const { boss, pool } = makeBoss();
     boss.activate();
+    // Vào pha cuối trước (một đòn từ pha đầu xuống 0 bị kẹp ở ngưỡng, QB-31).
+    boss.hp = data.hp * 0.1;
+    boss.step(PLAYER, pool, DT);
     boss.takeHit({ amount: data.hp, weak: false, stunSec: 0 });
     expect(boss.step(PLAYER, pool, DT).defeated).toBe(true);
     for (let i = 0; i < 30; i += 1) expect(boss.step(PLAYER, pool, DT).defeated).toBe(false);

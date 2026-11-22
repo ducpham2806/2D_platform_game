@@ -33,7 +33,7 @@ Quy ước "Tài liệu":
 | TUT | Hướng dẫn Prologue, Stage 1, Hub | P0 | `07-…` | Đủ (lời chuẩn ở `tutorial.json`) | Khung | EP-14, EP-16 |
 | M11 | Lưu cục bộ, mã sao lưu | P0 | Đặc tả Hub mục 8, `17-…` mục 11 | Đủ | Xong (bản lưu 4) | EP-14 (báo lỗi lưu), EP-18 (bản lưu kế tiếp) |
 | M12 | Âm thanh MVP | P1 | `12-Am-thanh.md` | Draft | Chưa | EP-12 |
-| M16 | Đo lường MVP | P1 | `13-Do-luong-MVP.md`, `adr/ADR-002-do-luong-mvp.md` | Draft; kênh gửi chờ người dùng | Nhật ký chơi thử cục bộ | EP-13 |
+| M16 | Đo lường MVP | P1 | `13-Do-luong-MVP.md`, `adr/ADR-002-do-luong-mvp.md` | Bản 1.1: phần lõi duyệt kèm sửa (Technical Director 14/11); phần còn lại Draft; kênh gửi chờ người dùng | Lõi `logic/telemetry/` (ST-13-01); nhật ký chơi thử cục bộ | EP-13 |
 | QA | Cổng Prototype, Vertical slice, MVP | P0 | `05-Cong-Prototype.md`, `08-Cong-MVP.md`, `04-Test-va-Launch.md` | Đủ | Đo tự động cổng Prototype xong | EP-11, EP-19, EP-20 |
 | M13–M17 | Live-ops, kiếm tiền, endgame, đóng gói | P3 (sau cổng MVP) | `05-`, `06-`, `04-…` | Đủ cho mức hiện tại (rà soát 14/11) | Chưa | Giai đoạn 2 |
 
@@ -79,7 +79,7 @@ Tên dùng chung giữa tài liệu, dữ liệu và mã. Thêm tên mới ở �
 | Booster | `shield_cell`, `repair_kit`, `overcharge`, `magnet_pulse`, `second_chance`, `boss_scanner` | `shop.json` |
 | Độ khó | `story`, `normal`, `challenge` (Cốt truyện, Thường, Thử thách) | `difficulties.json` |
 | Nhiệm vụ phụ | `sq_*` (một nhiệm vụ mỗi màn Stage 1–4); vật `seed_1…5`, `mirror_1…6`; class Tiled `questItem`, `questTarget`, `questZone`; bản lưu `sideQuests` | `15-…` mục 3; `quests.json` chưa có |
-| Quy tắc biên | `QB-01` … `QB-146` (93 luật, số có khoảng trống theo nhóm) | `17-Quy-tac-bien.md` |
+| Quy tắc biên | `QB-01` … `QB-146` (101 luật, số có khoảng trống theo nhóm) | `17-Quy-tac-bien.md` |
 | Âm thanh (Draft) | 5 bus `master`, `music`, `sfx`, `alert`, `ui`; id âm dạng `nhóm.tên` (`kai.dash.air`, `thorna.stalk.tele`, `ui.confirm`); cài đặt ở `cv.audio` | `12-Am-thanh.md`; `audio.json` chưa có |
 | Cài đặt (Draft) | `cv.settings` (bản 1), `cv.controls` (bản 2), `cv.audio`; id tùy chọn theo `14-Cai-dat-Tiep-can.md` mục 3 | `ui.json → settings` chưa có |
 | Sự kiện đo lường (Draft) | 24 sự kiện dạng `snake_case` (`stage_start`, `stage_end`, `survey_answer`…); lược đồ 2, khóa `cv.telemetry` | `13-Do-luong-MVP.md` mục 3; `telemetry.json` chưa có |

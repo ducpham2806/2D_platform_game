@@ -16,11 +16,16 @@
     "large": { "shakeMs": 150, "shakeIntensity": 0.006 },
     "burstRingSec": 0.2
   },
+  "reading": {
+    "_note": "Tốc độ đọc chung của hộp chữ (01-GDD/17-Quy-tac-bien.md QB-70…72; EP-14 ST-14-08). Hộp tự tắt sau max(minSec, số ký tự / charsPerSec) giây thời gian trận: không đếm khi tạm dừng, mở bảng Kỹ năng, hay khi hộp cao hơn (hội thoại, Kết quả) che. Bị che liền quá maxWaitSec giây thì hủy (QB-71). Tự tiến thoại (01-GDD/14-Cai-dat-Tiep-can.md mục 4.5) dùng cùng charsPerSec và minSec, không dùng maxWaitSec. Khác dialogue.charsPerSec (tốc độ chữ hiện dần).",
+    "charsPerSec": 15,
+    "minSec": 3,
+    "maxWaitSec": 10
+  },
   "difficultyHint": {
-    "note": "Gợi ý của NOVA khi chết liên tiếp ở một đoạn (01-GDD/11-Do-kho.md mục 2.5; thống nhất với kịch bản hướng dẫn D06, S09). deaths: số lần chết liên tiếp kể từ checkpoint gần nhất. lines theo id độ khó đang chơi; `<id>_early` dùng khi Xưởng chưa mở (chưa hạ boss chiến dịch nào), vì câu thường nhắc tới Xưởng. Câu ghép với tên vũ khí dài nhất không được vượt maxChars.vi (kiểm tra lúc nạp). Thời gian hiện = max(showSec, số ký tự / charsPerSecRead). weapon: câu thêm khi ở phòng boss, đã có vũ khí khắc chế mà lúc chết không cầm nó; {weapon} là tên vũ khí.",
+    "note": "Gợi ý của NOVA khi chết liên tiếp ở một đoạn (01-GDD/11-Do-kho.md mục 2.5; thống nhất với kịch bản hướng dẫn D06, S09). deaths: số lần chết liên tiếp kể từ checkpoint gần nhất. lines theo id độ khó đang chơi; `<id>_early` dùng khi Xưởng chưa mở (chưa hạ boss chiến dịch nào), vì câu thường nhắc tới Xưởng. Câu ghép với tên vũ khí dài nhất không được vượt maxChars.vi (kiểm tra lúc nạp). Thời gian hiện = max(showSec, số ký tự / reading.charsPerSec). weapon: câu thêm khi ở phòng boss, đã có vũ khí khắc chế mà lúc chết không cầm nó; {weapon} là tên vũ khí.",
     "deaths": 3,
     "showSec": 6,
-    "charsPerSecRead": 15,
     "lines": {
       "challenge": "Ba lần rồi. Đòn Thử thách khó đọc thật. Chế độ Thường ở màn Chuẩn bị, checkpoint vẫn giữ.",
       "normal": "Ba lần rồi. Không chê đâu: thử chế độ Cốt truyện ở màn Chuẩn bị. Checkpoint vẫn giữ.",
