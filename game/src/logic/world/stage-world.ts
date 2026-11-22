@@ -405,6 +405,7 @@ export class StageWorld {
       },
       {
         centerX: pl.centerX,
+        centerY: pl.box.y + pl.box.h / 2,
         top: pl.box.y,
         facing: pl.facing,
         hurt: pe.hurt,
@@ -447,6 +448,7 @@ export class StageWorld {
             return false;
           }
         : undefined,
+      pl.state !== 'dead' ? pl.box : undefined,
     );
 
     const killed: Enemy[] = [];
@@ -502,6 +504,7 @@ export class StageWorld {
         this.falls += 1;
         this.pitReturn = true;
         this.playerBeams.length = 0;
+        this.pool.removeWhere((p) => p.boomerang !== undefined);
         this.respawnTimer = mech.pit.returnSec;
         return ev;
       }
@@ -515,6 +518,7 @@ export class StageWorld {
       this.deathStreak += 1;
       this.pitReturn = false;
       this.playerBeams.length = 0;
+      this.pool.removeWhere((p) => p.boomerang !== undefined);
       this.respawnTimer = mech.respawnSec;
     }
     return ev;

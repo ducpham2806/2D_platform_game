@@ -1,4 +1,5 @@
 import type Phaser from 'phaser';
+import { GALE_CUTTER } from '../../logic/combat/loadout';
 import { laserBox } from '../../logic/stage/laser-path';
 import type { StageWorld } from '../../logic/world/stage-world';
 import { VINE_PLATFORM_THICKNESS } from '../../logic/world/stage-mechanics';
@@ -73,8 +74,9 @@ export function drawMechanics(
   for (const b of world.barriers) {
     if (b.broken) continue;
     const box = b.box();
-    g.fillStyle(0x7a5a3a, 1).fillRect(box.x, box.y, box.w, box.h);
-    g.lineStyle(1, 0xc9a227, 1);
+    const mist = b.spawn.requiresWeapon === GALE_CUTTER;
+    g.fillStyle(mist ? 0x8fb6d5 : 0x7a5a3a, mist ? 0.8 : 1).fillRect(box.x, box.y, box.w, box.h);
+    g.lineStyle(1, mist ? 0xdbf0ff : 0xc9a227, 1);
     for (let y = box.y + 4; y < box.y + box.h; y += 8)
       g.lineBetween(box.x + 2, y, box.x + box.w - 2, y + 3);
   }

@@ -12,6 +12,7 @@ const PROJECTILE_COLORS: Readonly<Record<Projectile['kind'], number>> = {
   charged: 0xffffff,
   sweep: 0x7bd389,
   shard: 0x9beaff,
+  boomerang: 0x89ffcf,
   enemyShot: 0xff8787,
   shockwave: 0xffa94d,
   drop: 0xff6b6b,
@@ -93,6 +94,11 @@ export function drawDynamic(
       for (const b of beam.boxes) g.fillRect(b.x, b.y, b.w, b.h);
   }
   for (const p of world.pool.all) {
+    if (!p.alive) continue;
+    if (p.boomerang) {
+      drawBoomerang(g, p, timeMs);
+      continue;
+    }
     g.fillStyle(PROJECTILE_COLORS[p.kind], p.kind === 'sweep' ? 0.6 : 1).fillRect(
       p.x,
       p.y,
@@ -102,6 +108,19 @@ export function drawDynamic(
     if (p.kind === 'charged')
       g.lineStyle(1, 0x4fd1ff, 1).strokeRect(p.x - 1, p.y - 1, p.w + 2, p.h + 2);
   }
+}
+
+function drawBoomerang(g: Phaser.GameObjects.Graphics, p: Projectile, timeMs: number): void {
+  const x = p.x + p.w / 2;
+  const y = p.y + p.h / 2;
+  const angle = timeMs / 45;
+  const dx = Math.cos(angle);
+  const dy = Math.sin(angle);
+  const radius = Math.min(p.w, p.h) / 2;
+  const back = p.boomerang?.phase === 'return';
+  g.lineStyle(2, back ? 0xe6fff5 : PROJECTILE_COLORS.boomerang, 1);
+  g.lineBetween(x - dx * radius, y - dy * radius, x + dx * 2, y + dy * 2);
+  g.lineBetween(x + dx * 2, y + dy * 2, x - dy * radius, y + dx * radius);
 }
 
 function drawBoss(

@@ -1,0 +1,39 @@
+{
+  "name": "Phòng thử Gale Cutter",
+  "rows": [
+    "####################",
+    "#.............#....#",
+    "#.............#....#",
+    "#.............#....#",
+    "#.............#....#",
+    "#.............#....#",
+    "#.............#....#",
+    "#..................#",
+    "#..................#",
+    "#.P........U.......#",
+    "####################",
+    "####################"
+  ],
+  "legend": {
+    "P": { "class": "spawn" },
+    "U": {
+      "class": "enemy",
+      "props": { "enemy": "thap_phao_tap_su", "harmless": true }
+    }
+  },
+  "objects": [
+    {
+      "class": "barrier",
+      "name": "Sương lạnh",
+      "rect": [14, 7, 14, 9],
+      "props": { "requiresWeapon": "Gale Cutter" }
+    },
+    {
+      "class": "secret",
+      "name": "Két Tay Mk I",
+      "col": 16,
+      "row": 9,
+      "props": { "item": "armor_cache_arm_mk1" }
+    }
+  ]
+}

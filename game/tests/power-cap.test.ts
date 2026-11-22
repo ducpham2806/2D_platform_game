@@ -96,7 +96,14 @@ function dps(
 ): number {
   const loadout = new WeaponLoadout(weapons, T);
   const pool = new ProjectilePool();
-  const ctx = { centerX: 2 * T, top: T, facing: 1 as const, hurt: false, aimTargets: undefined };
+  const ctx = {
+    centerX: 2 * T,
+    centerY: T + 12,
+    top: T,
+    facing: 1 as const,
+    hurt: false,
+    aimTargets: undefined,
+  };
   const targetX = ctx.centerX + 5 * T;
   let dmg = 0;
   let charged = 0;

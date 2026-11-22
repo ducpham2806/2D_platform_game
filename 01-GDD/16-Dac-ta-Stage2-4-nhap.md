@@ -145,7 +145,7 @@ Bậc base của kẻ địch mới lấy theo kẻ địch Stage 1 cùng vai tr
 
 ### 2.3 Vũ khí Warden: ngân sách năng lượng
 
-Vũ khí Warden dùng cùng **ngân sách sát thương mỗi thanh năng lượng**. `weapons.json` đã có cấu hình cho Vine Lash, Prism Beam, Frost Shard và Gale Cutter. Bộ kiểm cân bằng tính hai lượt trúng cho Gale Cutter từ ST-15-01c. Loadout sẽ cấp vũ khí khi ST-15-05 có hành vi ném và đón lưỡi.
+Vũ khí Warden dùng cùng **ngân sách sát thương mỗi thanh năng lượng**. `weapons.json` đã có cấu hình cho Vine Lash, Prism Beam, Frost Shard và Gale Cutter. Bộ kiểm cân bằng tính hai lượt trúng cho Gale Cutter từ ST-15-01c. Loadout cấp vũ khí từ ST-15-05.
 
 ```text
 ngân sách = floor(energyMax / energyCostOf28) × damageMul × hitsPerUse        mục tiêu 14 ± 15%
@@ -676,12 +676,14 @@ Pha 2 Thử thách: `shot, gust, twister, charge`. Pha 3 Thử thách: `gust, tw
 
 | Mục | Đề xuất `[PLACEHOLDER]` |
 | --- | --- |
-| `behavior.type` | `boomerang` (mới): lưỡi gió bay ra rồi quay về Kai |
+| `behavior.type` | `boomerang`: lưỡi gió bay ngang từ tâm Kai, quay đầu khi tới tầm hoặc chạm vật chắn. Chiều về hướng theo Kai và xuyên địa hình để Kai đón được lưỡi từ vị trí mới |
 | Thông số | `outTiles = 6`, `speedTilesPerSec = 11`, `sizePx = 12 × 12`, `damageMul = 1` mỗi lượt (đi và về, mỗi mục tiêu tối đa 1 lần mỗi lượt), `maxOnScreen = 1` |
 | Hủy đạn | Lưỡi chạm đạn của **kẻ địch thường** thuộc `cancelKinds` (`enemyShot`, `bomb`) thì hủy, tối đa `maxCancelsPerThrow = 2` mỗi lần ném. Không hủy đạn của mini-boss và boss, tia, sóng, đòn đỉnh (Q4) |
 | Năng lượng | `energyCostOf28 = 4` |
 | Điểm yếu | Terra (Stage 5, Alpha): "lưỡi gió mài mòn giáp đá" |
 | Khám phá | Thổi tan sương lạnh ở Két giáp Stage 3 (`Barrier`, `requiresWeapon: "Gale Cutter"`) |
+
+Khiên mặt trước chặn sát thương và lưỡi tiếp tục bay. Boss đang bất tử đổi pha làm tan lưỡi theo QB-31. Phòng thử Gale Cutter có sương lạnh và Két Tay Mk I. Bản đồ chiến dịch đặt Két ở kho hạt giống trong ST-17-03.
 
 ### 5.8 Két giáp, bí mật, nhiệm vụ phụ
 
@@ -806,7 +808,7 @@ Quy ước như EP-08 đến EP-10: Story ≤ 1–2 ngày, mỗi Story nhúng s�
 | ST-15-02 | `LaserPath`, `LaserEmitter`, gương 2 góc, cảm biến mở cửa, dữ liệu Tiled và phòng thử laser. Đường tia dùng chung cho báo trước và sát thương. Góc ban đầu và vị trí gương khai báo theo bản đồ, chốt bố cục Stage 2 sau G1 (ST-17-01) | 01a | 2 ngày |
 | ST-15-03 | Prism Beam (`beam`): bắn, phản xạ, xuyên, dừng ở khiên Lính Kén (QB-16, QB-18); `Barrier` nhận tia (rễ khô Két Stage 1) | 02 | 1,5 ngày |
 | ST-15-04 | **Xong 21/11/2026.** API vô hiệu QB-19, Frost Shard `shard` và `CoolantFlow`. Phòng thử băng cho mượn vũ khí, dùng ba bậc một chiều để lên gờ. **Điều kiện của Phase Step (ST-08-09)** | 01b | 2 ngày |
-| ST-15-05 | Gale Cutter (`boomerang`, hủy tối đa 2 đạn kẻ địch thường mỗi lần ném); sương lạnh = `Barrier` (Két Stage 3) | 01c | 1,5 ngày |
+| ST-15-05 | Gale Cutter (`boomerang`, hủy tối đa 2 đạn kẻ địch thường mỗi lần ném) và sương lạnh dùng `Barrier` (Két Stage 3). Xong 21/11/2026 | 01c | 1,5 ngày |
 | ST-15-06 | Kẻ địch dùng lại hành vi: Gương Quang (`drone` + `bounces`, `bankShot`), Người Tuyết Máy (dữ liệu), Tháp Băng (`turret` + `lob`), Frost Titan (`golem` + `landShockwave`), kèm bản Thử thách Thêm dữ liệu và bản Thử thách của các kẻ địch này (dời từ 01a) | 01a, 01b | 2 ngày |
 | ST-15-08a | `CrumblePlatform` (break, sink) và bệ mây trôi (đường hai điểm): phần cơ chế **không** đụng `player-physics` | 01b, 01c | 1 ngày |
 | ST-15-09 | Mini-boss Prism Sentinel và Gale Roc dùng lớp `Boss` và bộ chuyển cho `LockedRoom` (Q1). Gió đẩy của Vỗ Cánh nối vào `WindZone` ở ST-15-08b. Thêm dữ liệu Prism Sentinel (từ 01a) và Gale Roc (từ 01c) | 01c, 02, 14, 15 | 2,5 ngày |
