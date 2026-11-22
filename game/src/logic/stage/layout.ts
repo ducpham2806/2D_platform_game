@@ -116,6 +116,8 @@ export interface StageLayout {
   rooms: RoomSpawn[];
   secrets: SecretSpawn[];
   barriers: BarrierSpawn[];
+  /** Vùng dòng làm mát; các ô trống cho tới khi đóng băng. */
+  coolant?: CellSpan[];
   optics?: OpticsLayout;
   sections: SectionSpawn[];
 }

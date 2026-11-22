@@ -205,8 +205,8 @@ export class StageScene extends Phaser.Scene {
     // Dữ liệu gốc từ 03-Data; khi bật ?tune=1 thì áp thêm phần đã chỉnh lưu trên máy.
     const base: TuningData = { player: config.player, weapons: config.weapons, boss };
     const tuned = tunedData(base);
-    // Màn chơi thử (cổng Prototype) luôn bắt đầu như nhau để số liệu các phiên so sánh được.
-    const save = this.def.playtest ? undefined : getSave(this);
+    // Cổng Prototype và phòng thực hành độc lập với tiến trình trong bản lưu.
+    const save = this.def.playtest || this.def.practiceOnly ? undefined : getSave(this);
     // Checkpoint chỉ mang từ độ khó đang chọn hoặc khó hơn (thứ tự trong difficulties.json).
     const allowed = config.difficulties
       .slice(config.difficulties.findIndex((d) => d.id === difficulty.id))

@@ -42,6 +42,8 @@ export abstract class Enemy {
   beats = 1;
   /** Vị trí góc trên trái lúc xuất hiện. */
   protected readonly home: { x: number; y: number };
+  private disabledTime = 0;
+  private frozenTime = 0;
 
   constructor(
     readonly id: number,
@@ -77,6 +79,26 @@ export abstract class Enemy {
     return this.harmless ? 0 : this.data.contactDamage;
   }
 
+  get disabledSec(): number {
+    return this.disabledTime;
+  }
+
+  get frozen(): boolean {
+    return this.frozenTime > 0;
+  }
+
+  protected get disableImmune(): boolean {
+    return false;
+  }
+
+  /** QB-19: hai nguồn vô hiệu dùng chung đồng hồ; nguồn ngắn hơn không kéo dài hiệu lực. */
+  disable(sec: number, effect: 'stun' | 'freeze' = 'stun'): boolean {
+    if (this.disableImmune || !this.alive || !Number.isFinite(sec) || sec <= 0) return false;
+    this.disabledTime = Math.max(this.disabledTime, sec);
+    if (effect === 'freeze') this.frozenTime = Math.max(this.frozenTime, sec);
+    return true;
+  }
+
   /** Về trạng thái ban đầu (người chơi hồi sinh ở checkpoint). */
   reset(): void {
     this.box.x = this.home.x;
@@ -86,6 +108,8 @@ export abstract class Enemy {
     this.telegraphing = false;
     this.beats = 1;
     this.facing = -1;
+    this.disabledTime = 0;
+    this.frozenTime = 0;
     this.resetBehavior();
   }
 
@@ -110,9 +134,12 @@ export abstract class Enemy {
     return this.hp <= 0 ? 'killed' : 'hit';
   }
 
-  step(ctx: EnemyContext, dt: number): void {
-    this.flash = Math.max(0, this.flash - dt);
-    if (this.alive) this.behave(ctx, dt);
+  step(ctx: EnemyContext, dt: number, active = true): void {
+    this.flash = active ? Math.max(0, this.flash - dt) : 0;
+    const disabled = this.disabledTime > 0;
+    this.disabledTime = this.disabledTime > dt + 1e-9 ? this.disabledTime - dt : 0;
+    this.frozenTime = this.frozenTime > dt + 1e-9 ? this.frozenTime - dt : 0;
+    if (active && this.alive && !disabled) this.behave(ctx, dt);
   }
 
   protected abstract behave(ctx: EnemyContext, dt: number): void;

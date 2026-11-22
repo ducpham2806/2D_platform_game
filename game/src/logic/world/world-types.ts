@@ -52,6 +52,7 @@ export interface WorldEvents {
   /** Phát phá khiên làm mòn khiên Lính Kén nhưng chưa vỡ. */
   shieldHit: boolean;
   hitEnemy: boolean;
+  enemyFrozen: boolean;
   enemyKilled: boolean;
   /** Core Bit vừa nhặt, máu vừa hồi trong bước này. */
   coreBitGained: number;
@@ -81,6 +82,7 @@ export interface WorldEvents {
   roomCleared: boolean;
   /** Vật chắn (rễ khô) vừa vỡ. */
   barrierBroken: boolean;
+  coolantFrozen: boolean;
   mirrorToggled: boolean;
   sensorActivated: boolean;
   laserHit: boolean;
@@ -110,6 +112,7 @@ export function noWorldEvents(): WorldEvents {
     shieldBroken: false,
     shieldHit: false,
     hitEnemy: false,
+    enemyFrozen: false,
     enemyKilled: false,
     coreBitGained: 0,
     healed: 0,
@@ -131,6 +134,7 @@ export function noWorldEvents(): WorldEvents {
     roomLocked: false,
     roomCleared: false,
     barrierBroken: false,
+    coolantFrozen: false,
     mirrorToggled: false,
     sensorActivated: false,
     laserHit: false,

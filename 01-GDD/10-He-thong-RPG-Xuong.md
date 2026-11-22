@@ -92,7 +92,7 @@ Kiểm luật bậc: V2 bậc 2 tăng 67% sát thương; V3 bậc 1 = 60% hiệu
 | --- | --- | --- | --- |
 | Magnet Core | 1 | Hút Core Bit, viên máu trong `magnetRadiusTiles = 3` ô; vật phẩm bay tới 12 ô/s (`enemies.json → pickups.magnetSpeedTilesPerSec`, chung với Upgrade) | Cộng Upgrade `magnet_range` |
 | Last Stand | **3** | Máu dưới `hpFrac = 0.2`: sát thương gây ra × `damageMul = 1.3` | Có điều kiện: `conditional: true` (mục 3.3) |
-| Phase Step | **3** | Lướt để lại ảo ảnh `lifeSec = 0.6` s; kẻ địch thường chạm vào bị choáng `stunSec = 0.3` | Cần thêm trạng thái choáng cho mọi hành vi kẻ địch (hiện chưa có). Boss, mini-boss miễn nhiễm |
+| Phase Step | **3** | Lướt để lại ảo ảnh `lifeSec = 0.6` s; kẻ địch thường chạm vào bị choáng `stunSec = 0.3` | Gọi API vô hiệu có sẵn từ ST-15-04. Boss, mini-boss miễn nhiễm |
 | Energy Siphon | 1 | Hạ một kẻ địch hồi `energyPerKill = 2` đơn vị (≈ 7% của 28) | Thay "2%" của GDD (0,56 đơn vị, không cảm nhận được). `modules.json` vẫn ghi "2%" bằng chữ: thêm trường số và `load` ở ST-08-09 |
 
 Tải 4 module = 8 > 6 (3 ô) nên trước cấp 10 phải chọn tổ hợp; từ cấp 10 (4 ô, tải 8) lắp đủ. Đây là lựa chọn mỏng; nếu chơi thử thấy tab Module không ai cân nhắc thì ghi rõ module không thuộc phần đo ở cổng MVP.

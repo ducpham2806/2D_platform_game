@@ -37,9 +37,10 @@ export function drawEnemies(
     if (!e.alive) continue;
     const b = e.box;
     const d = e.data;
+    const telegraphing = e.disabledSec === 0 && e.telegraphing;
     let { x, y, w, h } = b;
     let color = bodyColor(e);
-    if (e.telegraphing) {
+    if (telegraphing) {
       if (d.behavior === 'drone') color = blink ? 0xff6b6b : color;
       else if (d.behavior === 'turret' && d.attack.count > 1) {
         // Co lại trước khi bắn gai.
@@ -57,16 +58,20 @@ export function drawEnemies(
         color = 0xd2b4ff;
       }
     }
-    if (e instanceof ShieldCharger && e.state === 'dash') color = 0xff8787;
+    if (e.disabledSec === 0 && e instanceof ShieldCharger && e.state === 'dash') color = 0xff8787;
     if (e instanceof Golem) {
       // Báo trước: nhấp nháy cam nhanh dần; lao: đỏ; pha 2: ánh đỏ ở ngực.
-      if (e.telegraphing)
+      if (telegraphing)
         color = Math.floor(timeMs / (140 - 90 * e.telegraphProgress)) % 2 === 0 ? 0xffa94d : color;
       if (e.state === 'dash') color = 0xff8787;
     }
     if (e.flash > 0) color = 0xffffff;
     g.fillStyle(color, e.harmless ? 0.6 : 1).fillRect(x, y, w, h);
     if (e.harmless) g.lineStyle(1, 0x7bd389, 1).strokeRect(x - 1, y - 1, w + 2, h + 2);
+    if (e.frozen) {
+      g.fillStyle(0x7fdcfa, 0.65).fillRect(x, y, w, h);
+      g.lineStyle(2, 0xc2f3ff, 1).strokeRect(x - 1, y - 1, w + 2, h + 2);
+    }
 
     // Chi tiết nhỏ để đọc hướng và loại.
     const front = e.facing > 0 ? b.x + b.w : b.x;
@@ -88,7 +93,7 @@ export function drawEnemies(
       );
     }
     // Báo trước đòn nhiều nhịp (bản Thử thách): một chấm sáng mỗi nhịp trên đầu kẻ địch.
-    if (e.telegraphing && e.beats > 1) {
+    if (telegraphing && e.beats > 1) {
       const gap = 4;
       const left = b.x + b.w / 2 - ((e.beats - 1) * gap) / 2;
       for (let i = 0; i < e.beats; i += 1)
@@ -96,7 +101,7 @@ export function drawEnemies(
     }
     if (e instanceof ShieldCharger && e.shieldUp) {
       const sx = e.facing > 0 ? b.x + b.w : b.x - 3;
-      const glow = e.telegraphing && blink;
+      const glow = telegraphing && blink;
       const strength = e.shieldLeft / Math.max(1, e.data.shieldHits);
       g.fillStyle(glow ? 0xffffff : 0x7fd1ff, 0.5 + 0.5 * strength).fillRect(
         sx,

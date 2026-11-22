@@ -29,6 +29,7 @@ import { Tile, type TileMap } from '../tilemap';
 import type { StageReward } from '../stage/stage-exp';
 import { EnemyField } from './enemy-field';
 import { resolveBeamHits } from './beam-hits';
+import { CoolantFlow } from './coolant-flow';
 import {
   type BossDamageObserver,
   type KaiDefense,
@@ -114,6 +115,7 @@ export class StageWorld {
   readonly vines: Vine[];
   readonly rooms: LockedRoom[];
   readonly barriers: Barrier[];
+  readonly coolant: readonly CoolantFlow[];
   readonly optics: StageOptics | undefined;
   readonly secrets: Secret[];
   /** Vật phẩm bí mật đã nhặt trong lượt chơi (StageSave ghi vào bản lưu). */
@@ -241,6 +243,9 @@ export class StageWorld {
     this.rooms = layout.rooms.map((r) => new LockedRoom(r, this.map));
     if (this.field) for (const r of this.rooms) r.bind(this.field.enemies, layout.enemies);
     this.barriers = layout.barriers.map((b) => new Barrier(b, this.map));
+    this.coolant = (layout.coolant ?? []).map(
+      (flow) => new CoolantFlow(flow, this.map, setup.mechanics.coolant.frozenSteps),
+    );
     this.optics = layout.optics && new StageOptics(layout.optics, this.map, setup.mechanics);
     const taken = new Set(setup.takenSecrets ?? []);
     this.secrets = layout.secrets.map((s) => {
@@ -425,13 +430,23 @@ export class StageWorld {
     }
     this.field?.step(pl, this.pool, dt);
     const optics = this.optics;
+    const hasCoolant = this.coolant.some((flow) => !flow.frozen);
     this.pool.update(
       dt,
       this.map,
       (p) => {
         for (const b of this.barriers) if (b.tryBreak(p)) ev.barrierBroken = true;
       },
-      optics?.mirrors.length ? (p) => optics.absorbShot(p, ev) : undefined,
+      optics?.mirrors.length || hasCoolant
+        ? (p) => {
+            if (optics?.absorbShot(p, ev)) return true;
+            if (p.kind === 'shard' && this.coolant.some((flow) => flow.absorbShot(p))) {
+              ev.coolantFrozen = true;
+              return true;
+            }
+            return false;
+          }
+        : undefined,
     );
 
     const killed: Enemy[] = [];

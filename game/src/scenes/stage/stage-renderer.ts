@@ -11,6 +11,7 @@ const PROJECTILE_COLORS: Readonly<Record<Projectile['kind'], number>> = {
   mid: 0x4fd1ff,
   charged: 0xffffff,
   sweep: 0x7bd389,
+  shard: 0x9beaff,
   enemyShot: 0xff8787,
   shockwave: 0xffa94d,
   drop: 0xff6b6b,

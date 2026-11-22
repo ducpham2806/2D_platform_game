@@ -73,10 +73,7 @@ export class EnemyField {
       pool,
       map: this.map,
     };
-    for (const e of this.enemies) {
-      if (this.isActive(e, player)) e.step(ctx, dt);
-      else e.flash = 0;
-    }
+    for (const e of this.enemies) e.step(ctx, dt, this.isActive(e, player));
   }
 
   /**

@@ -5,6 +5,7 @@ export type ProjectileKind =
   | 'mid'
   | 'charged'
   | 'sweep'
+  | 'shard'
   | 'enemyShot'
   | 'shockwave'
   | 'drop'
@@ -44,6 +45,8 @@ export interface Projectile {
   attached: boolean;
   /** Trọng lực (px/s²) cho đạn rơi như hạt nổ của Bướm Sắt; không có thì bay thẳng. */
   gravity?: number;
+  /** Vô hiệu kẻ địch thường khi đạn băng gây sát thương (QB-19). */
+  freezeSec?: number;
   alive: boolean;
   /** Đã trúng mục tiêu nào (mỗi viên chỉ trúng một mục tiêu một lần). */
   hitIds: Set<number>;

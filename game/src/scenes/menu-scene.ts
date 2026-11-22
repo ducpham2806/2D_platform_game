@@ -69,10 +69,14 @@ export class MenuScene extends Phaser.Scene {
     const optics = (): void => {
       this.scene.start(SceneKey.Stage, { stage: 'optics' });
     };
+    const frost = (): void => {
+      this.scene.start(SceneKey.Stage, { stage: 'frost' });
+    };
     textButton(this, cx, 58, 'Vào màn thử', () => this.scene.start(SceneKey.Stage));
     textButton(this, cx, 73, 'Phòng thử kẻ địch', enemies);
     textButton(this, cx, 88, 'Phòng thử màn chơi', mechanics);
-    textButton(this, cx, 103, 'Boss Thorna', thorna);
+    textButton(this, cx - 65, 103, 'Boss Thorna', thorna);
+    textButton(this, cx + 65, 103, 'Phòng thử băng', frost);
     textButton(this, cx - 65, 118, 'Mini-boss Bramble Golem', golem);
     textButton(this, cx + 65, 118, 'Phòng thử laser', optics);
     textButton(this, cx - 52, 133, 'Hub Arkon', () => this.scene.start(SceneKey.Hub));
@@ -96,10 +100,15 @@ export class MenuScene extends Phaser.Scene {
     textButton(this, cx - 52, 163, 'Kết quả chơi thử', () => this.scene.start(SceneKey.Playtest));
     textButton(this, cx + 52, 163, 'Dữ liệu lưu', () => this.scene.start(SceneKey.Save));
     this.add
-      .text(cx, 182, 'Phím: Enter màn thử · K · M · B · G · O Laser · H · X · Q · C · R · S', {
-        ...MUTED_STYLE,
-        fontSize: '8px',
-      })
+      .text(
+        cx,
+        182,
+        'Phím: Enter màn thử · K · M · B · G · O Laser · I Băng · H · X · Q · C · R · S',
+        {
+          ...MUTED_STYLE,
+          fontSize: '8px',
+        },
+      )
       .setOrigin(0.5);
 
     const keyboard = this.input.keyboard;
@@ -113,6 +122,7 @@ export class MenuScene extends Phaser.Scene {
     keyboard?.once('keydown-B', thorna);
     keyboard?.once('keydown-G', golem);
     keyboard?.once('keydown-O', optics);
+    keyboard?.once('keydown-I', frost);
     keyboard?.once('keydown-X', workshop);
     keyboard?.once('keydown-Q', openShop);
   }

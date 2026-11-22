@@ -9,7 +9,7 @@ import { arr, ConfigError, type Json, num, obj, str } from './json-check';
  * Tín hiệu của màn chơi mà bước hướng dẫn dùng để kích hoạt, hoàn thành, đếm thất bại.
  * Thêm dạng có tham số: `section:<id đoạn>`, `near:<id kẻ địch>` (kẻ địch còn sống trong
  * `nearTiles` ô), `roomLocked:<id kẻ địch>` (phòng khóa vừa đóng có loại kẻ địch đó),
- * `fire:<shot|mid|charged|sweep|beam>`.
+ * `fire:<shot|mid|charged|sweep|beam|shard>`.
  */
 export const TUTORIAL_SIGNALS = [
   'start',
@@ -40,7 +40,7 @@ export const TUTORIAL_SIGNALS = [
   'weaponGranted',
 ] as const;
 
-const FIRE_KINDS = ['shot', 'mid', 'charged', 'sweep', 'beam'];
+const FIRE_KINDS = ['shot', 'mid', 'charged', 'sweep', 'beam', 'shard'];
 export const TUTORIAL_STAGES = ['prologue', 'stage1'] as const;
 export type TutorialStage = (typeof TUTORIAL_STAGES)[number];
 

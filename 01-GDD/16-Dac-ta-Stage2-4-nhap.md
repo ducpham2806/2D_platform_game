@@ -508,7 +508,7 @@ Pha 2 Thử thách: `shot, shatter, slam, charge`. Pha 3 Thử thách: `slam, sh
 | --- | --- |
 | `behavior.type` | `shard` (mới): đạn băng bay thẳng |
 | Thông số | `speedTilesPerSec = 10`, `rangeTiles = 10`, `sizePx = 8 × 6`, `damageMul = 2`, `cooldownSec = 0,4` |
-| Đóng băng | Trúng kẻ địch thường thì vô hiệu `freezeSec = 2` (đứng yên, không tấn công, vẫn nhận sát thương, khiên Lính Kén vẫn chặn mặt trước). Mini-boss và boss miễn đóng băng. Dùng chung trạng thái `disabledSec` với Phase Step |
+| Đóng băng | Trúng kẻ địch thường thì vô hiệu `freezeSec = 2`. Trong thời gian đó địch đứng yên, dừng nhịp tấn công và sát thương chạm thân, vẫn nhận đòn. Khiên Lính Kén chặn mặt trước. Mini-boss và boss miễn đóng băng. Dùng chung `disabledSec` với Phase Step theo QB-19 |
 | Năng lượng | `energyCostOf28 = 4` (7 lần mỗi thanh) |
 | Điểm yếu | Aeris: "mảnh băng làm nặng cánh gió" |
 | Khám phá | Đông dòng chất làm mát thành bậc ở Két giáp Stage 2 |
@@ -805,7 +805,7 @@ Quy ước như EP-08 đến EP-10: Story ≤ 1–2 ngày, mỗi Story nhúng s�
 | ST-15-01c | Dữ liệu Stage 4 (kẻ địch, Gale Roc, Aeris, Gale Cutter, `wind`, `cloud`) | 01a | 0,5 ngày |
 | ST-15-02 | `LaserPath`, `LaserEmitter`, gương 2 góc, cảm biến mở cửa, dữ liệu Tiled và phòng thử laser. Đường tia dùng chung cho báo trước và sát thương. Góc ban đầu và vị trí gương khai báo theo bản đồ, chốt bố cục Stage 2 sau G1 (ST-17-01) | 01a | 2 ngày |
 | ST-15-03 | Prism Beam (`beam`): bắn, phản xạ, xuyên, dừng ở khiên Lính Kén (QB-16, QB-18); `Barrier` nhận tia (rễ khô Két Stage 1) | 02 | 1,5 ngày |
-| ST-15-04 | Trạng thái vô hiệu `disabledSec` cho mọi hành vi kẻ địch (QB-19); Frost Shard (`shard`, đóng băng); `CoolantFlow` (Két Stage 2). **Điều kiện của Phase Step (ST-08-09)** | 01b | 2 ngày |
+| ST-15-04 | **Xong 21/11/2026.** API vô hiệu QB-19, Frost Shard `shard` và `CoolantFlow`. Phòng thử băng cho mượn vũ khí, dùng ba bậc một chiều để lên gờ. **Điều kiện của Phase Step (ST-08-09)** | 01b | 2 ngày |
 | ST-15-05 | Gale Cutter (`boomerang`, hủy tối đa 2 đạn kẻ địch thường mỗi lần ném); sương lạnh = `Barrier` (Két Stage 3) | 01c | 1,5 ngày |
 | ST-15-06 | Kẻ địch dùng lại hành vi: Gương Quang (`drone` + `bounces`, `bankShot`), Người Tuyết Máy (dữ liệu), Tháp Băng (`turret` + `lob`), Frost Titan (`golem` + `landShockwave`), kèm bản Thử thách Thêm dữ liệu và bản Thử thách của các kẻ địch này (dời từ 01a) | 01a, 01b | 2 ngày |
 | ST-15-08a | `CrumblePlatform` (break, sink) và bệ mây trôi (đường hai điểm): phần cơ chế **không** đụng `player-physics` | 01b, 01c | 1 ngày |
