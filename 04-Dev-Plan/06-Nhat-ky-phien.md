@@ -25,6 +25,14 @@ Mẫu:
 
 ---
 
+## 2026-11-22: Tích hợp nhánh phát triển vào main
+
+- **Phạm vi:** Người dùng yêu cầu merge toàn bộ nhánh phát triển `ccr-9de01342-2046rb` đến `0d5d328` (ST-15-09). Mốc gốc của `main` trước khi tích hợp là `c458643`.
+- **Nội dung:** Đo lường và báo cáo MVP, demo 2.5D, hộp chữ, luật biên và các Story Stage 2–4 đã xong. Giữ lộ trình chuyển từng phần của PR #9.
+- **G1:** Tag `gate-r1` giữ mốc `eeb8ca1`. Liên kết Pages dựng theo `main`, nên khi ghi kết quả G1 phải ghi commit đã thử.
+- **Kiểm tra:** 736 test, lint, format, build, docs-check và gate-flow đạt trên nhánh phát triển trước tích hợp.
+- **Tiếp theo:** Thu kết quả chơi thử G1 và tiếp ST-15-10 (Lumen) theo kế hoạch.
+
 ## 2026-11-22: ST-15-09 Prism Sentinel và Gale Roc
 
 - **Nhánh:** `ccr-9de01342-2046rb`, từ `f9a6d11`. G1 tiếp tục trên `main`.
@@ -46,12 +54,3 @@ Mẫu:
 - **Kiểm tra:** 723 test, lint, format, build (typecheck), docs-check và gate-flow đạt. Chromium PC/Pixel 7 ngang giả lập, 0 lỗi console. [Ảnh](qa/ST-15-16/README.md).
 - **Còn lại:** Nút dùng Nano Cell trên cảm ứng thuộc EP-14. Đặt vật phẩm vào phòng bí mật tại các bản đồ chiến dịch.
 - **Tiếp theo:** ST-15-09 (Prism Sentinel và Gale Roc) làm được trước G1.
-
-## 2026-11-22: ST-15-15 báo đòn mini-boss và tầm hoạt động
-
-- **Nhánh:** `ccr-9de01342-2046rb`, từ `93096ce`. G1 tiếp tục trên `main`.
-- **QB-21:** kiểm ngưỡng 0,5 s của từng loại đòn mini-boss lúc nạp. Kiểm Bramble Golem và Frost Titan qua giậm, ném, lao, cả giậm nối Thử thách.
-- **QB-23:** tầm tâm 12 ô ngang và 7 ô dọc. Cả hộp địch phải nằm trong khung camera đã vẽ, thu 1 ô mỗi cạnh, khi báo và tung đòn. Địch còn trong tầm vẫn tuần tra ngoài khung.
-- **Quyết định:** ra khỏi vùng thì hủy đòn hoặc loạt chưa ra. Vào lại báo đủ trước khi tung đòn. Đạn và cú lao đã khởi phát đi tiếp theo cơ chế hiện có.
-- **Kiểm tra:** 707 test, build (typecheck), lint, format, docs-check và gate-flow đạt. Chromium PC/Pixel 7 giả lập xác nhận khóa báo ở mép, hủy giữa báo và Frost Titan đủ ngưỡng. [Ảnh](qa/ST-15-15/README.md).
-- **Tiếp theo:** ST-15-16 (Nano Cell và vật phẩm năng lượng) làm được trước G1.
