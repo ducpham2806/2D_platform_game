@@ -15,6 +15,7 @@
 | ST-15-05  | Gale Cutter, hủy đạn Q4 và sương lạnh Két Tay Mk I                                               | 01c                                                    | 1,5 ngày | DONE (21/11/2026) |
 | ST-15-06  | Gương Quang, Người Tuyết Máy, Tháp Băng và Frost Titan                                         | 01a, 01b                                               | 2 ngày | DONE (22/11/2026) |
 | ST-15-08a | Bục băng vỡ, bệ mây chìm và bệ mây trôi                                                       | 01b, 01c                                               | 1 ngày | DONE (22/11/2026) |
+| ST-15-15  | Thời gian báo đòn mini-boss và tầm hoạt động của kẻ địch                                       | 01a                                                    | 1 ngày | DONE (22/11/2026) |
 
 ## ST-15-14: Boss an toàn (QB-14, QB-31)
 
@@ -300,3 +301,18 @@ Phase Step gọi chung API khi triển khai ST-08-09. Mở khóa vũ khí qua Cr
 - [x] Kiểm nứt, thời điểm vỡ/chìm, hồi sinh và chờ vật cản rời chỗ mọc.
 - [x] Kiểm quãng đường bệ trôi theo cả hai trục, chở Kai, rơi xuyên, mép/va chạm và QB-40. Tích hợp qua Tiled và cơ chế bệ sẵn có.
 - [x] Kiểm kẻ địch rơi xuống sàn hoặc mất dưới đáy, giữ luật thưởng một lần. Có phòng thử và [ảnh PC/Pixel 7](../qa/ST-15-08a/README.md). Sàn trơn và gió ở ST-15-08b, Nứt Bục của Cryo ở ST-15-11.
+
+## ST-15-15: Báo đòn mini-boss và tầm hoạt động
+
+- **Thuộc Epic:** EP-15 · **Ưu tiên:** P1 · **Trạng thái:** DONE (22/11/2026) · **Phụ thuộc:** ST-15-01a · **Engine:** Phaser 3.90.0.
+
+> **Là** người chơi, **tôi muốn** nhìn đủ thời gian báo của mini-boss và thấy kẻ địch trước khi chúng tung đòn, **để** có thời gian né.
+
+- **QB-21:** Đòn giậm, ném, lao và giậm nối của Bramble Golem và Frost Titan phải báo ít nhất 0,5 s, kể cả Thử thách. Dữ liệu vi phạm bị từ chối khi nạp.
+- **QB-23:** Tâm địch cách tâm Kai tối đa 12 ô ngang và 7 ô dọc. Báo và khai hỏa khi toàn thân địch đã vào khung camera thu 1 ô mỗi cạnh. Địch còn trong tầm nhưng ngoài vùng này vẫn có thể tuần tra. Rời vùng khi đang báo hoặc đang chờ loạt sau thì hủy phần chưa diễn ra. Đạn đã ra và cú lao đã bắt đầu tiếp tục theo luật sẵn có.
+
+### Nghiệm thu
+
+- [x] Kiểm dữ liệu và thời gian báo đòn thật của hai mini-boss ở Thường và Thử thách.
+- [x] Kiểm tầm dọc, từng mép khung, rời khung giữa chuỗi và báo đủ thời gian khi quay lại.
+- [x] Kiểm luồng camera trong phòng thử, Chromium PC/Pixel 7 và luồng G1. [Ảnh và cách thử](../qa/ST-15-15/README.md)

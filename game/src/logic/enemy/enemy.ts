@@ -13,6 +13,8 @@ export interface EnemyContext {
   pool: ProjectilePool;
   map: TileMap;
   mirror?: ExtraSolid;
+  /** QB-23 xét hộp hiện tại, kể cả khi địch vừa di chuyển trong bước. */
+  attackAllowed?: (box: Box) => boolean;
 }
 
 export type EnemyHitResult = 'hit' | 'killed' | 'blocked' | 'shieldHit' | 'shieldBroken';
@@ -145,7 +147,26 @@ export abstract class Enemy {
     const disabled = this.disabledTime > 0;
     this.disabledTime = this.disabledTime > dt + 1e-9 ? this.disabledTime - dt : 0;
     this.frozenTime = this.frozenTime > dt + 1e-9 ? this.frozenTime - dt : 0;
-    if (active && this.alive && !disabled) this.behave(ctx, dt);
+    if (!this.alive) return;
+    if (!active) {
+      this.cancelAttack(dt);
+      return;
+    }
+    if (disabled) this.canAttack(ctx, dt);
+    else this.behave(ctx, dt);
+  }
+
+  /** Khi rời vùng hợp lệ, phần đòn chưa diễn ra phải báo lại từ đầu. */
+  protected canAttack(ctx: EnemyContext, dt: number): boolean {
+    if (ctx.attackAllowed?.(this.box) !== false) return true;
+    this.cancelAttack(dt);
+    return false;
+  }
+
+  protected cancelAttack(_dt: number): void {
+    this.telegraphing = false;
+    if (this.aimLines.length) this.aimLines = [];
+    if (this.landingMarks.length) this.landingMarks = [];
   }
 
   protected abstract behave(ctx: EnemyContext, dt: number): void;

@@ -2,8 +2,12 @@
   "_note": "Kẻ địch của Prologue và Stage 1–3 (đặc tả Prologue & Stage 1 mục 4 và GDD 16). Máu tính bằng phát Arc Cannon gốc, nhân enemyHp của độ khó. Sát thương tính bằng máu người chơi (100 ở cấp 1), nhân damageTaken. Mọi số là [PLACEHOLDER].",
   "rules": {
     "minTelegraphSec": 0.4,
+    "minMiniBossTelegraphSec": 0.5,
     "minSpawnDistanceTiles": 6,
     "activeRangeTiles": 12,
+    "activeRangeTilesY": 7,
+    "attackRequiresOnScreen": true,
+    "attackScreenInsetTiles": 1,
     "pickups": {
       "healChance": 0.08,
       "heal": 20,

@@ -3,6 +3,7 @@
  * mục 4: mọi đòn có telegraph ≥ minTelegraphSec, không đòn nào gây chết ngay.
  */
 import { deepMerge } from './deep-merge';
+import { TILES_X, TILES_Y } from './constants';
 import {
   ConfigError,
   type Json,
@@ -186,10 +187,14 @@ export interface PickupRules {
 
 export interface EnemyRules {
   minTelegraphSec: number;
+  minMiniBossTelegraphSec: number;
   /** Kẻ địch không được đặt gần điểm xuất phát/checkpoint hơn chừng này ô. */
   minSpawnDistanceTiles: number;
   /** Kẻ địch chỉ hoạt động khi người chơi cách trong chừng này ô (theo chiều ngang). */
   activeRangeTiles: number;
+  activeRangeTilesY: number;
+  attackRequiresOnScreen: boolean;
+  attackScreenInsetTiles: number;
   pickups: PickupRules;
 }
 
@@ -470,12 +475,24 @@ export function parseEnemies(value: unknown): EnemiesData {
   const root = obj(value, 'enemies');
   const r = obj(root.rules, 'enemies.rules');
   const pk = obj(r.pickups, 'enemies.rules.pickups');
+  if (typeof r.attackRequiresOnScreen !== 'boolean')
+    throw new ConfigError('enemies.rules.attackRequiresOnScreen: cần true/false');
   const rules: EnemyRules = {
     minTelegraphSec: num(r.minTelegraphSec, 'enemies.rules.minTelegraphSec', { min: 0 }),
+    minMiniBossTelegraphSec: num(
+      r.minMiniBossTelegraphSec,
+      'enemies.rules.minMiniBossTelegraphSec',
+      { min: 0.5 },
+    ),
     minSpawnDistanceTiles: num(r.minSpawnDistanceTiles, 'enemies.rules.minSpawnDistanceTiles', {
       min: 0,
     }),
     activeRangeTiles: num(r.activeRangeTiles, 'enemies.rules.activeRangeTiles', { min: 1 }),
+    activeRangeTilesY: num(r.activeRangeTilesY, 'enemies.rules.activeRangeTilesY', { min: 1 }),
+    attackRequiresOnScreen: r.attackRequiresOnScreen,
+    attackScreenInsetTiles: num(r.attackScreenInsetTiles, 'enemies.rules.attackScreenInsetTiles', {
+      min: 0,
+    }),
     pickups: {
       healChance: num(pk.healChance, 'enemies.rules.pickups.healChance', { min: 0 }),
       heal: num(pk.heal, 'enemies.rules.pickups.heal', { min: 0 }),
@@ -501,6 +518,10 @@ export function parseEnemies(value: unknown): EnemiesData {
       sizePx: size(pk.sizePx, 'enemies.rules.pickups.sizePx'),
     },
   };
+  if (rules.attackScreenInsetTiles * 2 >= Math.min(TILES_X, TILES_Y))
+    throw new ConfigError(
+      'enemies.rules.attackScreenInsetTiles: cần chừa vùng trên màn để tấn công',
+    );
   if (rules.pickups.healChance > 1) {
     throw new ConfigError('enemies.rules.pickups.healChance: phải trong khoảng 0–1');
   }
@@ -583,8 +604,12 @@ export function checkEnemyRules(data: EnemiesData, playerBaseHp: number, damageM
   ];
   for (const { e, p } of all) {
     const { telegraphSec, busySec, cycleSec } = attackTiming(e);
-    if (telegraphSec + 1e-9 < data.rules.minTelegraphSec) {
-      errors.push(`${p}: telegraph ${telegraphSec} s < ${data.rules.minTelegraphSec} s`);
+    const minimum =
+      e.behavior === 'golem'
+        ? Math.max(data.rules.minTelegraphSec, data.rules.minMiniBossTelegraphSec)
+        : data.rules.minTelegraphSec;
+    if (telegraphSec + 1e-9 < minimum) {
+      errors.push(`${p}: telegraph ${telegraphSec} s < ${minimum} s`);
     }
     if (busySec >= cycleSec) {
       errors.push(`${p}: telegraph và cả loạt (${busySec} s) phải ngắn hơn nhịp bắn ${cycleSec} s`);

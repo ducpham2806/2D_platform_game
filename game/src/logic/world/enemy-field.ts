@@ -63,8 +63,16 @@ export class EnemyField {
 
   /** Kẻ địch còn sống và đang trong tầm hoạt động của người chơi. */
   isActive(e: Enemy, player: PlayerPhysics): boolean {
-    const range = this.data.rules.activeRangeTiles * this.map.tileSize;
-    return e.alive && Math.abs(e.centerX - player.centerX) <= range;
+    return e.alive && this.inRange(e.box, player.centerX, player.box.y + player.box.h / 2);
+  }
+
+  private inRange(box: Box, x: number, y: number): boolean {
+    const { activeRangeTiles, activeRangeTilesY } = this.data.rules;
+    const t = this.map.tileSize;
+    return (
+      Math.abs(box.x + box.w / 2 - x) <= activeRangeTiles * t &&
+      Math.abs(box.y + box.h / 2 - y) <= activeRangeTilesY * t
+    );
   }
 
   active(player: PlayerPhysics): Enemy[] {
@@ -80,13 +88,30 @@ export class EnemyField {
     }
   }
 
-  step(player: PlayerPhysics, pool: ProjectilePool, dt: number, mirror?: ExtraSolid): boolean {
+  step(
+    player: PlayerPhysics,
+    pool: ProjectilePool,
+    dt: number,
+    mirror?: ExtraSolid,
+    view?: Box,
+  ): boolean {
+    const x = player.centerX;
+    const y = player.box.y + player.box.h / 2;
+    const screen = this.data.rules.attackRequiresOnScreen ? view : undefined;
+    const inset = this.data.rules.attackScreenInsetTiles * this.map.tileSize;
     const ctx = {
-      playerX: player.centerX,
-      playerY: player.box.y + player.box.h / 2,
+      playerX: x,
+      playerY: y,
       pool,
       map: this.map,
       ...(mirror ? { mirror } : {}),
+      attackAllowed: (box: Box): boolean =>
+        this.inRange(box, x, y) &&
+        (!screen ||
+          (box.x >= screen.x + inset &&
+            box.x + box.w <= screen.x + screen.w - inset &&
+            box.y >= screen.y + inset &&
+            box.y + box.h <= screen.y + screen.h - inset)),
     };
     let fellOut = false;
     for (const e of this.enemies) {

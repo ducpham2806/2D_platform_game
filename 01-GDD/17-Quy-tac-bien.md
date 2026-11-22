@@ -52,10 +52,10 @@ Tài liệu GDD mô tả luật chính. File này gom các **tình huống biên
 | Mã | Tình huống | Luật | Tham số | Trạng thái |
 | --- | --- | --- | --- | --- |
 | QB-20 | Chết để kẻ địch dựng lại rồi hạ lại (cày EXP, Core Bit) | Mỗi kẻ địch (theo id trên bản đồ) chỉ cho EXP và Core Bit **một lần mỗi lượt vào màn**; hạ lại chỉ có thể rơi viên máu | `stages.json → mechanics.enemyRewardOncePerRun: true` | Code |
-| QB-21 | Mini-boss báo trước quá nhanh | Mini-boss theo luật báo trước của boss: đòn nào cũng báo ≥ 0,5 s | `minTelegraphSec` cho mini-boss (chưa có) | Story MVP |
+| QB-21 | Mini-boss báo trước quá nhanh | Mỗi đòn mini-boss báo ≥ 0,5 s, kể cả đòn nối ở Thử thách | `enemies.json → rules.minMiniBossTelegraphSec` | Code (ST-15-15) |
 | QB-22 | Spike Guard và đạn gai | Spike Guard chỉ miễn ô gai môi trường; đạn của Tháp Gai, Gai Quạt vẫn trúng | — | Code (test `tests/qb-rules.test.ts`; cờ `spikeGuard` chưa nối với module) |
 | QB-24 | Kai chết sau khi đã hạ mini-boss | Mini-boss đã hạ không dựng lại trong lượt vào màn (phòng khóa giữ trạng thái mở). Chung cho mọi kẻ địch của phòng khóa đã xong: hồi sinh ở checkpoint không dựng lại chúng (phòng đã mở không khóa lại được). Phòng còn khóa lúc chết thì mở cửa, kẻ địch trong phòng dựng lại đầy máu | — | Code (sửa 15/11: trước đó Golem dựng lại khi Kai chết; test `tests/qb-rules.test.ts`) |
-| QB-23 | Kẻ địch bắn từ ngoài màn hình | Tầm hoạt động có cả trục dọc (7 ô). Kẻ địch chỉ bắt đầu báo trước khi đã nằm trong khung camera thu vào 1 ô | `activeRangeTilesY: 7`, `attackRequiresOnScreen` (chưa có) | Story MVP |
+| QB-23 | Kẻ địch bắn từ ngoài màn hình | Tầm hoạt động dọc 7 ô. Báo đòn và khai hỏa khi cả hộp địch ở trong khung camera thu 1 ô mỗi cạnh. Ra khỏi vùng thì hủy phần đòn đang chờ | `enemies.json → rules.activeRangeTilesY`, `attackRequiresOnScreen`, `attackScreenInsetTiles` | Code (ST-15-15) |
 
 Tình huống biên riêng của từng màn và nhiệm vụ phụ: `15-Nhiem-vu-phu.md` mục 5; `16-Dac-ta-Stage2-4-nhap.md` mục 3.11, 4.11, 5.11.
 
@@ -223,8 +223,8 @@ Mỗi trường dưới đây phải có kiểm tra trong `game/src/core/*-confi
 | --- | --- | --- | --- |
 | `weakStunCooldownSec` | `bosses.json → rules` (đã có, ≤ 5) | 1,5 | QB-14 |
 | `phaseShiftSec` | `bosses.json → rules` (đã có, ≤ 2) | 0,6 | QB-31 |
-| `minTelegraphSec` (mini-boss) | `enemies.json` | 0,5 | QB-21 |
-| `activeRangeTilesY`, `attackRequiresOnScreen` | `enemies.json → rules` | 7, true | QB-23 |
+| `minMiniBossTelegraphSec` | `enemies.json → rules` | 0,5 | QB-21 |
+| `activeRangeTilesY`, `attackRequiresOnScreen`, `attackScreenInsetTiles` | `enemies.json → rules` | 7, true, 1 | QB-23 |
 | `pickups.energyChance`, `pickups.energy` | `enemies.json` | 0,06; 4 | QB-17 |
 | `nanoCell {max, healPct, useLockSec, refill}` | `player.json`; vị trí ở `stages.json` | 4; 0,4; 0,4; "stageEnter" | QB-50…54 |
 | `climb {speedTilesPerSec, shoot, jumpOffTiles}` | `player.json` | 3; false; 2 | QB-05 |
