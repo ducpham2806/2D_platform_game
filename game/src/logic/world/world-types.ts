@@ -7,6 +7,7 @@ export interface WorldInput {
   jumpPressed: boolean;
   jumpHeld: boolean;
   dashPressed: boolean;
+  healPressed: boolean;
   downHeld: boolean;
   shootPressed: boolean;
   shootHeld: boolean;
@@ -24,6 +25,7 @@ export const IDLE_INPUT: WorldInput = {
   jumpPressed: false,
   jumpHeld: false,
   dashPressed: false,
+  healPressed: false,
   downHeld: false,
   shootPressed: false,
   shootHeld: false,
@@ -57,6 +59,8 @@ export interface WorldEvents {
   /** Core Bit vừa nhặt, máu vừa hồi trong bước này. */
   coreBitGained: number;
   healed: number;
+  nanoCellUsed: boolean;
+  energyGained: number;
   hitBoss: boolean;
   weakHit: boolean;
   playerHurt: boolean;
@@ -88,8 +92,8 @@ export interface WorldEvents {
   laserHit: boolean;
   platformCracked: boolean;
   platformBroken: boolean;
-  /** Vật phẩm bí mật vừa nhặt (id vật phẩm). */
-  secretFound: string | undefined;
+  /** Các vật phẩm bí mật vừa nhặt (id vật phẩm). */
+  secretsFound: string[];
   /** M8: vừa lướt trên không (P1); lượt lướt trên không vừa hồi. */
   airDash: boolean;
   airDashRestored: boolean;
@@ -118,6 +122,8 @@ export function noWorldEvents(): WorldEvents {
     enemyKilled: false,
     coreBitGained: 0,
     healed: 0,
+    nanoCellUsed: false,
+    energyGained: 0,
     hitBoss: false,
     weakHit: false,
     playerHurt: false,
@@ -142,7 +148,7 @@ export function noWorldEvents(): WorldEvents {
     laserHit: false,
     platformCracked: false,
     platformBroken: false,
-    secretFound: undefined,
+    secretsFound: [],
     airDash: false,
     airDashRestored: false,
     graze: false,

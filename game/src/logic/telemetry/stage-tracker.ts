@@ -102,7 +102,7 @@ export class StageTracker {
     this.runSec += dt;
     this.sinceProgress += dt;
     this.deviceSec[device] = (this.deviceSec[device] ?? 0) + dt;
-    if (ev.secretFound) this.secrets += 1;
+    this.secrets += ev.secretsFound.length;
     if (ev.swapped && this.fight) this.fight.swaps += 1;
     const section = this.section();
     this.visit(section);

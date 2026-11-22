@@ -97,10 +97,12 @@ describe('mở hàng theo boss, mua, gỡ (ST-09-01)', () => {
     expect(levelCap(shop, 'arc_core', 4)).toBe(2);
     expect(levelCap(shop, 'arc_core', 5)).toBe(3);
     expect(levelCap(shop, 'arc_core', 8)).toBe(5);
-    // Upgrade chưa có tác dụng (Dash Coil, Nano Cell Cap, Booster Slot) chưa bán dù tới mốc.
+    // Upgrade chưa có tác dụng (Dash Coil, Booster Slot) chưa bán dù tới mốc.
     expect(levelCap(shop, 'dash_coil', 2)).toBe(0);
     expect(levelCap(shop, 'dash_coil', 5)).toBe(0);
-    expect(levelCap(shop, 'nano_cell_cap', 8)).toBe(0);
+    expect(levelCap(shop, 'nano_cell_cap', 4)).toBe(0);
+    expect(levelCap(shop, 'nano_cell_cap', 5)).toBe(3);
+    expect(levelCap(shop, 'nano_cell_cap', 8)).toBe(4);
     expect(levelCap(shop, 'magnet_range', 8)).toBe(3);
     expect(bossesForLevel(shop, 'arc_core', 3)).toBe(5);
     expect(bossesForLevel(shop, 'arc_core', 4)).toBe(8);

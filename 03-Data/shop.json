@@ -36,6 +36,7 @@
       "desc": "+25% lượng hồi mỗi Nano Cell mỗi cấp.",
       "maxLevel": 4,
       "effectPerLevel": "+25% heal per Nano Cell",
+      "nanoCellHealPerLevel": 0.25,
       "baseCost": 400,
       "costGrowth": 1.25
     },
@@ -176,5 +177,5 @@
   "skinsAffectStats": false,
   "hitboxFixed": true,
   "refundUpgradePct": 100,
-  "note": "Giá Upgrade cấp n = round(baseCost × costGrowth^(n−1)) (01-GDD/04-Can-bang-kinh-te.md mục 1); gỡ hoàn 100% giá cấp cao nhất. unlockSchedule: cấp tối đa mở được của từng Upgrade theo số boss chiến dịch đã hạ (đặc tả Hub mục 4.3; cấp 3 mở sau 5 boss là quyết định lấp khoảng trống của EP-09, [PLACEHOLDER]); Upgrade không có trong một mốc thì chưa mở. energyMaxPerLevel: năng lượng tối đa vũ khí boss cộng thêm mỗi cấp (làm tròn). magnetTilesPerLevel: tầm hút Core Bit mỗi cấp (ô, tính từ thân Kai, tức hộp va chạm 12 × 24 px). Upgrade chưa có trường tác dụng (nano_cell_cap, dash_coil, booster_slot) chưa bán dù đã tới mốc mở. energyMaxPerLevel 0,15 (duyệt 14/11/2026: 0,1 thì cấp 1 và cấp 4 không thêm phát Vine Lash nào)."
+  "note": "Giá Upgrade cấp n = round(baseCost × costGrowth^(n−1)) (01-GDD/04-Can-bang-kinh-te.md mục 1); gỡ hoàn 100% giá cấp cao nhất. unlockSchedule: cấp tối đa mở được của từng Upgrade theo số boss chiến dịch đã hạ (đặc tả Hub mục 4.3; cấp 3 mở sau 5 boss là quyết định lấp khoảng trống của EP-09, [PLACEHOLDER]); Upgrade không có trong một mốc thì chưa mở. energyMaxPerLevel: năng lượng tối đa vũ khí boss cộng thêm mỗi cấp (làm tròn). magnetTilesPerLevel: tầm hút Core Bit mỗi cấp (ô, tính từ thân Kai, tức hộp va chạm 12 × 24 px). nanoCellHealPerLevel: cộng thêm tỷ lệ lượng hồi gốc của Nano Cell mỗi cấp. Upgrade chưa có trường tác dụng (dash_coil, booster_slot) chưa bán dù đã tới mốc mở. energyMaxPerLevel 0,15 (duyệt 14/11/2026: 0,1 thì cấp 1 và cấp 4 không thêm phát Vine Lash nào)."
 }

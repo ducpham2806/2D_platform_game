@@ -245,6 +245,10 @@ export class PlayerPhysics {
     return true;
   }
 
+  clearBufferedJump(): void {
+    this.buffer = 0;
+  }
+
   step(input: PlayerInput, dt: number): PlayerEvents {
     const p = this.params;
     // Sự kiện của applyHit gọi giữa hai bước được giữ lại cho bước này.

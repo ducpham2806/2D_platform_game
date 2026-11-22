@@ -11,7 +11,8 @@
     "swapPrev": ["KeyQ"],
     "swapNext": ["KeyE"],
     "pause": ["Escape"],
-    "interact": ["KeyW", "ArrowUp"]
+    "interact": ["KeyW", "ArrowUp"],
+    "heal": ["KeyH"]
   },
   "gamepad": {
     "buttons": {
@@ -21,6 +22,7 @@
       "interact": [3],
       "swapPrev": [4],
       "swapNext": [5],
+      "heal": [7],
       "pause": [9],
       "up": [12],
       "down": [13],

@@ -47,6 +47,8 @@ export interface StageData {
   armorCacheRequiresWeapon: string;
   coreBitBase: number;
   checkpoints: number;
+  /** Màn có một Nano Cell trong khu bí mật (QB-50). */
+  nanoCell?: boolean;
   /** id kẻ địch thường của màn (enemies.json). */
   enemies: string[];
   /** Đoạn của màn theo thứ tự (đoạn kẹt H1 của báo cáo MVP; bản đồ thật phải khớp). */
@@ -172,6 +174,8 @@ export function parseStages(value: unknown): StagesData {
   const stages = arr(s.stages, 'stages.stages').map((item, i) => {
     const p = `stages.stages[${i}]`;
     const st = obj(item, p);
+    if (st.nanoCell !== undefined && typeof st.nanoCell !== 'boolean')
+      throw new ConfigError(`${p}.nanoCell: cần boolean`);
     const stage: StageData = {
       index: num(st.index, `${p}.index`, { min: 1 }),
       id: str(st.id, `${p}.id`),
@@ -185,6 +189,7 @@ export function parseStages(value: unknown): StagesData {
       armorCacheRequiresWeapon: str(st.armorCacheRequiresWeapon, `${p}.armorCacheRequiresWeapon`),
       coreBitBase: num(st.coreBitBase, `${p}.coreBitBase`, { min: 0 }),
       checkpoints: num(st.checkpoints, `${p}.checkpoints`, { min: 1 }),
+      ...(st.nanoCell === undefined ? {} : { nanoCell: st.nanoCell }),
       enemies: arr(st.enemies, `${p}.enemies`).map((e, j) => str(e, `${p}.enemies[${j}]`)),
       segments: arr(st.segments, `${p}.segments`).map((e, j) => str(e, `${p}.segments[${j}]`)),
       ...(st.expectedMin !== undefined
@@ -338,6 +343,20 @@ export function checkDesignInvariants(config: GameConfig): string[] {
   stages.forEach((stage, i) => {
     if (stage.index !== i + 1) errors.push(`stages: index phải liên tục từ 1 (gặp ${stage.index})`);
   });
+
+  const nanoStages = stages.filter((stage) => stage.nanoCell).map((stage) => stage.index);
+  if (nanoStages.join(',') !== '1,3,5,7' || nanoStages.length !== config.player.nanoCell.max)
+    errors.push('stages.nanoCell: cần một Nano Cell ở mỗi màn 1/3/5/7 (QB-50)');
+  const nanoUpgrade = config.shop.upgrades.nano_cell_cap;
+  if (nanoUpgrade && nanoUpgrade.maxLevel !== 4)
+    errors.push('shop.nano_cell_cap: cần tối đa bốn cấp (QB-54)');
+  if (
+    nanoUpgrade &&
+    config.player.nanoCell.healPct *
+      (1 + (nanoUpgrade.nanoCellHealPerLevel ?? 0) * nanoUpgrade.maxLevel) >
+      1
+  )
+    errors.push('shop.nano_cell_cap: Nano Cell không được hồi hơn 100% máu tối đa');
 
   // Vòng khắc chế: vũ khí của màn k là điểm yếu của boss màn k+1, màn cuối khép vòng về màn 1.
   stages.forEach((stage, i) => {

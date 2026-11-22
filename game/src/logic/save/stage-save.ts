@@ -6,6 +6,7 @@
  *   nên thoát giữa màn không mất Core Bit đã nhặt và không cộng trùng.
  * Logic thuần.
  */
+import { NANO_CELL } from '../world/nano-cell';
 import type { WorldEvents } from '../world/world-types';
 import {
   addRewards,
@@ -47,6 +48,22 @@ export function stageSaveSetup(
   };
 }
 
+/** Bản lưu cũ đã ghi Nano Cell Stage 1 theo id của phòng thử M7. */
+export function claimedNanoCells(
+  save: SaveData,
+  stages: readonly { id: string; nanoCell?: boolean }[],
+): ReadonlySet<string> {
+  const claimedIn = (id: string): boolean => stageProgress(save, id).secrets.includes(NANO_CELL);
+  return new Set(
+    stages
+      .filter(
+        ({ id, nanoCell }) =>
+          nanoCell && (claimedIn(id) || (id === 'verdant_gardens' && claimedIn('mechanics'))),
+      )
+      .map(({ id }) => id),
+  );
+}
+
 /** Số liệu tích lũy của lượt chơi mà StageWorld cung cấp. */
 export interface RunTotals {
   readonly exp: number;
@@ -66,6 +83,8 @@ export class StageSave {
       difficulty?: string;
       /** Màn chiến dịch mà boss của phòng này là boss chiến dịch: hạ boss thì ghi `cleared`. */
       clearsCampaign?: string;
+      /** Ghi Nano Cell theo màn chiến dịch để dùng chung qua các bản đồ. */
+      nanoCellStage?: string;
     } = {},
   ) {}
 
@@ -79,9 +98,9 @@ export class StageSave {
       const difficulty = this.opts.difficulty ?? 'normal';
       changes.push((s) => recordCheckpoint(s, stageId, index, difficulty));
     }
-    if (ev.secretFound !== undefined) {
-      const item = ev.secretFound;
-      changes.push((s) => recordSecret(s, stageId, item));
+    for (const item of ev.secretsFound) {
+      const source = item === NANO_CELL ? (this.opts.nanoCellStage ?? stageId) : stageId;
+      changes.push((s) => recordSecret(s, source, item));
     }
     if (ev.weaponGranted !== undefined) {
       const weapon = ev.weaponGranted;

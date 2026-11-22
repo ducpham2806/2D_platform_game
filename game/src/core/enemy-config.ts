@@ -175,6 +175,8 @@ export interface PickupRules {
   /** Xác suất rơi viên hồi máu khi hạ kẻ địch (không rơi khi người chơi đầy máu). */
   healChance: number;
   heal: number;
+  energyChance: number;
+  energy: number;
   healLifetimeSec: number;
   coreBitLifetimeSec: number;
   /** Core Bit của một kẻ địch chia thành tối đa chừng này viên. */
@@ -475,6 +477,8 @@ export function parseEnemies(value: unknown): EnemiesData {
   const root = obj(value, 'enemies');
   const r = obj(root.rules, 'enemies.rules');
   const pk = obj(r.pickups, 'enemies.rules.pickups');
+  const energyChance = num(pk.energyChance, 'enemies.rules.pickups.energyChance', { min: 0 });
+  if (energyChance > 1) throw new ConfigError('enemies.rules.pickups.energyChance: cần tỷ lệ ≤ 1');
   if (typeof r.attackRequiresOnScreen !== 'boolean')
     throw new ConfigError('enemies.rules.attackRequiresOnScreen: cần true/false');
   const rules: EnemyRules = {
@@ -496,6 +500,8 @@ export function parseEnemies(value: unknown): EnemiesData {
     pickups: {
       healChance: num(pk.healChance, 'enemies.rules.pickups.healChance', { min: 0 }),
       heal: num(pk.heal, 'enemies.rules.pickups.heal', { min: 0 }),
+      energyChance,
+      energy: num(pk.energy, 'enemies.rules.pickups.energy', { min: 1 }),
       healLifetimeSec: num(pk.healLifetimeSec, 'enemies.rules.pickups.healLifetimeSec', {
         min: 0.5,
       }),

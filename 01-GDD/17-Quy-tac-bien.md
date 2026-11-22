@@ -45,7 +45,7 @@ Tài liệu GDD mô tả luật chính. File này gom các **tình huống biên
 | QB-16 | Vũ khí boss bắn vào khiên Lính Kén | Mỗi cú trúng tính 1 lần vào `shieldHits`, bất kể sát thương | `enemies.json` | Story Stage 2–4 |
 | QB-18 | Prism Beam gặp khiên Lính Kén | Tia dừng ở mặt trước khiên, tính 1 lần `shieldHits` kể cả phát phá khiên. Tia gặp mặt sau xuyên tiếp | — | Code (ST-15-03, `tests/prism-beam.test.ts`) |
 | QB-19 | Frost Shard và Phase Step cùng làm vô hiệu một kẻ địch | Lấy giá trị lớn hơn giữa `disabledSec` còn lại và thời gian mới. Boss và mini-boss miễn | `disabledSec` | API dùng chung và Frost Shard đã có (ST-15-04); Phase Step nối ở ST-08-09 |
-| QB-17 | Vật phẩm năng lượng rơi | Tỉ lệ 6%, hồi 4 năng lượng vào vũ khí đang cầm; đang cầm Arc Cannon thì nạp vũ khí boss có % thấp nhất; không rơi khi mọi vũ khí đầy | `pickups.energyChance 0.06`, `energy 4` (chưa có) | Story MVP |
+| QB-17 | Vật phẩm năng lượng rơi | Tỉ lệ 6%, hồi 4 năng lượng vào vũ khí đang cầm; đang cầm Arc Cannon thì nạp vũ khí boss có % thấp nhất; không rơi khi mọi vũ khí đầy. Viên nằm lại nếu vũ khí đích đầy. Hạ lại cùng địch chỉ có thể rơi viên máu (QB-20) | `enemies.json → rules.pickups.energyChance: 0.06`, `energy: 4` | Code (ST-15-16) |
 
 ## 3. Kẻ địch
 
@@ -86,15 +86,15 @@ Tình huống biên riêng của từng màn và nhiệm vụ phụ: `15-Nhiem-v
 
 ## 6. Nano Cell (bình hồi máu)
 
-Luật chính ở GDD chính. Toàn bộ là Story MVP, số `[PLACEHOLDER]`.
+Luật chính ở GDD chính. Logic QB-50…54 ở ST-15-16, nút cảm ứng ở EP-14.
 
-| Mã | Tình huống | Luật | Tham số (chưa có) |
+| Mã | Tình huống | Luật | Tham số |
 | --- | --- | --- | --- |
 | QB-50 | Sức chứa và nạp lại | Tối đa 4, tìm ở Stage 1, 3, 5, 7. Nạp đầy khi vào màn mới; chết **không** nạp lại cái đã dùng | `player.json → nanoCell.max`, `stages.json → nanoCell` |
 | QB-51 | Dùng khi đầy máu | Không cho dùng; nút xám | — |
 | QB-52 | Dùng khi đang bị đánh | Được dùng cả khi đang choáng vì trúng đòn; khóa thao tác 0,4 s | `nanoCell.useLockSec 0.4` |
 | QB-53 | Hết máu | Không tự dùng Nano Cell khi chết | — |
-| QB-54 | Lượng hồi | 40% máu tối đa; Nano Cell Cap tối đa đưa lên 80% | `nanoCell.healPct 0.4` |
+| QB-54 | Lượng hồi | 40% máu tối đa; Nano Cell Cap tối đa đưa lên 80% | `player.json → nanoCell.healPct: 0.4`; `shop.json → nanoCellHealPerLevel: 0.25` |
 
 ## 7. Cấp, build, thưởng trong trận
 

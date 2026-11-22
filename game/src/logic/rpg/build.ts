@@ -48,6 +48,7 @@ export interface BuildStats {
   damageTakenMul: number;
   /** Upgrade Energy Cell: năng lượng tối đa vũ khí boss nhân hệ số này (làm tròn). */
   energyMaxMul: number;
+  nanoCellHealMul: number;
   /** Upgrade Magnet Range: tầm hút Core Bit, ô (0 = không hút). */
   magnetTiles: number;
 }
@@ -72,6 +73,7 @@ export const EMPTY_BUILD: BuildStats = {
   damageMul: 1,
   damageTakenMul: 1,
   energyMaxMul: 1,
+  nanoCellHealMul: 1,
   magnetTiles: 0,
 };
 
@@ -102,7 +104,12 @@ export function computeBuild(
   }
   const up = (
     id: string,
-    field: 'damagePerLevel' | 'damageTakenPerLevel' | 'energyMaxPerLevel' | 'magnetTilesPerLevel',
+    field:
+      | 'damagePerLevel'
+      | 'damageTakenPerLevel'
+      | 'energyMaxPerLevel'
+      | 'magnetTilesPerLevel'
+      | 'nanoCellHealPerLevel',
   ): number => {
     const u = upgrades?.shop.upgrades[id];
     if (!u || !upgrades) return 0;
@@ -132,6 +139,7 @@ export function computeBuild(
       1 - up('armor_plating', 'damageTakenPerLevel'),
     ),
     energyMaxMul: 1 + up('energy_cell', 'energyMaxPerLevel'),
+    nanoCellHealMul: 1 + up('nano_cell_cap', 'nanoCellHealPerLevel'),
     magnetTiles: up('magnet_range', 'magnetTilesPerLevel'),
   };
 }

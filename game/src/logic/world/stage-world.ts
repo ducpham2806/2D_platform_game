@@ -40,7 +40,14 @@ import {
 } from './hits';
 import { Barrier, LockedRoom, makeSecret, type Secret, standPoint, Vine } from './stage-mechanics';
 import { StageOptics } from './stage-optics';
-import { noWorldEvents, type WorldEvents, type WorldInput, type WorldPhase } from './world-types';
+import { NANO_CELL, NanoCells } from './nano-cell';
+import {
+  IDLE_INPUT,
+  noWorldEvents,
+  type WorldEvents,
+  type WorldInput,
+  type WorldPhase,
+} from './world-types';
 
 export interface WorldSetup {
   /** Bố cục màn (bản đồ Tiled hoặc ASCII đã dựng). Không có thì dựng từ `rows`. */
@@ -69,6 +76,8 @@ export interface WorldSetup {
   ownedWeapons?: readonly string[];
   /** Từ bản lưu (M11): vật phẩm bí mật đã nhặt (theo `item`), không hiện lại. */
   takenSecrets?: readonly string[];
+  /** Số Nano Cell đã sở hữu trong bản lưu, nạp đầy khi dựng lượt. */
+  nanoCellCount?: number;
   /** Từ bản lưu (M11): boss của màn đã hạ, thắng lại không nhận thưởng lần đầu nữa. */
   bossDefeated?: boolean;
   /**
@@ -97,6 +106,7 @@ export class StageWorld {
   readonly map: TileMap;
   readonly player: PlayerPhysics;
   readonly loadout: WeaponLoadout;
+  readonly nanoCells: NanoCells;
   readonly pool = new ProjectilePool();
   /** Vệt Prism Beam giữ lại để vẽ. Sát thương được giải quyết ngay lúc bắn. */
   readonly playerBeams: { boxes: readonly Box[]; remainingSec: number }[] = [];
@@ -203,6 +213,7 @@ export class StageWorld {
     );
     this.player = new PlayerPhysics(physics, this.map, this.checkpoint.x, this.checkpoint.y, maxHp);
     this.loadout = new WeaponLoadout(this.built.weapons, t);
+    this.nanoCells = new NanoCells(setup.player.nanoCell.max, setup.nanoCellCount ?? 0);
     this.runtime = new BuildRuntime(this.build.shield);
     this.defense = this.defenseOf(this.build);
     this.vanguard = vanguardOf(this.build, t);
@@ -378,6 +389,24 @@ export class StageWorld {
     }
     // Khiên hồi trước khi xử lý trúng đòn; đồng hồ dừng trong hit-stop và lúc chờ hồi sinh.
     if (this.runtime.step(dt)) ev.kaiShieldReady = true;
+    const pl = this.player;
+    this.nanoCells.step(dt);
+    if (input.healPressed && pl.state !== 'dead') {
+      const healed = this.nanoCells.use(
+        pl.hp,
+        pl.maxHp,
+        this.built.player.nanoCell,
+        this.build.nanoCellHealMul,
+      );
+      if (healed > 0) {
+        pl.hp += healed;
+        ev.healed = healed;
+        ev.nanoCellUsed = true;
+        pl.clearBufferedJump();
+        this.loadout.cancelCharge();
+      }
+    }
+    if (this.nanoCells.locked) input = IDLE_INPUT;
 
     for (let i = this.playerBeams.length - 1; i >= 0; i -= 1) {
       const beam = this.playerBeams[i]!;
@@ -396,7 +425,6 @@ export class StageWorld {
       ev.swapped = this.loadout.index !== before;
     }
 
-    const pl = this.player;
     const previousX = pl.centerX;
     const previousY = pl.box.y + pl.box.h / 2;
     const pe = pl.step(
@@ -488,7 +516,7 @@ export class StageWorld {
       observeBossDamage,
     );
     if (fire.beam && path) this.fireBeam(fire.beam, path, ev, killed, observeBossDamage);
-    this.field?.onKilled(killed, pl);
+    this.field?.onKilled(killed, pl, this.loadout);
     // Boss hết máu vì đạn của Kai trong bước này thì thắng ngay, trước khi xét đòn lên Kai
     // (trước đây cùng bước Kai chết thì boss được dựng lại đầy máu).
     if (this.phase === 'boss' && this.boss?.settleDefeat()) this.onBossDefeated(ev);
@@ -508,7 +536,13 @@ export class StageWorld {
     );
     if (ev.kaiShieldAbsorbed)
       this.hitStop = Math.max(this.hitStop, this.build.shield?.hitStopSteps ?? 0);
-    this.field?.updatePickups(pl, dt, ev, this.build.magnetTiles * this.setup.tileSize);
+    this.field?.updatePickups(
+      pl,
+      dt,
+      ev,
+      this.build.magnetTiles * this.setup.tileSize,
+      this.loadout,
+    );
 
     if (!this.updateLasers(ev, previousX, previousY)) this.updateHazards(ev);
     if (ev.hurtBy) this.lastHitCause = ev.hurtBy;
@@ -758,8 +792,10 @@ export class StageWorld {
       const p = pl.box;
       if (p.x < b.x + b.w && p.x + p.w > b.x && p.y < b.y + b.h && p.y + p.h > b.y) {
         s.taken = true;
-        this.collected.push(s.spawn.item);
-        ev.secretFound = s.spawn.item;
+        const item = s.spawn.item;
+        if (item === NANO_CELL && !this.collected.includes(item)) this.nanoCells.pickUp();
+        this.collected.push(item);
+        ev.secretsFound.push(item);
       }
     }
   }
@@ -892,6 +928,7 @@ export class StageWorld {
 
   private respawn(ev: WorldEvents): void {
     const pl = this.player;
+    this.nanoCells.resetLock();
     this.safe = this.checkpoint;
     this.optics?.reset();
     for (const c of this.crumbles) c.reset();

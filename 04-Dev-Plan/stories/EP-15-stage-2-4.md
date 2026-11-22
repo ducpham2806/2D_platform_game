@@ -316,3 +316,18 @@ Phase Step gọi chung API khi triển khai ST-08-09. Mở khóa vũ khí qua Cr
 - [x] Kiểm dữ liệu và thời gian báo đòn thật của hai mini-boss ở Thường và Thử thách.
 - [x] Kiểm tầm dọc, từng mép khung, rời khung giữa chuỗi và báo đủ thời gian khi quay lại.
 - [x] Kiểm luồng camera trong phòng thử, Chromium PC/Pixel 7 và luồng G1. [Ảnh và cách thử](../qa/ST-15-15/README.md)
+
+## ST-15-16: Nano Cell và viên năng lượng
+
+- **Thuộc Epic:** EP-15 · **Ưu tiên:** P1 · **Trạng thái:** DONE (22/11/2026) · **Engine:** Phaser 3.90.0.
+
+> **Là** người chơi, **tôi muốn** dùng Nano Cell mình đã nhặt và nạp lại năng lượng vũ khí boss, **để** chủ động hồi máu và tiếp tục dùng vũ khí trong màn.
+
+- **QB-50–54:** Mỗi màn 1/3/5/7 có một Nano Cell, tối đa bốn. Vào màn nạp đầy số đã sở hữu. Hồi sinh hoặc trở lại checkpoint sau hố giữ số lượt còn lại. Khi còn sống và thiếu máu, H hoặc RT dùng một lượt, kể cả khi đang choáng. Hồi 40% máu tối đa, khóa thao tác trong 0,4 s. Nano Cell Cap cộng 25% mức hồi gốc mỗi cấp, tối đa bốn cấp. Nút cảm ứng thuộc EP-14.
+- **QB-17, QB-20:** Hạ địch có thể rơi viên +4 năng lượng với xác suất 6% nếu còn vũ khí boss thiếu năng lượng. Hạ lại cùng địch trong lượt chỉ có thể rơi viên máu. Nạp vào vũ khí boss đang cầm. Khi cầm Arc Cannon, nạp vũ khí boss có phần trăm thấp nhất. Năng lượng giới hạn ở mức tối đa.
+
+### Nghiệm thu
+
+- [x] Kiểm dữ liệu, tương thích bản lưu cũ, giới hạn sức chứa, nhặt và nạp lại qua các lượt vào màn. Ghi Nano Cell theo id màn chiến dịch; đọc được bí mật từng lưu ở phòng M7.
+- [x] Kiểm điều kiện hồi máu, thời lượng khóa, hồi sinh, H/RT và Nano Cell Cap. HUD báo số lượt còn lại. Bản đồ chiến dịch đặt vật phẩm theo cờ `stages.nanoCell`.
+- [x] Kiểm điều kiện rơi viên năng lượng, chọn vũ khí, giới hạn hồi và hồi quy G1. Viên nằm lại nếu vũ khí đích đang đầy. [Ảnh và cách thử](../qa/ST-15-16/README.md).
