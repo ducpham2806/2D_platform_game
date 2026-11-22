@@ -1,5 +1,5 @@
 /**
- * Dữ liệu Stage 2–4 và khung kiểm tra (ST-15-01a/b, GDD 16 mục 2.1–2.3, 3.3, 3.7, 3.8, 4.3, 4.7).
+ * Dữ liệu Stage 2–4 và khung kiểm tra (ST-15-01a/b/c, GDD 16 mục 2–5).
  * Số chỉ có trong đặc tả (kẻ địch Stage 2 chưa có dữ liệu) ghi kèm mục.
  */
 import { describe, expect, it } from 'vitest';
@@ -230,7 +230,7 @@ describe('cơ chế băng (ST-15-01b, GDD 16 mục 3.8, 4.3)', () => {
       decelTilesPerSec2: 6,
       hurtUsesNormalFriction: true,
     });
-    expect(crumble).toEqual({ triggerSec: 1, warnAtSec: [0.4, 0.7], respawnSec: 4 });
+    expect(crumble).toMatchObject({ triggerSec: 1, warnAtSec: [0.4, 0.7], respawnSec: 4 });
     expect(coolant).toEqual({ frozenSteps: 3 });
   });
 
@@ -253,6 +253,40 @@ describe('cơ chế băng (ST-15-01b, GDD 16 mục 3.8, 4.3)', () => {
   });
 });
 
+describe('gió và bệ mây (ST-15-01c, GDD 16 mục 5.3)', () => {
+  it('nạp gió, bệ trôi và bệ chìm từ cấu hình game', () => {
+    const { wind, cloud, crumble } = config.stages.mechanics;
+    expect(wind).toEqual({
+      forceTilesPerSec: 2.5,
+      groundMul: 0.5,
+      dashIgnores: true,
+      wallSlideIgnores: true,
+      hurtIgnores: true,
+      cycleSec: 4,
+      warnSec: 1,
+      rampSec: 0.3,
+    });
+    expect(cloud).toEqual({ oneWay: true, drift: { speedTilesPerSec: 1.5 } });
+    expect(crumble.sink).toEqual({ triggerSec: 0.8, sinkTilesPerSec: 3, respawnSec: 4 });
+  });
+
+  it.each([
+    ['wind.forceTilesPerSec', 0],
+    ['wind.groundMul', 1.1],
+    ['wind.hurtIgnores', 'true'],
+    ['wind.cycleSec', 1.3],
+    ['wind.warnSec', 0.49],
+    ['wind.rampSec', 0],
+    ['cloud.oneWay', false],
+    ['cloud.drift.speedTilesPerSec', 0],
+    ['crumble.sink.triggerSec', 0.65],
+    ['crumble.sink.sinkTilesPerSec', 0],
+    ['crumble.sink.respawnSec', -1],
+  ])('từ chối cấu hình %s = %j', (path, value) => {
+    expect(() => parseStagesWith(path, value)).toThrow(`stages.mechanics.${path}`);
+  });
+});
+
 describe('vũ khí Warden: ngân sách năng lượng, sức mạnh khắc chế (GDD 16 mục 2.3)', () => {
   it('Vine Lash 14 và 14,3/s; Prism Beam 13,5 và 12,5/s; Frost Shard 14 và 12,5/s', () => {
     const max = config.weapons.energyMax;
@@ -262,7 +296,6 @@ describe('vũ khí Warden: ngân sách năng lượng, sức mạnh khắc chế
     expect(counterPerSec(weapon('Prism Beam'))).toBeCloseTo(12.5, 6);
     expect(energyBudget(weapon('Frost Shard'), max)).toBe(14);
     expect(counterPerSec(weapon('Frost Shard'))).toBeCloseTo(12.5, 6);
-    expect(energyBudget(weapon('Gale Cutter'), max)).toBeUndefined();
     expect(checkWeaponBalance(config.weapons)).toEqual([]);
   });
 
@@ -300,6 +333,7 @@ describe('vũ khí Warden: ngân sách năng lượng, sức mạnh khắc chế
     expect(loadout.grant('Frost Shard')).toBe(true);
     expect(loadout.has('Frost Shard')).toBe(true);
     expect(loadout.grant('Gale Cutter')).toBe(false);
+    expect(loadout.has('Gale Cutter')).toBe(false);
   });
 });
 
@@ -353,6 +387,60 @@ describe('Frost Shard (ST-15-01b, QB-19)', () => {
     });
     expect(errors.join('\n')).toMatch(/Frost Shard: ngân sách 18/);
     expect(errors.join('\n')).toMatch(/Frost Shard: sức mạnh khắc chế 10\.0\/s < 12\/s/);
+  });
+});
+
+describe('Gale Cutter (ST-15-01c, GDD 16 mục 5.7)', () => {
+  it('nạp cấu hình và có ngân sách 14 khi trúng cả hai chiều', () => {
+    const gale = weapon('Gale Cutter');
+    expect(gale).toMatchObject({
+      from: 'Aeris',
+      weakBoss: ['Terra'],
+      damageVsWeak: 2.5,
+      weakStunSec: 0.5,
+      energyCost: 4,
+      behavior: {
+        type: 'boomerang',
+        outTiles: 6,
+        speedTilesPerSec: 11,
+        sizePx: { w: 12, h: 12 },
+        damageMul: 1,
+        maxOnScreen: 1,
+        maxCancelsPerThrow: 2,
+        cancelKinds: ['enemyShot', 'bomb'],
+      },
+    });
+    expect(energyBudget(gale, config.weapons.energyMax)).toBe(14);
+    expect(counterPerSec(gale)).toBeUndefined();
+    expect(stage(3).armorCacheRequiresWeapon).toBe(gale.name);
+    expect(stage(4).weaponGranted).toBe(gale.name);
+    expect(stage(5).bossWeakness).toBe(gale.name);
+  });
+
+  it.each([
+    ['outTiles', 0],
+    ['speedTilesPerSec', -1],
+    ['sizePx', { w: 12, h: 0 }],
+    ['maxOnScreen', 0],
+    ['maxCancelsPerThrow', 1.5],
+    ['cancelKinds', ['charged']],
+    ['cancelKinds', ['bomb', 'bomb']],
+  ])('từ chối boomerang.%s = %j', (key, value) => {
+    const raw = clone(data.weapons);
+    const gale = (raw.bossWeapons as Json[]).find((w) => w.name === 'Gale Cutter')!;
+    (gale.behavior as Json)[key] = value;
+    expect(() => parseWeapons(raw)).toThrow(`behavior.${key}`);
+  });
+
+  it.each([
+    [0, 'energyCostOf28'],
+    [3, 'Gale Cutter: ngân sách 18'],
+  ])('từ chối tiêu hao %s', (cost, error) => {
+    const errors = invariantsWith('weapons', (raw) => {
+      const gale = (raw.bossWeapons as Json[]).find((w) => w.name === 'Gale Cutter')!;
+      gale.energyCostOf28 = cost;
+    });
+    expect(errors.join('\n')).toContain(error);
   });
 });
 

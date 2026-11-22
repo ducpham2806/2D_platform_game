@@ -16,7 +16,7 @@ export interface StageMechanics {
   minEnemySpawnTiles: number;
   /** EXP, Core Bit của mỗi kẻ địch chỉ nhận một lần mỗi lượt vào màn (kẻ địch dựng lại không cho lại). */
   enemyRewardOncePerRun: boolean;
-  /** Mối nguy môi trường theo nhịp (laser) báo trước ít nhất chừng này giây (GDD 16 mục 3.12). */
+  /** Mối nguy môi trường theo nhịp báo trước ít nhất chừng này giây (GDD 16). */
   minTelegraphSec: number;
   /** Laser môi trường Stage 2 (GDD 16 mục 3.3; dùng từ ST-15-02). */
   laser: LaserMechanics;
@@ -28,14 +28,29 @@ export interface StageMechanics {
     decelTilesPerSec2: number;
     hurtUsesNormalFriction: boolean;
   };
-  /** Bục băng vỡ (GDD 16 mục 4.3; dùng từ ST-15-08a). */
+  /** Bục băng vỡ và bệ mây tan dùng chung mốc báo nứt (GDD 16 mục 4.3, 5.3). */
   crumble: {
     triggerSec: number;
     warnAtSec: readonly [number, number];
     respawnSec: number;
+    sink: { triggerSec: number; sinkTilesPerSec: number; respawnSec: number };
   };
   /** Dòng làm mát ở Két giáp Stage 2 (GDD 16 mục 3.8; dùng từ ST-15-04). */
   coolant: { frozenSteps: number };
+  /** Gió và bệ mây Stage 4 (GDD 16 mục 5.3, QB-07). */
+  wind: WindMechanics;
+  cloud: { oneWay: true; drift: { speedTilesPerSec: number } };
+}
+
+export interface WindMechanics {
+  forceTilesPerSec: number;
+  groundMul: number;
+  dashIgnores: boolean;
+  wallSlideIgnores: boolean;
+  hurtIgnores: boolean;
+  cycleSec: number;
+  warnSec: number;
+  rampSec: number;
 }
 
 export interface LaserMechanics {
@@ -122,7 +137,9 @@ function parseIce(value: unknown, p: string): StageMechanics['ice'] {
 
 function parseCrumble(value: unknown, p: string): StageMechanics['crumble'] {
   const crumble = obj(value, p);
+  const sink = obj(crumble.sink, `${p}.sink`);
   const triggerSec = num(crumble.triggerSec, `${p}.triggerSec`, { min: 0.5 });
+  const sinkTriggerSec = num(sink.triggerSec, `${p}.sink.triggerSec`, { min: 0.5 });
   const warnings = arr(crumble.warnAtSec, `${p}.warnAtSec`);
   if (warnings.length !== 2)
     throw new ConfigError(`${p}.warnAtSec: cần đúng hai mốc nứt sau lúc kích hoạt`);
@@ -130,10 +147,50 @@ function parseCrumble(value: unknown, p: string): StageMechanics['crumble'] {
   const second = num(warnings[1], `${p}.warnAtSec[1]`);
   if (first >= second || second >= triggerSec)
     throw new ConfigError(`${p}.warnAtSec: hai mốc phải tăng dần và trước triggerSec`);
+  if (second >= sinkTriggerSec)
+    throw new ConfigError(`${p}.warnAtSec: hai mốc phải trước ${p}.sink.triggerSec`);
   return {
     triggerSec,
     warnAtSec: [first, second],
     respawnSec: num(crumble.respawnSec, `${p}.respawnSec`, { min: 0 }),
+    sink: {
+      triggerSec: sinkTriggerSec,
+      sinkTilesPerSec: positiveNum(sink.sinkTilesPerSec, `${p}.sink.sinkTilesPerSec`),
+      respawnSec: num(sink.respawnSec, `${p}.sink.respawnSec`, { min: 0 }),
+    },
+  };
+}
+
+function parseWind(value: unknown, p: string, minWarnSec: number): WindMechanics {
+  const wind = obj(value, p);
+  const groundMul = num(wind.groundMul, `${p}.groundMul`, { min: 0 });
+  if (groundMul > 1) throw new ConfigError(`${p}.groundMul: phải ≤ 1`);
+  const cycleSec = positiveNum(wind.cycleSec, `${p}.cycleSec`);
+  const warnSec = num(wind.warnSec, `${p}.warnSec`, { min: minWarnSec });
+  const rampSec = positiveNum(wind.rampSec, `${p}.rampSec`);
+  if (warnSec + rampSec >= cycleSec)
+    throw new ConfigError(`${p}.cycleSec: phải dài hơn tổng warnSec và rampSec`);
+  return {
+    forceTilesPerSec: positiveNum(wind.forceTilesPerSec, `${p}.forceTilesPerSec`),
+    groundMul,
+    dashIgnores: bool(wind.dashIgnores, `${p}.dashIgnores`),
+    wallSlideIgnores: bool(wind.wallSlideIgnores, `${p}.wallSlideIgnores`),
+    hurtIgnores: bool(wind.hurtIgnores, `${p}.hurtIgnores`),
+    cycleSec,
+    warnSec,
+    rampSec,
+  };
+}
+
+function parseCloud(value: unknown, p: string): StageMechanics['cloud'] {
+  const cloud = obj(value, p);
+  if (cloud.oneWay !== true) throw new ConfigError(`${p}.oneWay: bệ mây phải là bệ một chiều`);
+  const drift = obj(cloud.drift, `${p}.drift`);
+  return {
+    oneWay: true,
+    drift: {
+      speedTilesPerSec: positiveNum(drift.speedTilesPerSec, `${p}.drift.speedTilesPerSec`),
+    },
   };
 }
 
@@ -143,6 +200,7 @@ export function parseStageMechanics(value: unknown): StageMechanics {
   const pit = obj(m.pit, `${p}.pit`);
   const spikes = obj(m.spikes, `${p}.spikes`);
   const vine = obj(m.vine, `${p}.vine`);
+  const minTelegraphSec = num(m.minTelegraphSec, `${p}.minTelegraphSec`, { min: 0 });
   const out: StageMechanics = {
     respawnSec: num(m.respawnSec, `${p}.respawnSec`, { min: 0 }),
     maxRespawnSec: num(m.maxRespawnSec, `${p}.maxRespawnSec`, { min: 0 }),
@@ -159,12 +217,8 @@ export function parseStageMechanics(value: unknown): StageMechanics {
       jumpBonus: num(vine.jumpBonus, `${p}.vine.jumpBonus`, { min: 0 }),
     },
     minEnemySpawnTiles: num(m.minEnemySpawnTiles, `${p}.minEnemySpawnTiles`, { min: 0 }),
-    minTelegraphSec: num(m.minTelegraphSec, `${p}.minTelegraphSec`, { min: 0 }),
-    laser: parseLaser(
-      m.laser,
-      `${p}.laser`,
-      num(m.minTelegraphSec, `${p}.minTelegraphSec`, { min: 0 }),
-    ),
+    minTelegraphSec,
+    laser: parseLaser(m.laser, `${p}.laser`, minTelegraphSec),
     mirror: parseMirror(m.mirror, `${p}.mirror`),
     sensor: {
       holdSec: num(obj(m.sensor, `${p}.sensor`).holdSec, `${p}.sensor.holdSec`, { min: 0 }),
@@ -174,6 +228,8 @@ export function parseStageMechanics(value: unknown): StageMechanics {
     coolant: {
       frozenSteps: int(obj(m.coolant, `${p}.coolant`).frozenSteps, `${p}.coolant.frozenSteps`, 1),
     },
+    wind: parseWind(m.wind, `${p}.wind`, minTelegraphSec),
+    cloud: parseCloud(m.cloud, `${p}.cloud`),
     enemyRewardOncePerRun: (() => {
       if (typeof m.enemyRewardOncePerRun !== 'boolean')
         throw new ConfigError(`${p}.enemyRewardOncePerRun: cần true/false`);

@@ -123,8 +123,18 @@
       ],
       "damageVsWeak": 2.5,
       "weakStunSec": 0.5,
-      "energyCostOf28": null,
-      "behavior": null
+      "energyCostOf28": 4,
+      "behavior": {
+        "type": "boomerang",
+        "outTiles": 6,
+        "speedTilesPerSec": 11,
+        "sizePx": { "w": 12, "h": 12 },
+        "damageMul": 1,
+        "maxOnScreen": 1,
+        "maxCancelsPerThrow": 2,
+        "cancelKinds": ["enemyShot", "bomb"],
+        "note": "GDD 16 mục 5.7, Q4. Trúng mỗi mục tiêu một lần mỗi chiều. Chỉ hủy đạn thường và bom của kẻ địch thường. Có thể ném lại sau khi đón lưỡi. Hành vi triển khai ở ST-15-05. [PLACEHOLDER]"
+      }
     },
     {
       "name": "Frost Shard",

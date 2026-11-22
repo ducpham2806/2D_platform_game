@@ -29,7 +29,7 @@ Tài liệu GDD mô tả luật chính. File này gom các **tình huống biên
 | QB-03 | Bị đánh khi đang lướt (sau khung bất tử) | Hủy lướt, mất tốc độ dash-jump, bật lùi như thường | — | Sau cổng (viết test) |
 | QB-04 | Chết khi đang lướt hoặc đang lơ lửng | Hồi sinh như thường; lượt lướt trên không được hồi | — | Sau cổng (viết test) |
 | QB-05 | Bắn khi leo thang, dây | Không bắn khi leo; nhảy rời thang cao 2 ô; leo 3 ô/s | `player.json → climb` (chưa có) | Sau cổng |
-| QB-07 | Bị đánh khi đứng trong vùng gió | Gió không đẩy Kai trong thời gian choáng vì trúng đòn (`hurt.stunSec` 0,3 s), để không rơi hố chỉ vì bị đánh | `wind.hurtIgnores: true` (chưa có) | Sau cổng (Stage 4) |
+| QB-07 | Bị đánh khi đứng trong vùng gió | Gió không đẩy Kai trong thời gian choáng vì trúng đòn (`hurt.stunSec` 0,3 s), để không rơi hố chỉ vì bị đánh | `wind.hurtIgnores: true` (ST-15-01c) | Hành vi ở ST-15-08b sau G1 |
 | QB-06 | Dây di chuyển tới đầu mút | Dừng 0,5 s rồi quay đầu; Kai đứng trên dây đi theo dây | `mechanics.movingVine` (chưa có) | Sau cổng |
 
 ## 2. Chiến đấu, đổi vũ khí, năng lượng

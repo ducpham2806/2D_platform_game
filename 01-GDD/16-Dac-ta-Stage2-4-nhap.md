@@ -145,7 +145,7 @@ Bậc base của kẻ địch mới lấy theo kẻ địch Stage 1 cùng vai tr
 
 ### 2.3 Vũ khí Warden: ngân sách năng lượng
 
-Vũ khí Warden dùng cùng **ngân sách sát thương mỗi thanh năng lượng**. `weapons.json` đã có cấu hình hành vi cho Vine Lash, Prism Beam và Frost Shard. Bộ kiểm cân bằng đọc cấu hình Frost Shard từ ST-15-01b, còn Loadout cấp vũ khí từ ST-15-04.
+Vũ khí Warden dùng cùng **ngân sách sát thương mỗi thanh năng lượng**. `weapons.json` đã có cấu hình cho Vine Lash, Prism Beam, Frost Shard và Gale Cutter. Bộ kiểm cân bằng tính hai lượt trúng cho Gale Cutter từ ST-15-01c. Loadout sẽ cấp vũ khí khi ST-15-05 có hành vi ném và đón lưỡi.
 
 ```text
 ngân sách = floor(energyMax / energyCostOf28) × damageMul × hitsPerUse        mục tiêu 14 ± 15%
@@ -594,7 +594,7 @@ Ghi chú: wireframe Stage 4 ghi bệ mây rơi ở D là "cơ chế" của đo�
 | Gió đổi hướng | Chu kỳ `cycleSec`; trước khi đổi `warnSec`: cờ quay, mũi tên ở mép màn hình đổi chiều; lực đổi dần trong `rampSec` | `wind.cycleSec = 4`, `wind.warnSec = 1,0`, `wind.rampSec = 0,3` |
 | Bệ mây | Bục một chiều (đứng từ trên, đi xuyên từ dưới, xuống bằng xuống + nhảy như bục một chiều có sẵn) | `cloud.oneWay = true` |
 | Bệ mây trôi | Đi qua lại giữa 2 điểm ghi trên bản đồ, chở Kai bằng `dx`, `dy` như dây leo | `cloud.drift.speedTilesPerSec = 1,5` |
-| Bệ mây tan (`CrumblePlatform`, `mode: "sink"`) | Như băng vỡ nhưng chìm xuống `sinkTilesPerSec` thay vì vỡ; màu xám để phân biệt mây trắng | `crumble.sink.triggerSec = 0,8`, `sinkTilesPerSec = 3`, `respawnSec = 4` |
+| Bệ mây tan (`CrumblePlatform`, `mode: "sink"`) | Dùng hai mốc báo nứt `crumble.warnAtSec` của băng vỡ, sau đó chìm xuống với tốc độ `sinkTilesPerSec`. Màu xám để phân biệt mây trắng | `crumble.sink.triggerSec = 0,8`, `sinkTilesPerSec = 3`, `respawnSec = 4` |
 | Hố | Luật hố Stage 1 (20 sát thương, về checkpoint, không chết nếu còn máu) | `mechanics.pit` (có sẵn) |
 
 Kai trên không đi ngược gió còn 5,5 − 2,5 = 3,0 ô/s, xuôi gió 8,0 ô/s. Vì vậy khe nhảy ngược gió phải đo riêng sau cổng `[SAU CỔNG]`; luật thiết kế: khe đường chính ngược gió ≤ `safeGapTiles` đo **khi có gió ngược**.
@@ -678,7 +678,7 @@ Pha 2 Thử thách: `shot, gust, twister, charge`. Pha 3 Thử thách: `gust, tw
 | --- | --- |
 | `behavior.type` | `boomerang` (mới): lưỡi gió bay ra rồi quay về Kai |
 | Thông số | `outTiles = 6`, `speedTilesPerSec = 11`, `sizePx = 12 × 12`, `damageMul = 1` mỗi lượt (đi và về, mỗi mục tiêu tối đa 1 lần mỗi lượt), `maxOnScreen = 1` |
-| Hủy đạn | Lưỡi chạm đạn của **kẻ địch thường** loại `enemyShot`, `bomb` thì hủy, tối đa `maxCancelsPerThrow = 2` mỗi lần ném. Không hủy đạn của mini-boss và boss, tia, sóng, đòn đỉnh (Q4) |
+| Hủy đạn | Lưỡi chạm đạn của **kẻ địch thường** thuộc `cancelKinds` (`enemyShot`, `bomb`) thì hủy, tối đa `maxCancelsPerThrow = 2` mỗi lần ném. Không hủy đạn của mini-boss và boss, tia, sóng, đòn đỉnh (Q4) |
 | Năng lượng | `energyCostOf28 = 4` |
 | Điểm yếu | Terra (Stage 5, Alpha): "lưỡi gió mài mòn giáp đá" |
 | Khám phá | Thổi tan sương lạnh ở Két giáp Stage 3 (`Barrier`, `requiresWeapon: "Gale Cutter"`) |
@@ -802,14 +802,14 @@ Quy ước như EP-08 đến EP-10: Story ≤ 1–2 ngày, mỗi Story nhúng s�
 | --- | --- | --- | --- |
 | ST-15-01a | Dữ liệu Stage 2 và khung kiểm tra chung: `enemies`, `bosses`, `weapons` (Prism Beam), `stages` (`expBudget`, `enemyRewardMul {exp, coreBit}`), `mechanics.laser`, `mirror`, `sensor`; ngân sách năng lượng, sức mạnh khắc chế ≥ 12, telegraph, không chết một đòn, Σ EXP = `expBudget` ± 5%. **Xong 15/11/2026, phạm vi đổi theo duyệt:** dữ liệu kẻ địch, mini-boss, boss Stage 2 (`enemies`, `bosses`) dời sang Story làm hành vi của chúng (06, 07, 09, 10), vì bộ kiểm dữ liệu từ chối hành vi, đòn chưa có; có `stages` (`expBudget`, `enemyRewardMul`, nối vào thưởng, mini-boss không nhân), `mechanics.laser/mirror/sensor`, Prism Beam (`beam`, chưa cấp được tới 03), kiểm ngân sách, sức mạnh khắc chế, trần đòn boss theo màn, laser không chết một đòn, EXP cộng dồn theo cấp khuyến nghị; Σ EXP ± 5% là hàm thuần (`logic/stage/stage-exp.ts`) dùng khi có bản đồ | | 1 ngày |
 | ST-15-01b | **Xong 21/11/2026.** Cấu hình và kiểm Frost Shard, `ice`, `crumble`, `coolant`. Người Tuyết Máy, Tháp Băng và Frost Titan đi cùng ST-15-06; dữ liệu Cryo đi cùng ST-15-11 để kiểm cùng hành vi | 01a | 0,5 ngày |
-| ST-15-01c | Dữ liệu Stage 4 (kẻ địch, Gale Roc, Aeris, Gale Cutter, `wind`, `cloud`) | 01a | 0,5 ngày |
+| ST-15-01c | Dữ liệu Gale Cutter, `wind`, `cloud`, `crumble.sink` (xong 21/11/2026) | 01a | 0,5 ngày |
 | ST-15-02 | `LaserPath`, `LaserEmitter`, gương 2 góc, cảm biến mở cửa, dữ liệu Tiled và phòng thử laser. Đường tia dùng chung cho báo trước và sát thương. Góc ban đầu và vị trí gương khai báo theo bản đồ, chốt bố cục Stage 2 sau G1 (ST-17-01) | 01a | 2 ngày |
 | ST-15-03 | Prism Beam (`beam`): bắn, phản xạ, xuyên, dừng ở khiên Lính Kén (QB-16, QB-18); `Barrier` nhận tia (rễ khô Két Stage 1) | 02 | 1,5 ngày |
 | ST-15-04 | **Xong 21/11/2026.** API vô hiệu QB-19, Frost Shard `shard` và `CoolantFlow`. Phòng thử băng cho mượn vũ khí, dùng ba bậc một chiều để lên gờ. **Điều kiện của Phase Step (ST-08-09)** | 01b | 2 ngày |
 | ST-15-05 | Gale Cutter (`boomerang`, hủy tối đa 2 đạn kẻ địch thường mỗi lần ném); sương lạnh = `Barrier` (Két Stage 3) | 01c | 1,5 ngày |
 | ST-15-06 | Kẻ địch dùng lại hành vi: Gương Quang (`drone` + `bounces`, `bankShot`), Người Tuyết Máy (dữ liệu), Tháp Băng (`turret` + `lob`), Frost Titan (`golem` + `landShockwave`), kèm bản Thử thách Thêm dữ liệu và bản Thử thách của các kẻ địch này (dời từ 01a) | 01a, 01b | 2 ngày |
 | ST-15-08a | `CrumblePlatform` (break, sink) và bệ mây trôi (đường hai điểm): phần cơ chế **không** đụng `player-physics` | 01b, 01c | 1 ngày |
-| ST-15-09 | Mini-boss Prism Sentinel và Gale Roc: lớp `Boss` + bộ chuyển cho `LockedRoom` (Q1 đã chốt; Frost Titan dùng `golem` ở ST-15-06). Gió đẩy của Vỗ Cánh nối vào `WindZone` ở ST-15-08b Thêm dữ liệu Prism Sentinel, Gale Roc (dời từ 01a) | 01c, 02, 14, 15 | 2,5 ngày |
+| ST-15-09 | Mini-boss Prism Sentinel và Gale Roc dùng lớp `Boss` và bộ chuyển cho `LockedRoom` (Q1). Gió đẩy của Vỗ Cánh nối vào `WindZone` ở ST-15-08b. Thêm dữ liệu Prism Sentinel (từ 01a) và Gale Roc (từ 01c) | 01c, 02, 14, 15 | 2,5 ngày |
 | ST-15-10 | Boss Lumen: `beam`, dịch chuyển, `focus` (Thử thách); mô phỏng bot; thêm dữ liệu Lumen (dời từ 01a). Phụ thuộc 03: thắng Lumen trước khi Prism Beam có hành vi thì Loadout không cấp và bản lưu không ghi vũ khí | 02, 03, 14 | 2 ngày |
 | ST-15-13 | Phòng thử ASCII cho phần trước cổng (kẻ địch, cơ chế, mini-boss, Lumen), nối màn Chuẩn bị và hội thoại boss; tín hiệu hướng dẫn mới. Phòng của 07, 08b, 11, 12 thêm trong chính các Story đó | 02–06, 08a, 09, 10 | 1,5 ngày |
 | ST-15-14 | **Boss an toàn:** `weakStunCooldownSec` 1,5 s chống khóa choáng (QB-14), `phaseShiftSec` 0,6 s khi một đòn vượt hai ngưỡng pha (QB-31); áp cả Thorna. **Xong 15/11/2026** (làm trước 01a: luật chung, `stories/EP-15-stage-2-4.md`) | 01a | 1 ngày |
@@ -821,9 +821,9 @@ Quy ước như EP-08 đến EP-10: Story ≤ 1–2 ngày, mỗi Story nhúng s�
 | Mã | Tên | Phụ thuộc | Cỡ |
 | --- | --- | --- | --- |
 | ST-15-08b | Sàn trơn (gia tốc, ma sát theo loại ô) và `WindZone` trong `player-physics`, kèm `wind.hurtIgnores` (QB-07) | Qua cổng, 01b, 01c | 1,5 ngày |
-| ST-15-07 | Kẻ địch hành vi mới: Tháp Laser (`laserTurret`), Chim Cắt Gió (`diver`), Cối Xoáy (`fan`), kèm bản Thử thách. Tháp Laser chỉ cần ST-15-02, có thể tách làm sớm nếu thiếu việc trước cổng Thêm dữ liệu Tháp Laser, Chim Cắt Gió, Cối Xoáy (dời từ 01a) | 02, 08b, 01c | 2,5 ngày |
+| ST-15-07 | Thêm dữ liệu và hành vi Tháp Laser (`laserTurret`, từ 01a), Chim Cắt Gió (`diver`, từ 01c), Cối Xoáy (`fan`, từ 01c), kèm bản Thử thách. Có thể tách Tháp Laser làm sớm vì chỉ cần ST-15-02 | 02, 08b, 01c | 2,5 ngày |
 | ST-15-11 | Boss Cryo: dữ liệu Cryo, `slam.slickFloorSec`, `shatter` (Thử thách); mô phỏng bot | 04, 08a, 08b, 14 | 2 ngày |
-| ST-15-12 | Boss Aeris: bay, `shot.aim`, `gust`, `rain` + hút, `twister` (Thử thách); mô phỏng bot. Tầm với Aeris (độ cao bay 3–6 ô, lốc ≤ 2,5 ô) là tham số, chốt ở ST-17-01 | 08b, 14 | 2,5 ngày |
+| ST-15-12 | Dữ liệu Aeris (từ 01c), hành vi bay, `shot.aim`, `gust`, `rain` + hút, `twister` (Thử thách) và mô phỏng bot. Cần ST-15-05 để cấp Gale Cutter khi thắng. Tầm với Aeris (độ cao bay 3–6 ô, lốc ≤ 2,5 ô) chốt ở ST-17-01 | 05, 08b, 14 | 2,5 ngày |
 | ST-17-01 | Đo metric thật bằng thang khe trong phòng thử (có và không có gió, trên băng); chốt `ice.*`, `wind.*`, `crumble.triggerSec`, góc gương, độ cao bay và lốc Aeris, khe né đòn boss | Qua cổng, ST-15-08b, ST-15-13 | 1 ngày |
 | ST-17-02 | Bản đồ Tiled Stage 2 (A–D, phòng boss, checkpoint theo độ khó gồm CP3b, CP-S3, bí mật, Két, Gương Rối); test đồ thị đường chính chỉ cần bộ động tác gốc + Arc Cannon | ST-17-01; EP-16 (Tiled, camera QB-120); Story checkpoint vùng chữ nhật (QB-40); tài liệu truyện Memory Log 2–4 (Q10) | 2 ngày |
 | ST-17-03 | Bản đồ Tiled Stage 3 | Như ST-17-02; ST-15-11 | 2 ngày |
