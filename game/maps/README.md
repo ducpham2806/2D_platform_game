@@ -51,7 +51,7 @@ Script tạo kèm tileset xám `graybox-tiles.png`. Sau đó mở file `.json` b
 
 ## Các bản đồ
 
-| File               | Nội dung                                                                                                                                                                                        |
-| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `m7-test.json`     | Phòng thử màn chơi (M7): gai, hố, 2 checkpoint, 2 dây leo đu ngược pha trên hố gai, phòng khóa (Tháp Pháo + Drone), vách vỡ bằng Arc Cannon giấu Nano Cell, rễ khô cần Prism Beam chắn Két giáp |
-| `optics-test.json` | Phòng thử laser, gương và cảm biến Stage 2. Vào từ menu bằng nút Phòng thử laser hoặc phím O, giữ nút Bắn tới nạp vừa rồi thả để xoay gương và mở cửa.                                          |
+| File               | Nội dung                                                                                                                                                                                                   |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `m7-test.json`     | Phòng thử màn chơi (M7): gai, hố, 2 checkpoint, 2 dây leo đu ngược pha trên hố gai, phòng khóa (Tháp Pháo + Drone), vách vỡ bằng Arc Cannon giấu Nano Cell, rễ khô cần Prism Beam chắn Két giáp            |
+| `optics-test.json` | Phòng thử laser, gương và cảm biến Stage 2. Vào từ menu bằng nút Phòng thử laser hoặc phím O, giữ nút Bắn tới nạp vừa rồi thả để xoay gương. Hoặc dùng vũ khí Prism Beam cho mượn để bắn dội vào cảm biến. |

@@ -6,7 +6,7 @@ import type {
   ShieldChargerData,
   TurretData,
 } from '../../core/enemy-config';
-import type { Projectile } from '../combat/projectiles';
+import type { ShieldContact } from '../combat/projectiles';
 import { spawnShockwaves } from '../boss/enemy-projectile';
 import { Enemy, type EnemyContext, type EnemyHitResult } from './enemy';
 
@@ -212,7 +212,7 @@ export class ShieldCharger extends Enemy {
     return this.shieldLeft > 0;
   }
 
-  protected override shieldCheck(p: Projectile): EnemyHitResult | undefined {
+  protected override shieldCheck(p: ShieldContact): EnemyHitResult | undefined {
     if (!this.shieldUp) return undefined;
     // Đạn bay vào mặt khiên: ngược hướng nhìn; roi đứng yên thì xét phía của nó.
     const fromFront =

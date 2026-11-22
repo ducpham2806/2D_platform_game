@@ -1,4 +1,6 @@
 /** Đầu vào và sự kiện của thế giới màn chơi (logic thuần). */
+import type { FireKind } from '../combat/loadout';
+
 export interface WorldInput {
   moveX: number;
   moveY: number;
@@ -36,7 +38,7 @@ export type WorldPhase = 'explore' | 'boss' | 'won';
 
 /** Chuyện xảy ra trong bước vừa chạy, để scene phát âm thanh, rung, hiện chữ. */
 export interface WorldEvents {
-  fired: 'shot' | 'mid' | 'charged' | 'sweep' | undefined;
+  fired: FireKind | undefined;
   emptyWeapon: boolean;
   swapped: boolean;
   hitTarget: boolean;

@@ -86,6 +86,11 @@ export function drawDynamic(
   if (world.boss) drawBoss(g, world.boss, t, world.map, timeMs, showCore);
   drawEnemies(g, world.enemies, timeMs);
   if (world.field) drawPickups(g, world.field.pickups.all, timeMs);
+  if (world.playerBeams.length > 0) {
+    g.fillStyle(0x9ef5ff, 1);
+    for (const beam of world.playerBeams)
+      for (const b of beam.boxes) g.fillRect(b.x, b.y, b.w, b.h);
+  }
   for (const p of world.pool.all) {
     g.fillStyle(PROJECTILE_COLORS[p.kind], p.kind === 'sweep' ? 0.6 : 1).fillRect(
       p.x,

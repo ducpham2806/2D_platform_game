@@ -1,8 +1,9 @@
 import type { StageMechanics } from '../../core/stage-mechanics-config';
-import type { Projectile } from '../combat/projectiles';
+import { overlaps, type Projectile } from '../combat/projectiles';
 import type { Enemy } from '../enemy/enemy';
 import type { Box } from '../player/collision';
 import type { Platform } from '../player/player-physics';
+import { laserBox, type LaserSegment, laserVector } from '../stage/laser-path';
 import type {
   BarrierSpawn,
   Cell,
@@ -198,6 +199,20 @@ export class Barrier {
     const touching =
       p.x < b.x + b.w + 1 && p.x + p.w > b.x - 1 && p.y < b.y + b.h + 1 && p.y + p.h > b.y - 1;
     if (!touching) return false;
+    return this.breakOpen();
+  }
+
+  /** Tia kết thúc ngay mặt ô đặc, nên xét thêm một lát mỏng ngay sau đầu tia. */
+  tryBreakByBeam(weapon: string, leg: LaserSegment, width: number): boolean {
+    if (this.broken || weapon !== this.spawn.requiresWeapon) return false;
+    const dir = laserVector(leg);
+    const from = leg.to;
+    const to = { x: from.x + dir.x * 1e-6, y: from.y + dir.y * 1e-6 };
+    if (!overlaps(laserBox({ from, to }, width), this.box())) return false;
+    return this.breakOpen();
+  }
+
+  private breakOpen(): true {
     this.broken = true;
     this.fill(Tile.Empty);
     return true;

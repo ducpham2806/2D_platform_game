@@ -254,6 +254,9 @@ export class StageScene extends Phaser.Scene {
           }
         : {}),
       ...fromSave,
+      ...(this.def.practiceWeapons
+        ? { ownedWeapons: [...(save?.data.character.weapons ?? []), ...this.def.practiceWeapons] }
+        : {}),
       ...(rewardClaimed === undefined ? {} : { bossRewardClaimed: rewardClaimed }),
       level: this.levels
         ? syncLevel(this.levels.info.level, this.levelRange, config.stages.levelSync)

@@ -43,7 +43,7 @@ Tài liệu GDD mô tả luật chính. File này gom các **tình huống biên
 | QB-14 | Vũ khí bắn nhanh khóa choáng boss liên tục | Trúng điểm yếu vẫn ×2,5 sát thương, nhưng sau khi hết choáng thì 1,5 s không choáng lại được. Trúng trong lúc boss đang choáng (choáng điểm yếu hoặc choáng sau Mưa đạn, Hoa Nở) không làm mới, không kéo dài choáng. Choáng không xóa hạt Hoa Nở đã thả | `bosses.json → rules.weakStunCooldownSec` 1,5 | Code (ST-15-14, `tests/boss-safety.test.ts`) |
 | QB-15 | Đổi qua lại hai vũ khí khi có nhiều ô | Vũ khí xếp theo thứ tự màn. Giữ nút đổi ≥ 0,3 s: đổi qua lại hai vũ khí dùng gần nhất. Cảm ứng: vuốt lên trên nút đổi | `controls.json → quickSwapHoldSec` (chưa có) | Sau cổng (cần khi có ≥ 3 vũ khí) |
 | QB-16 | Vũ khí boss bắn vào khiên Lính Kén | Mỗi cú trúng tính 1 lần vào `shieldHits`, bất kể sát thương | `enemies.json` | Story Stage 2–4 |
-| QB-18 | Prism Beam gặp khiên Lính Kén | Tia dừng ở mặt trước khiên, tính 1 lần `shieldHits`, không xuyên | — | Story Stage 2–4 (EP-15) |
+| QB-18 | Prism Beam gặp khiên Lính Kén | Tia dừng ở mặt trước khiên, tính 1 lần `shieldHits` kể cả phát phá khiên. Tia gặp mặt sau xuyên tiếp | — | Code (ST-15-03, `tests/prism-beam.test.ts`) |
 | QB-19 | Frost Shard và Phase Step cùng làm vô hiệu một kẻ địch | Lấy `disabledSec` lớn hơn, không cộng dồn; boss và mini-boss miễn | `disabledSec` | Story Stage 2–4 (EP-15) |
 | QB-17 | Vật phẩm năng lượng rơi | Tỉ lệ 6%, hồi 4 năng lượng vào vũ khí đang cầm; đang cầm Arc Cannon thì nạp vũ khí boss có % thấp nhất; không rơi khi mọi vũ khí đầy | `pickups.energyChance 0.06`, `energy 4` (chưa có) | Story MVP |
 

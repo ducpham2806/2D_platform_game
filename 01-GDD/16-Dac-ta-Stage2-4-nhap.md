@@ -338,7 +338,7 @@ Pha 2 Thử thách: `shot, beam, focus, roots`. Pha 3 Thử thách: `beam, focus
 | Gặp khiên | Trúng mặt trước khiên Lính Kén thì tia **dừng** ở khiên, tính 1 lần `shieldHits`, không xuyên (QB-16, QB-18). Trúng từ sau lưng thì xuyên như thường |
 | Năng lượng | `energyCostOf28 = 3` (9 lần mỗi thanh) |
 | Điểm yếu | Cryo (`damageVsWeak = 2,5`, `weakStunSec = 0,5`): "tia sáng nung chảy băng". Sức mạnh khắc chế 1,5 × 1 × 2,5 / 0,3 = 12,5/s ≥ 12 (mục 2.3). Hồi bắn 0,3 s ngắn hơn `weakStunSec`, nên cần `weakStunCooldownSec` (QB-14) |
-| Khám phá | Đốt rễ khô chắn Két giáp Stage 1 (`Barrier` cần nhận tia, không chỉ đạn); dội qua gương Stage 2 vào cảm biến đặt ngoài tầm Arc Cannon (lối tắt Core Bit khi quay lại) |
+| Khám phá | Đốt rễ khô chắn Két giáp Stage 1 (`Barrier` cần nhận tia, không chỉ đạn); dội qua gương Stage 2 vào cảm biến đặt ngoài tầm Arc Cannon (lối tắt Core Bit khi quay lại). Một xung Prism Beam kích hoạt cảm biến ngay. Nguồn laser môi trường chiếu đủ `sensor.holdSec` mới kích hoạt |
 | Không làm | Không đổi góc gương; tia không gây sát thương cho Kai khi dội về |
 
 ### 3.8 Két giáp, bí mật, nhiệm vụ phụ

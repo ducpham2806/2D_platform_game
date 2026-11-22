@@ -1,23 +1,25 @@
 import {
+  type BeamBehavior,
   type ChargeLevelData,
-  PLAYABLE_BEHAVIORS,
   type SweepBehavior,
+  type WeaponBehavior,
   type WeaponsData,
 } from '../../core/weapons-config';
 import type { ProjectilePool, ProjectileSpec } from './projectiles';
 
 export const ARC_CANNON = 'Arc Cannon';
+export const PRISM_BEAM = 'Prism Beam';
 
 /** Mức nạp: 0 chưa nạp, 1 nạp vừa, 2 nạp đầy. */
 export type ChargeLevel = 0 | 1 | 2;
 
 export interface WeaponSlot {
   name: string;
-  kind: 'buster' | 'sweep';
+  kind: 'buster' | WeaponBehavior['type'];
   /** Năng lượng còn lại (thanh energyMax); Arc Cannon không tốn năng lượng. */
   energy: number;
   cost: number;
-  behavior: SweepBehavior | null;
+  behavior: WeaponBehavior | null;
 }
 
 export interface FireInput {
@@ -39,8 +41,19 @@ export interface FireContext {
   aimTargets: ReadonlyArray<{ x: number; y: number }> | undefined;
 }
 
+export type FireKind = 'shot' | 'mid' | 'charged' | WeaponBehavior['type'];
+
+export interface BeamShot {
+  origin: { x: number; y: number };
+  direction: 'right' | 'left';
+  weapon: string;
+  damage: number;
+  behavior: BeamBehavior;
+}
+
 export interface FireEvents {
-  fired: 'shot' | 'mid' | 'charged' | 'sweep' | undefined;
+  fired: FireKind | undefined;
+  beam?: BeamShot;
   /** Bấm vũ khí boss nhưng hết năng lượng. */
   empty: boolean;
 }
@@ -100,16 +113,8 @@ export class WeaponLoadout {
   grant(name: string): boolean {
     if (this.slots.some((s) => s.name === name)) return false;
     const weapon = this.data.bossWeapons.find((w) => w.name === name);
-    // Chỉ hành vi đã có code (Prism Beam có dữ liệu `beam` từ ST-15-01a, hành vi ở ST-15-03).
-    // `step()` chỉ biết roi (`sweep`); hành vi khác đi nhánh Arc Cannon nên phải chặn ở đây.
     const b = weapon?.behavior;
-    if (
-      !b ||
-      b.type !== 'sweep' ||
-      !PLAYABLE_BEHAVIORS.includes(b.type) ||
-      weapon.energyCost === null
-    )
-      return false;
+    if (!b || weapon.energyCost === null) return false;
     this.slots.push({
       name,
       kind: b.type,
@@ -150,9 +155,9 @@ export class WeaponLoadout {
       this.chargeTime = 0;
       this.keepCharge = 0;
     }
-    if (this.current.kind === 'sweep') {
+    if (this.current.kind !== 'buster') {
       this.tickKeep(dt);
-      if (input.pressed) this.fireSweep(ctx, pool, events);
+      if (input.pressed) this.fireBossWeapon(ctx, pool, events);
       return events;
     }
 
@@ -259,10 +264,10 @@ export class WeaponLoadout {
     });
   }
 
-  private fireSweep(ctx: FireContext, pool: ProjectilePool, events: FireEvents): void {
+  private fireBossWeapon(ctx: FireContext, pool: ProjectilePool, events: FireEvents): void {
     const slot = this.current;
     const b = slot.behavior;
-    if (!b || this.fireCooldown > 0) return;
+    if (!b || this.fireCooldown > 1e-9) return;
     if (slot.energy + 1e-9 < slot.cost) {
       events.empty = true;
       return;
@@ -270,10 +275,29 @@ export class WeaponLoadout {
     slot.energy -= slot.cost;
     this.sinceBossWeapon = 0;
     this.fireCooldown = b.cooldownSec;
+    events.fired = b.type;
+    if (b.type === 'beam') {
+      // Bắt đầu từ tâm Kai để nòng súng không vượt qua mặt tường khi đứng sát.
+      events.beam = {
+        origin: { x: ctx.centerX, y: this.muzzle(ctx).y },
+        direction: ctx.facing > 0 ? 'right' : 'left',
+        weapon: slot.name,
+        damage: this.data.arcCannon.damage,
+        behavior: b,
+      };
+    } else this.fireSweep(ctx, pool, slot.name, b);
+  }
+
+  private fireSweep(
+    ctx: FireContext,
+    pool: ProjectilePool,
+    weapon: string,
+    b: SweepBehavior,
+  ): void {
     const width = b.rangeTiles * this.tileSize;
     const m = this.muzzle(ctx);
     pool.spawn({
-      ...this.baseSpec(slot.name),
+      ...this.baseSpec(weapon),
       kind: 'sweep',
       x: ctx.facing > 0 ? ctx.centerX : ctx.centerX - width,
       y: m.y - b.heightPx / 2,
@@ -287,7 +311,6 @@ export class WeaponLoadout {
       ttl: b.activeSec,
       attached: true,
     });
-    events.fired = 'sweep';
   }
 
   private baseSpec(

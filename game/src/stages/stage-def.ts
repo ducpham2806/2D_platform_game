@@ -22,6 +22,8 @@ interface StageDefBase {
   name: string;
   /** Ghi nhật ký chơi thử của cổng Prototype (chỉ màn xám). */
   playtest: boolean;
+  /** Vũ khí cho mượn tại phòng thử trong lượt, tự thêm vào bộ vũ khí đã mở. */
+  practiceWeapons?: readonly string[];
   /** id boss trong bosses.json; không có thì dùng boss xám. */
   boss?: string;
   /** Chạy các bước hướng dẫn của giai đoạn này (tutorial.json → stage). Không có: không hướng dẫn. */

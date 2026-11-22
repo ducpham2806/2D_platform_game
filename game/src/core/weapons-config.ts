@@ -34,7 +34,7 @@ export interface SweepBehavior {
 
 /**
  * Prism Beam (GDD 16 mục 3.7): tia tức thời theo `LaserPath`, xuyên mọi kẻ địch trên đường, phản xạ
- * ở gương tối đa `maxBounces`. Dữ liệu có từ ST-15-01a; hành vi làm ở ST-15-03.
+ * ở gương tối đa `maxBounces`.
  */
 export interface BeamBehavior {
   type: 'beam';
@@ -47,9 +47,6 @@ export interface BeamBehavior {
 }
 
 export type WeaponBehavior = SweepBehavior | BeamBehavior;
-
-/** Hành vi đã có code (Loadout cấp được); hành vi khác chỉ có dữ liệu. */
-export const PLAYABLE_BEHAVIORS: readonly WeaponBehavior['type'][] = ['sweep'];
 
 /**
  * Số lần trúng một mục tiêu mỗi lần dùng (ngân sách năng lượng, GDD 16 mục 2.3). Roi và tia trúng

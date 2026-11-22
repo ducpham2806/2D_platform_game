@@ -258,11 +258,12 @@ describe('vũ khí Warden: ngân sách năng lượng, sức mạnh khắc chế
     expect(() => parseWeapons(raw3)).toThrow(/weapons\.balance/);
   });
 
-  it('Prism Beam chưa có hành vi (ST-15-03): Loadout không cấp; Vine Lash vẫn cấp', () => {
+  it('Loadout cấp Prism Beam và Vine Lash, từ chối vũ khí chưa có hành vi', () => {
     const loadout = new WeaponLoadout(config.weapons, TILE_SIZE);
-    expect(loadout.grant('Prism Beam')).toBe(false);
-    expect(loadout.has('Prism Beam')).toBe(false);
+    expect(loadout.grant('Prism Beam')).toBe(true);
+    expect(loadout.has('Prism Beam')).toBe(true);
     expect(loadout.grant('Vine Lash')).toBe(true);
+    expect(loadout.grant('Frost Shard')).toBe(false);
   });
 });
 

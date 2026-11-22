@@ -5,7 +5,7 @@ import type { PlayerData } from '../../core/player-config';
 import type { StageMechanics } from '../../core/stage-mechanics-config';
 import type { WeaponsData } from '../../core/weapons-config';
 import { Boss } from '../boss/boss';
-import { WeaponLoadout } from '../combat/loadout';
+import { type BeamShot, WeaponLoadout } from '../combat/loadout';
 import { ProjectilePool } from '../combat/projectiles';
 import { TrainingTarget } from '../combat/targets';
 import type { Enemy } from '../enemy/enemy';
@@ -24,10 +24,18 @@ import { playerParams } from '../player/player-params';
 import { PlayerPhysics } from '../player/player-physics';
 import { createRng, type Rng } from '../rng';
 import { type EnemyMarkers, layoutFromRows, type StageLayout } from '../stage/layout';
+import { laserBox, type LaserPath, traceLaser } from '../stage/laser-path';
 import { Tile, type TileMap } from '../tilemap';
 import type { StageReward } from '../stage/stage-exp';
 import { EnemyField } from './enemy-field';
-import { type KaiDefense, resolveEnemyHits, resolvePlayerHits, type VanguardMods } from './hits';
+import { resolveBeamHits } from './beam-hits';
+import {
+  type BossDamageObserver,
+  type KaiDefense,
+  resolveEnemyHits,
+  resolvePlayerHits,
+  type VanguardMods,
+} from './hits';
 import { Barrier, LockedRoom, makeSecret, type Secret, standPoint, Vine } from './stage-mechanics';
 import { StageOptics } from './stage-optics';
 import { noWorldEvents, type WorldEvents, type WorldInput, type WorldPhase } from './world-types';
@@ -88,6 +96,8 @@ export class StageWorld {
   readonly player: PlayerPhysics;
   readonly loadout: WeaponLoadout;
   readonly pool = new ProjectilePool();
+  /** Vệt Prism Beam giữ lại để vẽ. Sát thương được giải quyết ngay lúc bắn. */
+  readonly playerBeams: { boxes: readonly Box[]; remainingSec: number }[] = [];
   readonly targets: TrainingTarget[] = [];
   boss: Boss | undefined;
   phase: WorldPhase = 'explore';
@@ -348,6 +358,12 @@ export class StageWorld {
     // Khiên hồi trước khi xử lý trúng đòn; đồng hồ dừng trong hit-stop và lúc chờ hồi sinh.
     if (this.runtime.step(dt)) ev.kaiShieldReady = true;
 
+    for (let i = this.playerBeams.length - 1; i >= 0; i -= 1) {
+      const beam = this.playerBeams[i]!;
+      beam.remainingSec -= dt;
+      if (beam.remainingSec <= 1e-9) this.playerBeams.splice(i, 1);
+    }
+
     for (const v of this.vines) v.step(dt);
     this.optics?.step(dt, ev);
 
@@ -394,6 +410,7 @@ export class StageWorld {
     );
     ev.fired = fire.fired;
     ev.emptyWeapon = fire.empty;
+    const path = fire.beam && this.tracePlayerBeam(fire.beam);
 
     for (const target of this.targets) target.step(dt);
     if (this.boss) {
@@ -418,6 +435,10 @@ export class StageWorld {
     );
 
     const killed: Enemy[] = [];
+    const observeBossDamage: BossDamageObserver = (weapon, amount, weak) => {
+      this.bossDamage.set(weapon, (this.bossDamage.get(weapon) ?? 0) + amount);
+      if (weak) this.bossWeakHits += 1;
+    };
     this.hitStop = resolvePlayerHits(
       this.pool,
       { targets: this.targets, enemies: this.enemies, boss: this.boss },
@@ -426,11 +447,9 @@ export class StageWorld {
       ev,
       killed,
       this.vanguard,
-      (weapon, amount, weak) => {
-        this.bossDamage.set(weapon, (this.bossDamage.get(weapon) ?? 0) + amount);
-        if (weak) this.bossWeakHits += 1;
-      },
+      observeBossDamage,
     );
+    if (fire.beam && path) this.fireBeam(fire.beam, path, ev, killed, observeBossDamage);
     this.field?.onKilled(killed, pl);
     // Boss hết máu vì đạn của Kai trong bước này thì thắng ngay, trước khi xét đòn lên Kai
     // (trước đây cùng bước Kai chết thì boss được dựng lại đầy máu).
@@ -467,6 +486,7 @@ export class StageWorld {
         ev.fellInPit = true;
         this.falls += 1;
         this.pitReturn = true;
+        this.playerBeams.length = 0;
         this.respawnTimer = mech.pit.returnSec;
         return ev;
       }
@@ -479,9 +499,55 @@ export class StageWorld {
       this.deaths += 1;
       this.deathStreak += 1;
       this.pitReturn = false;
+      this.playerBeams.length = 0;
       this.respawnTimer = mech.respawnSec;
     }
     return ev;
+  }
+
+  private tracePlayerBeam(shot: BeamShot): LaserPath {
+    const range = shot.behavior.rangeTiles * this.map.tileSize;
+    return (
+      this.optics?.trace(shot.origin, shot.direction, shot.behavior.maxBounces, range) ??
+      traceLaser(
+        this.map,
+        shot.origin,
+        shot.direction,
+        () => undefined,
+        shot.behavior.maxBounces,
+        range,
+      )
+    );
+  }
+
+  private fireBeam(
+    shot: BeamShot,
+    path: LaserPath,
+    ev: WorldEvents,
+    killed: Enemy[],
+    observeBossDamage: BossDamageObserver,
+  ): void {
+    const { widthPx, activeSec } = shot.behavior;
+    const result = resolveBeamHits(
+      path,
+      shot,
+      { targets: this.targets, enemies: this.enemies, boss: this.boss },
+      this.built.weapons,
+      this.attackMul,
+      ev,
+      killed,
+      observeBossDamage,
+    );
+    this.hitStop = Math.max(this.hitStop, result.hitStop);
+    const end = result.path.at(-1);
+    if (!end) return;
+    if (!result.blocked) {
+      for (const barrier of this.barriers)
+        if (barrier.tryBreakByBeam(shot.weapon, end, widthPx)) ev.barrierBroken = true;
+    }
+    const boxes = result.path.map((leg) => laserBox(leg, widthPx));
+    this.optics?.receiveBeam(boxes, ev);
+    this.playerBeams.push({ boxes, remainingSec: activeSec });
   }
 
   /** Sát thương môi trường nhân hệ số độ khó, làm tròn, tối thiểu 1 (như đòn kẻ địch). */
