@@ -129,7 +129,7 @@ Mỗi module một dòng; chi tiết ở file quyết định và Epic.
 - **M1 Khung game:** Xong phần khung. Scale nguyên, nhắc xoay ngang, nạp + kiểm tra JSON, event bus; 60 FPS ở CPU chậm 4–6× (`gate-check`). Còn: nạp atlas khi có asset; đo trên điện thoại thật.
 - **M2 Đầu vào:** Xong. Vùng an toàn tai thỏ cho nút cảm ứng, canvas, bảng HTML (ST-11-01, QB-92). Bàn phím, tay cầm, cảm ứng (cần ảo, 6 nút, đa chạm, rung), đổi phím, chỉnh bố cục, tự bắn, hỗ trợ ngắm. Còn: thử tay cầm thật.
 - **M3 Nhân vật:** Xong logic. Chạy, nhảy biến thiên, coyote, buffer, lướt, dash-jump, bám/nhảy tường, bục một chiều, bị đánh, chết, rơi hố. Còn: sprite, hoạt ảnh (asset P0); leo thang (đặc tả 02 đoạn A, B).
-- **M4 Chiến đấu:** Arc Cannon, Vine Lash, Prism Beam phản xạ (ST-15-03), điểm yếu, choáng, hit-stop. Còn: nhận Prism Beam từ Lumen, Frost Shard, Gale Cutter.
+- **M4 Chiến đấu:** Arc Cannon, Vine Lash, Prism Beam phản xạ (ST-15-03), điểm yếu, choáng, hit-stop. Frost Shard có cấu hình từ ST-15-01b, dùng từ ST-15-04. Còn: Lumen cấp Prism Beam; Gale Cutter.
 - **M5 Kẻ địch:** Xong cho Prologue, Stage 1 (5 loại + bản Thử thách); kẻ địch dựng lại sau khi Kai chết không trả thưởng lần nữa (QB-20). Thưởng theo màn (`enemyRewardMul`, ST-15-01a). Còn: kẻ địch Stage 2–4 (EP-15), tầm dọc và chỉ bắn khi trên màn (QB-23), sprite.
 - **M6 Boss:** Boss xám, Thorna và Bramble Golem; thắng nếu boss và Kai hết máu cùng bước (QB-30); chống khóa choáng và kẹp pha (QB-14, 31). Còn: Lumen, Cryo, Aeris, mini-boss và bản đồ đấu trường.
 - **M7 Màn chơi:** Khung Tiled, checkpoint, hố, gai, dây leo, phòng khóa, vật chắn, bí mật. Phòng thử laser kiểm gương, nguồn theo nhịp và cảm biến (ST-15-02). Còn: bản đồ chiến dịch, thang, bệ dây di chuyển, parallax.

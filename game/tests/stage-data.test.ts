@@ -1,7 +1,6 @@
 /**
- * Dữ liệu Stage 2–4 dùng chung và khung kiểm tra (EP-15 ST-15-01a; 01-GDD/16-Dac-ta-Stage2-4-nhap.md
- * mục 2.1–2.3, 3.3, 3.7). Số lấy từ dữ liệu; số chỉ có trong GDD (kẻ địch Stage 2 chưa có dữ liệu)
- * ghi kèm mục.
+ * Dữ liệu Stage 2–4 và khung kiểm tra (ST-15-01a/b, GDD 16 mục 2.1–2.3, 3.3, 3.7, 3.8, 4.3, 4.7).
+ * Số chỉ có trong đặc tả (kẻ địch Stage 2 chưa có dữ liệu) ghi kèm mục.
  */
 import { describe, expect, it } from 'vitest';
 import { bossDamageCap, bossMaxDamage } from '@/core/boss-config';
@@ -43,6 +42,15 @@ const MAP = TileMap.fromRows(
   TILE_SIZE,
 );
 const clone = <T>(v: T): T => JSON.parse(JSON.stringify(v)) as T;
+
+function parseStagesWith(path: string, value: unknown) {
+  const raw = clone(data.stages);
+  const keys = path.split('.');
+  let entry = raw.mechanics as Json;
+  for (const key of keys.slice(0, -1)) entry = entry[key] as Json;
+  entry[keys.at(-1)!] = value;
+  return parseStages(raw);
+}
 /** Lỗi kiểm lúc nạp sau khi sửa một file dữ liệu. */
 function invariantsWith(file: string, patch: (raw: Json) => void): string[] {
   const raw = clone(data);
@@ -198,14 +206,7 @@ describe('cơ chế laser, gương, cảm biến (GDD 16 mục 3.3)', () => {
   });
 
   it('kiểm dữ liệu: báo trước ≥ 0,5 s, còn khoảng tắt, đạn thường không đổi gương, laser không chết một đòn', () => {
-    const bad = (path: string, value: unknown) => {
-      const raw = clone(data.stages);
-      const keys = path.split('.');
-      let o = raw.mechanics as Json;
-      for (const k of keys.slice(0, -1)) o = o[k] as Json;
-      o[keys.at(-1)!] = value;
-      return () => parseStages(raw);
-    };
+    const bad = (path: string, value: unknown) => () => parseStagesWith(path, value);
     expect(bad('laser.pulse.warnSec', 0.3)).toThrow(/báo trước 0.3 s < 0.5 s/);
     expect(bad('laser.pulse.onSec', 2.6)).toThrow(/phải ngắn hơn chu kỳ/);
     expect(bad('laser.hitsPerActivation', 1.5)).toThrow(/số nguyên/);
@@ -221,14 +222,47 @@ describe('cơ chế laser, gương, cảm biến (GDD 16 mục 3.3)', () => {
   });
 });
 
+describe('cơ chế băng (ST-15-01b, GDD 16 mục 3.8, 4.3)', () => {
+  it('nạp sàn trơn, bục băng vỡ và dòng chất làm mát từ cấu hình game', () => {
+    const { ice, crumble, coolant } = config.stages.mechanics;
+    expect(ice).toEqual({
+      accelTilesPerSec2: 12,
+      decelTilesPerSec2: 6,
+      hurtUsesNormalFriction: true,
+    });
+    expect(crumble).toEqual({ triggerSec: 1, warnAtSec: [0.4, 0.7], respawnSec: 4 });
+    expect(coolant).toEqual({ frozenSteps: 3 });
+  });
+
+  it.each([
+    ['ice', undefined],
+    ['ice.accelTilesPerSec2', 0],
+    ['ice.decelTilesPerSec2', -1],
+    ['ice.hurtUsesNormalFriction', 'true'],
+    ['crumble.triggerSec', 0.49],
+    ['crumble.respawnSec', -1],
+    ['crumble.warnAtSec', [0.4]],
+    ['crumble.warnAtSec', [0, 0.7]],
+    ['crumble.warnAtSec', [0.7, 0.7]],
+    ['crumble.warnAtSec', [0.4, 1]],
+    ['crumble.warnAtSec', [0.4, '0.7']],
+    ['coolant.frozenSteps', 0],
+    ['coolant.frozenSteps', 2.5],
+  ])('từ chối cấu hình %s = %j', (path, value) => {
+    expect(() => parseStagesWith(path, value)).toThrow(`stages.mechanics.${path}`);
+  });
+});
+
 describe('vũ khí Warden: ngân sách năng lượng, sức mạnh khắc chế (GDD 16 mục 2.3)', () => {
-  it('Vine Lash 14 và 14,3/s; Prism Beam 13,5 và 12,5/s', () => {
+  it('Vine Lash 14 và 14,3/s; Prism Beam 13,5 và 12,5/s; Frost Shard 14 và 12,5/s', () => {
     const max = config.weapons.energyMax;
     expect(energyBudget(weapon('Vine Lash'), max)).toBe(14);
     expect(counterPerSec(weapon('Vine Lash'))).toBeCloseTo(14.29, 2);
     expect(energyBudget(weapon('Prism Beam'), max)).toBe(13.5);
     expect(counterPerSec(weapon('Prism Beam'))).toBeCloseTo(12.5, 6);
-    expect(energyBudget(weapon('Frost Shard'), max)).toBeUndefined();
+    expect(energyBudget(weapon('Frost Shard'), max)).toBe(14);
+    expect(counterPerSec(weapon('Frost Shard'))).toBeCloseTo(12.5, 6);
+    expect(energyBudget(weapon('Gale Cutter'), max)).toBeUndefined();
     expect(checkWeaponBalance(config.weapons)).toEqual([]);
   });
 
@@ -258,12 +292,66 @@ describe('vũ khí Warden: ngân sách năng lượng, sức mạnh khắc chế
     expect(() => parseWeapons(raw3)).toThrow(/weapons\.balance/);
   });
 
-  it('Loadout cấp Prism Beam và Vine Lash, từ chối vũ khí chưa có hành vi', () => {
+  it('Loadout cấp Prism Beam và Vine Lash, từ chối Frost Shard dù đã có cấu hình', () => {
     const loadout = new WeaponLoadout(config.weapons, TILE_SIZE);
     expect(loadout.grant('Prism Beam')).toBe(true);
     expect(loadout.has('Prism Beam')).toBe(true);
     expect(loadout.grant('Vine Lash')).toBe(true);
     expect(loadout.grant('Frost Shard')).toBe(false);
+    expect(loadout.has('Frost Shard')).toBe(false);
+  });
+});
+
+describe('Frost Shard (ST-15-01b, QB-19)', () => {
+  it('nạp thông số viên đạn, đóng băng và khắc chế Aeris', () => {
+    expect(weapon('Frost Shard')).toMatchObject({
+      from: 'Cryo',
+      weakBoss: ['Aeris'],
+      damageVsWeak: 2.5,
+      weakStunSec: 0.5,
+      energyCost: 4,
+      behavior: {
+        type: 'shard',
+        speedTilesPerSec: 10,
+        rangeTiles: 10,
+        sizePx: { w: 8, h: 6 },
+        damageMul: 2,
+        cooldownSec: 0.4,
+        freezeSec: 2,
+      },
+    });
+  });
+
+  it.each([
+    ['speedTilesPerSec', 0],
+    ['rangeTiles', 0],
+    ['sizePx', { w: 0, h: 6 }],
+    ['damageMul', -1],
+    ['cooldownSec', 0],
+    ['freezeSec', 0],
+    ['freezeSec', -1],
+  ])('từ chối shard.%s = %j', (key, value) => {
+    const raw = clone(data.weapons);
+    const shard = (raw.bossWeapons as Json[]).find((w) => w.name === 'Frost Shard')!;
+    (shard.behavior as Json)[key] = value;
+    expect(() => parseWeapons(raw)).toThrow(`behavior.${key}`);
+  });
+
+  it.each([null, 0, 29])('từ chối tiêu hao Frost Shard ngoài giới hạn %j', (cost) => {
+    const raw = clone(data.weapons);
+    const shard = (raw.bossWeapons as Json[]).find((w) => w.name === 'Frost Shard')!;
+    shard.energyCostOf28 = cost;
+    expect(() => parseWeapons(raw)).toThrow('energyCostOf28');
+  });
+
+  it('kiểm cân bằng Frost Shard ngay cả trước khi cấp được trong game', () => {
+    const errors = invariantsWith('weapons', (weapons) => {
+      const shard = (weapons.bossWeapons as Json[]).find((w) => w.name === 'Frost Shard')!;
+      shard.energyCostOf28 = 3;
+      (shard.behavior as Json).cooldownSec = 0.5;
+    });
+    expect(errors.join('\n')).toMatch(/Frost Shard: ngân sách 18/);
+    expect(errors.join('\n')).toMatch(/Frost Shard: sức mạnh khắc chế 10\.0\/s < 12\/s/);
   });
 });
 

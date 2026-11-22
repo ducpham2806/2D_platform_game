@@ -1,9 +1,8 @@
-import {
-  type BeamBehavior,
-  type ChargeLevelData,
-  type SweepBehavior,
-  type WeaponBehavior,
-  type WeaponsData,
+import type {
+  BeamBehavior,
+  ChargeLevelData,
+  SweepBehavior,
+  WeaponsData,
 } from '../../core/weapons-config';
 import type { ProjectilePool, ProjectileSpec } from './projectiles';
 
@@ -13,13 +12,15 @@ export const PRISM_BEAM = 'Prism Beam';
 /** Mức nạp: 0 chưa nạp, 1 nạp vừa, 2 nạp đầy. */
 export type ChargeLevel = 0 | 1 | 2;
 
+type PlayableWeaponBehavior = SweepBehavior | BeamBehavior;
+
 export interface WeaponSlot {
   name: string;
-  kind: 'buster' | WeaponBehavior['type'];
+  kind: 'buster' | PlayableWeaponBehavior['type'];
   /** Năng lượng còn lại (thanh energyMax); Arc Cannon không tốn năng lượng. */
   energy: number;
   cost: number;
-  behavior: WeaponBehavior | null;
+  behavior: PlayableWeaponBehavior | null;
 }
 
 export interface FireInput {
@@ -41,7 +42,7 @@ export interface FireContext {
   aimTargets: ReadonlyArray<{ x: number; y: number }> | undefined;
 }
 
-export type FireKind = 'shot' | 'mid' | 'charged' | WeaponBehavior['type'];
+export type FireKind = 'shot' | 'mid' | 'charged' | PlayableWeaponBehavior['type'];
 
 export interface BeamShot {
   origin: { x: number; y: number };
@@ -109,12 +110,13 @@ export class WeaponLoadout {
     return 0;
   }
 
-  /** Thêm vũ khí boss (đầy năng lượng). Vũ khí chưa có hành vi trong dữ liệu thì bỏ qua. */
+  /** Thêm vũ khí boss từ các hành vi đã chạy được (đầy năng lượng). */
   grant(name: string): boolean {
     if (this.slots.some((s) => s.name === name)) return false;
     const weapon = this.data.bossWeapons.find((w) => w.name === name);
     const b = weapon?.behavior;
     if (!b || weapon.energyCost === null) return false;
+    if (b.type !== 'sweep' && b.type !== 'beam') return false;
     this.slots.push({
       name,
       kind: b.type,
