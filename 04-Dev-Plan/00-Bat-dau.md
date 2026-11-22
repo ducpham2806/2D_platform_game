@@ -4,13 +4,13 @@
 
 ## Đang ở đâu
 
-- **Mốc:** Giai đoạn 1. Code Prototype và phần MVP không phụ thuộc cảm giác đã xong (EP-08, 09, 10). Bản thử G1 đã đăng (tag `gate-r1`). **Đang chờ người dùng chơi thử cổng Prototype (G1).**
-- **Nhánh làm việc:** `ccr-9de01342-2046rb`. `gate-r1` trỏ tới `eeb8ca1` (PR #10); `main` ở `c458643` (PR #11, chỉ tài liệu). Nhánh phát triển chờ xong đợt thử G1 mới merge.
+- **Mốc:** Giai đoạn 1. Code Prototype và phần MVP không phụ thuộc cảm giác đã xong (EP-08, 09, 10). Bản gốc G1 được lưu ở tag `gate-r1`. **Đang chờ ghi kết quả chơi thử cổng Prototype (G1).**
+- **Tích hợp:** Người dùng yêu cầu đưa nhánh `ccr-9de01342-2046rb` đến ST-15-09 vào `main`. Tag `gate-r1` trỏ tới `eeb8ca1` (PR #10). GitHub Pages dựng theo commit mới trên `main`.
 - **Kế hoạch:** `01-Ke-hoach-lam-viec.md` (sprint S9–S21, epic EP-11…EP-20, ba cổng G1, G2, G3).
 
 ## Chờ người dùng (đường găng)
 
-1. ~~Merge PR #10~~ xong (14/11, `main` = `eeb8ca1`). Repo công khai, Pages đã bật; bản `eeb8ca1` đã đăng ở `https://ducpham2806.github.io/2D_platform_game/?gate=1` (14/11). Tag `gate-r1` → `eeb8ca1` (người dùng tạo trên GitHub, 14/11; môi trường của Claude không đẩy được tag). Còn: người dùng mở thử trên điện thoại rồi phát link. Code mới tiếp tục trên nhánh này, chỉ merge vào `main` sau đợt thử. **Không merge PR #9** (nhánh của phiên 13/11, tách từ `main` song song, xung đột 31 file); người dùng chọn cách A (14/11): chuyển từng phần sau tag (`stories/EP-21-chuyen-PR9.md`), rồi đóng PR #9.
+1. Khi ghi kết quả G1, ghi rõ commit đã dùng. Link Pages `?gate=1` mở chế độ chơi thử của bản đang đăng. PR #9 xử lý bằng cách chuyển từng phần theo `stories/EP-21-chuyen-PR9.md` (phương án A đã chọn 14/11).
 2. Chơi thử cổng Prototype với 5 người, ≥ 3 người cảm ứng: `05-Cong-Prototype.md` mục 3; ghi kết quả vào mục 7.
 3. Chọn kênh gửi dữ liệu đo lường (`adr/ADR-002-do-luong-mvp.md`).
 4. Asset: tạm dừng (hướng dẫn asset hiện theo pixel art); làm lại theo model 3D sau khi duyệt ADR-003 (EP-22 ST-22-03, 05).
