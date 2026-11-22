@@ -75,10 +75,15 @@ export class MenuScene extends Phaser.Scene {
     const gale = (): void => {
       this.scene.start(SceneKey.Stage, { stage: 'gale' });
     };
-    textButton(this, cx, 58, 'Vào màn thử', () => this.scene.start(SceneKey.Stage));
+    const tryEnemies = (difficulty: 'normal' | 'challenge'): void => {
+      this.scene.start(SceneKey.Stage, { stage: 'prismFrostEnemies', difficulty });
+    };
+    textButton(this, cx - 65, 58, 'Vào màn thử', () => this.scene.start(SceneKey.Stage));
+    textButton(this, cx + 65, 58, 'Thử thách S2–3', () => tryEnemies('challenge'));
     textButton(this, cx - 65, 73, 'Phòng thử kẻ địch', enemies);
     textButton(this, cx + 65, 73, 'Phòng thử Gale Cutter', gale);
-    textButton(this, cx, 88, 'Phòng thử màn chơi', mechanics);
+    textButton(this, cx - 65, 88, 'Phòng thử màn chơi', mechanics);
+    textButton(this, cx + 65, 88, 'Địch S2–3', () => tryEnemies('normal'));
     textButton(this, cx - 65, 103, 'Boss Thorna', thorna);
     textButton(this, cx + 65, 103, 'Phòng thử băng', frost);
     textButton(this, cx - 65, 118, 'Mini-boss Bramble Golem', golem);

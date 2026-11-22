@@ -429,8 +429,9 @@ export class StageWorld {
       ev.bossLanded = be.landed;
       if (be.defeated) this.onBossDefeated(ev);
     }
-    this.field?.step(pl, this.pool, dt);
     const optics = this.optics;
+    const mirror = optics?.mirrors.length ? optics.isMirrorCell : undefined;
+    this.field?.step(pl, this.pool, dt, mirror);
     const hasCoolant = this.coolant.some((flow) => !flow.frozen);
     this.pool.update(
       dt,
@@ -449,6 +450,7 @@ export class StageWorld {
           }
         : undefined,
       pl.state !== 'dead' ? pl.box : undefined,
+      mirror,
     );
 
     const killed: Enemy[] = [];

@@ -269,6 +269,9 @@ export class StageOptics {
   private readonly mirrorAt = (col: number, row: number): MirrorAngle | undefined =>
     this.mirrorByCell.get(row * this.map.cols + col)?.angle;
 
+  readonly isMirrorCell = (col: number, row: number): boolean =>
+    col >= 0 && col < this.map.cols && this.mirrorAt(col, row) !== undefined;
+
   private refreshPaths(): void {
     this.mapRevision = this.map.revision;
     for (const laser of this.lasers) {

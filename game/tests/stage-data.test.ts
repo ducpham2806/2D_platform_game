@@ -120,9 +120,9 @@ describe('thưởng theo màn (GDD 16 mục 2.1)', () => {
   it('Σ EXP Stage 2 (bảng 3.4, làm tròn từng con) + Prism Sentinel 110 + Lumen 241 = expBudget 660', () => {
     const buom = config.enemies.enemies.buom_sat!.exp;
     const ken = config.enemies.enemies.linh_ken!.exp;
-    // Gương Quang (6 EXP) và Tháp Laser (10) chưa có dữ liệu (ST-15-06, 07): số ở GDD 16 mục 3.4.
+    // Tháp Laser (10 EXP) lấy từ bảng GDD 16 mục 3.4 đến khi có dữ liệu ở ST-15-07.
     const enemies = [
-      { exp: 6, count: 8 },
+      { exp: config.enemies.enemies.guong_quang!.exp, count: 8 },
       { exp: 10, count: 5 },
       { exp: buom, count: 4 },
       { exp: ken, count: 3 },

@@ -3,7 +3,16 @@
  * mục 4: mọi đòn có telegraph ≥ minTelegraphSec, không đòn nào gây chết ngay.
  */
 import { deepMerge } from './deep-merge';
-import { ConfigError, type Json, num, obj, size, type SizePx, str } from './json-check';
+import {
+  ConfigError,
+  type Json,
+  num,
+  obj,
+  positiveNum,
+  size,
+  type SizePx,
+  str,
+} from './json-check';
 
 export type EnemyBehavior = 'drone' | 'turret' | 'butterfly' | 'shieldCharger' | 'golem';
 const BEHAVIORS: readonly EnemyBehavior[] = [
@@ -16,6 +25,22 @@ const BEHAVIORS: readonly EnemyBehavior[] = [
 
 export interface EnemyProjectileData {
   speedTilesPerSec: number;
+  damage: number;
+  sizePx: SizePx;
+  bounces?: number;
+}
+
+export interface LobData {
+  aimAtPlayer: true;
+  elevationDeg: number;
+  gravityTilesPerSec2: number;
+  spreadTiles: number;
+  maxRangeTiles: number;
+}
+
+export interface LandingShockwaveData {
+  speedTilesPerSec: number;
+  rangeTiles: number;
   damage: number;
   sizePx: SizePx;
 }
@@ -41,6 +66,8 @@ export interface DroneData extends EnemyCommon {
     telegraphSec: number;
     cooldownSec: number;
     projectile: EnemyProjectileData;
+    bankShot: boolean;
+    dualShot: boolean;
     /** Số viên mỗi loạt (viên sau nhắm lại) và khoảng cách giữa các viên (Thử thách: bắn đôi). */
     burst: { count: number; gapSec: number };
   };
@@ -55,6 +82,7 @@ export interface TurretData extends EnemyCommon {
     count: number;
     spreadDeg: number;
     projectile: EnemyProjectileData;
+    lob?: LobData;
     /** Số loạt mỗi nhịp, cách nhau `volleyGapSec`, loạt k lệch k × `volleyOffsetDeg` (Thử thách). */
     volleys: number;
     volleyGapSec: number;
@@ -126,12 +154,14 @@ export interface GolemData extends EnemyCommon {
       gravityTilesPerSec2: number;
       recoverSec: number;
       projectile: EnemyProjectileData;
+      landShockwave?: LandingShockwaveData;
     };
     dash: {
       telegraphSec: number;
       dashTiles: number;
       dashSpeedTilesPerSec: number;
       recoverSec: number;
+      damage?: number;
       /** Dừng lao thì giậm đất tại chỗ (báo trước như giậm) (Thử thách). */
       endSlam: boolean;
     };
@@ -181,10 +211,13 @@ export function enemiesFor(data: EnemiesData, newAttackPatterns: boolean): Enemi
 
 function projectile(value: unknown, path: string): EnemyProjectileData {
   const p = obj(value, path);
+  const bounces = optInt(p.bounces, `${path}.bounces`, 0, 0);
+  if (bounces > 2) throw new ConfigError(`${path}.bounces: tối đa 2 lần nảy`);
   return {
     speedTilesPerSec: num(p.speedTilesPerSec, `${path}.speedTilesPerSec`, { min: 0 }),
     damage: num(p.damage, `${path}.damage`, { min: 0 }),
     sizePx: size(p.sizePx, `${path}.sizePx`),
+    ...(p.bounces === undefined ? {} : { bounces }),
   };
 }
 
@@ -206,9 +239,46 @@ function optNum(v: unknown, path: string, fallback: number, min: number): number
 }
 
 function optInt(v: unknown, path: string, fallback: number, min: number): number {
-  const n = optNum(v, path, fallback, min);
+  return v === undefined ? fallback : int(v, path, min);
+}
+
+function int(v: unknown, path: string, min: number): number {
+  const n = num(v, path, { min });
   if (!Number.isInteger(n)) throw new ConfigError(`${path}: cần số nguyên`);
   return n;
+}
+
+function optBool(value: unknown, path: string): boolean {
+  if (value === undefined) return false;
+  if (typeof value !== 'boolean') throw new ConfigError(`${path}: cần true/false`);
+  return value;
+}
+
+function parseLob(value: unknown, path: string): LobData {
+  const l = obj(value, path);
+  if (l.aimAtPlayer !== true) throw new ConfigError(`${path}.aimAtPlayer: cần true`);
+  const elevationDeg = positiveNum(l.elevationDeg, `${path}.elevationDeg`);
+  if (elevationDeg >= 90) throw new ConfigError(`${path}.elevationDeg: cần góc nhỏ hơn 90°`);
+  const maxRangeTiles = positiveNum(l.maxRangeTiles, `${path}.maxRangeTiles`);
+  const spreadTiles = num(l.spreadTiles, `${path}.spreadTiles`, { min: 0 });
+  if (spreadTiles > maxRangeTiles) throw new ConfigError(`${path}.spreadTiles: vượt maxRangeTiles`);
+  return {
+    aimAtPlayer: true,
+    elevationDeg,
+    gravityTilesPerSec2: positiveNum(l.gravityTilesPerSec2, `${path}.gravityTilesPerSec2`),
+    spreadTiles,
+    maxRangeTiles,
+  };
+}
+
+function landingShockwave(value: unknown, path: string): LandingShockwaveData {
+  const w = obj(value, path);
+  return {
+    speedTilesPerSec: positiveNum(w.speedTilesPerSec, `${path}.speedTilesPerSec`),
+    rangeTiles: positiveNum(w.rangeTiles, `${path}.rangeTiles`),
+    damage: num(w.damage, `${path}.damage`, { min: 0 }),
+    sizePx: size(w.sizePx, `${path}.sizePx`),
+  };
 }
 
 function parseEnemy(id: string, value: unknown, p = `enemies.${id}`): EnemyData {
@@ -225,7 +295,13 @@ function parseEnemy(id: string, value: unknown, p = `enemies.${id}`): EnemyData 
     patrolRangeTiles: num(e.patrolRangeTiles, `${p}.patrolRangeTiles`, { min: 0 }),
   });
   switch (behavior as EnemyBehavior) {
-    case 'drone':
+    case 'drone': {
+      const shot = projectile(a.projectile, `${pa}.projectile`);
+      const bankShot = optBool(a.bankShot, `${pa}.bankShot`);
+      const dualShot = optBool(a.dualShot, `${pa}.dualShot`);
+      if (bankShot && (!(shot.bounces && shot.bounces > 0) || shot.speedTilesPerSec === 0))
+        throw new ConfigError(`${pa}.bankShot: cần đạn di chuyển và có số lần nảy dương`);
+      if (dualShot && !bankShot) throw new ConfigError(`${pa}.dualShot: cần bankShot`);
       return {
         ...base,
         behavior: 'drone',
@@ -234,7 +310,9 @@ function parseEnemy(id: string, value: unknown, p = `enemies.${id}`): EnemyData 
           rangeTiles: num(a.rangeTiles, `${pa}.rangeTiles`, { min: 1 }),
           telegraphSec: num(a.telegraphSec, `${pa}.telegraphSec`, { min: 0 }),
           cooldownSec: num(a.cooldownSec, `${pa}.cooldownSec`, { min: 0 }),
-          projectile: projectile(a.projectile, `${pa}.projectile`),
+          projectile: shot,
+          bankShot,
+          dualShot,
           burst: (() => {
             if (a.burst === undefined) return { count: 1, gapSec: 0 };
             const b = obj(a.burst, `${pa}.burst`);
@@ -245,6 +323,7 @@ function parseEnemy(id: string, value: unknown, p = `enemies.${id}`): EnemyData 
           })(),
         },
       };
+    }
     case 'turret':
       return {
         ...base,
@@ -252,9 +331,10 @@ function parseEnemy(id: string, value: unknown, p = `enemies.${id}`): EnemyData 
         attack: {
           intervalSec: num(a.intervalSec, `${pa}.intervalSec`, { min: 0.1 }),
           telegraphSec: num(a.telegraphSec, `${pa}.telegraphSec`, { min: 0 }),
-          count: num(a.count, `${pa}.count`, { min: 1 }),
+          count: int(a.count, `${pa}.count`, 1),
           spreadDeg: num(a.spreadDeg, `${pa}.spreadDeg`, { min: 0 }),
           projectile: projectile(a.projectile, `${pa}.projectile`),
+          ...(a.lob === undefined ? {} : { lob: parseLob(a.lob, `${pa}.lob`) }),
           volleys: optInt(a.volleys, `${pa}.volleys`, 1, 1),
           volleyGapSec: optNum(a.volleyGapSec, `${pa}.volleyGapSec`, 0, 0.05),
           volleyOffsetDeg: optNum(a.volleyOffsetDeg, `${pa}.volleyOffsetDeg`, 0, 0),
@@ -311,7 +391,7 @@ function parseEnemy(id: string, value: unknown, p = `enemies.${id}`): EnemyData 
           },
           bombs: {
             telegraphSec: num(bombs.telegraphSec, `${pa}.bombs.telegraphSec`, { min: 0 }),
-            count: num(bombs.count, `${pa}.bombs.count`, { min: 1 }),
+            count: int(bombs.count, `${pa}.bombs.count`, 1),
             spreadFactor: num(bombs.spreadFactor, `${pa}.bombs.spreadFactor`, { min: 0 }),
             lobSpeedTilesPerSec: num(bombs.lobSpeedTilesPerSec, `${pa}.bombs.lobSpeedTilesPerSec`, {
               min: 0.5,
@@ -321,6 +401,11 @@ function parseEnemy(id: string, value: unknown, p = `enemies.${id}`): EnemyData 
             }),
             recoverSec: num(bombs.recoverSec, `${pa}.bombs.recoverSec`, { min: 0 }),
             projectile: projectile(bombs.projectile, `${pa}.bombs.projectile`),
+            ...(bombs.landShockwave === undefined
+              ? {}
+              : {
+                  landShockwave: landingShockwave(bombs.landShockwave, `${pa}.bombs.landShockwave`),
+                }),
           },
           dash: {
             telegraphSec: num(dash.telegraphSec, `${pa}.dash.telegraphSec`, { min: 0 }),
@@ -333,6 +418,9 @@ function parseEnemy(id: string, value: unknown, p = `enemies.${id}`): EnemyData 
               },
             ),
             recoverSec: num(dash.recoverSec, `${pa}.dash.recoverSec`, { min: 0 }),
+            ...(dash.damage === undefined
+              ? {}
+              : { damage: num(dash.damage, `${pa}.dash.damage`, { min: 0 }) }),
             endSlam: (() => {
               if (dash.endSlam === undefined) return false;
               if (typeof dash.endSlam !== 'boolean')
@@ -471,7 +559,12 @@ function attackDamage(e: EnemyData): number {
     case 'shieldCharger':
       return e.contactDamage;
     case 'golem':
-      return Math.max(e.attack.slam.shockwave.damage, e.attack.bombs.projectile.damage);
+      return Math.max(
+        e.attack.slam.shockwave.damage,
+        e.attack.bombs.projectile.damage,
+        e.attack.bombs.landShockwave?.damage ?? 0,
+        e.attack.dash.damage ?? 0,
+      );
     default:
       return e.attack.projectile.damage;
   }

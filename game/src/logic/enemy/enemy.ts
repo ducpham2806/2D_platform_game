@@ -1,5 +1,6 @@
 import type { EnemyData, EnemyProjectileData } from '../../core/enemy-config';
-import type { ProjectilePool, ShieldContact } from '../combat/projectiles';
+import type { ExtraSolid, FlightLine, FlightPoint } from '../combat/flight';
+import type { ProjectilePool, ProjectileSpec, ShieldContact } from '../combat/projectiles';
 import { enemyProjectile } from '../boss/enemy-projectile';
 import type { Box } from '../player/collision';
 import type { TileMap } from '../tilemap';
@@ -11,6 +12,7 @@ export interface EnemyContext {
   playerY: number;
   pool: ProjectilePool;
   map: TileMap;
+  mirror?: ExtraSolid;
 }
 
 export type EnemyHitResult = 'hit' | 'killed' | 'blocked' | 'shieldHit' | 'shieldBroken';
@@ -35,6 +37,8 @@ export abstract class Enemy {
   flash = 0;
   /** Đang báo trước đòn (telegraph): scene vẽ nhấp nháy/phình/co theo loại. */
   telegraphing = false;
+  aimLines: readonly FlightLine[] = [];
+  landingMarks: readonly FlightPoint[] = [];
   /**
    * Số nhịp của đòn đang báo trước (viên, loạt, hạt, cú lao); > 1 thì scene vẽ một chấm mỗi nhịp
    * (bản Thử thách, GDD 11 mục 2.6).
@@ -106,6 +110,8 @@ export abstract class Enemy {
     this.hp = this.maxHp;
     this.flash = 0;
     this.telegraphing = false;
+    this.aimLines = [];
+    this.landingMarks = [];
     this.beats = 1;
     this.facing = -1;
     this.disabledTime = 0;
@@ -163,26 +169,40 @@ export abstract class Enemy {
     gravity = 0,
   ): void {
     const t = this.tileSize;
-    const { w, h } = data.sizePx;
     const speed = data.speedTilesPerSec * t;
     const startX = kind === 'bomb' ? this.centerX : this.centerX + dirX * (this.box.w / 2);
     const startY = kind === 'bomb' ? this.box.y + this.box.h : this.centerY;
+    ctx.pool.spawn(
+      this.makeShot(data, { x: startX, y: startY }, dirX * speed, dirY * speed, kind, gravity),
+    );
+  }
+
+  protected makeShot(
+    data: EnemyProjectileData,
+    from: FlightPoint,
+    vx: number,
+    vy: number,
+    kind: 'enemyShot' | 'bomb',
+    gravity = 0,
+  ): ProjectileSpec {
+    const { w, h } = data.sizePx;
     const spec = enemyProjectile(
-      t,
+      this.tileSize,
       kind,
-      startX - w / 2,
-      startY - h / 2,
+      from.x - w / 2,
+      from.y - h / 2,
       data.sizePx,
-      dirX * speed,
-      dirY * speed,
+      vx,
+      vy,
       this.harmless ? 0 : data.damage,
     );
-    const tagged = {
+    return {
       ...spec,
       source: `enemy:${this.data.id}`,
       fromRegularEnemy: this.data.behavior !== 'golem',
+      ...(data.bounces === undefined ? {} : { bouncesLeft: data.bounces }),
+      ...(gravity > 0 ? { gravity } : {}),
     };
-    ctx.pool.spawn(gravity > 0 ? { ...tagged, gravity } : tagged);
   }
 
   /**
