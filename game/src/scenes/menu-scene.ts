@@ -75,6 +75,9 @@ export class MenuScene extends Phaser.Scene {
     const gale = (): void => {
       this.scene.start(SceneKey.Stage, { stage: 'gale' });
     };
+    const platforms = (): void => {
+      this.scene.start(SceneKey.Stage, { stage: 'platforms' });
+    };
     const tryEnemies = (difficulty: 'normal' | 'challenge'): void => {
       this.scene.start(SceneKey.Stage, { stage: 'prismFrostEnemies', difficulty });
     };
@@ -84,8 +87,9 @@ export class MenuScene extends Phaser.Scene {
     textButton(this, cx + 65, 73, 'Phòng thử Gale Cutter', gale);
     textButton(this, cx - 65, 88, 'Phòng thử màn chơi', mechanics);
     textButton(this, cx + 65, 88, 'Địch S2–3', () => tryEnemies('normal'));
-    textButton(this, cx - 65, 103, 'Boss Thorna', thorna);
-    textButton(this, cx + 65, 103, 'Phòng thử băng', frost);
+    textButton(this, 53, 103, 'Boss Thorna', thorna);
+    textButton(this, cx, 103, 'Phòng thử băng', frost);
+    textButton(this, 267, 103, 'Bục băng và mây', platforms);
     textButton(this, cx - 65, 118, 'Mini-boss Bramble Golem', golem);
     textButton(this, cx + 65, 118, 'Phòng thử laser', optics);
     textButton(this, cx - 52, 133, 'Hub Arkon', () => this.scene.start(SceneKey.Hub));
@@ -109,10 +113,15 @@ export class MenuScene extends Phaser.Scene {
     textButton(this, cx - 52, 163, 'Kết quả chơi thử', () => this.scene.start(SceneKey.Playtest));
     textButton(this, cx + 52, 163, 'Dữ liệu lưu', () => this.scene.start(SceneKey.Save));
     this.add
-      .text(cx, 182, 'Enter · K · M · B · G · O Laser · I Băng · V Gale · H · X · Q · C · R · S', {
-        ...MUTED_STYLE,
-        fontSize: '8px',
-      })
+      .text(
+        cx,
+        182,
+        'Enter · K · M · B · G · O Laser · I Băng · V Gale · P Bục · H · X · Q · C · R · S',
+        {
+          ...MUTED_STYLE,
+          fontSize: '8px',
+        },
+      )
       .setOrigin(0.5);
 
     const keyboard = this.input.keyboard;
@@ -128,6 +137,7 @@ export class MenuScene extends Phaser.Scene {
     keyboard?.once('keydown-O', optics);
     keyboard?.once('keydown-I', frost);
     keyboard?.once('keydown-V', gale);
+    keyboard?.once('keydown-P', platforms);
     keyboard?.once('keydown-X', workshop);
     keyboard?.once('keydown-Q', openShop);
   }

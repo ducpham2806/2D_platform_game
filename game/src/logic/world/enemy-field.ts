@@ -3,12 +3,14 @@ import type { ExtraSolid } from '../combat/flight';
 import type { ProjectilePool } from '../combat/projectiles';
 import { createEnemy } from '../enemy/behaviors';
 import { type Enemy, isFlying } from '../enemy/enemy';
+import { type Box, groundBelow, moveY } from '../player/collision';
 import type { PlayerPhysics } from '../player/player-physics';
 import { createRng, type Rng } from '../rng';
 import type { EnemySpawn } from '../stage/layout';
 import type { TileMap } from '../tilemap';
 import { enemyReward, NO_STAGE_REWARD, type StageReward } from '../stage/stage-exp';
 import { PickupPool } from './pickups';
+import { standsOn } from './platforms';
 import type { WorldEvents } from './world-types';
 
 /** Ký hiệu trên bản đồ ASCII → kẻ địch (giữ tên cũ cho các màn dựng sẵn). */
@@ -27,6 +29,7 @@ export class EnemyField {
   private readonly rng: Rng;
   /** Kẻ địch (theo id) đã cho EXP, Core Bit trong lượt vào màn này. */
   private readonly rewarded = new Set<number>();
+  private readonly fallSpeeds = new Map<Enemy, number>();
 
   constructor(
     private readonly data: EnemiesData,
@@ -44,6 +47,7 @@ export class EnemyField {
      * (`exempt`) không nhân: thưởng ghi thẳng trong dữ liệu.
      */
     private readonly stage: StageReward = NO_STAGE_REWARD,
+    private readonly fallRules?: { gravity: number; maxSpeed: number },
   ) {
     const t = map.tileSize;
     this.rng = createRng(seed);
@@ -67,7 +71,16 @@ export class EnemyField {
     return this.enemies.filter((e) => this.isActive(e, player));
   }
 
-  step(player: PlayerPhysics, pool: ProjectilePool, dt: number, mirror?: ExtraSolid): void {
+  /** Chỉ địch đất mất mặt đỡ của bục vừa vỡ mới bắt đầu rơi. */
+  dropFrom(surface: Box): void {
+    if (!this.fallRules) return;
+    for (const e of this.enemies) {
+      if (e.alive && !isFlying(e.data) && standsOn(e.box, surface) && !groundBelow(e.box, this.map))
+        this.fallSpeeds.set(e, 0);
+    }
+  }
+
+  step(player: PlayerPhysics, pool: ProjectilePool, dt: number, mirror?: ExtraSolid): boolean {
     const ctx = {
       playerX: player.centerX,
       playerY: player.box.y + player.box.h / 2,
@@ -75,7 +88,30 @@ export class EnemyField {
       map: this.map,
       ...(mirror ? { mirror } : {}),
     };
-    for (const e of this.enemies) e.step(ctx, dt, this.isActive(e, player));
+    let fellOut = false;
+    for (const e of this.enemies) {
+      const vy = this.fallSpeeds.get(e);
+      if (vy === undefined) e.step(ctx, dt, this.isActive(e, player));
+      else {
+        e.step(ctx, dt, false);
+        if (this.fall(e, vy, dt)) fellOut = true;
+      }
+    }
+    return fellOut;
+  }
+
+  private fall(e: Enemy, vy: number, dt: number): boolean {
+    const rules = this.fallRules!;
+    const next = Math.min(vy + rules.gravity * dt, rules.maxSpeed);
+    if (!e.alive || moveY(e.box, ((vy + next) * dt) / 2, this.map, false)) {
+      this.fallSpeeds.delete(e);
+    } else if (e.box.y > this.map.heightPx) {
+      this.fallSpeeds.delete(e);
+      e.hp = 0;
+      this.awardExp(e);
+      return true;
+    } else this.fallSpeeds.set(e, next);
+    return false;
   }
 
   /**
@@ -84,16 +120,18 @@ export class EnemyField {
    */
   onKilled(killed: readonly Enemy[], player: PlayerPhysics): void {
     for (const e of killed) {
-      const paid = this.rewardOnce && this.rewarded.has(e.id);
-      if (!paid) {
-        this.rewarded.add(e.id);
-        this.exp += enemyReward(e.data.exp, this.mulFor(e).exp, this.rewardMul);
-      }
-      const coreBit = paid
-        ? 0
-        : enemyReward(e.data.coreBit, this.mulFor(e).coreBit, this.rewardMul);
+      const coreBit = this.awardExp(e)
+        ? enemyReward(e.data.coreBit, this.mulFor(e).coreBit, this.rewardMul)
+        : 0;
       this.pickups.drop(e.centerX, e.centerY, coreBit, player.hp < player.maxHp, this.rng);
     }
+  }
+
+  private awardExp(e: Enemy): boolean {
+    if (this.rewardOnce && this.rewarded.has(e.id)) return false;
+    this.rewarded.add(e.id);
+    this.exp += enemyReward(e.data.exp, this.mulFor(e).exp, this.rewardMul);
+    return true;
   }
 
   /** Vật phẩm rơi, người chơi nhặt: Core Bit vào túi, viên máu hồi máu (không quá tối đa). */
@@ -123,6 +161,7 @@ export class EnemyField {
    * địch đã hạ không dựng lại (của phòng khóa đã xong, kể cả mini-boss; QB-24).
    */
   reset(stayDown?: ReadonlySet<Enemy>): void {
+    this.fallSpeeds.clear();
     for (const e of this.enemies) if (e.alive || !stayDown?.has(e)) e.reset();
     this.pickups.clear();
   }

@@ -86,6 +86,8 @@ export interface WorldEvents {
   mirrorToggled: boolean;
   sensorActivated: boolean;
   laserHit: boolean;
+  platformCracked: boolean;
+  platformBroken: boolean;
   /** Vật phẩm bí mật vừa nhặt (id vật phẩm). */
   secretFound: string | undefined;
   /** M8: vừa lướt trên không (P1); lượt lướt trên không vừa hồi. */
@@ -138,6 +140,8 @@ export function noWorldEvents(): WorldEvents {
     mirrorToggled: false,
     sensorActivated: false,
     laserHit: false,
+    platformCracked: false,
+    platformBroken: false,
     secretFound: undefined,
     airDash: false,
     airDashRestored: false,

@@ -14,6 +14,7 @@
 | ST-15-04  | Frost Shard, vô hiệu theo QB-19 và dòng làm mát đóng băng                                         | 01b                                                    | 2 ngày | DONE (21/11/2026) |
 | ST-15-05  | Gale Cutter, hủy đạn Q4 và sương lạnh Két Tay Mk I                                               | 01c                                                    | 1,5 ngày | DONE (21/11/2026) |
 | ST-15-06  | Gương Quang, Người Tuyết Máy, Tháp Băng và Frost Titan                                         | 01a, 01b                                               | 2 ngày | DONE (22/11/2026) |
+| ST-15-08a | Bục băng vỡ, bệ mây chìm và bệ mây trôi                                                       | 01b, 01c                                               | 1 ngày | DONE (22/11/2026) |
 
 ## ST-15-14: Boss an toàn (QB-14, QB-31)
 
@@ -283,3 +284,19 @@ Phase Step gọi chung API khi triển khai ST-08-09. Mở khóa vũ khí qua Cr
 - [x] Kiểm cấu hình của bốn loại và bốn biến thể lúc nạp. Kiểm thưởng Stage 2–3 và miễn vô hiệu của Frost Titan theo QB-19.
 - [x] Kiểm đường đạn và vạch báo, va chạm trần/tường/gương, ném cong và nhắm lại, cú trượt ở mép, tảng chỉ tạo sóng khi đáp sàn.
 - [x] Phòng thử cho cả hai độ khó, có ảnh Chromium PC và Pixel 7 giả lập. Bản đồ chiến dịch ở EP-17, QB-21 và QB-23 áp toàn game ở ST-15-15. [Ảnh kiểm thử](../qa/ST-15-06/README.md)
+
+## ST-15-08a: Bục băng vỡ và hai bệ mây
+
+- **Thuộc Epic:** EP-15 · **Ưu tiên:** P1 · **Trạng thái:** DONE (22/11/2026) · **Phụ thuộc:** ST-15-01b/c · **Engine:** Phaser 3.90.0.
+
+> **Là** người chơi, **tôi muốn** nhìn dấu nứt và canh vị trí bệ mây, **để** nhảy qua bục sắp vỡ hoặc đi nhờ bệ trôi.
+
+- GDD 16 mục 4.3, 4.11, 5.3 và 5.11. Kai đặt chân mới kích hoạt. Dù Kai rời đi, bộ đếm tiếp tục. Nứt ở 0 / 0,4 / 0,7 s, bục băng vỡ sau 1 s và bệ mây bắt đầu chìm sau 0,8 s với tốc độ 3 ô/s. Mọc lại sau 4 s khi vị trí trống. Hồi sinh ở checkpoint dựng lại bục.
+- Bệ mây trôi qua lại giữa hai điểm Tiled ở 1,5 ô/s và chở Kai bằng `Platform.dx/dy` như dây leo. Bệ một chiều dùng thao tác Xuống + Nhảy có sẵn. Bục vỡ và bệ di động không kích hoạt checkpoint (QB-40).
+- Kẻ địch không kích hoạt bục. Khi băng dưới chân vỡ, kẻ địch đất rơi. Rơi khỏi bản đồ tính hạ và cộng EXP gốc của lượt, Core Bit mất theo hố (QB-20).
+
+### Nghiệm thu
+
+- [x] Kiểm nứt, thời điểm vỡ/chìm, hồi sinh và chờ vật cản rời chỗ mọc.
+- [x] Kiểm quãng đường bệ trôi theo cả hai trục, chở Kai, rơi xuyên, mép/va chạm và QB-40. Tích hợp qua Tiled và cơ chế bệ sẵn có.
+- [x] Kiểm kẻ địch rơi xuống sàn hoặc mất dưới đáy, giữ luật thưởng một lần. Có phòng thử và [ảnh PC/Pixel 7](../qa/ST-15-08a/README.md). Sàn trơn và gió ở ST-15-08b, Nứt Bục của Cryo ở ST-15-11.

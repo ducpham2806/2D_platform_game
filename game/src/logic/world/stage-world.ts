@@ -21,7 +21,7 @@ import {
 import { BuildRuntime } from '../rpg/build-runtime';
 import { checkpointActive, scaleReward, startCheckpointFor } from '../difficulty/difficulty';
 import { playerParams } from '../player/player-params';
-import { PlayerPhysics } from '../player/player-physics';
+import { type Platform, PlayerPhysics } from '../player/player-physics';
 import { createRng, type Rng } from '../rng';
 import { type EnemyMarkers, layoutFromRows, type StageLayout } from '../stage/layout';
 import { laserBox, type LaserPath, traceLaser } from '../stage/laser-path';
@@ -30,6 +30,7 @@ import type { StageReward } from '../stage/stage-exp';
 import { EnemyField } from './enemy-field';
 import { resolveBeamHits } from './beam-hits';
 import { CoolantFlow } from './coolant-flow';
+import { CloudDrift, CrumblePlatform, standsOn } from './platforms';
 import {
   type BossDamageObserver,
   type KaiDefense,
@@ -113,6 +114,9 @@ export class StageWorld {
   /** Cơ chế màn (M7). */
   readonly layout: StageLayout;
   readonly vines: Vine[];
+  readonly crumbles: readonly CrumblePlatform[];
+  readonly cloudDrifts: readonly CloudDrift[];
+  private readonly fixedPlatforms: readonly Platform[];
   readonly rooms: LockedRoom[];
   readonly barriers: Barrier[];
   readonly coolant: readonly CoolantFlow[];
@@ -191,13 +195,13 @@ export class StageWorld {
     this.built = applyBuild(setup.player, setup.weapons, this.build);
     const { maxHp, attackMul } = statsFor(this.level, setup.player.level, this.build);
     this.attackMul = attackMul;
-    this.player = new PlayerPhysics(
-      playerParams(this.built.player, t, setup.stepSec, playerModsOf(this.build, setup.stepSec)),
-      this.map,
-      this.checkpoint.x,
-      this.checkpoint.y,
-      maxHp,
+    const physics = playerParams(
+      this.built.player,
+      t,
+      setup.stepSec,
+      playerModsOf(this.build, setup.stepSec),
     );
+    this.player = new PlayerPhysics(physics, this.map, this.checkpoint.x, this.checkpoint.y, maxHp);
     this.loadout = new WeaponLoadout(this.built.weapons, t);
     this.runtime = new BuildRuntime(this.build.shield);
     this.defense = this.defenseOf(this.build);
@@ -233,13 +237,24 @@ export class StageWorld {
           setup.difficulty.rewardMul,
           setup.mechanics.enemyRewardOncePerRun,
           setup.stageReward,
+          { gravity: physics.gravity * physics.fallGravityMul, maxSpeed: physics.maxFallSpeed },
         )
       : undefined;
     this.bossSpawn = layout.boss ? standPoint(layout.boss, t) : undefined;
     this.boss = this.makeBoss();
 
     this.vines = layout.vines.map((v) => new Vine(v, setup.mechanics.vine, t));
-    this.player.platforms = this.vines.map((v) => v.platform);
+    this.crumbles = (layout.crumbles ?? []).map(
+      (p) => new CrumblePlatform(p, this.map, setup.mechanics.crumble),
+    );
+    this.cloudDrifts = (layout.cloudDrifts ?? []).map(
+      (p) => new CloudDrift(p, setup.mechanics.cloud.drift.speedTilesPerSec * t, t),
+    );
+    this.fixedPlatforms = [
+      ...this.vines.map((v) => v.platform),
+      ...this.cloudDrifts.map((c) => c.platform),
+    ];
+    this.syncPlatforms();
     this.rooms = layout.rooms.map((r) => new LockedRoom(r, this.map));
     if (this.field) for (const r of this.rooms) r.bind(this.field.enemies, layout.enemies);
     this.barriers = layout.barriers.map((b) => new Barrier(b, this.map));
@@ -370,6 +385,8 @@ export class StageWorld {
     }
 
     for (const v of this.vines) v.step(dt);
+    for (const c of this.cloudDrifts) c.step(dt);
+    this.stepCrumbles(dt, ev);
     this.optics?.step(dt, ev);
 
     if (input.swapPrev || input.swapNext) {
@@ -391,6 +408,7 @@ export class StageWorld {
       },
       dt,
     );
+    this.activateCrumbles(ev);
     this.attachSweeps();
     ev.airDash = pe.airDashed;
     ev.airDashRestored = pe.airDashRestored;
@@ -431,7 +449,7 @@ export class StageWorld {
     }
     const optics = this.optics;
     const mirror = optics?.mirrors.length ? optics.isMirrorCell : undefined;
-    this.field?.step(pl, this.pool, dt, mirror);
+    if (this.field?.step(pl, this.pool, dt, mirror)) ev.enemyKilled = true;
     const hasCoolant = this.coolant.some((flow) => !flow.frozen);
     this.pool.update(
       dt,
@@ -524,6 +542,55 @@ export class StageWorld {
       this.respawnTimer = mech.respawnSec;
     }
     return ev;
+  }
+
+  private syncPlatforms(): void {
+    this.player.platforms = [
+      ...this.fixedPlatforms,
+      ...this.crumbles.flatMap((p) => (p.support ? [p.support] : [])),
+    ];
+  }
+
+  private stepCrumbles(dt: number, ev: WorldEvents): void {
+    let updatePlatforms = false;
+    for (const p of this.crumbles) {
+      const before = p.support;
+      const event = p.step(
+        dt,
+        () =>
+          (this.player.state !== 'dead' && p.obstructedBy(this.player.box)) ||
+          this.enemies.some((e) => e.alive && p.obstructedBy(e.box)) ||
+          this.targets.some((t) => t.alive && p.obstructedBy(t.box)) ||
+          (this.boss !== undefined && this.boss.state !== 'dead' && p.obstructedBy(this.boss.box)),
+      );
+      if (p.support !== before) updatePlatforms = true;
+      if (event === 'crack') ev.platformCracked = true;
+      if (event === 'collapse') {
+        ev.platformBroken = true;
+        if (p.spawn.mode === 'break') this.field?.dropFrom(p.origin);
+      }
+    }
+    if (updatePlatforms) this.syncPlatforms();
+  }
+
+  private activateCrumbles(ev: WorldEvents): void {
+    const pl = this.player;
+    if (this.crumbles.length === 0 || !pl.grounded || pl.state === 'dead') return;
+    const ride = pl.onPlatform && pl.platforms.find((p) => standsOn(pl.box, p));
+    for (const p of this.crumbles) {
+      const reached =
+        p.spawn.mode === 'break'
+          ? !pl.onPlatform && standsOn(pl.box, p.origin)
+          : ride && ride === p.support;
+      if (reached && p.activate()) ev.platformCracked = true;
+    }
+  }
+
+  private onCrumblingIce(): boolean {
+    return this.crumbles.some(
+      (p) =>
+        p.spawn.mode === 'break' && p.state !== 'broken' && standsOn(this.player.box, p.origin),
+    );
   }
 
   private tracePlayerBeam(shot: BeamShot): LaserPath {
@@ -666,6 +733,7 @@ export class StageWorld {
     if (
       !pl.grounded ||
       pl.onPlatform ||
+      this.onCrumblingIce() ||
       pl.state === 'hurt' ||
       this.map.overlapsHazard(b) ||
       this.inLaser(b)
@@ -707,12 +775,19 @@ export class StageWorld {
   /** Đi qua checkpoint (theo cột) thì lưu làm điểm hồi sinh; chỉ tiến, không lùi. */
   private updateCheckpoints(ev: WorldEvents): void {
     const pl = this.player;
-    if (this.phase !== 'explore' || pl.state === 'dead') return;
+    if (
+      this.phase !== 'explore' ||
+      pl.state === 'dead' ||
+      !pl.grounded ||
+      pl.onPlatform ||
+      this.onCrumblingIce()
+    )
+      return;
     const cps = this.layout.checkpoints;
     const t = this.setup.tileSize;
     for (let i = this.checkpointIndex; i < cps.length; i += 1) {
       const cp = cps[i]!;
-      if (pl.centerX < (cp.col + 0.5) * t || !pl.grounded) break;
+      if (pl.centerX < (cp.col + 0.5) * t) break;
       // Checkpoint không có ở độ khó này: đi qua không ghi.
       if (!checkpointActive(cp, this.setup.difficulty.id)) continue;
       this.checkpointIndex = i + 1;
@@ -818,6 +893,9 @@ export class StageWorld {
     const pl = this.player;
     this.safe = this.checkpoint;
     this.optics?.reset();
+    for (const c of this.crumbles) c.reset();
+    for (const c of this.cloudDrifts) c.reset();
+    if (this.crumbles.length) this.syncPlatforms();
     if (this.pitReturn) {
       // Rơi hố còn máu: về checkpoint, giữ máu và mọi thứ khác.
       this.pitReturn = false;

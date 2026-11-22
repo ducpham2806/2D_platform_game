@@ -38,6 +38,20 @@ export interface VineSpawn extends Cell {
   phase: number;
 }
 
+/** Mép trái và mặt trên của bệ, tọa độ ô từ 0. */
+export interface PlatformSpawn extends Cell {
+  widthTiles: number;
+}
+
+export interface CrumbleSpawn extends PlatformSpawn {
+  mode: 'break' | 'sink';
+}
+
+export interface CloudDriftSpawn extends PlatformSpawn {
+  /** Mép trái và mặt trên ở đầu còn lại của đường trôi. */
+  end: Cell;
+}
+
 /**
  * Phòng khóa: hai cột mép trái/phải (`first`, `last`) chứa cửa, hàng `top`..`bottom`. Vào hẳn bên
  * trong thì cửa đóng tới khi hạ hết kẻ địch xuất phát trong phòng.
@@ -118,6 +132,8 @@ export interface StageLayout {
   barriers: BarrierSpawn[];
   /** Vùng dòng làm mát; các ô trống cho tới khi đóng băng. */
   coolant?: CellSpan[];
+  crumbles?: CrumbleSpawn[];
+  cloudDrifts?: CloudDriftSpawn[];
   optics?: OpticsLayout;
   sections: SectionSpawn[];
 }

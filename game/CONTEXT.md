@@ -132,7 +132,7 @@ Mỗi module một dòng; chi tiết ở file quyết định và Epic.
 - **M4 Chiến đấu:** Arc Cannon, Vine Lash, Prism Beam, Frost Shard (QB-19), Gale Cutter (Q4). Còn: Lumen, Cryo, Aeris cấp vũ khí.
 - **M5 Kẻ địch:** Prologue, Stage 1 và bốn địch ST-15-06 đã chạy. Thưởng theo màn, trả một lần (QB-20). Còn: địch Stage 2/4, QB-21/23, sprite.
 - **M6 Boss:** Boss xám, Thorna và Bramble Golem; thắng nếu boss và Kai hết máu cùng bước (QB-30); chống khóa choáng và kẹp pha (QB-14, 31). Còn: Lumen, Cryo, Aeris, mini-boss và bản đồ đấu trường.
-- **M7 Màn chơi:** Khung Tiled, checkpoint, hố, gai, dây leo, cửa và bí mật. Phòng thử laser, băng và Gale Cutter. Gió và bệ mây có dữ liệu (ST-15-01c). Còn: bản đồ chiến dịch, thang, bệ dây di chuyển, parallax.
+- **M7 Màn chơi:** Tiled, checkpoint, hố, gai, dây leo, cửa và bí mật. Phòng thử laser, băng, Gale Cutter và bục băng/mây (ST-15-08a). Còn: bản đồ chiến dịch, sàn trơn/gió, thang, parallax.
 - **M8 Hệ thống RPG:** Xong cấp, SP, cây kỹ năng 3 × 3 có hiệu ứng trong trận, Xưởng tab Kỹ năng, trần sức mạnh. Còn: Module, Két giáp (ST-08-09, bị chặn), âm thanh kỹ năng, loadout (Alpha).
 - **M9 Kinh tế và Shop:** Xong bản MVP chỉ Upgrade (Quầy Mira, giao dịch nguyên tử, hoàn số đã trả, gợi ý thu nhập theo màn có trong bản build và độ khó chọn lần cuối). Còn: Booster, Skin, Premium (Alpha).
 - **M10 Giao diện:** Xong HUD, menu tạm dừng, hội thoại boss, màn Kết quả, Xưởng, Quầy, màn Chuẩn bị; hộp chữ thuần (QB-70…72, ST-14-08: hiện lại, hủy, đồng hồ trận). Còn (EP-14): Hub dạng menu MVP, Cài đặt (`14-Cai-dat-Tiep-can.md`), chữ ≥ 16 sp và nút ≥ 48 dp, safe-area, tự tạm dừng, báo lỗi lưu, bỏ qua thoại giữ 0,6 s, i18n; ChoicePanel, thoại NPC, bản đồ nhỏ (Alpha).
