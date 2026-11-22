@@ -10,6 +10,8 @@
     "attackScreenInsetTiles": 1,
     "pickups": {
       "healChance": 0.08,
+      "energyChance": 0.06,
+      "energy": 4,
       "heal": 20,
       "healLifetimeSec": 8,
       "coreBitLifetimeSec": 10,

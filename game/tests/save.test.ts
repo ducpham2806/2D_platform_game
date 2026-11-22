@@ -177,7 +177,7 @@ describe('lưu tiến trình trong màn', () => {
     expect(saver.step(ev({ checkpoint: 1 }), run, DT)).toBe(true);
     expect(m.data.inventory.coreBits).toBe(3);
     run.coreBits = 5;
-    saver.step(ev({ secretFound: 'nano_cell' }), run, DT);
+    saver.step(ev({ secretsFound: ['nano_cell', 'side_cache'] }), run, DT);
     expect(m.data.inventory.coreBits).toBe(5);
     expect(m.data.character.exp).toBe(10);
     // Chết rồi hồi sinh không mất Core Bit; nhặt thêm rồi thoát màn thì cộng phần còn lại.
@@ -187,12 +187,20 @@ describe('lưu tiến trình trong màn', () => {
     expect(m.data.playTimeSec).toBeCloseTo(3 * DT);
     expect(stageProgress(m.data, 'thorna')).toEqual({
       checkpointBy: { normal: 1 },
-      secrets: ['nano_cell'],
+      secrets: ['nano_cell', 'side_cache'],
     });
     saver.step(ev({ bossDefeated: true, weaponGranted: 'Vine Lash' }), run, DT);
     expect(m.data.progress.bossesDefeated).toEqual(['thorna']);
     expect(m.data.character.weapons).toEqual(['Vine Lash']);
     expect(stageProgress(m.data, 'thorna').checkpointBy).toEqual({});
+  });
+
+  it('ghi Nano Cell theo màn chiến dịch, vẫn ghi bí mật khác theo bản đồ', async () => {
+    const m = await SaveManager.open(new MemorySaveStore());
+    const saver = new StageSave(m, 'mechanics', 'gray', { nanoCellStage: 'verdant_gardens' });
+    saver.step(ev({ secretsFound: ['nano_cell', 'side_cache'] }), { exp: 0, coreBits: 0 }, DT);
+    expect(stageProgress(m.data, 'verdant_gardens').secrets).toEqual(['nano_cell']);
+    expect(stageProgress(m.data, 'mechanics').secrets).toEqual(['side_cache']);
   });
 
   it('vào lại màn: đúng checkpoint, có vũ khí đã nhận, bí mật đã nhặt không hiện lại', () => {

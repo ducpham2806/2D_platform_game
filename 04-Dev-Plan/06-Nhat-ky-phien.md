@@ -25,6 +25,17 @@ Mẫu:
 
 ---
 
+## 2026-11-22: ST-15-16 Nano Cell và viên năng lượng
+
+- **Nhánh:** `ccr-9de01342-2046rb`, từ `1771a0d`. G1 tiếp tục trên `main`.
+- **Nano Cell:** Stage 1/3/5/7 cấp mỗi màn một ô. Đọc bí mật M7 cũ, ghi mới theo id màn chiến dịch. Vào lượt nạp đầy. Nhặt thêm chỉ nạp ô mới. Chết, rơi hố và qua checkpoint giữ số còn lại.
+- **Hồi máu:** H/RT hồi 40% máu tối đa khi còn sống và thiếu máu, kể cả đang choáng. Khóa đầu vào 0,4 s, xóa đệm nhảy và nạp súng. Nano Cell Cap nâng dần lên 80% ở cấp 4.
+- **Năng lượng:** 6% rơi ở lần đầu hạ địch trong lượt nếu còn thanh vũ khí boss chưa đầy. Khi cầm Arc Cannon, hồi +4 cho thanh thấp nhất. Kẹp theo thanh tối đa và giữ viên khi vũ khí đích đầy.
+- **File chính:** `NanoCells`, `StageSave`, `WeaponLoadout`, `EnemyField`, HUD và `game/tests/nano-cell-energy.test.ts`.
+- **Kiểm tra:** 723 test, lint, format, build (typecheck), docs-check và gate-flow đạt. Chromium PC/Pixel 7 ngang giả lập, 0 lỗi console. [Ảnh](qa/ST-15-16/README.md).
+- **Còn lại:** Nút dùng Nano Cell trên cảm ứng thuộc EP-14. Đặt vật phẩm vào phòng bí mật tại các bản đồ chiến dịch.
+- **Tiếp theo:** ST-15-09 (Prism Sentinel và Gale Roc) làm được trước G1.
+
 ## 2026-11-22: ST-15-15 báo đòn mini-boss và tầm hoạt động
 
 - **Nhánh:** `ccr-9de01342-2046rb`, từ `93096ce`. G1 tiếp tục trên `main`.
@@ -43,12 +54,3 @@ Mẫu:
 - **File chính:** `CrumblePlatform`, `CloudDrift`, `StageWorld`, `EnemyField`, bộ nạp Tiled và 14 bài trong `game/tests/platforms.test.ts`.
 - **Kiểm tra:** 683 test, build (typecheck), lint, format, docs-check và gate-flow đạt. Phòng **Bục băng và mây** chơi qua bằng bàn phím và Pixel 7 giả lập, 0 lỗi console. [Ảnh](qa/ST-15-08a/README.md).
 - **Tiếp theo:** ST-15-15/16 làm được trước G1. Sàn trơn và gió thuộc ST-15-08b, Nứt Bục của Cryo ở ST-15-11, bố trí bệ chiến dịch ở EP-17.
-
-## 2026-11-22: ST-15-06 bốn kẻ địch Viện Quang và Kho Lạnh
-
-- **Nhánh:** `ccr-9de01342-2046rb`, từ `35fca2b`. G1 tiếp tục trên `main`.
-- **Đã làm:** Gương Quang dội trần khi bị che và vẽ hướng ngắm. Song Tia thêm viên thẳng nếu có đường dội. Người Tuyết Máy dùng 0 khiên, dừng ở mép và thêm hai cú Trượt Dội ở Thử thách.
-- **Địch Kho Lạnh:** Tháp Băng dùng góc ném 50°, có hai điểm rơi và nhắm lại ở loạt hai. Frost Titan giậm, ném ba tảng, húc và miễn vô hiệu. Tảng Vỡ sinh hai sóng khi đáp sàn hoặc bục một chiều. Hạ Titan mở phòng khóa và trả 185 EXP/50 Core Bit theo dữ liệu gốc.
-- **Quyết định:** dùng đường va chạm quét cho vạch dội và bóng đổ. Sửa vị trí phóng bom trong hành vi `golem` để bom không chạm sàn ngay lúc bắn. Mở hai chế độ phòng thử ở menu thường.
-- **Kiểm tra:** 669 test, build (typecheck), lint, format, docs-check và gate-flow đạt. Chromium PC Thường và Pixel 7 giả lập Thử thách, 0 lỗi console. [Ảnh](qa/ST-15-06/README.md).
-- **Tiếp theo:** ST-15-08a hoặc ST-15-15/16. Đặt địch trong bản đồ chiến dịch ở EP-17. QB-21 và QB-23 thống nhất ở ST-15-15.

@@ -3,6 +3,7 @@
     {
       "index": 1,
       "id": "verdant_gardens",
+      "nanoCell": true,
       "name": "Verdant Gardens",
       "recommendedLevel": "2-4",
       "mechanic": "dây leo đẩy/kéo, bẫy gai",
@@ -75,6 +76,7 @@
     {
       "index": 3,
       "id": "cryo_vault",
+      "nanoCell": true,
       "name": "Cryo Vault",
       "recommendedLevel": "5-8",
       "mechanic": "sàn trơn, băng vỡ",
@@ -147,6 +149,7 @@
     {
       "index": 5,
       "id": "bedrock_mines",
+      "nanoCell": true,
       "name": "Bedrock Mines",
       "recommendedLevel": "8-12",
       "mechanic": "tường phá được, hầm sập",
@@ -205,6 +208,7 @@
     {
       "index": 7,
       "id": "abyss_harbor",
+      "nanoCell": true,
       "name": "Abyss Harbor",
       "recommendedLevel": "12-16",
       "mechanic": "bơi, dòng nước, áp suất",

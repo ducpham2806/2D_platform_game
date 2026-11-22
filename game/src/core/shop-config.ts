@@ -22,6 +22,8 @@ export interface UpgradeData {
   damageTakenPerLevel?: number;
   /** Năng lượng tối đa của vũ khí boss cộng thêm mỗi cấp, theo tỷ lệ (energy_cell). */
   energyMaxPerLevel?: number;
+  /** Tỷ lệ lượng hồi gốc của Nano Cell cộng thêm mỗi cấp. */
+  nanoCellHealPerLevel?: number;
   /** Tầm hút Core Bit mỗi cấp, ô (magnet_range). */
   magnetTilesPerLevel?: number;
 }
@@ -35,6 +37,7 @@ export function upgradeHasEffect(u: UpgradeData): boolean {
     u.damagePerLevel !== undefined ||
     u.damageTakenPerLevel !== undefined ||
     u.energyMaxPerLevel !== undefined ||
+    u.nanoCellHealPerLevel !== undefined ||
     u.magnetTilesPerLevel !== undefined
   );
 }
@@ -67,6 +70,7 @@ const REQUIRED_NUMBERS = {
     arc_core: 'damagePerLevel',
     armor_plating: 'damageTakenPerLevel',
     energy_cell: 'energyMaxPerLevel',
+    nano_cell_cap: 'nanoCellHealPerLevel',
     magnet_range: 'magnetTilesPerLevel',
   },
   boosters: { overcharge: 'chargeSpeed' },
@@ -108,6 +112,8 @@ export function parseShop(value: unknown): ShopData {
     }
     if (o.energyMaxPerLevel !== undefined)
       u.energyMaxPerLevel = num(o.energyMaxPerLevel, `${p}.energyMaxPerLevel`, { min: 0 });
+    if (o.nanoCellHealPerLevel !== undefined)
+      u.nanoCellHealPerLevel = num(o.nanoCellHealPerLevel, `${p}.nanoCellHealPerLevel`, { min: 0 });
     if (o.magnetTilesPerLevel !== undefined)
       u.magnetTilesPerLevel = num(o.magnetTilesPerLevel, `${p}.magnetTilesPerLevel`, { min: 0 });
     upgrades[id] = u;

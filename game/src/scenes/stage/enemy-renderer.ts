@@ -148,6 +148,11 @@ export function drawPickups(
       g.fillStyle(0xffd166, 1)
         .fillTriangle(cx, p.y, p.x + p.w, cy, cx, p.y + p.h)
         .fillTriangle(cx, p.y, p.x, cy, cx, p.y + p.h);
+    } else if (p.kind === 'energy') {
+      g.fillStyle(0x4fd1ff, 1).fillRect(p.x, p.y, p.w, p.h);
+      g.fillStyle(0x0f1724, 1)
+        .fillRect(p.x + p.w / 2 - 1, p.y + 1, 2, p.h - 2)
+        .fillRect(p.x + 1, p.y + p.h / 2 - 1, p.w / 2, 2);
     } else {
       g.fillStyle(0xffffff, 1).fillRect(p.x, p.y, p.w, p.h);
       g.fillStyle(0x7bd389, 1)

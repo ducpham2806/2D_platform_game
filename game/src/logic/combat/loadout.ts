@@ -145,10 +145,33 @@ export class WeaponLoadout {
     this.index = (this.index + dir + this.slots.length) % this.slots.length;
   }
 
-  refill(): void {
-    for (const s of this.slots) s.energy = this.data.energyMax;
+  get hasEnergyDeficit(): boolean {
+    return this.slots.some((s) => s.kind !== 'buster' && s.energy < this.energyMax);
+  }
+
+  restoreEnergy(amount: number): number {
+    let target = this.current;
+    if (target.kind === 'buster') {
+      // Các thanh vũ khí boss có cùng mức tối đa, nên thứ tự năng lượng cũng là thứ tự phần trăm.
+      for (const slot of this.slots) {
+        if (slot.kind !== 'buster' && (target.kind === 'buster' || slot.energy < target.energy))
+          target = slot;
+      }
+    }
+    if (target.kind === 'buster' || target.energy >= this.energyMax) return 0;
+    const before = target.energy;
+    target.energy = Math.min(this.energyMax, before + amount);
+    return target.energy - before;
+  }
+
+  cancelCharge(): void {
     this.chargeTime = 0;
     this.keepCharge = 0;
+  }
+
+  refill(): void {
+    for (const s of this.slots) s.energy = this.data.energyMax;
+    this.cancelCharge();
   }
 
   step(input: FireInput, ctx: FireContext, pool: ProjectilePool, dt: number): FireEvents {
@@ -156,10 +179,7 @@ export class WeaponLoadout {
     this.fireCooldown = Math.max(0, this.fireCooldown - dt);
     this.sinceBossWeapon += dt;
     this.regen(dt);
-    if (ctx.hurt) {
-      this.chargeTime = 0;
-      this.keepCharge = 0;
-    }
+    if (ctx.hurt) this.cancelCharge();
     if (this.current.kind !== 'buster') {
       this.tickKeep(dt);
       if (input.pressed) this.fireBossWeapon(ctx, pool, events);

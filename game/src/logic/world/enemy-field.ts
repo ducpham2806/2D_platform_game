@@ -1,5 +1,6 @@
 import type { EnemiesData } from '../../core/enemy-config';
 import type { ExtraSolid } from '../combat/flight';
+import type { WeaponLoadout } from '../combat/loadout';
 import type { ProjectilePool } from '../combat/projectiles';
 import { createEnemy } from '../enemy/behaviors';
 import { type Enemy, isFlying } from '../enemy/enemy';
@@ -27,6 +28,7 @@ export class EnemyField {
   exp = 0;
   coreBits = 0;
   private readonly rng: Rng;
+  private readonly energyRng: Rng;
   /** Kẻ địch (theo id) đã cho EXP, Core Bit trong lượt vào màn này. */
   private readonly rewarded = new Set<number>();
   private readonly fallSpeeds = new Map<Enemy, number>();
@@ -51,6 +53,8 @@ export class EnemyField {
   ) {
     const t = map.tileSize;
     this.rng = createRng(seed);
+    // Mở vũ khí không làm lệch chuỗi rơi viên máu của cùng một seed.
+    this.energyRng = createRng(seed ^ 0x9e3779b9);
     this.pickups = new PickupPool(data.rules.pickups, t);
     for (const s of spawns) {
       const enemy = data.enemies[s.enemy];
@@ -143,12 +147,15 @@ export class EnemyField {
    * Kẻ địch vừa bị hạ: cộng EXP, rơi đồ. Kẻ địch đã cho thưởng trong lượt này (dựng lại sau khi
    * Kai chết) thì chỉ rơi viên máu, để không cày được bằng cách chết.
    */
-  onKilled(killed: readonly Enemy[], player: PlayerPhysics): void {
+  onKilled(killed: readonly Enemy[], player: PlayerPhysics, loadout?: WeaponLoadout): void {
     for (const e of killed) {
-      const coreBit = this.awardExp(e)
+      const firstReward = this.awardExp(e);
+      const coreBit = firstReward
         ? enemyReward(e.data.coreBit, this.mulFor(e).coreBit, this.rewardMul)
         : 0;
       this.pickups.drop(e.centerX, e.centerY, coreBit, player.hp < player.maxHp, this.rng);
+      if (firstReward && loadout?.hasEnergyDeficit)
+        this.pickups.dropEnergy(e.centerX, e.centerY, this.energyRng);
     }
   }
 
@@ -161,11 +168,21 @@ export class EnemyField {
 
   /** Vật phẩm rơi, người chơi nhặt: Core Bit vào túi, viên máu hồi máu (không quá tối đa). */
   /** `magnetPx`: tầm hút Core Bit tính từ thân Kai (Upgrade Magnet Range); 0 = không hút. */
-  updatePickups(player: PlayerPhysics, dt: number, ev: WorldEvents, magnetPx = 0): void {
+  updatePickups(
+    player: PlayerPhysics,
+    dt: number,
+    ev: WorldEvents,
+    magnetPx = 0,
+    loadout?: WeaponLoadout,
+  ): void {
     if (player.state !== 'dead') this.pickups.attract(player.box, magnetPx, dt);
     this.pickups.update(dt, this.map);
     if (player.state === 'dead') return;
-    const got = this.pickups.collect(player.box);
+    const got = this.pickups.collect(
+      player.box,
+      loadout && ((amount) => loadout.restoreEnergy(amount)),
+    );
+    ev.energyGained = got.energy;
     if (got.coreBit > 0) {
       this.coreBits += got.coreBit;
       ev.coreBitGained = got.coreBit;
@@ -173,7 +190,7 @@ export class EnemyField {
     if (got.heal > 0) {
       const before = player.hp;
       player.hp = Math.min(player.maxHp, player.hp + got.heal);
-      ev.healed = player.hp - before;
+      ev.healed += player.hp - before;
     }
   }
 

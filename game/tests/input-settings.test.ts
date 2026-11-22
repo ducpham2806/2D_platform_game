@@ -7,6 +7,7 @@ import {
   defaultControlSettings,
   loadControlSettings,
   MemoryStore,
+  parseControlSettings,
   saveControlSettings,
 } from '@/logic/input/settings';
 import { loadData } from './helpers';
@@ -37,6 +38,22 @@ describe('lưu cài đặt điều khiển', () => {
     };
     saveControlSettings(store, changed);
     expect(loadControlSettings(store, defaults())).toEqual(changed);
+  });
+
+  it('bản lưu cũ nhận H/RT nếu trống và giữ phím đã gán cho hành động khác', () => {
+    const base = defaultControlSettings(defaults());
+    const keyboard: Partial<typeof base.keyboard> = { ...base.keyboard, jump: ['KeyH'] };
+    const gamepad: Partial<typeof base.gamepad> = { ...base.gamepad };
+    delete keyboard.heal;
+    delete gamepad.heal;
+    const migrated = parseControlSettings({ ...base, keyboard, gamepad }, defaults());
+    expect(migrated.keyboard.jump).toEqual(['KeyH']);
+    expect(migrated.keyboard.heal).toEqual([]);
+    expect(migrated.gamepad.heal).toEqual([7]);
+    keyboard.jump = ['Space'];
+    expect(parseControlSettings({ ...base, keyboard }, defaults()).keyboard.heal).toEqual(['KeyH']);
+    keyboard.heal = ['KeyN'];
+    expect(parseControlSettings({ ...base, keyboard }, defaults()).keyboard.heal).toEqual(['KeyN']);
   });
 
   it('JSON hỏng hoặc sai phiên bản thì quay về mặc định', () => {

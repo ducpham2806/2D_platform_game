@@ -41,9 +41,10 @@ import { recordTutorialDone, setTutorialOff, stageDifficulty } from '../logic/sa
 import type { SaveManager } from '../logic/save/save-manager';
 import { TutorialManager, type TutorialView } from '../logic/tutorial/tutorial-manager';
 import { TutorialSignals } from '../logic/tutorial/tutorial-signals';
-import { StageSave, stageSaveSetup } from '../logic/save/stage-save';
+import { claimedNanoCells, StageSave, stageSaveSetup } from '../logic/save/stage-save';
 import { StageWorld } from '../logic/world/stage-world';
 import type { WorldEvents, WorldInput } from '../logic/world/world-types';
+import { NANO_CELL } from '../logic/world/nano-cell';
 import { buildStageLayout, STAGE_DEFS, type StageDefId } from '../stages';
 import type { StageDef } from '../stages/stage-def';
 import { DialogueBox } from './stage/dialogue-box';
@@ -211,7 +212,12 @@ export class StageScene extends Phaser.Scene {
     const allowed = config.difficulties
       .slice(config.difficulties.findIndex((d) => d.id === difficulty.id))
       .map((d) => d.id);
-    const fromSave = save ? stageSaveSetup(save.data, this.def.id, bossId, allowed) : {};
+    const fromSave = save ? stageSaveSetup(save.data, this.def.id, bossId, allowed) : undefined;
+    const nanoClaims = save && claimedNanoCells(save.data, config.stages.stages);
+    const nanoCellCount = nanoClaims ? nanoClaims.size : 0;
+    const takenSecrets = new Set(fromSave?.takenSecrets);
+    if (this.def.campaign && nanoClaims && nanoClaims.has(this.def.campaign))
+      takenSecrets.add(NANO_CELL);
     this.savedCoreBits = save?.data.inventory.coreBits ?? 0;
     const defeated = save?.data.progress.bossesDefeated ?? [];
     const storyBosses = new Set(config.stages.stages.map((s) => s.boss));
@@ -254,6 +260,8 @@ export class StageScene extends Phaser.Scene {
           }
         : {}),
       ...fromSave,
+      nanoCellCount,
+      takenSecrets: [...takenSecrets],
       ...(this.def.practiceWeapons
         ? { ownedWeapons: [...(save?.data.character.weapons ?? []), ...this.def.practiceWeapons] }
         : {}),
@@ -277,6 +285,7 @@ export class StageScene extends Phaser.Scene {
       ? new StageSave(save, this.def.id, bossId, {
           difficulty: difficulty.id,
           ...(campaignId ? { clearsCampaign: campaignId } : {}),
+          ...(campaign?.nanoCell ? { nanoCellStage: campaign.id } : {}),
         })
       : undefined;
     this.save = save;
@@ -749,6 +758,7 @@ export class StageScene extends Phaser.Scene {
       jumpPressed: snap.pressed.jump,
       jumpHeld: snap.held.jump,
       dashPressed: snap.pressed.dash,
+      healPressed: snap.pressed.heal,
       // Cần ảo/cần tay cầm là trục analog: kéo xuống quá nửa cũng tính là "xuống".
       downHeld: snap.held.down || snap.moveY > DOWN_AXIS_THRESHOLD,
       shootPressed: snap.pressed.shoot,
@@ -801,7 +811,8 @@ export class StageScene extends Phaser.Scene {
       camera.shake(fb.medium.shakeMs, fb.medium.shakeIntensity);
     }
     if (ev.kaiShieldReady) this.kaiFx.shieldReadyUntil = this.time.now + 220;
-    if (ev.healed > 0) hud?.flash(`+${ev.healed} máu`, 500);
+    if (ev.energyGained > 0) hud?.flash(`+${Number(ev.energyGained.toFixed(1))} năng lượng`, 500);
+    if (ev.healed > 0) hud?.flash(`${ev.nanoCellUsed ? 'Nano Cell · ' : ''}+${ev.healed} máu`, 500);
     if (ev.checkpoint !== undefined)
       hud?.flash(`Checkpoint ${ev.checkpoint}${this.saver ? ' · đã lưu' : ''}`, 900);
     if (ev.fellInPit) camera.shake(80, 0.003);
@@ -809,9 +820,11 @@ export class StageScene extends Phaser.Scene {
     if (ev.roomLocked) hud?.flash('Phòng khóa: hạ hết kẻ địch', 1200);
     if (ev.roomCleared) hud?.flash('Cửa mở', 900);
     if (ev.barrierBroken) camera.shake(100, 0.004);
-    if (ev.secretFound) {
-      const label = world.secrets.find((s) => s.spawn.item === ev.secretFound)?.spawn.label;
-      hud?.flash(`Nhặt được: ${label ?? ev.secretFound}`, 1400);
+    if (ev.secretsFound.length > 0) {
+      const labels = ev.secretsFound.map(
+        (item) => world.secrets.find((s) => s.spawn.item === item)?.spawn.label ?? item,
+      );
+      hud?.flash(`Nhặt được: ${labels.join(', ')}`, 1400);
     }
   }
 

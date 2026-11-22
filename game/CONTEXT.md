@@ -43,7 +43,7 @@ src/
   logic/enemy/            kẻ địch thường (M5): lớp chung + Drone, Tháp pháo, Bướm Sắt, Lính Kén;
                           mini-boss Bramble Golem (M6) (thuần)
   logic/world/            StageWorld: ghép mọi thứ thành một bước logic; xử lý trúng đòn; EnemyField
-                          (kẻ địch của màn, tầm hoạt động, EXP); vật phẩm rơi Core Bit/máu;
+                          (tầm hoạt động, EXP); vật phẩm Core Bit/máu/năng lượng; Nano Cell;
                           cơ chế màn M7 (dây leo đu, phòng khóa, vật chắn, bí mật) (thuần)
   core/stage-mechanics-config.ts  kiểm tra stages.json → mechanics (hồi sinh, hố, gai, dây leo)
   logic/formula.ts        tính công thức trong dữ liệu ("100+4*(L-1)") không dùng eval (thuần)
@@ -130,12 +130,12 @@ Mỗi module một dòng; chi tiết ở file quyết định và Epic.
 - **M2 Đầu vào:** Xong. Vùng an toàn tai thỏ cho nút cảm ứng, canvas, bảng HTML (ST-11-01, QB-92). Bàn phím, tay cầm, cảm ứng (cần ảo, 6 nút, đa chạm, rung), đổi phím, chỉnh bố cục, tự bắn, hỗ trợ ngắm. Còn: thử tay cầm thật.
 - **M3 Nhân vật:** Xong logic. Chạy, nhảy biến thiên, coyote, buffer, lướt, dash-jump, bám/nhảy tường, bục một chiều, bị đánh, chết, rơi hố. Còn: sprite, hoạt ảnh (asset P0); leo thang (đặc tả 02 đoạn A, B).
 - **M4 Chiến đấu:** Arc Cannon, Vine Lash, Prism Beam, Frost Shard (QB-19), Gale Cutter (Q4). Còn: Lumen, Cryo, Aeris cấp vũ khí.
-- **M5 Kẻ địch:** Prologue, Stage 1 và bốn địch ST-15-06 đã chạy. QB-20, 21, 23 đã áp dụng. Còn: địch Stage 2/4, sprite.
+- **M5 Kẻ địch:** Prologue, Stage 1 và bốn địch ST-15-06 đã chạy. QB-17, 20, 21, 23 đã áp dụng. Còn: địch Stage 2/4, sprite.
 - **M6 Boss:** Boss xám, Thorna và Bramble Golem; thắng nếu boss và Kai hết máu cùng bước (QB-30); chống khóa choáng và kẹp pha (QB-14, 31). Còn: Lumen, Cryo, Aeris, mini-boss và bản đồ đấu trường.
-- **M7 Màn chơi:** Tiled, checkpoint, hố, gai, dây leo, cửa và bí mật. Phòng thử laser, băng, Gale Cutter và bục băng/mây (ST-15-08a). Còn: bản đồ chiến dịch, sàn trơn/gió, thang, parallax.
+- **M7 Màn chơi:** Tiled, checkpoint, hố, gai, dây leo, cửa và bí mật. Phòng thử laser, băng, Gale Cutter và bục băng/mây (ST-15-08a). Nano Cell (QB-50…54) dùng H/RT, đọc bí mật theo màn từ bản lưu. Còn: bản đồ chiến dịch, sàn trơn/gió, thang, parallax.
 - **M8 Hệ thống RPG:** Xong cấp, SP, cây kỹ năng 3 × 3 có hiệu ứng trong trận, Xưởng tab Kỹ năng, trần sức mạnh. Còn: Module, Két giáp (ST-08-09, bị chặn), âm thanh kỹ năng, loadout (Alpha).
-- **M9 Kinh tế và Shop:** Xong bản MVP chỉ Upgrade (Quầy Mira, giao dịch nguyên tử, hoàn số đã trả, gợi ý thu nhập theo màn có trong bản build và độ khó chọn lần cuối). Còn: Booster, Skin, Premium (Alpha).
-- **M10 Giao diện:** Xong HUD, menu tạm dừng, hội thoại boss, màn Kết quả, Xưởng, Quầy, màn Chuẩn bị; hộp chữ thuần (QB-70…72, ST-14-08: hiện lại, hủy, đồng hồ trận). Còn (EP-14): Hub dạng menu MVP, Cài đặt (`14-Cai-dat-Tiep-can.md`), chữ ≥ 16 sp và nút ≥ 48 dp, safe-area, tự tạm dừng, báo lỗi lưu, bỏ qua thoại giữ 0,6 s, i18n; ChoicePanel, thoại NPC, bản đồ nhỏ (Alpha).
+- **M9 Kinh tế và Shop:** Xong bản MVP chỉ Upgrade (Quầy Mira, giao dịch nguyên tử, hoàn số đã trả, gợi ý thu nhập, Nano Cell Cap). Còn: Booster, Skin, Premium (Alpha).
+- **M10 Giao diện:** Xong HUD, menu tạm dừng, hội thoại boss, màn Kết quả, Xưởng, Quầy, màn Chuẩn bị; hộp chữ thuần (QB-70…72, ST-14-08: hiện lại, hủy, đồng hồ trận). Còn (EP-14): Hub dạng menu MVP, Cài đặt (`14-Cai-dat-Tiep-can.md`), chữ ≥ 16 sp và nút ≥ 48 dp, safe-area, tự tạm dừng, báo lỗi lưu, nút Nano Cell, bỏ qua thoại giữ 0,6 s, i18n; ChoicePanel, thoại NPC, bản đồ nhỏ (Alpha).
 - **TUT Hướng dẫn:** Khung xong, 11 bước Stage 1. Còn: Prologue (sau cổng), giai đoạn Hub (R01–R06), gợi ý bậc 3–4.
 - **ĐK Ba độ khó:** Xong cho Stage 1 (EP-10). Còn: checkpoint theo độ khó trên bản đồ thật, chốt số mẫu đòn (sau cổng), Stage 2–4.
 - **M11 Lưu:** Xong lưu cục bộ, bản lưu 4, mã sao lưu. Còn: cloud (Beta).

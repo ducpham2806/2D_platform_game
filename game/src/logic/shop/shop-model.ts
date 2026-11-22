@@ -81,6 +81,7 @@ export interface ShopSources {
   economy: EconomyData;
   /** Năng lượng tối đa gốc của vũ khí boss (Energy Cell hiện số thật). */
   weapons: { energyMax: number };
+  player: { nanoCell: { healPct: number } };
   stages: { stages: readonly { index: number; id: string; name: string; boss: string }[] };
   difficulties: readonly DifficultyData[];
   /** Thưởng Core Bit lần đầu hạ boss (trừ ra khi chơi lại). */
@@ -151,13 +152,15 @@ function pct(x: number): string {
 export function upgradeEffectText(
   u: UpgradeData,
   level: number,
-  energyMax: number,
+  src: ShopSources,
 ): string | undefined {
   if (u.damagePerLevel !== undefined) return `+${pct(u.damagePerLevel * level)} sát thương`;
   if (u.damageTakenPerLevel !== undefined)
     return `−${pct(u.damageTakenPerLevel * level)} sát thương nhận`;
   if (u.energyMaxPerLevel !== undefined)
-    return `${Math.round(energyMax * (1 + u.energyMaxPerLevel * level))} năng lượng`;
+    return `${Math.round(src.weapons.energyMax * (1 + u.energyMaxPerLevel * level))} năng lượng`;
+  if (u.nanoCellHealPerLevel !== undefined)
+    return `hồi ${pct(src.player.nanoCell.healPct * (1 + u.nanoCellHealPerLevel * level))} máu tối đa`;
   if (u.magnetTilesPerLevel !== undefined)
     return level === 0 ? 'không hút' : `hút trong ${u.magnetTilesPerLevel * level} ô`;
   return undefined;
@@ -188,8 +191,8 @@ export function buildShop(src: ShopSources, state: ShopState): ShopModel {
       unlockAfterBosses: locked && !comingSoon ? bossesForLevel(shop, u.id, level + 1) : undefined,
       refund: level > 0 ? refundAmount(u, level, state.paid) : undefined,
       comingSoon,
-      effectNow: upgradeEffectText(u, level, src.weapons.energyMax),
-      effectNext: maxed ? undefined : upgradeEffectText(u, level + 1, src.weapons.energyMax),
+      effectNow: upgradeEffectText(u, level, src),
+      effectNext: maxed ? undefined : upgradeEffectText(u, level + 1, src),
     };
   });
   return {
