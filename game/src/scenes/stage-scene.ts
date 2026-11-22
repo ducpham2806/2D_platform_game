@@ -386,6 +386,9 @@ export class StageScene extends Phaser.Scene {
       return;
     }
     const steps = this.stepper.advance(delta);
+    // Phaser cập nhật worldView khi vẽ. Dùng cùng khung người chơi vừa thấy cho các bước bù.
+    const { x, y, width, height } = this.cameras.main.worldView;
+    const cameraView = { x, y, w: width, h: height };
     for (let i = 0; i < steps; i += 1) {
       const snap = input.step();
       if (this.result?.isOpen) {
@@ -410,7 +413,7 @@ export class StageScene extends Phaser.Scene {
         continue;
       }
       this.prev = { x: world.player.box.x, y: world.player.box.y };
-      const ev = world.step(this.toWorldInput(snap, input));
+      const ev = world.step(this.toWorldInput(snap, input), cameraView);
       this.telemetry?.step(ev, input.device);
       if (ev.respawned && this.pendingBuild) {
         world.setBuild(this.pendingBuild);

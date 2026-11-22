@@ -47,6 +47,10 @@ export class Drone extends Enemy {
     const a = this.data.attack;
     const t = this.tileSize;
     this.cooldown = Math.max(0, this.cooldown - dt);
+    if (!this.canAttack(ctx, dt)) {
+      this.patrol(ctx.map, this.data.moveSpeedTilesPerSec, this.data.patrolRangeTiles, dt);
+      return;
+    }
     if (this.burstLeft > 0) {
       // Các viên sau của loạt: nhắm lại, không báo trước riêng (báo trước tính cho cả loạt).
       this.faceToward(ctx.playerX);
@@ -92,6 +96,11 @@ export class Drone extends Enemy {
     this.windup = 0;
     this.burstLeft = 0;
     this.burstTimer = 0;
+  }
+
+  protected override cancelAttack(dt: number): void {
+    super.cancelAttack(dt);
+    this.burstLeft = 0;
   }
 }
 
@@ -139,6 +148,8 @@ export class Turret extends Enemy {
   protected override behave(ctx: EnemyContext, dt: number): void {
     const a = this.data.attack;
     this.faceToward(ctx.playerX);
+    this.timer -= dt;
+    if (!this.canAttack(ctx, dt)) return;
     if (this.volley > 0 && this.volley < a.volleys) {
       this.volleyTimer -= dt;
       if (this.volleyTimer <= 1e-9) {
@@ -147,7 +158,6 @@ export class Turret extends Enemy {
         this.volleyTimer = a.volleyGapSec;
       }
     }
-    this.timer -= dt;
     const warning = this.timer <= a.telegraphSec + 1e-9;
     const followUp = a.lob !== undefined && this.volley > 0 && this.volley < a.volleys;
     this.telegraphing = warning || followUp;
@@ -171,6 +181,13 @@ export class Turret extends Enemy {
     this.timer = this.data.attack.intervalSec;
     this.volley = 0;
     this.volleyTimer = 0;
+  }
+
+  protected override cancelAttack(dt: number): void {
+    super.cancelAttack(dt);
+    this.volley = 0;
+    // Bước đầu khi vào khung còn trừ dt trước khi hiện báo.
+    this.timer = Math.max(this.timer, this.data.attack.telegraphSec + dt);
   }
 }
 
@@ -198,6 +215,8 @@ export class Butterfly extends Enemy {
     this.patrol(ctx.map, this.data.moveSpeedTilesPerSec, this.data.patrolRangeTiles, dt);
     this.box.y =
       this.home.y + wave.amplitudeTiles * t * Math.sin((2 * Math.PI * this.time) / wave.periodSec);
+    this.timer -= dt;
+    if (!this.canAttack(ctx, dt)) return;
     if (this.dropsLeft > 0) {
       this.dropTimer -= dt;
       if (this.dropTimer <= 1e-9) {
@@ -206,7 +225,6 @@ export class Butterfly extends Enemy {
         this.dropTimer = attack.dropGapSec;
       }
     }
-    this.timer -= dt;
     this.telegraphing = this.timer <= attack.telegraphSec + 1e-9;
     if (this.telegraphing) this.beats = attack.drops;
     if (this.timer > 1e-9) return;
@@ -222,6 +240,12 @@ export class Butterfly extends Enemy {
     this.timer = this.data.attack.intervalSec;
     this.dropsLeft = 0;
     this.dropTimer = 0;
+  }
+
+  protected override cancelAttack(dt: number): void {
+    super.cancelAttack(dt);
+    this.dropsLeft = 0;
+    this.timer = Math.max(this.timer, this.data.attack.telegraphSec + dt);
   }
 }
 
@@ -270,6 +294,7 @@ export class ShieldCharger extends Enemy {
     const a = this.data.attack;
     const t = this.tileSize;
     this.cooldown = Math.max(0, this.cooldown - dt);
+    const canAttack = this.canAttack(ctx, dt);
     const dx = ctx.playerX - this.centerX;
     const sameLevel = Math.abs(ctx.playerY - this.centerY) <= 1.5 * t;
     const inRange = Math.abs(dx) <= a.rangeTiles * t && sameLevel;
@@ -281,7 +306,7 @@ export class ShieldCharger extends Enemy {
           this.facing = this.facing === 1 ? -1 : 1;
           this.behindFor = 0;
         }
-        if (inRange && inFront && this.cooldown <= 0) {
+        if (canAttack && inRange && inFront && this.cooldown <= 0) {
           this.chainLeft = a.chainDashes;
           this.enter('telegraph', a.telegraphSec);
           this.beats = 1 + a.chainDashes;
@@ -301,7 +326,7 @@ export class ShieldCharger extends Enemy {
         const step = Math.min(a.dashSpeedTilesPerSec * t * dt, a.dashTiles * t - this.dashed);
         const nextX = this.box.x + this.facing * step;
         if (step <= 1e-9 || this.blocked(ctx.map, nextX)) {
-          if (this.chainLeft > 0) {
+          if (canAttack && this.chainLeft > 0) {
             // Lao nối: quay về phía người chơi, báo trước ngắn rồi lao tiếp.
             this.chainLeft -= 1;
             this.faceToward(ctx.playerX);
@@ -339,6 +364,12 @@ export class ShieldCharger extends Enemy {
     this.cooldown = 0;
     this.dashed = 0;
     this.behindFor = 0;
+    this.chainLeft = 0;
+  }
+
+  protected override cancelAttack(dt: number): void {
+    super.cancelAttack(dt);
+    if (this.state === 'telegraph') this.enter('walk', 0);
     this.chainLeft = 0;
   }
 }
@@ -388,13 +419,14 @@ export class Golem extends Enemy {
     const a = this.data.attack;
     const t = this.tileSize;
     this.cooldown = Math.max(0, this.cooldown - dt);
+    const canAttack = this.canAttack(ctx, dt);
     switch (this.state) {
       case 'walk': {
         this.faceToward(ctx.playerX);
         const next = this.box.x + this.facing * this.data.moveSpeedTilesPerSec * t * dt;
         if (Math.abs(ctx.playerX - this.centerX) > 3 * t && !this.blocked(ctx.map, next))
           this.box.x = next;
-        if (this.cooldown <= 0) {
+        if (this.cooldown <= 0 && this.canAttack(ctx, dt)) {
           this.enter(this.phase === 1 ? 'slamTelegraph' : 'bombTelegraph');
           // Pha 2: bom rồi lao (thêm cú giậm cuối ở Thử thách).
           this.beats = this.phase === 1 ? 1 : a.dash.endSlam ? 3 : 2;
@@ -426,7 +458,7 @@ export class Golem extends Enemy {
         const nextX = this.box.x + this.facing * step;
         if (step <= 1e-9 || this.blocked(ctx.map, nextX)) {
           // Thử thách: dừng lao là giậm đất tại chỗ (báo trước như cú giậm thường).
-          if (a.dash.endSlam) this.enter('slamTelegraph');
+          if (canAttack && a.dash.endSlam) this.enter('slamTelegraph');
           else this.enter('recover', a.dash.recoverSec);
           return;
         }
@@ -523,6 +555,11 @@ export class Golem extends Enemy {
     this.cooldown = this.data.attack.cooldownSec;
     this.dashed = 0;
     this.telegraphProgress = 0;
+  }
+
+  protected override cancelAttack(dt: number): void {
+    if (this.telegraphing) this.enter('walk');
+    super.cancelAttack(dt);
   }
 }
 

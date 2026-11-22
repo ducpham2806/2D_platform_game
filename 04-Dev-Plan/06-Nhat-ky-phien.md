@@ -25,6 +25,15 @@ Mẫu:
 
 ---
 
+## 2026-11-22: ST-15-15 báo đòn mini-boss và tầm hoạt động
+
+- **Nhánh:** `ccr-9de01342-2046rb`, từ `93096ce`. G1 tiếp tục trên `main`.
+- **QB-21:** kiểm ngưỡng 0,5 s của từng loại đòn mini-boss lúc nạp. Kiểm Bramble Golem và Frost Titan qua giậm, ném, lao, cả giậm nối Thử thách.
+- **QB-23:** tầm tâm 12 ô ngang và 7 ô dọc. Cả hộp địch phải nằm trong khung camera đã vẽ, thu 1 ô mỗi cạnh, khi báo và tung đòn. Địch còn trong tầm vẫn tuần tra ngoài khung.
+- **Quyết định:** ra khỏi vùng thì hủy đòn hoặc loạt chưa ra. Vào lại báo đủ trước khi tung đòn. Đạn và cú lao đã khởi phát đi tiếp theo cơ chế hiện có.
+- **Kiểm tra:** 707 test, build (typecheck), lint, format, docs-check và gate-flow đạt. Chromium PC/Pixel 7 giả lập xác nhận khóa báo ở mép, hủy giữa báo và Frost Titan đủ ngưỡng. [Ảnh](qa/ST-15-15/README.md).
+- **Tiếp theo:** ST-15-16 (Nano Cell và vật phẩm năng lượng) làm được trước G1.
+
 ## 2026-11-22: ST-15-08a bục băng vỡ và bệ mây
 
 - **Nhánh:** `ccr-9de01342-2046rb`, từ `d858814`. G1 tiếp tục trên `main`.
@@ -43,13 +52,3 @@ Mẫu:
 - **Quyết định:** dùng đường va chạm quét cho vạch dội và bóng đổ. Sửa vị trí phóng bom trong hành vi `golem` để bom không chạm sàn ngay lúc bắn. Mở hai chế độ phòng thử ở menu thường.
 - **Kiểm tra:** 669 test, build (typecheck), lint, format, docs-check và gate-flow đạt. Chromium PC Thường và Pixel 7 giả lập Thử thách, 0 lỗi console. [Ảnh](qa/ST-15-06/README.md).
 - **Tiếp theo:** ST-15-08a hoặc ST-15-15/16. Đặt địch trong bản đồ chiến dịch ở EP-17. QB-21 và QB-23 thống nhất ở ST-15-15.
-
-## 2026-11-21: ST-15-05 Gale Cutter và sương lạnh Két Tay Mk I
-
-- **Nhánh:** `ccr-9de01342-2046rb`, từ `2ed9412`. G1 tiếp tục trên `main`.
-- **Đã làm:** Gale Cutter bay ngang tối đa 6 ô, quay đầu ở vật chắn hoặc hết tầm. Chiều về hướng tới Kai và xuyên địa hình. Mỗi mục tiêu trúng tối đa một lần mỗi chiều. Mỗi lượt ném tốn 4 năng lượng, đổi vũ khí vẫn giữ lưỡi.
-- **Q4:** hủy tối đa hai viên `enemyShot` hoặc `bomb` có nguồn địch thường, tính cả hai chiều và xử lý trước sát thương lên Kai. Khiên còn chặn sát thương. Lưỡi tan khi chạm boss bất tử đổi pha (QB-31).
-- **Sương lạnh:** dùng `Barrier`, giữ lối mở qua hồi sinh. Phòng thử mượn Gale Cutter, có tháp pháo và Két Tay Mk I. Dùng phím V để mở phòng, tránh phát bắn ngoài ý muốn từ phím J.
-- **File chính:** `WeaponLoadout`, `ProjectilePool`, va chạm vũ khí, bản đồ Tiled `gale-test.json` và 11 bài trong `game/tests/gale-cutter.test.ts`.
-- **Kiểm tra:** 653 test, build (typecheck), lint, format, docs-check và gate-flow đạt. Bàn phím và Pixel 7 giả lập hủy đạn, phá sương, nhặt Két, 0 lỗi console. [Ảnh](qa/ST-15-05/README.md).
-- **Tiếp theo:** ST-15-06 hoặc ST-15-15/16 trước G1. Aeris chính thức cấp vũ khí ở ST-15-12, đặt Két ở kho hạt giống trong ST-17-03.

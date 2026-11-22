@@ -357,7 +357,8 @@ export class StageWorld {
     return this.respawnTimer > 0;
   }
 
-  step(input: WorldInput): WorldEvents {
+  /** Khung đã vẽ gần nhất. Mô phỏng thuần không có camera có thể bỏ qua khung. */
+  step(input: WorldInput, view?: Box): WorldEvents {
     const ev = noWorldEvents();
     const dt = this.setup.stepSec;
     this.elapsedSec += dt;
@@ -449,7 +450,7 @@ export class StageWorld {
     }
     const optics = this.optics;
     const mirror = optics?.mirrors.length ? optics.isMirrorCell : undefined;
-    if (this.field?.step(pl, this.pool, dt, mirror)) ev.enemyKilled = true;
+    if (this.field?.step(pl, this.pool, dt, mirror, view)) ev.enemyKilled = true;
     const hasCoolant = this.coolant.some((flow) => !flow.frozen);
     this.pool.update(
       dt,

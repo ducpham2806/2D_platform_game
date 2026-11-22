@@ -4,6 +4,16 @@ Các mục cũ chuyển từ `04-Dev-Plan/06-Nhat-ky-phien.md`, mới nhất ở
 
 ---
 
+## 2026-11-21: ST-15-05 Gale Cutter và sương lạnh Két Tay Mk I
+
+- **Nhánh:** `ccr-9de01342-2046rb`, từ `2ed9412`. G1 tiếp tục trên `main`.
+- **Đã làm:** Gale Cutter bay ngang tối đa 6 ô, quay đầu ở vật chắn hoặc hết tầm. Chiều về hướng tới Kai và xuyên địa hình. Mỗi mục tiêu trúng tối đa một lần mỗi chiều. Mỗi lượt ném tốn 4 năng lượng, đổi vũ khí vẫn giữ lưỡi.
+- **Q4:** hủy tối đa hai viên `enemyShot` hoặc `bomb` có nguồn địch thường, tính cả hai chiều và xử lý trước sát thương lên Kai. Khiên còn chặn sát thương. Lưỡi tan khi chạm boss bất tử đổi pha (QB-31).
+- **Sương lạnh:** dùng `Barrier`, giữ lối mở qua hồi sinh. Phòng thử mượn Gale Cutter, có tháp pháo và Két Tay Mk I. Dùng phím V để mở phòng, tránh phát bắn ngoài ý muốn từ phím J.
+- **File chính:** `WeaponLoadout`, `ProjectilePool`, va chạm vũ khí, bản đồ Tiled `gale-test.json` và 11 bài trong `game/tests/gale-cutter.test.ts`.
+- **Kiểm tra:** 653 test, build (typecheck), lint, format, docs-check và gate-flow đạt. Bàn phím và Pixel 7 giả lập hủy đạn, phá sương, nhặt Két, 0 lỗi console. [Ảnh](qa/ST-15-05/README.md).
+- **Tiếp theo:** ST-15-06 hoặc ST-15-15/16 trước G1. Aeris chính thức cấp vũ khí ở ST-15-12, đặt Két ở kho hạt giống trong ST-17-03.
+
 ## 2026-11-21: ST-15-01c dữ liệu Gale Cutter và cơ chế Stage 4
 
 - **Nhánh:** `ccr-9de01342-2046rb`, từ `654c31a`. Bản thử G1 tiếp tục trên `main`.
