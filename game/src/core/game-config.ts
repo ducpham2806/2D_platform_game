@@ -442,6 +442,10 @@ export function checkDesignInvariants(config: GameConfig): string[] {
   // GDD 11 mục 3.1), điểm yếu là vũ khí có thật; bản Thử thách giữ ngưỡng pha như bản gốc.
   const baseHp = evaluateFormula(config.player.level.hp, { L: 1 });
   const worstBossTaken = Math.max(...config.difficulties.map((d) => d.damageTaken));
+  for (const boss of [...Object.values(config.bosses), ...Object.values(config.bossesChallenge)]) {
+    if (boss.roomFlight && boss.minTelegraphSec < config.enemies.rules.minMiniBossTelegraphSec)
+      errors.push(`bosses.${boss.id}.minTelegraphSec: mini-boss phòng khóa dưới ngưỡng QB-21`);
+  }
   for (const boss of Object.values(config.bossesChallenge)) {
     errors.push(...checkBossRules(boss, baseHp, worstBossTaken).map((e) => `Thử thách ${e}`));
     const basePhases = config.bosses[boss.id]?.phases ?? [];
@@ -458,7 +462,7 @@ export function checkDesignInvariants(config: GameConfig): string[] {
   }
   for (const boss of Object.values(config.bosses)) {
     errors.push(...checkBossRules(boss, baseHp, worstBossTaken));
-    if (!config.weapons.bossWeapons.some((w) => w.name === boss.weakness)) {
+    if (!boss.roomFlight && !config.weapons.bossWeapons.some((w) => w.name === boss.weakness)) {
       errors.push(`bosses.${boss.id}.weakness: không có vũ khí ${boss.weakness}`);
     }
   }
@@ -494,10 +498,10 @@ export function checkDesignInvariants(config: GameConfig): string[] {
   // (GDD 11 mục 3.1); các màn đã làm có đủ dữ liệu kẻ địch.
   const hardestTaken = Math.max(...config.difficulties.map((d) => d.damageTaken));
   errors.push(...checkEnemyRules(config.enemies, baseHp, hardestTaken));
-  // Stage 3 đã đủ dữ liệu từ ST-15-06. Stage 2 còn Tháp Laser và Prism Sentinel.
+  // Stage 3 đã đủ dữ liệu từ ST-15-06. Stage 2 còn Tháp Laser.
   for (const stage of stages.filter((s) => s.index <= STAGES_WITH_ENEMY_DATA || s.index === 3)) {
-    if (!config.enemies.enemies[stage.miniBoss]) {
-      errors.push(`stages.${stage.id}.miniBoss: "${stage.miniBoss}" chưa có trong enemies.json`);
+    if (!config.enemies.enemies[stage.miniBoss] && !config.bosses[stage.miniBoss]?.roomFlight) {
+      errors.push(`stages.${stage.id}.miniBoss: "${stage.miniBoss}" thiếu dữ liệu mini-boss`);
     }
     for (const id of stage.enemies) {
       if (!config.enemies.enemies[id]) {

@@ -73,6 +73,7 @@ export interface WorldEvents {
   gateClosed: boolean;
   bossPhaseChanged: boolean;
   bossLanded: boolean;
+  bossReflected: boolean;
   bossDefeated: boolean;
   weaponGranted: string | undefined;
   /** M7: số thứ tự (từ 1) của checkpoint vừa chạm. */
@@ -134,6 +135,7 @@ export function noWorldEvents(): WorldEvents {
     gateClosed: false,
     bossPhaseChanged: false,
     bossLanded: false,
+    bossReflected: false,
     bossDefeated: false,
     weaponGranted: undefined,
     checkpoint: undefined,

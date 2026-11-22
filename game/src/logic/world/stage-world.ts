@@ -39,6 +39,7 @@ import {
   type VanguardMods,
 } from './hits';
 import { Barrier, LockedRoom, makeSecret, type Secret, standPoint, Vine } from './stage-mechanics';
+import { RoomBoss } from './room-boss';
 import { StageOptics } from './stage-optics';
 import { NANO_CELL, NanoCells } from './nano-cell';
 import {
@@ -59,6 +60,7 @@ export interface WorldSetup {
   player: PlayerData;
   weapons: WeaponsData;
   boss: BossData;
+  roomBossData?: Readonly<Record<string, BossData>>;
   difficulty: DifficultyData;
   seed: number;
   /** Kẻ địch thường (M5): dữ liệu và ký hiệu đặt trên bản đồ. Không có thì màn không có kẻ địch. */
@@ -266,13 +268,28 @@ export class StageWorld {
       ...this.cloudDrifts.map((c) => c.platform),
     ];
     this.syncPlatforms();
-    this.rooms = layout.rooms.map((r) => new LockedRoom(r, this.map));
-    if (this.field) for (const r of this.rooms) r.bind(this.field.enemies, layout.enemies);
     this.barriers = layout.barriers.map((b) => new Barrier(b, this.map));
     this.coolant = (layout.coolant ?? []).map(
       (flow) => new CoolantFlow(flow, this.map, setup.mechanics.coolant.frozenSteps),
     );
     this.optics = layout.optics && new StageOptics(layout.optics, this.map, setup.mechanics);
+    this.rooms = layout.rooms.map((r, i) => {
+      if (!r.miniBoss) return new LockedRoom(r, this.map);
+      const data = setup.roomBossData?.[r.miniBoss.id];
+      if (!data?.roomFlight || !setup.enemies)
+        throw new Error(`Phòng khóa thiếu dữ liệu mini-boss ${r.miniBoss.id}`);
+      const hp = data.hp * setup.difficulty.enemyHp;
+      const mini = new RoomBoss(
+        r,
+        { ...data, hp },
+        this.map,
+        this.optics,
+        setup.enemies.rules,
+        setup.seed + i + 2,
+      );
+      return new LockedRoom(r, this.map, mini);
+    });
+    if (this.field) for (const r of this.rooms) r.bind(this.field.enemies, layout.enemies);
     const taken = new Set(setup.takenSecrets ?? []);
     this.secrets = layout.secrets.map((s) => {
       const secret = makeSecret(s, t);
@@ -293,6 +310,11 @@ export class StageWorld {
   }
 
   /** Dữ liệu đang dùng (bảng chỉnh cảm giác đọc để hiện giá trị hiện tại). */
+  /** Trong phòng khóa hoặc đấu trường, chỉ có một boss có thể tham chiến. */
+  get combatBoss(): Boss | undefined {
+    return this.phase === 'boss' ? this.boss : this.lockedRoom?.miniBoss?.boss;
+  }
+
   get tuning(): Pick<WorldSetup, 'player' | 'weapons' | 'boss'> {
     return { player: this.setup.player, weapons: this.setup.weapons, boss: this.setup.boss };
   }
@@ -500,14 +522,24 @@ export class StageWorld {
       mirror,
     );
 
+    const mini = this.lockedRoom?.miniBoss;
+    const roomAttack = mini?.step(pl, this.pool, dt, view);
+    if (roomAttack) {
+      ev.bossLanded ||= roomAttack.landed;
+      ev.bossPhaseChanged ||= roomAttack.phaseChanged;
+      ev.bossReflected = roomAttack.reflected;
+    }
+    const hitBoss = this.combatBoss;
     const killed: Enemy[] = [];
-    const observeBossDamage: BossDamageObserver = (weapon, amount, weak) => {
-      this.bossDamage.set(weapon, (this.bossDamage.get(weapon) ?? 0) + amount);
-      if (weak) this.bossWeakHits += 1;
-    };
+    const observeBossDamage: BossDamageObserver | undefined = mini
+      ? undefined
+      : (weapon, amount, weak) => {
+          this.bossDamage.set(weapon, (this.bossDamage.get(weapon) ?? 0) + amount);
+          if (weak) this.bossWeakHits += 1;
+        };
     this.hitStop = resolvePlayerHits(
       this.pool,
-      { targets: this.targets, enemies: this.enemies, boss: this.boss },
+      { targets: this.targets, enemies: this.enemies, boss: hitBoss },
       this.built.weapons,
       this.attackMul,
       ev,
@@ -515,7 +547,7 @@ export class StageWorld {
       this.vanguard,
       observeBossDamage,
     );
-    if (fire.beam && path) this.fireBeam(fire.beam, path, ev, killed, observeBossDamage);
+    if (fire.beam && path) this.fireBeam(fire.beam, path, ev, killed, hitBoss, observeBossDamage);
     this.field?.onKilled(killed, pl, this.loadout);
     // Boss hết máu vì đạn của Kai trong bước này thì thắng ngay, trước khi xét đòn lên Kai
     // (trước đây cùng bước Kai chết thì boss được dựng lại đầy máu).
@@ -524,10 +556,27 @@ export class StageWorld {
     // `source`, giữ nguyên.
     if (this.boss?.takeShotClear())
       this.pool.removeWhere((p) => p.owner === 'enemy' && p.source === undefined);
+    if (mini) {
+      const boss = mini.boss;
+      const defeated = roomAttack?.defeated || boss.settleDefeat();
+      if (defeated || boss.takeShotClear())
+        this.pool.removeWhere((p) => p.owner === 'enemy' && p.source === boss.source);
+      if (defeated) {
+        ev.enemyKilled = true;
+        this.field?.rewardRoomBoss(
+          boss.centerX,
+          boss.box.y + boss.box.h / 2,
+          boss.data.rewardExp,
+          boss.data.rewardCoreBit,
+          pl,
+          this.loadout,
+        );
+      }
+    }
     resolveEnemyHits(
       this.pool,
       this.field?.active(pl) ?? [],
-      this.phase === 'boss' ? this.boss : undefined,
+      hitBoss,
       pl,
       // Đòn kẻ địch và boss: độ khó × build (Armor Plating, đã kẹp sàn). Gai, hố chỉ theo độ khó.
       this.setup.difficulty.damageTaken * this.build.damageTakenMul,
@@ -596,7 +645,10 @@ export class StageWorld {
           (this.player.state !== 'dead' && p.obstructedBy(this.player.box)) ||
           this.enemies.some((e) => e.alive && p.obstructedBy(e.box)) ||
           this.targets.some((t) => t.alive && p.obstructedBy(t.box)) ||
-          (this.boss !== undefined && this.boss.state !== 'dead' && p.obstructedBy(this.boss.box)),
+          (this.boss !== undefined &&
+            this.boss.state !== 'dead' &&
+            p.obstructedBy(this.boss.box)) ||
+          this.rooms.some((r) => r.miniBoss?.alive && p.obstructedBy(r.miniBoss.boss.box)),
       );
       if (p.support !== before) updatePlatforms = true;
       if (event === 'crack') ev.platformCracked = true;
@@ -648,13 +700,14 @@ export class StageWorld {
     path: LaserPath,
     ev: WorldEvents,
     killed: Enemy[],
-    observeBossDamage: BossDamageObserver,
+    boss: Boss | undefined,
+    observeBossDamage?: BossDamageObserver,
   ): void {
     const { widthPx, activeSec } = shot.behavior;
     const result = resolveBeamHits(
       path,
       shot,
-      { targets: this.targets, enemies: this.enemies, boss: this.boss },
+      { targets: this.targets, enemies: this.enemies, boss },
       this.built.weapons,
       this.attackMul,
       ev,
@@ -851,8 +904,9 @@ export class StageWorld {
     const out = this.targets
       .filter((t) => t.alive)
       .map((t) => ({ x: t.box.x + t.box.w / 2, y: t.box.y + t.box.h / 2 }));
-    if (this.boss && this.phase === 'boss')
-      out.push({ x: this.boss.centerX, y: this.boss.box.y + this.boss.box.h / 2 });
+    const boss = this.combatBoss;
+    if (boss && boss.state !== 'dead')
+      out.push({ x: boss.centerX, y: boss.box.y + boss.box.h / 2 });
     return out;
   }
 

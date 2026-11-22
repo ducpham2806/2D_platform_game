@@ -3,6 +3,7 @@ import { FROST_ROOM } from './frost-room';
 import { GALE_ROOM } from './gale-room';
 import { GOLEM_ROOM } from './golem-room';
 import { GRAY_BOX } from './gray-box';
+import { MINI_BOSS_ROOM } from './mini-boss-room';
 import { MECHANICS_ROOM } from './mechanics-room';
 import { OPTICS_ROOM } from './optics-room';
 import { PLATFORM_ROOM } from './platform-room';
@@ -22,6 +23,7 @@ export const STAGE_DEFS = {
   gale: GALE_ROOM,
   prismFrostEnemies: PRISM_FROST_ENEMIES,
   platforms: PLATFORM_ROOM,
+  miniBossRoom: MINI_BOSS_ROOM,
   thorna: THORNA_ROOM,
   golem: GOLEM_ROOM,
 } as const satisfies Record<string, StageDef>;

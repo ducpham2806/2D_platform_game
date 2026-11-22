@@ -13,6 +13,7 @@ import type {
   VineSpawn,
 } from '../stage/layout';
 import { Tile, type TileMap } from '../tilemap';
+import type { RoomBoss } from './room-boss';
 
 /** Cơ chế môi trường của màn (M7, đặc tả Stage 1 mục 3). Logic thuần. */
 
@@ -92,6 +93,7 @@ export class LockedRoom {
   constructor(
     readonly spawn: RoomSpawn,
     private readonly map: TileMap,
+    readonly miniBoss?: RoomBoss,
   ) {}
 
   /** Gán các kẻ địch xuất phát bên trong phòng (giữa hai cột cửa). */
@@ -109,12 +111,14 @@ export class LockedRoom {
   }
 
   get remaining(): number {
-    return this.enemies.filter((e) => e.alive).length;
+    return this.enemies.filter((e) => e.alive).length + Number(this.miniBoss?.alive ?? false);
   }
 
   /** Các loại kẻ địch (id trong enemies.json) của phòng. */
   get kinds(): string[] {
-    return [...new Set(this.enemies.map((e) => e.data.id))];
+    const kinds = new Set(this.enemies.map((e) => e.data.id));
+    if (this.miniBoss) kinds.add(this.miniBoss.id);
+    return [...kinds];
   }
 
   /** Vùng bên trong (px), giữa hai cột cửa. */
@@ -145,6 +149,7 @@ export class LockedRoom {
       }
       this.state = 'locked';
       this.setDoors(true);
+      this.miniBoss?.activate();
       return 'locked';
     }
     if (this.state === 'locked' && this.remaining === 0) {
@@ -160,6 +165,7 @@ export class LockedRoom {
     if (this.state !== 'locked') return;
     this.state = 'open';
     this.setDoors(false);
+    this.miniBoss?.reset();
   }
 
   private setDoors(closed: boolean): void {

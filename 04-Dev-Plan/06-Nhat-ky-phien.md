@@ -25,6 +25,17 @@ Mẫu:
 
 ---
 
+## 2026-11-22: ST-15-09 Prism Sentinel và Gale Roc
+
+- **Nhánh:** `ccr-9de01342-2046rb`, từ `f9a6d11`. G1 tiếp tục trên `main`.
+- **Sentinel:** Tán Sắc và Lao Lăng Kính. Tia Phản Xạ ở pha hai dùng chung `LaserPath`; xoay gương trong lúc báo có thể trừ 10 máu và choáng 1,5 s. Tia Kép mở hai vạch, xung hai đảo góc sau 0,4 s.
+- **Roc:** Bổ Nhào khóa hướng, đáp sàn hở 1 s, pha hai bổ nối báo 0,5 s và mưa tám lông chừa hai khe rộng hai ô. Thử thách có hai sóng đất. Vỗ Cánh bắn ba lông và phát trạng thái gió.
+- **Phòng khóa:** hai mini-boss dùng `Boss` và `RoomBoss`. Dựng lại nếu chưa hạ, giữ cửa khi xong. Thưởng 110/40 và 270/60 gốc, nhân độ khó. Chặn bắn ngoài khung và chỉ dọn đạn của đúng mini-boss.
+- **Quyết định:** Sentinel phát tia từ đầu dẫn phía trên gương để phản đòn bằng nhánh ngang. Tách số máu Kai khỏi tên mini-boss trên HUD sau khi xem ảnh.
+- **Kiểm tra:** 736 test, lint, format, build, docs-check, gate-flow. Chromium PC và Pixel 7 ngang giả lập, 0 lỗi console. [Ảnh](qa/ST-15-09/README.md).
+- **Còn lại:** Lực đẩy của Vỗ Cánh nối `WindZone` ở ST-15-08b. Phòng chiến dịch ở EP-17.
+- **Tiếp theo:** ST-15-10 (Lumen) làm được trước G1.
+
 ## 2026-11-22: ST-15-16 Nano Cell và viên năng lượng
 
 - **Nhánh:** `ccr-9de01342-2046rb`, từ `1771a0d`. G1 tiếp tục trên `main`.
@@ -44,13 +55,3 @@ Mẫu:
 - **Quyết định:** ra khỏi vùng thì hủy đòn hoặc loạt chưa ra. Vào lại báo đủ trước khi tung đòn. Đạn và cú lao đã khởi phát đi tiếp theo cơ chế hiện có.
 - **Kiểm tra:** 707 test, build (typecheck), lint, format, docs-check và gate-flow đạt. Chromium PC/Pixel 7 giả lập xác nhận khóa báo ở mép, hủy giữa báo và Frost Titan đủ ngưỡng. [Ảnh](qa/ST-15-15/README.md).
 - **Tiếp theo:** ST-15-16 (Nano Cell và vật phẩm năng lượng) làm được trước G1.
-
-## 2026-11-22: ST-15-08a bục băng vỡ và bệ mây
-
-- **Nhánh:** `ccr-9de01342-2046rb`, từ `d858814`. G1 tiếp tục trên `main`.
-- **Đã làm:** Kai đặt chân thì nứt theo ba mốc 0 / 0,4 / 0,7 s. Băng vỡ sau 1 s, mây chìm sau 0,8 s ở 3 ô/s. Rời bục không đặt lại đồng hồ. Tính 4 s từ lúc vỡ hoặc bắt đầu chìm và đợi chỗ cũ trống.
-- **Bệ trôi:** hai điểm Tiled, 1,5 ô/s, chở Kai theo cả hai trục và dùng Xuống + Nhảy. Bệ chìm chở Kai đến nền hoặc hết bản đồ. Hồi sinh ở checkpoint dựng lại bục và đưa bệ trôi về đầu.
-- **Luật biên:** QB-40 loại bục vỡ và bệ di động khỏi kích hoạt checkpoint. Địch đất rơi khi băng dưới chân vỡ. Rơi khỏi bản đồ trả EXP một lần theo QB-20, mất Core Bit.
-- **File chính:** `CrumblePlatform`, `CloudDrift`, `StageWorld`, `EnemyField`, bộ nạp Tiled và 14 bài trong `game/tests/platforms.test.ts`.
-- **Kiểm tra:** 683 test, build (typecheck), lint, format, docs-check và gate-flow đạt. Phòng **Bục băng và mây** chơi qua bằng bàn phím và Pixel 7 giả lập, 0 lỗi console. [Ảnh](qa/ST-15-08a/README.md).
-- **Tiếp theo:** ST-15-15/16 làm được trước G1. Sàn trơn và gió thuộc ST-15-08b, Nứt Bục của Cryo ở ST-15-11, bố trí bệ chiến dịch ở EP-17.

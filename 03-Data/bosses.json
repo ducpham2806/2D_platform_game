@@ -252,5 +252,172 @@
         }
       ]
     }
+  },
+  "prism_sentinel": {
+    "name": "Prism Sentinel",
+    "hp": 70,
+    "sizePx": {
+      "w": 32,
+      "h": 26
+    },
+    "contactDamage": 12,
+    "rewardExp": 110,
+    "rewardCoreBit": 40,
+    "idleSec": 0.65,
+    "minTelegraphSec": 0.5,
+    "roomFlight": {
+      "minHeightTiles": 3,
+      "maxHeightTiles": 3,
+      "liftTilesPerSec": 7,
+      "bobPeriodSec": 3.0
+    },
+    "walk": {
+      "speedTilesPerSec": 0.8,
+      "keepDistanceTiles": 5
+    },
+    "phases": [
+      {
+        "untilHpPct": 50,
+        "speedMul": 1,
+        "attacks": [
+          "thorns",
+          "charge"
+        ]
+      },
+      {
+        "untilHpPct": 0,
+        "speedMul": 1,
+        "attacks": [
+          "beam",
+          "thorns"
+        ]
+      }
+    ],
+    "attacks": {
+      "thorns": {
+        "telegraphSec": 0.7,
+        "count": 3,
+        "spreadDeg": 30,
+        "speedTilesPerSec": 7,
+        "damage": 10,
+        "recoverSec": 0.45,
+        "sizePx": {
+          "w": 5,
+          "h": 5
+        }
+      },
+      "charge": {
+        "telegraphSec": 0.7,
+        "speedTilesPerSec": 9,
+        "retreatTiles": 0.5,
+        "damage": 15,
+        "recoverSec": 0.55
+      },
+      "beam": {
+        "telegraphSec": 0.8,
+        "activeSec": 0.5,
+        "widthPx": 4,
+        "maxBounces": 1,
+        "damage": 15,
+        "selfHitDamage": 10,
+        "selfHitStunSec": 1.5,
+        "recoverSec": 0.5
+      }
+    },
+    "challenge": {
+      "attacks": {
+        "beam": {
+          "pulseGapSec": 0.4
+        }
+      }
+    }
+  },
+  "gale_roc": {
+    "name": "Gale Roc",
+    "hp": 90,
+    "sizePx": {
+      "w": 32,
+      "h": 26
+    },
+    "contactDamage": 12,
+    "rewardExp": 270,
+    "rewardCoreBit": 60,
+    "idleSec": 0.65,
+    "minTelegraphSec": 0.5,
+    "roomFlight": {
+      "minHeightTiles": 4,
+      "maxHeightTiles": 6,
+      "liftTilesPerSec": 7,
+      "bobPeriodSec": 3.0
+    },
+    "phases": [
+      {
+        "untilHpPct": 50,
+        "speedMul": 1,
+        "attacks": [
+          "dive",
+          "gust"
+        ]
+      },
+      {
+        "untilHpPct": 0,
+        "speedMul": 1,
+        "attacks": [
+          "rain",
+          "dive"
+        ]
+      }
+    ],
+    "attacks": {
+      "dive": {
+        "telegraphSec": 0.7,
+        "followUpTelegraphSec": 0.5,
+        "speedTilesPerSec": 11,
+        "damage": 15,
+        "recoverSec": 1.0
+      },
+      "gust": {
+        "telegraphSec": 0.7,
+        "count": 3,
+        "spreadDeg": 30,
+        "speedTilesPerSec": 7,
+        "damage": 10,
+        "recoverSec": 0.45,
+        "sizePx": {
+          "w": 5,
+          "h": 5
+        },
+        "activeSec": 1.2,
+        "pushTilesPerSec": 4
+      },
+      "rain": {
+        "telegraphSec": 0.8,
+        "count": 8,
+        "activeSec": 1.1,
+        "fallSpeedTilesPerSec": 10,
+        "damage": 12,
+        "safeGaps": 2,
+        "gapWidthTiles": 2,
+        "stunAfterSec": 1.0,
+        "sizePx": {
+          "w": 5,
+          "h": 9
+        }
+      }
+    },
+    "challenge": {
+      "attacks": {
+        "dive": {
+          "shockwave": {
+            "speedTilesPerSec": 6,
+            "damage": 10,
+            "sizePx": {
+              "w": 9,
+              "h": 7
+            }
+          }
+        }
+      }
+    }
   }
 }
