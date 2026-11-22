@@ -16,6 +16,7 @@ import {
   traceLaser,
 } from '../stage/laser-path';
 import type {
+  Cell,
   LaserSpawn,
   MirrorSpawn,
   OpticalDoorSpawn,
@@ -84,6 +85,7 @@ class Mirror {
   readonly center;
   readonly box: Box;
   angle: MirrorAngle;
+  turns = 0;
   private rotationLeft = 0;
 
   constructor(
@@ -107,12 +109,14 @@ class Mirror {
   toggle(charge: number): boolean {
     if (this.rotating || charge < MIRROR_CHARGES.indexOf(this.rules.toggleMinCharge)) return false;
     this.angle = this.angle === 45 ? 135 : 45;
+    this.turns += 1;
     this.rotationLeft = this.rules.rotateSec;
     return true;
   }
 
   reset(): void {
     this.angle = this.spawn.angle;
+    this.turns = 0;
     this.rotationLeft = 0;
   }
 }
@@ -250,6 +254,22 @@ export class StageOptics {
     rangePx?: number,
   ): LaserPath {
     return traceLaser(this.map, origin, direction, this.mirrorAt, maxBounces, rangePx);
+  }
+
+  /** Tia từ đầu dẫn phía trên gương đã chọn; xung hai chỉ đảo góc ảo của gương đó. */
+  bossBeamPath(mirror: Cell, fromY: number, alternate: boolean, maxBounces: number): LaserPath {
+    return traceLaser(
+      this.map,
+      { x: (mirror.col + 0.5) * this.map.tileSize, y: fromY },
+      'down',
+      (col, row) => {
+        const angle = this.mirrorAt(col, row);
+        if (!alternate || col !== mirror.col || row !== mirror.row || angle === undefined)
+          return angle;
+        return angle === 45 ? 135 : 45;
+      },
+      maxBounces,
+    );
   }
 
   /** Một xung từ vũ khí mở cửa; laser môi trường vẫn phải chiếu liên tục đủ thời gian giữ. */

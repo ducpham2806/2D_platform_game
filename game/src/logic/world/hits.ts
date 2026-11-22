@@ -275,6 +275,20 @@ export function resolveEnemyHits(
       p.alive = false;
     }
   }
+  for (const pulse of boss?.beam.pulses ?? []) {
+    if (pulse.hitPlayer || !pulse.boxes.some((box) => overlaps(box, player.box))) continue;
+    const amount = incomingDamage(pulse.damage, damageTaken);
+    if (absorbed(amount)) pulse.hitPlayer = true;
+    else {
+      // Bật ra xa tim tia, với đoạn dọc lấy đúng x của đường tia.
+      const box = pulse.boxes.find((box) => overlaps(box, player.box))!;
+      if (player.applyHit(amount, box.x + box.w / 2)) {
+        pulse.hitPlayer = true;
+        ev.playerHurt = true;
+        ev.hurtBy = boss?.source ?? 'boss:beam';
+      }
+    }
+  }
   for (const e of enemies) {
     if (!e.alive || e.disabledSec > 0 || !overlaps(e.box, player.box)) continue;
     const amount = incomingDamage(e.contactDamage, damageTaken);
@@ -289,7 +303,7 @@ export function resolveEnemyHits(
     if (absorbed(amount)) return;
     if (player.applyHit(amount, boss.centerX)) {
       ev.playerHurt = true;
-      ev.hurtBy = 'boss:touch';
+      ev.hurtBy = boss.source ?? 'boss:touch';
     }
   }
 }

@@ -6,7 +6,18 @@ import { deepMerge } from './deep-merge';
 import { arr, ConfigError, type Json, num, obj, size, type SizePx, str } from './json-check';
 
 export type BossAttackId =
-  'shot' | 'charge' | 'slam' | 'rain' | 'thorns' | 'lash' | 'roots' | 'bloom' | 'stalk';
+  | 'shot'
+  | 'charge'
+  | 'slam'
+  | 'rain'
+  | 'thorns'
+  | 'lash'
+  | 'roots'
+  | 'bloom'
+  | 'stalk'
+  | 'beam'
+  | 'dive'
+  | 'gust';
 const ATTACK_IDS: readonly BossAttackId[] = [
   'shot',
   'charge',
@@ -17,6 +28,9 @@ const ATTACK_IDS: readonly BossAttackId[] = [
   'roots',
   'bloom',
   'stalk',
+  'beam',
+  'dive',
+  'gust',
 ];
 
 export interface BossPhaseData {
@@ -37,6 +51,7 @@ export interface ShotAttack {
 }
 
 export interface ChargeAttack {
+  retreatTiles?: number;
   telegraphSec: number;
   speedTilesPerSec: number;
   damage: number;
@@ -52,6 +67,7 @@ export interface SlamAttack {
 }
 
 export interface RainAttack {
+  count?: number;
   telegraphSec: number;
   activeSec: number;
   fallSpeedTilesPerSec: number;
@@ -124,7 +140,33 @@ export interface BloomAttack {
   sizePx: SizePx;
 }
 
+export interface BossBeamAttack {
+  telegraphSec: number;
+  activeSec: number;
+  widthPx: number;
+  maxBounces: number;
+  damage: number;
+  selfHitDamage: number;
+  selfHitStunSec: number;
+  recoverSec: number;
+  /** Có giá trị thì bắn thêm một xung theo góc gương đối diện. */
+  pulseGapSec?: number;
+}
+
+export interface DiveAttack extends ChargeAttack {
+  followUpTelegraphSec: number;
+  shockwave?: SlamAttack['shockwave'];
+}
+
+export interface GustAttack extends ThornsAttack {
+  activeSec: number;
+  pushTilesPerSec: number;
+}
+
 export interface BossAttacks {
+  beam?: BossBeamAttack;
+  dive?: DiveAttack;
+  gust?: GustAttack;
   shot?: ShotAttack;
   charge?: ChargeAttack;
   slam?: SlamAttack;
@@ -189,6 +231,13 @@ export interface BossData {
   rewardCoreBit: number;
   idleSec: number;
   minTelegraphSec: number;
+  /** Cấu hình bay cho mini-boss ở phòng khóa. Độ cao đo từ sàn đến tâm thân. */
+  roomFlight?: {
+    minHeightTiles: number;
+    maxHeightTiles: number;
+    liftTilesPerSec: number;
+    bobPeriodSec: number;
+  };
   /** Boss đi chậm về phía người chơi khi nghỉ giữa các đòn; không có thì đứng yên. */
   walk?: { speedTilesPerSec: number; keepDistanceTiles: number };
   phases: BossPhaseData[];
@@ -220,6 +269,9 @@ function parseShot(v: Json, p: string): ShotAttack {
 
 function parseCharge(v: Json, p: string): ChargeAttack {
   return {
+    ...(v.retreatTiles === undefined
+      ? {}
+      : { retreatTiles: num(v.retreatTiles, `${p}.retreatTiles`, { min: 0 }) }),
     telegraphSec: num(v.telegraphSec, `${p}.telegraphSec`, { min: 0 }),
     speedTilesPerSec: num(v.speedTilesPerSec, `${p}.speedTilesPerSec`, { min: 1 }),
     damage: num(v.damage, `${p}.damage`, { min: 0 }),
@@ -242,14 +294,21 @@ function parseSlam(v: Json, p: string): SlamAttack {
   };
 }
 
+function attackCount(v: unknown, p: string): number {
+  const value = num(v, p, { min: 1 });
+  if (!Number.isInteger(value)) throw new ConfigError(`${p}: cần số nguyên`);
+  return value;
+}
+
 function parseRain(v: Json, p: string): RainAttack {
   return {
+    ...(v.count === undefined ? {} : { count: attackCount(v.count, `${p}.count`) }),
     telegraphSec: num(v.telegraphSec, `${p}.telegraphSec`, { min: 0 }),
     activeSec: num(v.activeSec, `${p}.activeSec`, { min: 0.1 }),
     fallSpeedTilesPerSec: num(v.fallSpeedTilesPerSec, `${p}.fallSpeedTilesPerSec`, { min: 1 }),
     damage: num(v.damage, `${p}.damage`, { min: 0 }),
-    safeGaps: num(v.safeGaps, `${p}.safeGaps`, { min: 1 }),
-    gapWidthTiles: num(v.gapWidthTiles, `${p}.gapWidthTiles`, { min: 1 }),
+    safeGaps: attackCount(v.safeGaps, `${p}.safeGaps`),
+    gapWidthTiles: attackCount(v.gapWidthTiles, `${p}.gapWidthTiles`),
     stunAfterSec: num(v.stunAfterSec, `${p}.stunAfterSec`, { min: 0 }),
     sizePx: size(v.sizePx, `${p}.sizePx`),
   };
@@ -318,6 +377,49 @@ function parseStalk(v: Json, p: string): StalkAttack {
   };
 }
 
+function parseBeam(v: Json, p: string): BossBeamAttack {
+  return {
+    telegraphSec: num(v.telegraphSec, `${p}.telegraphSec`, { min: 0 }),
+    activeSec: num(v.activeSec, `${p}.activeSec`, { min: 0.05 }),
+    widthPx: num(v.widthPx, `${p}.widthPx`, { min: 1 }),
+    maxBounces: attackCount(v.maxBounces, `${p}.maxBounces`),
+    damage: num(v.damage, `${p}.damage`, { min: 0 }),
+    selfHitDamage: num(v.selfHitDamage, `${p}.selfHitDamage`, { min: 1 }),
+    selfHitStunSec: num(v.selfHitStunSec, `${p}.selfHitStunSec`, { min: 0.05 }),
+    recoverSec: num(v.recoverSec, `${p}.recoverSec`, { min: 0 }),
+    ...(v.pulseGapSec === undefined
+      ? {}
+      : { pulseGapSec: num(v.pulseGapSec, `${p}.pulseGapSec`, { min: 0.05 }) }),
+  };
+}
+
+function parseDive(v: Json, p: string): DiveAttack {
+  const shockwave = v.shockwave === undefined ? undefined : obj(v.shockwave, `${p}.shockwave`);
+  return {
+    ...parseCharge(v, p),
+    followUpTelegraphSec: num(v.followUpTelegraphSec, `${p}.followUpTelegraphSec`, { min: 0 }),
+    ...(shockwave
+      ? {
+          shockwave: {
+            speedTilesPerSec: num(shockwave.speedTilesPerSec, `${p}.shockwave.speedTilesPerSec`, {
+              min: 1,
+            }),
+            damage: num(shockwave.damage, `${p}.shockwave.damage`, { min: 1 }),
+            sizePx: size(shockwave.sizePx, `${p}.shockwave.sizePx`),
+          },
+        }
+      : {}),
+  };
+}
+
+function parseGust(v: Json, p: string): GustAttack {
+  return {
+    ...parseThorns(v, p),
+    activeSec: num(v.activeSec, `${p}.activeSec`, { min: 0.05 }),
+    pushTilesPerSec: num(v.pushTilesPerSec, `${p}.pushTilesPerSec`, { min: 0.1 }),
+  };
+}
+
 function parseBoss(id: string, value: unknown, rules: BossRules, p = `bosses.${id}`): BossData {
   const b = obj(value, p);
   const raw = obj(b.attacks, `${p}.attacks`);
@@ -348,6 +450,15 @@ function parseBoss(id: string, value: unknown, rules: BossRules, p = `bosses.${i
   if (roots) attacks.roots = roots;
   if (bloom) attacks.bloom = bloom;
   if (stalk) attacks.stalk = stalk;
+  const beam = take('beam', parseBeam);
+  const dive = take('dive', parseDive);
+  const gust = take('gust', parseGust);
+  if (beam) attacks.beam = beam;
+  if (dive) attacks.dive = dive;
+  if (gust) attacks.gust = gust;
+  const flight = b.roomFlight === undefined ? undefined : obj(b.roomFlight, `${p}.roomFlight`);
+  if (!flight && (beam || dive || gust))
+    throw new ConfigError(`${p}.roomFlight: cần cấu hình bay cho đòn mini-boss`);
   const phases = arr(b.phases, `${p}.phases`).map((item, i) => {
     const ph = obj(item, `${p}.phases[${i}]`);
     const list = arr(ph.attacks, `${p}.phases[${i}].attacks`).map((x, j) => {
@@ -374,8 +485,8 @@ function parseBoss(id: string, value: unknown, rules: BossRules, p = `bosses.${i
     hp: num(b.hp, `${p}.hp`, { min: 1 }),
     sizePx: size(b.sizePx, `${p}.sizePx`),
     contactDamage: num(b.contactDamage, `${p}.contactDamage`, { min: 0 }),
-    weakness: str(b.weakness, `${p}.weakness`),
-    reward: str(b.reward, `${p}.reward`),
+    weakness: flight ? '' : str(b.weakness, `${p}.weakness`),
+    reward: flight ? '' : str(b.reward, `${p}.reward`),
     rewardExp: num(b.rewardExp, `${p}.rewardExp`, { min: 0 }),
     rewardCoreBit: num(b.rewardCoreBit, `${p}.rewardCoreBit`, { min: 0 }),
     idleSec: num(b.idleSec, `${p}.idleSec`, { min: 0 }),
@@ -384,6 +495,25 @@ function parseBoss(id: string, value: unknown, rules: BossRules, p = `bosses.${i
     attacks,
     rules,
   };
+  if (flight) {
+    if (b.weakness !== undefined || b.reward !== undefined)
+      throw new ConfigError(
+        `${p}: mini-boss phòng khóa không cấp vũ khí và không có điểm yếu vũ khí`,
+      );
+    const minHeightTiles = num(flight.minHeightTiles, `${p}.roomFlight.minHeightTiles`, { min: 1 });
+    out.roomFlight = {
+      minHeightTiles,
+      maxHeightTiles: num(flight.maxHeightTiles, `${p}.roomFlight.maxHeightTiles`, {
+        min: minHeightTiles,
+      }),
+      liftTilesPerSec: num(flight.liftTilesPerSec, `${p}.roomFlight.liftTilesPerSec`, { min: 1 }),
+      bobPeriodSec: num(flight.bobPeriodSec, `${p}.roomFlight.bobPeriodSec`, { min: 0.1 }),
+    };
+    if (beam && beam.maxBounces !== 1)
+      throw new ConfigError(`${p}.attacks.beam.maxBounces: cần đúng một lần phản xạ`);
+    if (phases.length !== 2 || phases[0]?.untilHpPct !== 50)
+      throw new ConfigError(`${p}.phases: mini-boss phòng khóa cần hai pha, đổi ở 50%`);
+  }
   if (b.walk !== undefined) {
     const w = obj(b.walk, `${p}.walk`);
     out.walk = {
@@ -451,6 +581,10 @@ function attackDamages(boss: BossData): number[] {
     a.roots?.damage,
     a.bloom?.damage,
     a.stalk?.damage,
+    a.beam?.damage,
+    a.dive?.damage,
+    a.dive?.shockwave?.damage,
+    a.gust?.damage,
   ].filter((d): d is number => d !== undefined);
 }
 
@@ -462,6 +596,9 @@ function attackDamages(boss: BossData): number[] {
 export function checkBossRules(boss: BossData, playerBaseHp: number, damageMul = 1): string[] {
   const errors: string[] = [];
   const maxSpeed = Math.max(...boss.phases.map((ph) => ph.speedMul));
+  const dive = boss.attacks.dive;
+  if (dive && dive.followUpTelegraphSec / maxSpeed + 1e-9 < boss.minTelegraphSec)
+    errors.push(`${boss.id}.dive.followUpTelegraphSec: đòn nối ngắn hơn ${boss.minTelegraphSec} s`);
   // Rễ Đuổi: thời gian từ đánh dấu tới khi trồi cũng là báo trước (GDD 11 mục 3.3).
   const stalk = boss.attacks.stalk;
   if (stalk && stalk.eruptDelaySec / maxSpeed + 1e-9 < boss.minTelegraphSec)

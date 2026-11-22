@@ -62,6 +62,8 @@ export interface RoomSpawn {
   top: number;
   bottom: number;
   doors: Cell[];
+  /** Mini-boss chạy bằng Boss (Q1), lấy cấu hình từ bosses.json. */
+  miniBoss?: Cell & { id: string };
 }
 
 /** Vật phẩm bí mật nhặt một lần (Memory Log, Nano Cell, Hạt Giống, Két giáp...). */

@@ -46,6 +46,7 @@ const OBJECT_CLASSES = [
   'enemy',
   'target',
   'boss',
+  'miniBoss',
   'gate',
   'vine',
   'room',
@@ -300,6 +301,23 @@ function buildLayout(map: TileMap, objects: readonly TiledObject[]): StageLayout
     if (doors.length === 0) fail(label(o), 'mép trái/phải không có ô trống để làm cửa');
     return { ...s, doors };
   });
+  for (const o of of('miniBoss')) {
+    const cell = cellOf(o);
+    const enclosing = rooms.filter(
+      (r) => cell.col > r.first && cell.col < r.last && cell.row >= r.top && cell.row <= r.bottom,
+    );
+    const room = enclosing[0];
+    if (!room || enclosing.length !== 1)
+      fail(label(o), 'mini-boss phải nằm trong đúng một phòng khóa');
+    if (room.miniBoss) fail(label(o), 'phòng khóa chỉ có một mini-boss dùng lớp Boss');
+    if (map.get(cell.col, cell.row) !== Tile.Empty)
+      fail(label(o), 'điểm xuất hiện mini-boss phải trống');
+    for (let col = room.first + 1; col < room.last; col += 1) {
+      if (room.bottom + 1 >= map.rows || !map.isSolid(col, room.bottom + 1))
+        fail(label(o), 'phòng mini-boss cần sàn đặc liền hàng dưới phòng');
+    }
+    room.miniBoss = { ...cell, id: propStr(o.props, 'boss', label(o)) };
+  }
   const secrets: SecretSpawn[] = of('secret').map((o) => ({
     ...cellOf(o),
     item: propStr(o.props, 'item', label(o)),

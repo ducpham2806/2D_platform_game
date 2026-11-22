@@ -248,6 +248,9 @@ export class StageScene extends Phaser.Scene {
       seed: WORLD_SEED,
       // Thử thách: kẻ địch dùng bản Thử thách khi có (GDD 11 mục 2.6).
       enemies: enemiesFor(config.enemies, difficulty.newAttackPatterns),
+      roomBossData: difficulty.newAttackPatterns
+        ? { ...config.bosses, ...config.bossesChallenge }
+        : config.bosses,
       mechanics: config.stages.mechanics,
       // Thưởng kẻ địch theo màn chiến dịch (GDD 16 mục 2.1; Stage 1 = 1), mini-boss không nhân.
       // Theo `def.campaign`, không phụ thuộc bản lưu.
@@ -817,7 +820,9 @@ export class StageScene extends Phaser.Scene {
       hud?.flash(`Checkpoint ${ev.checkpoint}${this.saver ? ' · đã lưu' : ''}`, 900);
     if (ev.fellInPit) camera.shake(80, 0.003);
     if (ev.spikeHit) camera.shake(90, 0.004);
-    if (ev.roomLocked) hud?.flash('Phòng khóa: hạ hết kẻ địch', 1200);
+    if (ev.bossReflected) hud?.flash('Tia dội trúng Prism Sentinel', 800);
+    if (ev.roomLocked)
+      hud?.flash(world.lockedRoom?.miniBoss?.boss.data.name ?? 'Phòng khóa: hạ hết kẻ địch', 1200);
     if (ev.roomCleared) hud?.flash('Cửa mở', 900);
     if (ev.barrierBroken) camera.shake(100, 0.004);
     if (ev.secretsFound.length > 0) {

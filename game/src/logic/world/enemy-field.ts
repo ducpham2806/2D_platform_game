@@ -2,6 +2,7 @@ import type { EnemiesData } from '../../core/enemy-config';
 import type { ExtraSolid } from '../combat/flight';
 import type { WeaponLoadout } from '../combat/loadout';
 import type { ProjectilePool } from '../combat/projectiles';
+import { enemyInRange, enemyOnScreen } from '../enemy/attack-range';
 import { createEnemy } from '../enemy/behaviors';
 import { type Enemy, isFlying } from '../enemy/enemy';
 import { type Box, groundBelow, moveY } from '../player/collision';
@@ -71,12 +72,7 @@ export class EnemyField {
   }
 
   private inRange(box: Box, x: number, y: number): boolean {
-    const { activeRangeTiles, activeRangeTilesY } = this.data.rules;
-    const t = this.map.tileSize;
-    return (
-      Math.abs(box.x + box.w / 2 - x) <= activeRangeTiles * t &&
-      Math.abs(box.y + box.h / 2 - y) <= activeRangeTilesY * t
-    );
+    return enemyInRange(this.data.rules, this.map.tileSize, box, x, y);
   }
 
   active(player: PlayerPhysics): Enemy[] {
@@ -101,8 +97,6 @@ export class EnemyField {
   ): boolean {
     const x = player.centerX;
     const y = player.box.y + player.box.h / 2;
-    const screen = this.data.rules.attackRequiresOnScreen ? view : undefined;
-    const inset = this.data.rules.attackScreenInsetTiles * this.map.tileSize;
     const ctx = {
       playerX: x,
       playerY: y,
@@ -110,12 +104,7 @@ export class EnemyField {
       map: this.map,
       ...(mirror ? { mirror } : {}),
       attackAllowed: (box: Box): boolean =>
-        this.inRange(box, x, y) &&
-        (!screen ||
-          (box.x >= screen.x + inset &&
-            box.x + box.w <= screen.x + screen.w - inset &&
-            box.y >= screen.y + inset &&
-            box.y + box.h <= screen.y + screen.h - inset)),
+        this.inRange(box, x, y) && enemyOnScreen(this.data.rules, this.map.tileSize, box, view),
     };
     let fellOut = false;
     for (const e of this.enemies) {
@@ -153,10 +142,31 @@ export class EnemyField {
       const coreBit = firstReward
         ? enemyReward(e.data.coreBit, this.mulFor(e).coreBit, this.rewardMul)
         : 0;
-      this.pickups.drop(e.centerX, e.centerY, coreBit, player.hp < player.maxHp, this.rng);
-      if (firstReward && loadout?.hasEnergyDeficit)
-        this.pickups.dropEnergy(e.centerX, e.centerY, this.energyRng);
+      this.dropRewards(e.centerX, e.centerY, coreBit, player, firstReward ? loadout : undefined);
     }
+  }
+
+  rewardRoomBoss(
+    x: number,
+    y: number,
+    exp: number,
+    coreBit: number,
+    player: PlayerPhysics,
+    loadout: WeaponLoadout,
+  ): void {
+    this.exp += enemyReward(exp, 1, this.rewardMul);
+    this.dropRewards(x, y, enemyReward(coreBit, 1, this.rewardMul), player, loadout);
+  }
+
+  private dropRewards(
+    x: number,
+    y: number,
+    coreBit: number,
+    player: PlayerPhysics,
+    loadout?: WeaponLoadout,
+  ): void {
+    this.pickups.drop(x, y, coreBit, player.hp < player.maxHp, this.rng);
+    if (loadout?.hasEnergyDeficit) this.pickups.dropEnergy(x, y, this.energyRng);
   }
 
   private awardExp(e: Enemy): boolean {

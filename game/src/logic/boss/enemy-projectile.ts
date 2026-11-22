@@ -39,20 +39,23 @@ export function spawnRainDrops(
   cols: readonly number[],
   rain: Pick<RainAttack, 'fallSpeedTilesPerSec' | 'damage' | 'sizePx'>,
   kind: 'drop' | 'seed' = 'drop',
+  source?: string,
+  originY = tileSize,
 ): void {
   for (const col of cols) {
-    pool.spawn(
-      enemyProjectile(
+    pool.spawn({
+      ...enemyProjectile(
         tileSize,
         kind,
         col * tileSize + (tileSize - rain.sizePx.w) / 2,
-        tileSize,
+        originY,
         rain.sizePx,
         0,
         rain.fallSpeedTilesPerSec * tileSize,
         rain.damage,
       ),
-    );
+      ...(source === undefined ? {} : { source }),
+    });
   }
 }
 

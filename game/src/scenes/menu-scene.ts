@@ -112,17 +112,11 @@ export class MenuScene extends Phaser.Scene {
         .setOrigin(0.5);
     textButton(this, cx - 52, 163, 'Kết quả chơi thử', () => this.scene.start(SceneKey.Playtest));
     textButton(this, cx + 52, 163, 'Dữ liệu lưu', () => this.scene.start(SceneKey.Save));
-    this.add
-      .text(
-        cx,
-        182,
-        'Enter · K · M · B · G · O Laser · I Băng · V Gale · P Bục · H · X · Q · C · R · S',
-        {
-          ...MUTED_STYLE,
-          fontSize: '8px',
-        },
-      )
-      .setOrigin(0.5);
+    const tryMiniBoss = (difficulty: 'normal' | 'challenge'): void => {
+      this.scene.start(SceneKey.Stage, { stage: 'miniBossRoom', difficulty });
+    };
+    textButton(this, cx - 65, 178, 'Mini-boss S2–4', () => tryMiniBoss('normal'));
+    textButton(this, cx + 65, 178, 'Mini-boss Thử thách', () => tryMiniBoss('challenge'));
 
     const keyboard = this.input.keyboard;
     keyboard?.once('keydown-ENTER', () => this.scene.start(SceneKey.Stage));

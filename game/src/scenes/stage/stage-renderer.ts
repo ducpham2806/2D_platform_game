@@ -4,6 +4,7 @@ import type { Projectile } from '../../logic/combat/projectiles';
 import { Tile, type TileMap } from '../../logic/tilemap';
 import type { StageWorld } from '../../logic/world/stage-world';
 import { drawEnemies, drawPickups } from './enemy-renderer';
+import { drawRoomBoss } from './room-boss-renderer';
 
 /** Màu khối giữ chỗ (chưa có sprite). Mỗi loại đạn một màu để dễ đọc khi chơi thử. */
 const PROJECTILE_COLORS: Readonly<Record<Projectile['kind'], number>> = {
@@ -86,6 +87,7 @@ export function drawDynamic(
   // Lõi sáng khi boss đang hở: chỉ hiện khi đã học Đòn Trừng Phạt (V3).
   const showCore = (world.build.effects.punishMul ?? 1) > 1;
   if (world.boss) drawBoss(g, world.boss, t, world.map, timeMs, showCore);
+  for (const room of world.rooms) if (room.miniBoss) drawRoomBoss(g, room, t, timeMs);
   drawEnemies(g, world.enemies, timeMs);
   if (world.field) drawPickups(g, world.field.pickups.all, timeMs);
   if (world.playerBeams.length > 0) {

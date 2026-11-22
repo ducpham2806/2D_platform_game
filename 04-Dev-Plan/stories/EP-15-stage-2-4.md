@@ -331,3 +331,19 @@ Phase Step gọi chung API khi triển khai ST-08-09. Mở khóa vũ khí qua Cr
 - [x] Kiểm dữ liệu, tương thích bản lưu cũ, giới hạn sức chứa, nhặt và nạp lại qua các lượt vào màn. Ghi Nano Cell theo id màn chiến dịch; đọc được bí mật từng lưu ở phòng M7.
 - [x] Kiểm điều kiện hồi máu, thời lượng khóa, hồi sinh, H/RT và Nano Cell Cap. HUD báo số lượt còn lại. Bản đồ chiến dịch đặt vật phẩm theo cờ `stages.nanoCell`.
 - [x] Kiểm điều kiện rơi viên năng lượng, chọn vũ khí, giới hạn hồi và hồi quy G1. Viên nằm lại nếu vũ khí đích đang đầy. [Ảnh và cách thử](../qa/ST-15-16/README.md).
+
+## ST-15-09: Mini-boss Prism Sentinel và Gale Roc
+
+- **Thuộc Epic:** EP-15 · **Ưu tiên:** P1 · **Trạng thái:** DONE (22/11/2026) · **Phụ thuộc:** ST-15-01c, ST-15-02, ST-15-14, ST-15-15.
+
+> **Là** người chơi, **tôi muốn** đọc hướng tia của Prism Sentinel và đòn bổ nhào của Gale Roc, **để** né đòn, phản chiếu tia và tận dụng lúc mini-boss hở.
+
+- **Q1, QB-19, QB-21, QB-23, QB-24, QB-31:** Hai mini-boss dùng lớp `Boss` ở phòng khóa, đổi pha ở 50%, miễn đóng băng, báo đủ 0,5 s trong tầm và khung hình. Mở cửa khi hạ hết địch. Sau hồi sinh, phòng chưa xong dựng lại trận, phòng đã xong giữ mở. Thưởng theo độ khó, miễn hệ số kẻ địch thường của màn.
+- **GDD 16 mục 3.5:** Prism Sentinel có 70 máu. Tán Sắc ba viên, Lao Lăng Kính và Tia Phản Xạ chung `LaserPath`. Đổi góc gương trong lúc báo có thể dội tia về Sentinel, trừ 10 máu và choáng 1,5 s. Thử thách có hai đường báo và hai xung cách 0,4 s, xung hai dùng góc đối diện.
+- **GDD 16 mục 5.5:** Gale Roc có 90 máu. Bổ Nhào khóa đích khi báo, khi tiếp đất thì hở 1 s. Vỗ Cánh bắn ba lông và phát trạng thái gió để ST-15-08b nối `WindZone`. Pha hai có mưa tám lông chừa hai khe rộng hai ô, cùng hai cú Bổ Nhào nối có báo riêng. Thử thách tạo hai sóng đất khi bổ chạm sàn.
+
+### Nghiệm thu
+
+- [x] Cấu hình gốc và Thử thách hợp lệ. Kiểm Tán Sắc, Lao Lăng Kính, đổi vạch khi xoay gương, hai xung và phản đòn. Kiểm Bổ Nhào, đòn nối, Vỗ Cánh, khe Mưa Lông Thép và sóng đất.
+- [x] Kiểm phòng khóa Tiled, sàn đặc, sát thương, hồi sinh, thưởng và mở cửa. Tia phản xạ phát qua đầu dẫn phía trên gương được chọn để nhánh ngang có thể dội qua Sentinel.
+- [x] Chạy thử hai phòng trên Chromium PC và Pixel 7 ngang giả lập, kiểm hồi quy G1. [Ảnh và cách thử](../qa/ST-15-09/README.md).

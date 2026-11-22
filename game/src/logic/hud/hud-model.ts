@@ -48,7 +48,7 @@ export function buildHud(world: StageWorld, savedCoreBits = 0, level = world.lev
   const pl = world.player;
   const hp = bar(Math.max(0, Math.ceil(pl.hp)), pl.maxHp);
   const slot = world.loadout.current;
-  const boss = world.boss;
+  const boss = world.combatBoss;
   return {
     hp: { ...hp, low: hp.frac <= LOW_HP_FRACTION },
     energy:
@@ -56,7 +56,7 @@ export function buildHud(world: StageWorld, savedCoreBits = 0, level = world.lev
     nanoCells: { capacity: world.nanoCells.capacity, remaining: world.nanoCells.remaining },
     weapon: { name: slot.name, index: world.loadout.index, count: world.loadout.slots.length },
     boss:
-      boss && world.phase === 'boss'
+      boss && boss.state !== 'dead'
         ? {
             ...bar(boss.hp, boss.data.hp),
             name: boss.data.name,

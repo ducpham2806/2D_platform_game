@@ -396,7 +396,7 @@ Giọng NOVA (`08-Giong-nhan-vat.md`): thuật ngữ hệ thống trộn đùa, 
 - [x] Gương chỉ đổi góc bằng đạn nạp vừa trở lên; tự bắn trên cảm ứng không xoay gương.
 - [x] Cảm biến mở cửa sau 0,3 s nhận tia, cửa không đóng lại; hồi sinh trả gương về góc đầu.
 - [ ] 4 kẻ địch thường và bản Thử thách chạy đúng; telegraph ≥ 0,4 s; vạch ngắm Gương Quang vẽ đúng điểm nảy.
-- [ ] Prism Sentinel đổi pha ở 50%; phản đòn bằng gương gây 10 và choáng 1,5 s.
+- [x] Prism Sentinel đổi pha ở 50%; phản đòn bằng gương gây 10 và choáng 1,5 s (phòng thử ST-15-09).
 - [ ] Lumen đổi pha ở 60% và 30%; Vine Lash 2,5× và choáng 0,5 s; bot không né thua ở cấp 7; Tiêu Điểm khóa ≥ 0,5 s ở pha 3.
 - [ ] Nhận Prism Beam; Prism Beam đốt rễ khô Két Stage 1; Két Thân Mk I chỉ mở khi có Frost Shard.
 - [ ] Checkpoint đúng bảng 3.9 ở cả ba độ khó.
@@ -736,7 +736,7 @@ Màn dọc: mọi checkpoint Stage 4 là vùng chữ nhật trên Tiled, xét th
 - [ ] Gió: lực ngang đúng `force`, trên đất × `groundMul`; lướt và bám tường bỏ qua gió; báo trước đổi chiều 1,0 s.
 - [ ] Bệ mây: một chiều, trôi chở Kai đúng `dx`, `dy`, tan đúng `triggerSec` và mọc lại sau 4 s.
 - [ ] Chim Cắt Gió và Cối Xoáy cùng bản Thử thách chạy đúng; telegraph ≥ 0,4 s; Cối Xoáy bị phá thì gió tắt.
-- [ ] Gale Roc đổi pha ở 50%; phòng khóa không có hố.
+- [x] Gale Roc đổi pha ở 50%; phòng khóa thử ST-15-09 có sàn đặc liên tục. Bố trí phòng chiến dịch ở ST-17-04.
 - [ ] Aeris đổi pha ở 60% và 30%; Frost Shard 2,5× và choáng 0,5 s; bot không né thua ở cấp 10; Lốc Xoáy báo trước ≥ 0,5 s ở pha 3; Đổi Gió không chồng Mắt Bão.
 - [ ] Nhận Gale Cutter; Gale Cutter phá sương lạnh Két Stage 3; Két Chân Mk I hiện khóa "cần Quake Drill".
 - [ ] Checkpoint đúng bảng 5.9.
@@ -811,7 +811,7 @@ Quy ước như EP-08 đến EP-10: Story ≤ 1–2 ngày, mỗi Story nhúng s�
 | ST-15-05 | Gale Cutter (`boomerang`, hủy tối đa 2 đạn kẻ địch thường mỗi lần ném) và sương lạnh dùng `Barrier` (Két Stage 3). Xong 21/11/2026 | 01c | 1,5 ngày |
 | ST-15-06 | Gương Quang (`drone` và đạn dội), Người Tuyết Máy (`shieldCharger`), Tháp Băng (`turret` và đạn cong), Frost Titan (`golem` và sóng khi tảng đáp), kèm cấu hình Thử thách và phòng thử. Xong 22/11/2026 | 01a, 01b | 2 ngày |
 | ST-15-08a | `CrumblePlatform` (break, sink), bệ mây trôi theo hai điểm và phòng thử. Xong 22/11/2026 | 01b, 01c | 1 ngày |
-| ST-15-09 | Mini-boss Prism Sentinel và Gale Roc dùng lớp `Boss` và bộ chuyển cho `LockedRoom` (Q1). Gió đẩy của Vỗ Cánh nối vào `WindZone` ở ST-15-08b. Thêm dữ liệu Prism Sentinel (từ 01a) và Gale Roc (từ 01c) | 01c, 02, 14, 15 | 2,5 ngày |
+| ST-15-09 | Mini-boss Prism Sentinel và Gale Roc dùng lớp `Boss` và bộ chuyển cho `LockedRoom` (Q1). Gió đẩy của Vỗ Cánh nối vào `WindZone` ở ST-15-08b. Dữ liệu hai mini-boss và phòng thử đã xong 22/11 | 01c, 02, 14, 15 | 2,5 ngày |
 | ST-15-10 | Boss Lumen: `beam`, dịch chuyển, `focus` (Thử thách); mô phỏng bot; thêm dữ liệu Lumen (dời từ 01a). Phụ thuộc 03: thắng Lumen trước khi Prism Beam có hành vi thì Loadout không cấp và bản lưu không ghi vũ khí | 02, 03, 14 | 2 ngày |
 | ST-15-13 | Phòng thử ASCII cho phần trước cổng (kẻ địch, cơ chế, mini-boss, Lumen), nối màn Chuẩn bị và hội thoại boss; tín hiệu hướng dẫn mới. Phòng của 07, 08b, 11, 12 thêm trong chính các Story đó | 02–06, 08a, 09, 10 | 1,5 ngày |
 | ST-15-14 | **Boss an toàn:** `weakStunCooldownSec` 1,5 s chống khóa choáng (QB-14), `phaseShiftSec` 0,6 s khi một đòn vượt hai ngưỡng pha (QB-31); áp cả Thorna. **Xong 15/11/2026** (làm trước 01a: luật chung, `stories/EP-15-stage-2-4.md`) | 01a | 1 ngày |

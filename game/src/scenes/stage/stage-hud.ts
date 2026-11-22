@@ -146,15 +146,16 @@ export class StageHud {
   update(hud: HudModel, touch: boolean, swapGlyph: string): void {
     const g = this.bars;
     g.clear();
-    // Máu.
-    g.fillStyle(0x0f1724, 0.8).fillRect(PAD, PAD, HP_W + 4, 9);
+    // Chừa khoảng giữa số máu Kai và tên mini-boss dài trong phòng khóa.
+    const hpWidth = hud.boss && hud.roomRemaining !== undefined ? HP_W - 16 : HP_W;
+    g.fillStyle(0x0f1724, 0.8).fillRect(PAD, PAD, hpWidth + 4, 9);
     g.fillStyle(hud.hp.low ? 0xff6b6b : 0x7bd389, 1).fillRect(
       PAD + 2,
       PAD + 2,
-      HP_W * hud.hp.frac,
+      hpWidth * hud.hp.frac,
       5,
     );
-    this.hpText.setText(`${hud.hp.value}/${hud.hp.max}`);
+    this.hpText.setX(PAD + hpWidth + 6).setText(`${hud.hp.value}/${hud.hp.max}`);
     // Năng lượng vũ khí boss.
     if (hud.energy) {
       g.fillStyle(0x0f1724, 0.8).fillRect(PAD, PAD + 11, ENERGY_W + 4, 6);

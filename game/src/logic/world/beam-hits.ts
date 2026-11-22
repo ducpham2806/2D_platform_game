@@ -23,7 +23,7 @@ export function resolveBeamHits(
   attackMul: number,
   ev: WorldEvents,
   killed: Enemy[],
-  observer: BossDamageObserver,
+  observer?: BossDamageObserver,
 ): { path: LaserPath; hitStop: number; blocked: boolean } {
   const receivers: Receiver[] = [];
   for (const entity of hitTargets.targets)
