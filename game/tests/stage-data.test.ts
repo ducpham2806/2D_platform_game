@@ -210,6 +210,7 @@ describe('cơ chế laser, gương, cảm biến (GDD 16 mục 3.3)', () => {
     expect(bad('laser.pulse.onSec', 2.6)).toThrow(/phải ngắn hơn chu kỳ/);
     expect(bad('laser.hitsPerActivation', 1.5)).toThrow(/số nguyên/);
     expect(bad('laser.hurtsEnemies', 'no')).toThrow(/true\/false/);
+    expect(bad('laser.hurtsEnemies', true)).toThrow(/không gây sát thương kẻ địch/);
     expect(bad('mirror.toggleMinCharge', 'shot')).toThrow(/đạn thường không được đổi góc gương/);
     expect(bad('mirror.toggleMinCharge', 'big')).toThrow(/cần một trong/);
     expect(bad('sensor.holdSec', -1)).toThrow(/sensor\.holdSec/);

@@ -52,7 +52,7 @@ import { ResultPanel, type ResultChoice } from './stage/result-panel';
 import { KAI_SHIELD_COLOR, StageHud } from './stage/stage-hud';
 import { TutorialBox } from './stage/tutorial-box';
 import { StagePlaytest, tunedData } from './stage/stage-playtest';
-import { barrierCells, drawMechanics } from './stage/mechanics-renderer';
+import { drawMechanics, dynamicSolidCells } from './stage/mechanics-renderer';
 import { chargeGlowColor, drawDynamic, drawStaticMap } from './stage/stage-renderer';
 import { StageTelemetry } from './telemetry/stage-telemetry';
 import { getTelemetry } from './telemetry/telemetry-service';
@@ -290,7 +290,7 @@ export class StageScene extends Phaser.Scene {
       });
     }
 
-    drawStaticMap(this.add.graphics(), world.map, barrierCells(world));
+    drawStaticMap(this.add.graphics(), world.map, dynamicSolidCells(world));
     this.dynamic = this.add.graphics();
     this.glow = this.add.graphics();
     const pl = world.player;

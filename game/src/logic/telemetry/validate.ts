@@ -25,7 +25,7 @@ export interface ValidateOptions {
 
 /** Dấu hiệu chữ chưa làm sạch: chữ số, URL, ký tự ngoài ASCII in được. */
 const DIRTY_TEXT_RE = /\d|:\/\/|www\.|[^\x20-\x7e]/i;
-const CAUSE_RE = /^(?:enemy|boss):[A-Za-z0-9_.-]{1,40}$|^(?:spike|pit)$/;
+const CAUSE_RE = /^(?:(?:enemy|boss):[A-Za-z0-9_.-]{1,40}|spike|pit|laser)$/;
 /** Giới hạn khóa của `map`, độ dài `ids`: chặn ghi rác. */
 const MAX_MAP_KEYS = 32;
 const MAX_IDS = 32;
@@ -93,7 +93,7 @@ export function checkProp(v: unknown, s: PropSpec, o: ValidateOptions): string {
       return typeof v === 'string' && PATTERNS[s.pattern].test(v) ? '' : `sai khuôn ${s.pattern}`;
     case 'cause': {
       if (typeof v !== 'string' || !CAUSE_RE.test(v))
-        return 'cần enemy:<id>, boss:<đòn>, spike hoặc pit';
+        return 'cần enemy:<id>, boss:<đòn>, spike, pit hoặc laser';
       return v.startsWith('enemy:') ? checkId(v.slice(6), 'enemy', o) : '';
     }
     case 'scalar':

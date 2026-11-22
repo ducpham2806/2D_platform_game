@@ -92,7 +92,12 @@ export class ProjectilePool {
   }
 
   /** `onWall` được gọi với viên vừa vỡ vì chạm khối đặc (để vật chắn biết ai bắn vào). */
-  update(dt: number, map: TileMap, onWall?: (p: Projectile) => void): void {
+  update(
+    dt: number,
+    map: TileMap,
+    onWall?: (p: Projectile) => void,
+    absorb?: (p: Projectile) => boolean,
+  ): void {
     for (const p of this.items) {
       if (!p.alive) continue;
       p.ttl -= dt;
@@ -104,13 +109,21 @@ export class ProjectilePool {
       if (p.gravity) p.vy += p.gravity * dt;
       const dx = p.vx * dt;
       const dy = p.vy * dt;
-      p.x += dx;
-      p.y += dy;
-      p.traveled += Math.hypot(dx, dy);
-      if (p.traveled >= p.maxDistance) p.alive = false;
-      else if (overlapsSolid(p, map)) {
-        p.alive = false;
-        onWall?.(p);
+      // Phòng gương: đạn Kai đi từng đoạn không quá nửa ô để tôn trọng thứ tự tường/gương.
+      const pieces =
+        absorb && p.owner === 'player'
+          ? Math.max(1, Math.ceil(Math.max(Math.abs(dx), Math.abs(dy)) / (map.tileSize / 2)))
+          : 1;
+      const distance = Math.hypot(dx, dy) / pieces;
+      for (let i = 0; i < pieces && p.alive; i += 1) {
+        p.x += dx / pieces;
+        p.y += dy / pieces;
+        p.traveled += distance;
+        if (p.traveled >= p.maxDistance) p.alive = false;
+        else if (overlapsSolid(p, map)) {
+          p.alive = false;
+          onWall?.(p);
+        } else if (absorb?.(p)) p.alive = false;
       }
       if (p.y > map.heightPx || p.x + p.w < 0 || p.x > map.widthPx) p.alive = false;
     }

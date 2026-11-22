@@ -62,7 +62,7 @@ export type PropSpec =
   /** Bảng id → số; có `catalog` thì khóa phải thuộc danh mục. */
   | { kind: 'map'; catalog?: CatalogName }
   | { kind: 'pattern'; pattern: PatternName }
-  /** Nguồn cú đánh: `enemy:<id kẻ địch>`, `boss:<id đòn>`, `spike`, `pit`. */
+  /** Nguồn cú đánh: `enemy:<id kẻ địch>`, `boss:<id đòn>`, `spike`, `pit`, `laser`. */
   | { kind: 'cause' }
   /** Số hoặc boolean (giá trị một tùy chọn Cài đặt). */
   | { kind: 'scalar' }

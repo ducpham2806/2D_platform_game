@@ -1,10 +1,15 @@
 import type Phaser from 'phaser';
+import { laserBox } from '../../logic/stage/laser-path';
 import type { StageWorld } from '../../logic/world/stage-world';
 import { VINE_PLATFORM_THICKNESS } from '../../logic/world/stage-mechanics';
+import type { StageOptics } from '../../logic/world/stage-optics';
 
-/** Ô thuộc vật chắn (vẽ động vì vỡ được), để bản đồ tĩnh bỏ qua. */
-export function barrierCells(world: StageWorld): (col: number, row: number) => boolean {
-  const spans = world.barriers.map((b) => b.spawn);
+/** Ô của vật chắn và cửa thay đổi trong trận, để bản đồ tĩnh bỏ qua. */
+export function dynamicSolidCells(world: StageWorld): (col: number, row: number) => boolean {
+  const spans = [
+    ...world.barriers.map((b) => b.spawn),
+    ...(world.optics?.doors.map((d) => d.spawn) ?? []),
+  ];
   return (c, r) => spans.some((s) => c >= s.first && c <= s.last && r >= s.top && r <= s.bottom);
 }
 
@@ -18,6 +23,7 @@ export function drawMechanics(
   timeMs: number,
 ): void {
   const t = world.map.tileSize;
+  if (world.optics) drawOptics(g, world.optics, timeMs, t);
   world.layout.checkpoints.forEach((cp, i) => {
     const reached = i < world.checkpointIndex;
     const x = cp.col * t + t / 2;
@@ -65,5 +71,55 @@ export function drawMechanics(
     const cy = y + h / 2;
     g.fillStyle(0x4fd1ff, pulse).fillTriangle(cx, y, x + w, cy, cx, y + h);
     g.fillStyle(0x4fd1ff, pulse).fillTriangle(cx, y, x, cy, cx, y + h);
+  }
+}
+
+function drawOptics(
+  g: Phaser.GameObjects.Graphics,
+  optics: StageOptics,
+  timeMs: number,
+  tileSize: number,
+): void {
+  const warning = 0.65 + 0.3 * Math.sin(timeMs / 45);
+  for (const laser of optics.lasers) {
+    if (laser.state === 'active') {
+      g.fillStyle(0xff646e, 1);
+      for (const b of laser.boxes) g.fillRect(b.x, b.y, b.w, b.h);
+    } else if (laser.state === 'warning') {
+      g.fillStyle(0xff8b65, warning);
+      for (const segment of laser.path) {
+        const b = laserBox(segment, 1);
+        g.fillRect(b.x, b.y, b.w, b.h);
+      }
+    }
+    const { x, y } = laser.center;
+    g.fillStyle(0x263447, 1).fillRect(x - 5, y - 5, 10, 10);
+    g.fillStyle(laser.state === 'off' ? 0x516076 : 0xff8b65, 1).fillCircle(x, y, 3);
+  }
+  for (const mirror of optics.mirrors) {
+    const { x, y } = mirror.center;
+    const half = tileSize / 2 - 1;
+    const dy = mirror.angle === 45 ? half : -half;
+    g.lineStyle(3, mirror.rotating ? 0xffffff : 0x85dcff, 1).lineBetween(
+      x - half,
+      y + dy,
+      x + half,
+      y - dy,
+    );
+  }
+  for (const { box: b, progress, door } of optics.sensors) {
+    const x = b.x + b.w / 2;
+    const y = b.y + b.h / 2;
+    const color = door.open ? 0x82e7a5 : 0xffcf73;
+    g.lineStyle(2, color, 1).strokeCircle(x, y, 5);
+    g.fillStyle(color, 1).fillCircle(x, y, 4 * progress);
+  }
+  for (const { box: b, open } of optics.doors) {
+    if (!open) {
+      g.fillStyle(0x30465f, 1).fillRect(b.x, b.y, b.w, b.h);
+      g.fillStyle(0xffcf73, 1).fillRect(b.x + b.w / 2 - 1, b.y, 2, b.h);
+    } else {
+      g.lineStyle(1, 0x82e7a5, 1).lineBetween(b.x, b.y, b.x + b.w, b.y);
+    }
   }
 }

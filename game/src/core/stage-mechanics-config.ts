@@ -70,6 +70,8 @@ function parseLaser(value: unknown, p: string, minWarnSec: number): LaserMechani
     },
   };
   const { periodSec, onSec, warnSec } = out.pulse;
+  if (out.hurtsEnemies)
+    throw new ConfigError(`${p}.hurtsEnemies: laser môi trường không gây sát thương kẻ địch`);
   if (warnSec + 1e-9 < minWarnSec)
     throw new ConfigError(`${p}.pulse.warnSec: báo trước ${warnSec} s < ${minWarnSec} s`);
   // Phải còn khoảng tắt hẳn (không báo, không bật) để người chơi qua được.

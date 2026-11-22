@@ -1,10 +1,17 @@
 import { isObject, type Json } from '../../core/json-check';
 import { Tile, TileMap } from '../tilemap';
 import {
+  LASER_DIRECTIONS,
+  type LaserDirection,
+  MIRROR_ANGLES,
+  type MirrorAngle,
+} from './laser-path';
+import {
   type BarrierSpawn,
   type Cell,
   edgeDoorCells,
   type EnemySpawn,
+  type OpticsLayout,
   type RoomSpawn,
   type SecretSpawn,
   type SectionSpawn,
@@ -41,6 +48,10 @@ const OBJECT_CLASSES = [
   'room',
   'secret',
   'barrier',
+  'laser',
+  'mirror',
+  'lightSensor',
+  'opticalDoor',
   'section',
 ] as const;
 type ObjectClass = (typeof OBJECT_CLASSES)[number];
@@ -310,6 +321,73 @@ function buildLayout(map: TileMap, objects: readonly TiledObject[]): StageLayout
     };
   }
 
+  const doorCells = new Set(
+    rooms.flatMap((room) => room.doors).map(({ col, row }) => row * map.cols + col),
+  );
+  if (gate) for (const row of gate.rows) doorCells.add(row * map.cols + gate.col);
+  const overlapsBarrier = (col: number, row: number): boolean =>
+    barriers.some(
+      ({ first, last, top, bottom }) => col >= first && col <= last && row >= top && row <= bottom,
+    );
+  const opticalDoors: OpticsLayout['doors'] = [];
+  const doorIds = new Set<number>();
+  for (const o of of('opticalDoor')) {
+    if (!Number.isSafeInteger(o.id) || o.id <= 0 || doorIds.has(o.id))
+      fail(label(o), 'cần id Tiled dương và duy nhất');
+    const s = span(o);
+    for (let row = s.top; row <= s.bottom; row += 1) {
+      for (let col = s.first; col <= s.last; col += 1) {
+        const key = row * map.cols + col;
+        if (map.get(col, row) !== Tile.Empty || doorCells.has(key) || overlapsBarrier(col, row))
+          fail(label(o), `ô cửa (${col}, ${row}) phải trống`);
+        doorCells.add(key);
+      }
+    }
+    doorIds.add(o.id);
+    opticalDoors.push({ ...s, id: o.id });
+  }
+  const opticalCells = new Set<number>();
+  const opticalCell = (o: TiledObject): Cell => {
+    const cell = cellOf(o);
+    const { col, row } = cell;
+    const key = row * map.cols + col;
+    if (
+      map.isSolid(col, row) ||
+      doorCells.has(key) ||
+      overlapsBarrier(col, row) ||
+      opticalCells.has(key)
+    )
+      fail(label(o), `ô quang học (${col}, ${row}) bị chắn hoặc trùng đối tượng`);
+    opticalCells.add(key);
+    return cell;
+  };
+  const optics: OpticsLayout = {
+    doors: opticalDoors,
+    lasers: of('laser').map((o) => {
+      const mode = propStr(o.props, 'mode', label(o));
+      if (mode !== 'always' && mode !== 'pulse') fail(label(o), 'mode phải là always hoặc pulse');
+      const direction = propStr(o.props, 'direction', label(o));
+      if (!LASER_DIRECTIONS.includes(direction as LaserDirection))
+        fail(label(o), `direction cần một trong ${LASER_DIRECTIONS.join(', ')}`);
+      const phase = propNum(o.props, 'phase', label(o)) ?? 0;
+      if (phase < 0 || phase > 1) fail(label(o), 'phase cần nằm trong 0–1');
+      return { ...opticalCell(o), mode, direction: direction as LaserDirection, phase };
+    }),
+    mirrors: of('mirror').map((o) => {
+      const angle = propNum(o.props, 'angle', label(o));
+      if (!MIRROR_ANGLES.includes(angle as MirrorAngle))
+        fail(label(o), `angle cần một trong ${MIRROR_ANGLES.join(', ')}`);
+      return { ...opticalCell(o), angle: angle as MirrorAngle };
+    }),
+    sensors: of('lightSensor').map((o) => {
+      const doorId = propNum(o.props, 'door', label(o));
+      if (doorId === undefined || !doorIds.has(doorId))
+        fail(label(o), 'door phải trỏ tới id đối tượng opticalDoor');
+      return { ...opticalCell(o), doorId };
+    }),
+  };
+  const hasOptics = opticalCells.size > 0 || opticalDoors.length > 0;
+
   return {
     map,
     spawn: cellOf(spawns[0]!),
@@ -335,6 +413,7 @@ function buildLayout(map: TileMap, objects: readonly TiledObject[]): StageLayout
     rooms,
     secrets,
     barriers,
+    ...(hasOptics ? { optics } : {}),
     sections,
   };
 }
