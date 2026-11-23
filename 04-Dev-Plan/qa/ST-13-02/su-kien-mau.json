@@ -1,0 +1,232 @@
+[
+ {
+  "e": "session_start",
+  "t": 1794694281439,
+  "sid": "g1vrz5uh",
+  "n": 0,
+  "p": {
+   "day": "2026-11-14",
+   "tzMin": 0,
+   "platform": "android",
+   "browser": "chrome",
+   "pwa": false,
+   "screen": "850x350",
+   "dpr": 2.75,
+   "scaleK": 2,
+   "touchCapable": true,
+   "lang": "en",
+   "staff": false
+  }
+ },
+ {
+  "e": "boot_timing",
+  "t": 1794694281451,
+  "sid": "g1vrz5uh",
+  "n": 1,
+  "p": {
+   "msToMenu": 443
+  }
+ },
+ {
+  "e": "stage_start",
+  "t": 1794694283424,
+  "sid": "g1vrz5uh",
+  "n": 2,
+  "p": {
+   "room": "thorna",
+   "difficulty": "normal",
+   "difficultyDefault": "normal",
+   "challengeOpen": false,
+   "run": 1,
+   "clearedBefore": [],
+   "fromCheckpoint": 0,
+   "level": 1,
+   "effLevel": 1,
+   "skills": "V0P0C0",
+   "upgrades": {},
+   "weapons": 0,
+   "coreBits": 0,
+   "stage": "verdant_gardens",
+   "device": "touch"
+  }
+ },
+ {
+  "e": "section_enter",
+  "t": 1794694283424,
+  "sid": "g1vrz5uh",
+  "n": 3,
+  "p": {
+   "stage": "verdant_gardens",
+   "section": "approach",
+   "tRun": 0
+  }
+ },
+ {
+  "e": "section_enter",
+  "t": 1794694283951,
+  "sid": "g1vrz5uh",
+  "n": 4,
+  "p": {
+   "stage": "verdant_gardens",
+   "section": "boss",
+   "tRun": 0.5
+  }
+ },
+ {
+  "e": "boss_start",
+  "t": 1794694283951,
+  "sid": "g1vrz5uh",
+  "n": 5,
+  "p": {
+   "stage": "verdant_gardens",
+   "boss": "thorna",
+   "attempt": 1
+  }
+ },
+ {
+  "e": "tutorial_step_start",
+  "t": 1794694283953,
+  "sid": "g1vrz5uh",
+  "n": 6,
+  "p": {
+   "id": "S08",
+   "phase": "stage1"
+  }
+ },
+ {
+  "e": "death",
+  "t": 1794694288584,
+  "sid": "g1vrz5uh",
+  "n": 7,
+  "p": {
+   "stage": "verdant_gardens",
+   "section": "boss",
+   "kind": "death",
+   "cause": "boss:enemyShot",
+   "device": "keyboard",
+   "tRun": 4.7,
+   "streak": 1
+  }
+ },
+ {
+  "e": "boss_end",
+  "t": 1794694288584,
+  "sid": "g1vrz5uh",
+  "n": 8,
+  "p": {
+   "boss": "thorna",
+   "outcome": "death",
+   "fightSec": 4.1,
+   "dmg": {},
+   "weakHits": 0,
+   "swaps": 0,
+   "bossHpPct": 100,
+   "device": "keyboard",
+   "gameSpeed": 1
+  }
+ },
+ {
+  "e": "boss_start",
+  "t": 1794694289584,
+  "sid": "g1vrz5uh",
+  "n": 9,
+  "p": {
+   "stage": "verdant_gardens",
+   "boss": "thorna",
+   "attempt": 2
+  }
+ },
+ {
+  "e": "tutorial_step_start",
+  "t": 1794694290467,
+  "sid": "g1vrz5uh",
+  "n": 10,
+  "p": {
+   "id": "S09",
+   "phase": "stage1"
+  }
+ },
+ {
+  "e": "tutorial_step_complete",
+  "t": 1794694290467,
+  "sid": "g1vrz5uh",
+  "n": 11,
+  "p": {
+   "id": "S08"
+  }
+ },
+ {
+  "e": "boss_end",
+  "t": 1794694292984,
+  "sid": "g1vrz5uh",
+  "n": 12,
+  "p": {
+   "boss": "thorna",
+   "outcome": "win",
+   "fightSec": 3.4,
+   "dmg": {
+    "arcCannon": 1
+   },
+   "weakHits": 0,
+   "swaps": 0,
+   "bossHpPct": 0,
+   "device": "keyboard",
+   "gameSpeed": 1
+  }
+ },
+ {
+  "e": "tutorial_step_start",
+  "t": 1794694292987,
+  "sid": "g1vrz5uh",
+  "n": 13,
+  "p": {
+   "id": "S13",
+   "phase": "stage1"
+  }
+ },
+ {
+  "e": "tutorial_step_complete",
+  "t": 1794694292987,
+  "sid": "g1vrz5uh",
+  "n": 14,
+  "p": {
+   "id": "S09"
+  }
+ },
+ {
+  "e": "tutorial_step_complete",
+  "t": 1794694292987,
+  "sid": "g1vrz5uh",
+  "n": 15,
+  "p": {
+   "id": "S10"
+  }
+ },
+ {
+  "e": "stage_end",
+  "t": 1794694295730,
+  "sid": "g1vrz5uh",
+  "n": 16,
+  "p": {
+   "stage": "verdant_gardens",
+   "runSec": 10,
+   "realSec": 11.4,
+   "deaths": 1,
+   "pits": 0,
+   "furthest": "boss",
+   "last": "boss",
+   "coreBitsEarned": 80,
+   "expEarned": 120,
+   "balance": 80,
+   "secrets": 0,
+   "deviceSec": {
+    "touch": 0.5,
+    "keyboard": 9.5
+   },
+   "gameSpeedMin": 1,
+   "fpsMedian": 60,
+   "slowFramePct": 0,
+   "outcome": "clear"
+  }
+ }
+]

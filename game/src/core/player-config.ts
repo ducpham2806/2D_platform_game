@@ -1,7 +1,14 @@
 /** Kiểu và kiểm tra player.json (logic thuần). */
-import { ConfigError, num, obj, str } from './json-check';
+import { ConfigError, num, obj, positiveNum, str } from './json-check';
+
+export interface NanoCellData {
+  max: number;
+  healPct: number;
+  useLockSec: number;
+}
 
 export interface PlayerData {
+  nanoCell: NanoCellData;
   speedTilesPerSec: number;
   hitboxPx: { width: number; height: number };
   jump: {
@@ -50,6 +57,14 @@ export function parsePlayer(value: unknown): PlayerData {
   const dash = obj(p.dash, 'player.dash');
   const level = obj(p.level, 'player.level');
   const cap = obj(level.storyPowerCap, 'player.level.storyPowerCap');
+  const nano = obj(p.nanoCell, 'player.nanoCell');
+  const nanoMax = num(nano.max, 'player.nanoCell.max', { min: 1 });
+  const healPct = positiveNum(nano.healPct, 'player.nanoCell.healPct');
+  if (!Number.isInteger(nanoMax) || nanoMax > 4)
+    throw new ConfigError('player.nanoCell.max: cần số nguyên từ 1 đến 4 (QB-50)');
+  if (healPct > 1) throw new ConfigError('player.nanoCell.healPct: cần tỷ lệ ≤ 1');
+  if (nano.refill !== 'stageEnter')
+    throw new ConfigError('player.nanoCell.refill: chỉ nạp khi vào màn (QB-50)');
   const revive = obj(p.inPlaceRevivePerStage, 'player.inPlaceRevivePerStage');
   const slots = obj(p.moduleSlots, 'player.moduleSlots');
   const hitbox = obj(p.hitboxPx, 'player.hitboxPx');
@@ -65,6 +80,11 @@ export function parsePlayer(value: unknown): PlayerData {
   const maxTiles = num(jump.maxTiles, 'player.jump.maxTiles', { min: 0 });
   if (minTiles > maxTiles) throw new ConfigError('player.jump: minTiles lớn hơn maxTiles');
   return {
+    nanoCell: {
+      max: nanoMax,
+      healPct,
+      useLockSec: positiveNum(nano.useLockSec, 'player.nanoCell.useLockSec'),
+    },
     speedTilesPerSec: num(p.speedTilesPerSec, 'player.speedTilesPerSec', { min: 0 }),
     hitboxPx: {
       width: num(hitbox.width, 'player.hitboxPx.width', { min: 1 }),

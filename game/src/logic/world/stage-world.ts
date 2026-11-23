@@ -5,10 +5,11 @@ import type { PlayerData } from '../../core/player-config';
 import type { StageMechanics } from '../../core/stage-mechanics-config';
 import type { WeaponsData } from '../../core/weapons-config';
 import { Boss } from '../boss/boss';
-import { WeaponLoadout } from '../combat/loadout';
+import { type BeamShot, WeaponLoadout } from '../combat/loadout';
 import { ProjectilePool } from '../combat/projectiles';
 import { TrainingTarget } from '../combat/targets';
 import type { Enemy } from '../enemy/enemy';
+import { type Box, groundBelow, moveX } from '../player/collision';
 import {
   applyBuild,
   type BuildStats,
@@ -20,14 +21,34 @@ import {
 import { BuildRuntime } from '../rpg/build-runtime';
 import { checkpointActive, scaleReward, startCheckpointFor } from '../difficulty/difficulty';
 import { playerParams } from '../player/player-params';
-import { PlayerPhysics } from '../player/player-physics';
+import { type Platform, PlayerPhysics } from '../player/player-physics';
 import { createRng, type Rng } from '../rng';
 import { type EnemyMarkers, layoutFromRows, type StageLayout } from '../stage/layout';
+import { laserBox, type LaserPath, traceLaser } from '../stage/laser-path';
 import { Tile, type TileMap } from '../tilemap';
+import type { StageReward } from '../stage/stage-exp';
 import { EnemyField } from './enemy-field';
-import { type KaiDefense, resolveEnemyHits, resolvePlayerHits, type VanguardMods } from './hits';
+import { resolveBeamHits } from './beam-hits';
+import { CoolantFlow } from './coolant-flow';
+import { CloudDrift, CrumblePlatform, standsOn } from './platforms';
+import {
+  type BossDamageObserver,
+  type KaiDefense,
+  resolveEnemyHits,
+  resolvePlayerHits,
+  type VanguardMods,
+} from './hits';
 import { Barrier, LockedRoom, makeSecret, type Secret, standPoint, Vine } from './stage-mechanics';
-import { noWorldEvents, type WorldEvents, type WorldInput, type WorldPhase } from './world-types';
+import { RoomBoss } from './room-boss';
+import { StageOptics } from './stage-optics';
+import { NANO_CELL, NanoCells } from './nano-cell';
+import {
+  IDLE_INPUT,
+  noWorldEvents,
+  type WorldEvents,
+  type WorldInput,
+  type WorldPhase,
+} from './world-types';
 
 export interface WorldSetup {
   /** Bố cục màn (bản đồ Tiled hoặc ASCII đã dựng). Không có thì dựng từ `rows`. */
@@ -39,6 +60,7 @@ export interface WorldSetup {
   player: PlayerData;
   weapons: WeaponsData;
   boss: BossData;
+  roomBossData?: Readonly<Record<string, BossData>>;
   difficulty: DifficultyData;
   seed: number;
   /** Kẻ địch thường (M5): dữ liệu và ký hiệu đặt trên bản đồ. Không có thì màn không có kẻ địch. */
@@ -48,12 +70,16 @@ export interface WorldSetup {
   mechanics: StageMechanics;
   /** Module Spike Guard: miễn nhiễm gai (M8 sẽ bật theo loadout). */
   spikeGuard?: boolean;
+  /** Hệ số thưởng kẻ địch thường của màn chiến dịch, trừ mini-boss (GDD 16 mục 2.1); không có thì 1. */
+  stageReward?: StageReward;
   /** Vào màn từ checkpoint đã lưu (số thứ tự từ 1; 0 hoặc không có = điểm xuất phát). */
   startCheckpoint?: number;
   /** Từ bản lưu (M11): vũ khí boss đã nhận, có ngay khi vào màn. */
   ownedWeapons?: readonly string[];
   /** Từ bản lưu (M11): vật phẩm bí mật đã nhặt (theo `item`), không hiện lại. */
   takenSecrets?: readonly string[];
+  /** Số Nano Cell đã sở hữu trong bản lưu, nạp đầy khi dựng lượt. */
+  nanoCellCount?: number;
   /** Từ bản lưu (M11): boss của màn đã hạ, thắng lại không nhận thưởng lần đầu nữa. */
   bossDefeated?: boolean;
   /**
@@ -82,7 +108,10 @@ export class StageWorld {
   readonly map: TileMap;
   readonly player: PlayerPhysics;
   readonly loadout: WeaponLoadout;
+  readonly nanoCells: NanoCells;
   readonly pool = new ProjectilePool();
+  /** Vệt Prism Beam giữ lại để vẽ. Sát thương được giải quyết ngay lúc bắn. */
+  readonly playerBeams: { boxes: readonly Box[]; remainingSec: number }[] = [];
   readonly targets: TrainingTarget[] = [];
   boss: Boss | undefined;
   phase: WorldPhase = 'explore';
@@ -97,8 +126,13 @@ export class StageWorld {
   /** Cơ chế màn (M7). */
   readonly layout: StageLayout;
   readonly vines: Vine[];
+  readonly crumbles: readonly CrumblePlatform[];
+  readonly cloudDrifts: readonly CloudDrift[];
+  private readonly fixedPlatforms: readonly Platform[];
   readonly rooms: LockedRoom[];
   readonly barriers: Barrier[];
+  readonly coolant: readonly CoolantFlow[];
+  readonly optics: StageOptics | undefined;
   readonly secrets: Secret[];
   /** Vật phẩm bí mật đã nhặt trong lượt chơi (StageSave ghi vào bản lưu). */
   readonly collected: string[] = [];
@@ -113,6 +147,13 @@ export class StageWorld {
   deathStreak = 0;
   /** Thời gian của lượt chơi màn (giây, tính cả lúc hit-stop và chờ hồi sinh; màn Kết quả). */
   elapsedSec = 0;
+  /**
+   * Đo lường (GDD 13): sát thương lên boss theo tên vũ khí (đơn vị phát Arc Cannon) và số cú trúng
+   * điểm yếu, cộng dồn cả lượt; nguồn đòn gần nhất làm Kai mất máu.
+   */
+  readonly bossDamage = new Map<string, number>();
+  bossWeakHits = 0;
+  lastHitCause: string | undefined;
 
   private readonly rng: Rng;
   private attackMul: number;
@@ -166,14 +207,15 @@ export class StageWorld {
     this.built = applyBuild(setup.player, setup.weapons, this.build);
     const { maxHp, attackMul } = statsFor(this.level, setup.player.level, this.build);
     this.attackMul = attackMul;
-    this.player = new PlayerPhysics(
-      playerParams(this.built.player, t, setup.stepSec, playerModsOf(this.build, setup.stepSec)),
-      this.map,
-      this.checkpoint.x,
-      this.checkpoint.y,
-      maxHp,
+    const physics = playerParams(
+      this.built.player,
+      t,
+      setup.stepSec,
+      playerModsOf(this.build, setup.stepSec),
     );
+    this.player = new PlayerPhysics(physics, this.map, this.checkpoint.x, this.checkpoint.y, maxHp);
     this.loadout = new WeaponLoadout(this.built.weapons, t);
+    this.nanoCells = new NanoCells(setup.player.nanoCell.max, setup.nanoCellCount ?? 0);
     this.runtime = new BuildRuntime(this.build.shield);
     this.defense = this.defenseOf(this.build);
     this.vanguard = vanguardOf(this.build, t);
@@ -207,16 +249,47 @@ export class StageWorld {
           setup.seed + 1,
           setup.difficulty.rewardMul,
           setup.mechanics.enemyRewardOncePerRun,
+          setup.stageReward,
+          { gravity: physics.gravity * physics.fallGravityMul, maxSpeed: physics.maxFallSpeed },
         )
       : undefined;
     this.bossSpawn = layout.boss ? standPoint(layout.boss, t) : undefined;
     this.boss = this.makeBoss();
 
     this.vines = layout.vines.map((v) => new Vine(v, setup.mechanics.vine, t));
-    this.player.platforms = this.vines.map((v) => v.platform);
-    this.rooms = layout.rooms.map((r) => new LockedRoom(r, this.map));
-    if (this.field) for (const r of this.rooms) r.bind(this.field.enemies, layout.enemies);
+    this.crumbles = (layout.crumbles ?? []).map(
+      (p) => new CrumblePlatform(p, this.map, setup.mechanics.crumble),
+    );
+    this.cloudDrifts = (layout.cloudDrifts ?? []).map(
+      (p) => new CloudDrift(p, setup.mechanics.cloud.drift.speedTilesPerSec * t, t),
+    );
+    this.fixedPlatforms = [
+      ...this.vines.map((v) => v.platform),
+      ...this.cloudDrifts.map((c) => c.platform),
+    ];
+    this.syncPlatforms();
     this.barriers = layout.barriers.map((b) => new Barrier(b, this.map));
+    this.coolant = (layout.coolant ?? []).map(
+      (flow) => new CoolantFlow(flow, this.map, setup.mechanics.coolant.frozenSteps),
+    );
+    this.optics = layout.optics && new StageOptics(layout.optics, this.map, setup.mechanics);
+    this.rooms = layout.rooms.map((r, i) => {
+      if (!r.miniBoss) return new LockedRoom(r, this.map);
+      const data = setup.roomBossData?.[r.miniBoss.id];
+      if (!data?.roomFlight || !setup.enemies)
+        throw new Error(`Phòng khóa thiếu dữ liệu mini-boss ${r.miniBoss.id}`);
+      const hp = data.hp * setup.difficulty.enemyHp;
+      const mini = new RoomBoss(
+        r,
+        { ...data, hp },
+        this.map,
+        this.optics,
+        setup.enemies.rules,
+        setup.seed + i + 2,
+      );
+      return new LockedRoom(r, this.map, mini);
+    });
+    if (this.field) for (const r of this.rooms) r.bind(this.field.enemies, layout.enemies);
     const taken = new Set(setup.takenSecrets ?? []);
     this.secrets = layout.secrets.map((s) => {
       const secret = makeSecret(s, t);
@@ -237,6 +310,11 @@ export class StageWorld {
   }
 
   /** Dữ liệu đang dùng (bảng chỉnh cảm giác đọc để hiện giá trị hiện tại). */
+  /** Trong phòng khóa hoặc đấu trường, chỉ có một boss có thể tham chiến. */
+  get combatBoss(): Boss | undefined {
+    return this.phase === 'boss' ? this.boss : this.lockedRoom?.miniBoss?.boss;
+  }
+
   get tuning(): Pick<WorldSetup, 'player' | 'weapons' | 'boss'> {
     return { player: this.setup.player, weapons: this.setup.weapons, boss: this.setup.boss };
   }
@@ -312,7 +390,8 @@ export class StageWorld {
     return this.respawnTimer > 0;
   }
 
-  step(input: WorldInput): WorldEvents {
+  /** Khung đã vẽ gần nhất. Mô phỏng thuần không có camera có thể bỏ qua khung. */
+  step(input: WorldInput, view?: Box): WorldEvents {
     const ev = noWorldEvents();
     const dt = this.setup.stepSec;
     this.elapsedSec += dt;
@@ -332,8 +411,35 @@ export class StageWorld {
     }
     // Khiên hồi trước khi xử lý trúng đòn; đồng hồ dừng trong hit-stop và lúc chờ hồi sinh.
     if (this.runtime.step(dt)) ev.kaiShieldReady = true;
+    const pl = this.player;
+    this.nanoCells.step(dt);
+    if (input.healPressed && pl.state !== 'dead') {
+      const healed = this.nanoCells.use(
+        pl.hp,
+        pl.maxHp,
+        this.built.player.nanoCell,
+        this.build.nanoCellHealMul,
+      );
+      if (healed > 0) {
+        pl.hp += healed;
+        ev.healed = healed;
+        ev.nanoCellUsed = true;
+        pl.clearBufferedJump();
+        this.loadout.cancelCharge();
+      }
+    }
+    if (this.nanoCells.locked) input = IDLE_INPUT;
+
+    for (let i = this.playerBeams.length - 1; i >= 0; i -= 1) {
+      const beam = this.playerBeams[i]!;
+      beam.remainingSec -= dt;
+      if (beam.remainingSec <= 1e-9) this.playerBeams.splice(i, 1);
+    }
 
     for (const v of this.vines) v.step(dt);
+    for (const c of this.cloudDrifts) c.step(dt);
+    this.stepCrumbles(dt, ev);
+    this.optics?.step(dt, ev);
 
     if (input.swapPrev || input.swapNext) {
       const before = this.loadout.index;
@@ -341,7 +447,8 @@ export class StageWorld {
       ev.swapped = this.loadout.index !== before;
     }
 
-    const pl = this.player;
+    const previousX = pl.centerX;
+    const previousY = pl.box.y + pl.box.h / 2;
     const pe = pl.step(
       {
         moveX: input.moveX,
@@ -352,6 +459,7 @@ export class StageWorld {
       },
       dt,
     );
+    this.activateCrumbles(ev);
     this.attachSweeps();
     ev.airDash = pe.airDashed;
     ev.airDashRestored = pe.airDashRestored;
@@ -366,6 +474,7 @@ export class StageWorld {
       },
       {
         centerX: pl.centerX,
+        centerY: pl.box.y + pl.box.h / 2,
         top: pl.box.y,
         facing: pl.facing,
         hurt: pe.hurt,
@@ -376,6 +485,7 @@ export class StageWorld {
     );
     ev.fired = fire.fired;
     ev.emptyWeapon = fire.empty;
+    const path = fire.beam && this.tracePlayerBeam(fire.beam);
 
     for (const target of this.targets) target.step(dt);
     if (this.boss) {
@@ -388,29 +498,85 @@ export class StageWorld {
       ev.bossLanded = be.landed;
       if (be.defeated) this.onBossDefeated(ev);
     }
-    this.field?.step(pl, this.pool, dt);
-    this.pool.update(dt, this.map, (p) => {
-      for (const b of this.barriers) if (b.tryBreak(p)) ev.barrierBroken = true;
-    });
+    const optics = this.optics;
+    const mirror = optics?.mirrors.length ? optics.isMirrorCell : undefined;
+    if (this.field?.step(pl, this.pool, dt, mirror, view)) ev.enemyKilled = true;
+    const hasCoolant = this.coolant.some((flow) => !flow.frozen);
+    this.pool.update(
+      dt,
+      this.map,
+      (p) => {
+        for (const b of this.barriers) if (b.tryBreak(p)) ev.barrierBroken = true;
+      },
+      optics?.mirrors.length || hasCoolant
+        ? (p) => {
+            if (optics?.absorbShot(p, ev)) return true;
+            if (p.kind === 'shard' && this.coolant.some((flow) => flow.absorbShot(p))) {
+              ev.coolantFrozen = true;
+              return true;
+            }
+            return false;
+          }
+        : undefined,
+      pl.state !== 'dead' ? pl.box : undefined,
+      mirror,
+    );
 
+    const mini = this.lockedRoom?.miniBoss;
+    const roomAttack = mini?.step(pl, this.pool, dt, view);
+    if (roomAttack) {
+      ev.bossLanded ||= roomAttack.landed;
+      ev.bossPhaseChanged ||= roomAttack.phaseChanged;
+      ev.bossReflected = roomAttack.reflected;
+    }
+    const hitBoss = this.combatBoss;
     const killed: Enemy[] = [];
+    const observeBossDamage: BossDamageObserver | undefined = mini
+      ? undefined
+      : (weapon, amount, weak) => {
+          this.bossDamage.set(weapon, (this.bossDamage.get(weapon) ?? 0) + amount);
+          if (weak) this.bossWeakHits += 1;
+        };
     this.hitStop = resolvePlayerHits(
       this.pool,
-      { targets: this.targets, enemies: this.enemies, boss: this.boss },
+      { targets: this.targets, enemies: this.enemies, boss: hitBoss },
       this.built.weapons,
       this.attackMul,
       ev,
       killed,
       this.vanguard,
+      observeBossDamage,
     );
-    this.field?.onKilled(killed, pl);
+    if (fire.beam && path) this.fireBeam(fire.beam, path, ev, killed, hitBoss, observeBossDamage);
+    this.field?.onKilled(killed, pl, this.loadout);
     // Boss hết máu vì đạn của Kai trong bước này thì thắng ngay, trước khi xét đòn lên Kai
     // (trước đây cùng bước Kai chết thì boss được dựng lại đầy máu).
     if (this.phase === 'boss' && this.boss?.settleDefeat()) this.onBossDefeated(ev);
+    // Boss vừa kẹp pha (QB-31): xóa đạn boss trước khi xét đòn lên Kai. Đạn kẻ địch thường có
+    // `source`, giữ nguyên.
+    if (this.boss?.takeShotClear())
+      this.pool.removeWhere((p) => p.owner === 'enemy' && p.source === undefined);
+    if (mini) {
+      const boss = mini.boss;
+      const defeated = roomAttack?.defeated || boss.settleDefeat();
+      if (defeated || boss.takeShotClear())
+        this.pool.removeWhere((p) => p.owner === 'enemy' && p.source === boss.source);
+      if (defeated) {
+        ev.enemyKilled = true;
+        this.field?.rewardRoomBoss(
+          boss.centerX,
+          boss.box.y + boss.box.h / 2,
+          boss.data.rewardExp,
+          boss.data.rewardCoreBit,
+          pl,
+          this.loadout,
+        );
+      }
+    }
     resolveEnemyHits(
       this.pool,
       this.field?.active(pl) ?? [],
-      this.phase === 'boss' ? this.boss : undefined,
+      hitBoss,
       pl,
       // Đòn kẻ địch và boss: độ khó × build (Armor Plating, đã kẹp sàn). Gai, hố chỉ theo độ khó.
       this.setup.difficulty.damageTaken * this.build.damageTakenMul,
@@ -419,9 +585,16 @@ export class StageWorld {
     );
     if (ev.kaiShieldAbsorbed)
       this.hitStop = Math.max(this.hitStop, this.build.shield?.hitStopSteps ?? 0);
-    this.field?.updatePickups(pl, dt, ev, this.build.magnetTiles * this.setup.tileSize);
+    this.field?.updatePickups(
+      pl,
+      dt,
+      ev,
+      this.build.magnetTiles * this.setup.tileSize,
+      this.loadout,
+    );
 
-    this.updateHazards(ev);
+    if (!this.updateLasers(ev, previousX, previousY)) this.updateHazards(ev);
+    if (ev.hurtBy) this.lastHitCause = ev.hurtBy;
     this.updateSecrets(ev);
     this.updateRooms(ev);
     this.updateCheckpoints(ev);
@@ -434,25 +607,195 @@ export class StageWorld {
         ev.fellInPit = true;
         this.falls += 1;
         this.pitReturn = true;
+        this.playerBeams.length = 0;
+        this.pool.removeWhere((p) => p.boomerang !== undefined);
         this.respawnTimer = mech.pit.returnSec;
         return ev;
       }
       pl.state = 'dead';
+      ev.deathCause = 'pit';
     }
     if (pe.died || pl.state === 'dead') {
       ev.playerDied = true;
+      ev.deathCause ??= ev.hurtBy ?? this.lastHitCause;
       this.deaths += 1;
       this.deathStreak += 1;
       this.pitReturn = false;
+      this.playerBeams.length = 0;
+      this.pool.removeWhere((p) => p.boomerang !== undefined);
       this.respawnTimer = mech.respawnSec;
     }
     return ev;
+  }
+
+  private syncPlatforms(): void {
+    this.player.platforms = [
+      ...this.fixedPlatforms,
+      ...this.crumbles.flatMap((p) => (p.support ? [p.support] : [])),
+    ];
+  }
+
+  private stepCrumbles(dt: number, ev: WorldEvents): void {
+    let updatePlatforms = false;
+    for (const p of this.crumbles) {
+      const before = p.support;
+      const event = p.step(
+        dt,
+        () =>
+          (this.player.state !== 'dead' && p.obstructedBy(this.player.box)) ||
+          this.enemies.some((e) => e.alive && p.obstructedBy(e.box)) ||
+          this.targets.some((t) => t.alive && p.obstructedBy(t.box)) ||
+          (this.boss !== undefined &&
+            this.boss.state !== 'dead' &&
+            p.obstructedBy(this.boss.box)) ||
+          this.rooms.some((r) => r.miniBoss?.alive && p.obstructedBy(r.miniBoss.boss.box)),
+      );
+      if (p.support !== before) updatePlatforms = true;
+      if (event === 'crack') ev.platformCracked = true;
+      if (event === 'collapse') {
+        ev.platformBroken = true;
+        if (p.spawn.mode === 'break') this.field?.dropFrom(p.origin);
+      }
+    }
+    if (updatePlatforms) this.syncPlatforms();
+  }
+
+  private activateCrumbles(ev: WorldEvents): void {
+    const pl = this.player;
+    if (this.crumbles.length === 0 || !pl.grounded || pl.state === 'dead') return;
+    const ride = pl.onPlatform && pl.platforms.find((p) => standsOn(pl.box, p));
+    for (const p of this.crumbles) {
+      const reached =
+        p.spawn.mode === 'break'
+          ? !pl.onPlatform && standsOn(pl.box, p.origin)
+          : ride && ride === p.support;
+      if (reached && p.activate()) ev.platformCracked = true;
+    }
+  }
+
+  private onCrumblingIce(): boolean {
+    return this.crumbles.some(
+      (p) =>
+        p.spawn.mode === 'break' && p.state !== 'broken' && standsOn(this.player.box, p.origin),
+    );
+  }
+
+  private tracePlayerBeam(shot: BeamShot): LaserPath {
+    const range = shot.behavior.rangeTiles * this.map.tileSize;
+    return (
+      this.optics?.trace(shot.origin, shot.direction, shot.behavior.maxBounces, range) ??
+      traceLaser(
+        this.map,
+        shot.origin,
+        shot.direction,
+        () => undefined,
+        shot.behavior.maxBounces,
+        range,
+      )
+    );
+  }
+
+  private fireBeam(
+    shot: BeamShot,
+    path: LaserPath,
+    ev: WorldEvents,
+    killed: Enemy[],
+    boss: Boss | undefined,
+    observeBossDamage?: BossDamageObserver,
+  ): void {
+    const { widthPx, activeSec } = shot.behavior;
+    const result = resolveBeamHits(
+      path,
+      shot,
+      { targets: this.targets, enemies: this.enemies, boss },
+      this.built.weapons,
+      this.attackMul,
+      ev,
+      killed,
+      observeBossDamage,
+    );
+    this.hitStop = Math.max(this.hitStop, result.hitStop);
+    const end = result.path.at(-1);
+    if (!end) return;
+    if (!result.blocked) {
+      for (const barrier of this.barriers)
+        if (barrier.tryBreakByBeam(shot.weapon, end, widthPx)) ev.barrierBroken = true;
+    }
+    const boxes = result.path.map((leg) => laserBox(leg, widthPx));
+    this.optics?.receiveBeam(boxes, ev);
+    this.playerBeams.push({ boxes, remainingSec: activeSec });
   }
 
   /** Sát thương môi trường nhân hệ số độ khó, làm tròn, tối thiểu 1 (như đòn kẻ địch). */
   private damageTaken(base: number): number {
     if (base <= 0) return 0;
     return Math.max(1, Math.round(base * this.setup.difficulty.damageTaken));
+  }
+
+  /** Laser môi trường dùng đường tia hiện tại, đi qua địch và bỏ qua khiên C3. */
+  private updateLasers(ev: WorldEvents, previousX: number, previousY: number): boolean {
+    const pl = this.player;
+    if (!this.optics || pl.state === 'dead') return false;
+    const { damage, knockbackTilesPerSec } = this.setup.mechanics.laser;
+    for (const laser of this.optics.lasers) {
+      const segment = laser.collision(pl.box);
+      if (!segment || !laser.canHit) continue;
+      let hurt: boolean;
+      if (laser.spawn.mode === 'always') {
+        const safe = this.laserReturnPoint();
+        hurt = pl.hitHazard(this.damageTaken(damage), safe.x, safe.y);
+      } else {
+        const speed = knockbackTilesPerSec * this.map.tileSize;
+        const vertical = segment.from.x === segment.to.x;
+        // Dùng phía trước khi Kai bước vào tia nếu tâm đang nằm ngay trên đường tia.
+        const offset = vertical
+          ? pl.centerX - segment.from.x
+          : pl.box.y + pl.box.h / 2 - segment.from.y;
+        const previous = vertical ? previousX - segment.from.x : previousY - segment.from.y;
+        const away = (offset || previous) > 0 ? 1 : -1;
+        hurt = pl.applyHazardHit(
+          this.damageTaken(damage),
+          vertical ? away * speed : 0,
+          vertical ? 0 : away * speed,
+        );
+      }
+      if (hurt) {
+        if (laser.spawn.mode === 'pulse') laser.registerHit();
+        ev.laserHit = true;
+        ev.playerHurt = true;
+        ev.hurtBy = 'laser';
+      }
+      if (hurt || laser.spawn.mode === 'always') return true;
+    }
+    return false;
+  }
+
+  private laserReturnPoint(): { x: number; y: number } {
+    const { w, h } = this.player.box;
+    const t = this.map.tileSize;
+    for (const point of [this.safe, this.checkpoint]) {
+      const base = { x: point.x - w / 2, y: point.y - h, w, h };
+      if (!this.inLaser(base)) return point;
+      // Gương có thể vừa hướng tia vào chỗ an toàn trước đó. Dò mặt sàn cùng phía tường.
+      const left = { ...base };
+      const right = { ...base };
+      let leftBlocked = false;
+      let rightBlocked = false;
+      while (!leftBlocked || !rightBlocked) {
+        leftBlocked ||= moveX(left, -t, this.map) !== 0;
+        rightBlocked ||= moveX(right, t, this.map) !== 0;
+        for (const box of [leftBlocked ? undefined : left, rightBlocked ? undefined : right]) {
+          if (!box || !groundBelow(box, this.map)) continue;
+          if (!this.map.overlapsHazard(box) && !this.inLaser(box))
+            return { x: box.x + w / 2, y: point.y };
+        }
+      }
+    }
+    return this.checkpoint;
+  }
+
+  private inLaser(box: Box): boolean {
+    return this.optics?.lasers.some((laser) => !!laser.collision(box)) ?? false;
   }
 
   /** Gai: mất máu, về chỗ đứng an toàn. Ghi lại chỗ an toàn khi đứng vững trên nền thật. */
@@ -469,10 +812,21 @@ export class StageWorld {
     if (!this.setup.spikeGuard && this.map.overlapsHazard(inset)) {
       ev.spikeHit = true;
       const dmg = this.damageTaken(this.setup.mechanics.spikes.damage);
-      if (pl.hitHazard(dmg, this.safe.x, this.safe.y)) ev.playerHurt = true;
+      if (pl.hitHazard(dmg, this.safe.x, this.safe.y)) {
+        ev.playerHurt = true;
+        ev.hurtBy = 'spike';
+      }
       return;
     }
-    if (!pl.grounded || pl.onPlatform || pl.state === 'hurt' || this.map.overlapsHazard(b)) return;
+    if (
+      !pl.grounded ||
+      pl.onPlatform ||
+      this.onCrumblingIce() ||
+      pl.state === 'hurt' ||
+      this.map.overlapsHazard(b) ||
+      this.inLaser(b)
+    )
+      return;
     const t = this.map.tileSize;
     const row = Math.floor((pl.bottom + 0.5) / t);
     const firm = (x: number): boolean => {
@@ -491,8 +845,10 @@ export class StageWorld {
       const p = pl.box;
       if (p.x < b.x + b.w && p.x + p.w > b.x && p.y < b.y + b.h && p.y + p.h > b.y) {
         s.taken = true;
-        this.collected.push(s.spawn.item);
-        ev.secretFound = s.spawn.item;
+        const item = s.spawn.item;
+        if (item === NANO_CELL && !this.collected.includes(item)) this.nanoCells.pickUp();
+        this.collected.push(item);
+        ev.secretsFound.push(item);
       }
     }
   }
@@ -509,12 +865,19 @@ export class StageWorld {
   /** Đi qua checkpoint (theo cột) thì lưu làm điểm hồi sinh; chỉ tiến, không lùi. */
   private updateCheckpoints(ev: WorldEvents): void {
     const pl = this.player;
-    if (this.phase !== 'explore' || pl.state === 'dead') return;
+    if (
+      this.phase !== 'explore' ||
+      pl.state === 'dead' ||
+      !pl.grounded ||
+      pl.onPlatform ||
+      this.onCrumblingIce()
+    )
+      return;
     const cps = this.layout.checkpoints;
     const t = this.setup.tileSize;
     for (let i = this.checkpointIndex; i < cps.length; i += 1) {
       const cp = cps[i]!;
-      if (pl.centerX < (cp.col + 0.5) * t || !pl.grounded) break;
+      if (pl.centerX < (cp.col + 0.5) * t) break;
       // Checkpoint không có ở độ khó này: đi qua không ghi.
       if (!checkpointActive(cp, this.setup.difficulty.id)) continue;
       this.checkpointIndex = i + 1;
@@ -541,8 +904,9 @@ export class StageWorld {
     const out = this.targets
       .filter((t) => t.alive)
       .map((t) => ({ x: t.box.x + t.box.w / 2, y: t.box.y + t.box.h / 2 }));
-    if (this.boss && this.phase === 'boss')
-      out.push({ x: this.boss.centerX, y: this.boss.box.y + this.boss.box.h / 2 });
+    const boss = this.combatBoss;
+    if (boss && boss.state !== 'dead')
+      out.push({ x: boss.centerX, y: boss.box.y + boss.box.h / 2 });
     return out;
   }
 
@@ -618,7 +982,12 @@ export class StageWorld {
 
   private respawn(ev: WorldEvents): void {
     const pl = this.player;
+    this.nanoCells.resetLock();
     this.safe = this.checkpoint;
+    this.optics?.reset();
+    for (const c of this.crumbles) c.reset();
+    for (const c of this.cloudDrifts) c.reset();
+    if (this.crumbles.length) this.syncPlatforms();
     if (this.pitReturn) {
       // Rơi hố còn máu: về checkpoint, giữ máu và mọi thứ khác.
       this.pitReturn = false;
@@ -631,7 +1000,9 @@ export class StageWorld {
     this.pool.clear();
     this.loadout.refill();
     this.runtime.resetOnDeath();
-    this.field?.reset();
+    // Phòng khóa đã xong giữ trạng thái mở, nên kẻ địch của nó (kể cả mini-boss) không dựng lại.
+    const cleared = this.rooms.filter((r) => r.state === 'cleared').flatMap((r) => r.members);
+    this.field?.reset(new Set(cleared));
     for (const r of this.rooms) r.reset();
     if (this.phase === 'boss') {
       // Chết trong phòng boss: hồi sinh trong phòng, boss đầy máu, trận bắt đầu lại.

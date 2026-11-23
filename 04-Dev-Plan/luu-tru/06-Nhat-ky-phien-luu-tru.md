@@ -4,6 +4,212 @@ Các mục cũ chuyển từ `04-Dev-Plan/06-Nhat-ky-phien.md`, mới nhất ở
 
 ---
 
+<<<<<<< HEAD
+=======
+## 2026-11-22: ST-15-15 báo đòn mini-boss và tầm hoạt động
+
+- **Nhánh:** `ccr-9de01342-2046rb`, từ `93096ce`. G1 tiếp tục trên `main`.
+- **QB-21:** kiểm ngưỡng 0,5 s của từng loại đòn mini-boss lúc nạp. Kiểm Bramble Golem và Frost Titan qua giậm, ném, lao, cả giậm nối Thử thách.
+- **QB-23:** tầm tâm 12 ô ngang và 7 ô dọc. Cả hộp địch phải nằm trong khung camera đã vẽ, thu 1 ô mỗi cạnh, khi báo và tung đòn. Địch còn trong tầm vẫn tuần tra ngoài khung.
+- **Quyết định:** ra khỏi vùng thì hủy đòn hoặc loạt chưa ra. Vào lại báo đủ trước khi tung đòn. Đạn và cú lao đã khởi phát đi tiếp theo cơ chế hiện có.
+- **Kiểm tra:** 707 test, build (typecheck), lint, format, docs-check và gate-flow đạt. Chromium PC/Pixel 7 giả lập xác nhận khóa báo ở mép, hủy giữa báo và Frost Titan đủ ngưỡng. [Ảnh](qa/ST-15-15/README.md).
+- **Tiếp theo:** ST-15-16 (Nano Cell và vật phẩm năng lượng) làm được trước G1.
+
+## 2026-11-22: ST-15-08a bục băng vỡ và bệ mây
+
+- **Nhánh:** `ccr-9de01342-2046rb`, từ `d858814`. G1 tiếp tục trên `main`.
+- **Đã làm:** Kai đặt chân thì nứt theo ba mốc 0 / 0,4 / 0,7 s. Băng vỡ sau 1 s, mây chìm sau 0,8 s ở 3 ô/s. Rời bục không đặt lại đồng hồ. Tính 4 s từ lúc vỡ hoặc bắt đầu chìm và đợi chỗ cũ trống.
+- **Bệ trôi:** hai điểm Tiled, 1,5 ô/s, chở Kai theo cả hai trục và dùng Xuống + Nhảy. Bệ chìm chở Kai đến nền hoặc hết bản đồ. Hồi sinh ở checkpoint dựng lại bục và đưa bệ trôi về đầu.
+- **Luật biên:** QB-40 loại bục vỡ và bệ di động khỏi kích hoạt checkpoint. Địch đất rơi khi băng dưới chân vỡ. Rơi khỏi bản đồ trả EXP một lần theo QB-20, mất Core Bit.
+- **File chính:** `CrumblePlatform`, `CloudDrift`, `StageWorld`, `EnemyField`, bộ nạp Tiled và 14 bài trong `game/tests/platforms.test.ts`.
+- **Kiểm tra:** 683 test, build (typecheck), lint, format, docs-check và gate-flow đạt. Phòng **Bục băng và mây** chơi qua bằng bàn phím và Pixel 7 giả lập, 0 lỗi console. [Ảnh](qa/ST-15-08a/README.md).
+- **Tiếp theo:** ST-15-15/16 làm được trước G1. Sàn trơn và gió thuộc ST-15-08b, Nứt Bục của Cryo ở ST-15-11, bố trí bệ chiến dịch ở EP-17.
+
+## 2026-11-22: ST-15-06 bốn kẻ địch Viện Quang và Kho Lạnh
+
+- **Nhánh:** `ccr-9de01342-2046rb`, từ `35fca2b`. G1 tiếp tục trên `main`.
+- **Đã làm:** Gương Quang dội trần khi bị che và vẽ hướng ngắm. Song Tia thêm viên thẳng nếu có đường dội. Người Tuyết Máy dùng 0 khiên, dừng ở mép và thêm hai cú Trượt Dội ở Thử thách.
+- **Địch Kho Lạnh:** Tháp Băng dùng góc ném 50°, có hai điểm rơi và nhắm lại ở loạt hai. Frost Titan giậm, ném ba tảng, húc và miễn vô hiệu. Tảng Vỡ sinh hai sóng khi đáp sàn hoặc bục một chiều. Hạ Titan mở phòng khóa và trả 185 EXP/50 Core Bit theo dữ liệu gốc.
+- **Quyết định:** dùng đường va chạm quét cho vạch dội và bóng đổ. Sửa vị trí phóng bom trong hành vi `golem` để bom không chạm sàn ngay lúc bắn. Mở hai chế độ phòng thử ở menu thường.
+- **Kiểm tra:** 669 test, build (typecheck), lint, format, docs-check và gate-flow đạt. Chromium PC Thường và Pixel 7 giả lập Thử thách, 0 lỗi console. [Ảnh](qa/ST-15-06/README.md).
+- **Tiếp theo:** ST-15-08a hoặc ST-15-15/16. Đặt địch trong bản đồ chiến dịch ở EP-17. QB-21 và QB-23 thống nhất ở ST-15-15.
+
+## 2026-11-21: ST-15-05 Gale Cutter và sương lạnh Két Tay Mk I
+
+- **Nhánh:** `ccr-9de01342-2046rb`, từ `2ed9412`. G1 tiếp tục trên `main`.
+- **Đã làm:** Gale Cutter bay ngang tối đa 6 ô, quay đầu ở vật chắn hoặc hết tầm. Chiều về hướng tới Kai và xuyên địa hình. Mỗi mục tiêu trúng tối đa một lần mỗi chiều. Mỗi lượt ném tốn 4 năng lượng, đổi vũ khí vẫn giữ lưỡi.
+- **Q4:** hủy tối đa hai viên `enemyShot` hoặc `bomb` có nguồn địch thường, tính cả hai chiều và xử lý trước sát thương lên Kai. Khiên còn chặn sát thương. Lưỡi tan khi chạm boss bất tử đổi pha (QB-31).
+- **Sương lạnh:** dùng `Barrier`, giữ lối mở qua hồi sinh. Phòng thử mượn Gale Cutter, có tháp pháo và Két Tay Mk I. Dùng phím V để mở phòng, tránh phát bắn ngoài ý muốn từ phím J.
+- **File chính:** `WeaponLoadout`, `ProjectilePool`, va chạm vũ khí, bản đồ Tiled `gale-test.json` và 11 bài trong `game/tests/gale-cutter.test.ts`.
+- **Kiểm tra:** 653 test, build (typecheck), lint, format, docs-check và gate-flow đạt. Bàn phím và Pixel 7 giả lập hủy đạn, phá sương, nhặt Két, 0 lỗi console. [Ảnh](qa/ST-15-05/README.md).
+- **Tiếp theo:** ST-15-06 hoặc ST-15-15/16 trước G1. Aeris chính thức cấp vũ khí ở ST-15-12, đặt Két ở kho hạt giống trong ST-17-03.
+
+## 2026-11-21: ST-15-01c dữ liệu Gale Cutter và cơ chế Stage 4
+
+- **Nhánh:** `ccr-9de01342-2046rb`, từ `654c31a`. Bản thử G1 tiếp tục trên `main`.
+- **Đã làm:** Gale Cutter có dữ liệu `boomerang`, tốn 4/28 năng lượng, trúng cả đi và về với ngân sách 14 sát thương/thanh. Mỗi lần ném hủy tối đa 2 viên thuộc `cancelKinds`. Loadout cấp vũ khí từ ST-15-05.
+- **Dữ liệu cơ chế:** `wind` gồm ngoại lệ QB-07 và kiểm thời lượng báo trước, `cloud` bắt buộc một chiều, `crumble.sink` dùng hai mốc nứt của băng vỡ.
+- **File chính:** `03-Data/{weapons,stages}.json`, bộ kiểm cấu hình, `WeaponLoadout` và `game/tests/stage-data.test.ts`.
+- **Quyết định:** dữ liệu Chim Cắt Gió và Cối Xoáy đi cùng ST-15-07, Gale Roc cùng ST-15-09, Aeris cùng ST-15-12. Đo khắc chế Terra khi có hành vi ở Alpha.
+- **Kiểm tra:** 642 test, build (typecheck), lint, format, docs-check và gate-flow (PC, Pixel 7 giả lập, gộp nhật ký) đạt.
+- **Tiếp theo:** ST-15-05 ném và đón Gale Cutter, hủy đạn theo Q4 và mở sương lạnh ở Két Tay Mk I. Bệ mây ở ST-15-08a, gió ở ST-15-08b sau G1.
+
+## 2026-11-21: ST-15-04 Frost Shard, vô hiệu QB-19 và dòng làm mát
+
+- **Nhánh:** `ccr-9de01342-2046rb`, từ `850e7b2`. Bản thử G1 trên `main`.
+- **Đã làm:** cấp Frost Shard, đạn theo dữ liệu. `Enemy.disable` lấy thời gian còn lại hoặc thời gian mới lớn hơn (QB-19); vô hiệu dừng nhịp AI và sát thương chạm thân. Khiên Lính Kén vẫn chặn mặt trước. Boss và mini-boss miễn vô hiệu.
+- **Dòng làm mát:** class Tiled `coolant` chuyển thành ba bậc một chiều. Dòng lỏng vô hại, giữ viên Frost Shard lúc đông. Bậc tồn tại qua hồi sinh, đặt lại khi chơi lại.
+- **Phòng thử:** phím I hoặc chọn từ menu, mượn Frost Shard, tiến trình ở trong lượt. PC leo tới gờ thật. Ảnh PC và Pixel 7 giả lập ở `qa/ST-15-04/`.
+- **File chính:** `WeaponLoadout`, `Enemy`, `hits.ts`, `CoolantFlow`, map và renderer; 16 bài trong `game/tests/frost-shard.test.ts`.
+- **Kiểm tra:** 620 test, build (typecheck), lint, format, docs-check, gate-flow. Luồng phòng băng trên Chromium PC và Pixel 7 giả lập, 0 lỗi console.
+- **Tiếp theo:** Phase Step gọi API vô hiệu ở ST-08-09. Cryo cấp vũ khí ở ST-15-11, đặt Két Thân Mk I ở ST-17-02.
+
+## 2026-11-21: ST-15-01b dữ liệu Frost Shard và cơ chế băng
+
+- **Nhánh:** `ccr-9de01342-2046rb`, từ `49394f1`. G1 tiếp tục trên `main`.
+- **Đã làm:** Frost Shard có cấu hình `shard` (10 ô/s, tầm 10 ô, đạn 8 × 6 px, ×2 sát thương, hồi 0,4 s, đóng băng 2 s, tốn 4/28). Bộ kiểm cân bằng xác nhận 14 sát thương/thanh, 12,5/s khi khắc chế Aeris.
+- **Dữ liệu cơ chế:** nạp `ice`, `crumble` (hai mốc nứt tăng dần và trước khi vỡ) và `coolant.frozenSteps` (3 bậc, số nguyên dương). Bộ kiểm báo đường dẫn trường sai.
+- **File chính:** `03-Data/{weapons,stages}.json`, bộ kiểm cấu hình, `WeaponLoadout` và `game/tests/stage-data.test.ts`.
+- **Quyết định:** cấp Frost Shard từ ST-15-04. Dữ liệu Người Tuyết Máy, Tháp Băng, Frost Titan đi cùng ST-15-06; dữ liệu Cryo đi cùng ST-15-11, sau khi phần thưởng Frost Shard hoạt động.
+- **Kiểm tra:** 604 test, lint, format, build (typecheck), docs-check và gate-flow (PC, Pixel 7 giả lập, gộp nhật ký) đạt.
+- **Tiếp theo:** ST-15-04 triển khai đạn Frost Shard, trạng thái vô hiệu QB-19 và dòng làm mát.
+
+## 2026-11-21: ST-15-03 Prism Beam
+
+- **Nhánh:** `ccr-9de01342-2046rb`, từ `995085b`. Bản chơi thử G1 ở `main`.
+- **Đã làm:** Prism Beam dùng lại `LaserPath`; cắt tia theo khiên ở QB-16/18, xuyên mục tiêu đúng một lần, đốt rễ khô và dội vào cảm biến. Đo lường ghi sát thương boss thật và giữ luật QB-14/31.
+- **File chính:** `WeaponLoadout`, `beam-hits.ts`, `StageWorld`, `StageOptics`, `Barrier`, renderer và `tests/prism-beam.test.ts`.
+- **Quyết định:** một xung Prism Beam đủ mở cảm biến; nguồn môi trường vẫn dùng `sensor.holdSec`. Phòng thử laser cho mượn vũ khí trong lượt.
+- **Kiểm tra:** 578 test; typecheck, lint, format, build, docs-check và gate-flow đạt. Chromium trên PC và Pixel 7 giả lập: mở cửa, tốn 3 năng lượng, 0 lỗi console; đốt rễ phòng M7 trên PC. Ảnh ở `qa/ST-15-03/`.
+- **Còn dở:** nhận Prism Beam từ Lumen ở ST-15-10. Việc tiếp theo có thể là ST-15-01b, rồi ST-15-04 (Frost Shard, vô hiệu, dòng làm mát), hoặc ST-15-15/16.
+
+## 2026-11-21: ST-15-02 laser, gương và cảm biến Stage 2
+
+- **Nhánh:** `ccr-9de01342-2046rb`, từ `83f6d6b`. Giữ bản thử G1 trên `main`.
+- **Đã làm:** đường tia phản xạ dùng chung, nguồn liên tục và theo nhịp, Arc Cannon nạp vừa/đầy xoay gương, cảm biến mở cửa trong lượt, hồi sinh đặt lại gương. Phòng thử mở từ menu bằng nút Phòng thử laser hoặc phím O.
+- **File chính:** logic đường tia, `StageOptics`, `StageWorld`, Tiled, renderer và phòng thử. Cập nhật lược đồ nguồn sát thương `laser` và tài liệu EP-15.
+- **Quyết định:** nguồn lệch pha bắt đầu ở lần báo trước đầy đủ kế tiếp. Bố trí bục bắn, gương và tia phản xạ ở phòng thử để có lối đi bên dưới sau khi mở cửa.
+- **Kiểm tra:** 566 test, typecheck, lint, format, build, docs-check và gate-flow. Chạy thử PC và Pixel 7 giả lập, 0 lỗi console. Ảnh trong `qa/ST-15-02/`.
+- **Tiếp theo:** ST-15-03 (Prism Beam). Bố cục và kiểm đường chính của Stage 2 ở ST-17-02 sau G1.
+
+## 2026-11-15: EP-15 ST-15-01a dữ liệu Stage 2 dùng chung và khung kiểm tra
+
+- **Nhánh / commit:** `ccr-9de01342-2046rb` (không merge vào `main` trong đợt thử G1); commit ST-15-01a.
+- **Mục tiêu:** người dùng bảo làm tiếp: ST-15-01a (GDD 16 mục 2.1–2.3, 3.3, 3.7).
+- **Đã làm:** `stages.json` `expBudget` 332/660/1.101/1.602, `enemyRewardMul` (nối vào thưởng kẻ địch, mini-boss không nhân, một lần làm tròn), `mechanics.minTelegraphSec/laser/mirror/sensor`; Prism Beam (`beam`, chưa cấp được); `weapons.json → balance`; `bosses.json → rules.maxAttackDamage`. Kiểm lúc nạp: ngân sách năng lượng, sức mạnh khắc chế, trần đòn boss theo màn, laser không chết một đòn, EXP cộng dồn theo cấp khuyến nghị. `logic/stage/stage-exp.ts` (Σ EXP ± 5%).
+- **File chính:** `03-Data/{stages,weapons,bosses}.json`, `game/src/core/{game-config,stage-mechanics-config,weapons-config,boss-config}.ts`, `game/src/logic/stage/stage-exp.ts`, `game/src/logic/world/{enemy-field,stage-world}.ts`, `game/src/logic/combat/loadout.ts`, `game/tests/stage-data.test.ts` (14 test), GDD 16 mục 10, `stories/EP-15-stage-2-4.md`.
+- **Quyết định:** dữ liệu Gương Quang, Tháp Laser, Prism Sentinel, Lumen dời sang Story làm hành vi (06, 07, 09, 10) vì bộ kiểm từ chối hành vi chưa có; ST-15-10 thêm phụ thuộc 03 (Prism Beam phải cấp được trước khi thắng Lumen).
+- **Duyệt:** Technical Director + Producer "kèm sửa", 8 điểm đã áp (mini-boss không nhân, hệ số theo `def.campaign`, bắt buộc với màn có đặc tả, ≥ 1, báo trước từ dữ liệu…).
+- **Lỗi tìm thấy / đã sửa:** bản nháp nhân cả mini-boss (Frost Titan sẽ cho 555 EXP thay vì 185).
+- **Kiểm tra:** 541 test, typecheck, lint, format, build, docs-check đạt; `gate-flow` đạt.
+- **Còn dở:** không.
+- **Tiếp theo:** em: ST-15-02 (LaserPath, LaserEmitter, Mirror, LightSensor). Người dùng (khi rảnh): chơi thử G1 trên `gate-r1`, ADR-002, Vercel.
+
+## 2026-11-15: EP-15 ST-15-14 boss an toàn (QB-14 chống khóa choáng, QB-31 kẹp pha)
+
+- **Nhánh / commit:** `ccr-9de01342-2046rb` (không merge vào `main` trong đợt thử G1); `a4cc397` (bản đầu) + commit chốt sau duyệt.
+- **Mục tiêu:** mục 4 của `00-Bat-dau.md`; người dùng bảo cứ làm tiếp, việc của người dùng (G1, ADR-002, Vercel) để sau.
+- **Đã làm:** `bosses.json → rules {weakStunCooldownSec 1.5, phaseShiftSec 0.6}`. Boss: choáng điểm yếu chỉ bắt đầu khi không đang choáng và hết hồi choáng; một đòn rơi cách pha đang chơi ≥ 2 (chết tính là một pha) thì kẹp ở ngưỡng, bất tử đứng yên 0,6 s (vẽ trắng), bỏ đòn dở; StageWorld xóa đạn boss cùng bước; đạn Kai lúc bất tử phát `bossImmune`. Đo lường `dmg` = máu thật bị trừ.
+- **File chính:** `game/src/logic/boss/boss.ts`, `game/src/logic/world/{hits,stage-world,world-types}.ts`, `game/src/core/boss-config.ts`, `03-Data/bosses.json`, `game/tests/boss-safety.test.ts` (16 test), `stories/EP-15-stage-2-4.md` (mới), GDD 13, 16, 17, `05-Cong-Prototype.md`, `qa/ST-15-14/`.
+- **Duyệt:** Technical Director "kèm sửa", 8 điểm đã áp: không kéo dài choáng sau Hoa Nở; chết là một pha (pha áp chót cũng kẹp); ghi luật hai đòn cùng bước; `bossImmune` thay `blocked` (S06 đếm `blocked` là thất bại); đo lường; ghi khác biệt với `gate-r1`; thêm test biên.
+- **Lỗi tìm thấy / đã sửa:** trước đây trúng điểm yếu lúc choáng làm mới choáng, nên Vine Lash (hồi 0,35 s) khóa choáng boss xám mãi; trúng điểm yếu lúc choáng sau Hoa Nở kéo dài khoảng hở 0,5 s.
+- **Kiểm tra:** 527 test, typecheck, lint, format, build, docs-check đạt; chạy thử Chromium (kẹp 60%, pha 2, trắng 0,6 s, 0 lỗi console); `gate-flow` đạt.
+- **Còn dở:** hit-stop, rung ở mọi phát điểm yếu lúc hồi choáng (quyết ở mô phỏng ST-15-10…12).
+- **Tiếp theo:** em: ST-15-01a (dữ liệu Stage 2, khung kiểm tra chung), rồi ST-15-02. Người dùng (khi rảnh): chơi thử G1 trên bản `gate-r1`, chọn ADR-002, trả lời Vercel.
+
+## 2026-11-15: EP-14 ST-14-08 hộp chữ thuần (QB-70…72) và ST-QB-01 test khóa luật biên
+
+- **Nhánh / commit:** `ccr-9de01342-2046rb` (không merge vào `main` trong đợt thử G1); commit ST-14-08 + ST-QB-01.
+- **Mục tiêu:** mục 3 của `00-Bat-dau.md`: sửa QB-72 (tạm dừng vẫn làm gợi ý chết hết giờ), QB-70 (bị che thì mất hẳn), test khóa các luật đã code.
+- **Đã làm:** `logic/hud/text-boxes.ts` (`BOX_ORDER`, `topBox`, `readingSec` NFC, `TimedBox` đồng hồ trận frozen/covered/free); Scene đếm gợi ý mỗi bước trận chạy, ẩn khi tạm dừng rồi hiện lại, hủy khi hạ boss, checkpoint, vào đấu trường, tắt hướng dẫn; đo lường `difficulty_hint` lúc câu thật sự hiện. `ui.json → reading {15, 3, 10}` thay `difficultyHint.charsPerSecRead`. Agent viết `tests/qb-rules.test.ts` (18 test: QB-02, 11, 12, 13, 22, 24, 33, 41, 61, 121, 132); tách `logic/stage/camera-bounds.ts`, nhãn tab Xưởng vào `workshop-model.ts`.
+- **File chính:** `game/src/logic/hud/text-boxes.ts`, `game/src/scenes/stage-scene.ts`, `game/src/core/ui-config.ts`, `game/src/logic/world/{stage-world,enemy-field,stage-mechanics}.ts`, `game/tests/{text-boxes,qb-rules}.test.ts`, `03-Data/ui.json`, GDD 07, 11, 14, 17, `stories/EP-14-giao-dien-mvp.md` (mới), `stories/QB-khoa-luat.md` (mới), `qa/ST-14-08/`, `qa/QB-khoa-luat/`.
+- **Duyệt:** Technical Director duyệt ST-14-08 "kèm sửa", 7 điểm bắt buộc đã áp (ẩn khi tạm dừng; hội thoại không tính là chờ; hủy khi vào đấu trường, khi tắt hướng dẫn; đếm từng bước; GDD 14 tự tiến thoại dùng `reading`, không dùng `maxWaitSec`; GDD 11).
+- **Lỗi tìm thấy / đã sửa:** QB-24: hạ Golem xong mà Kai chết thì Golem dựng lại đầy máu trong phòng đã mở; sửa: kẻ địch của phòng khóa đã xong không dựng lại (luật mở rộng ghi ở QB-24). Chữ tab Module "khi có" → "khi nhận module đầu tiên" (QB-87).
+- **Kiểm tra:** 511 test (thêm 29), typecheck, lint, format, build, docs-check đạt; chạy thử Chromium ST-14-08 đạt (tạm dừng 9 s, thời gian còn lại đứng yên, 0 lỗi console); `npm run gate-flow` đạt (máy tính, Pixel 7).
+- **Còn dở:** Báo ngắn, câu NOVA nhiệm vụ (ST-14-09); bước hướng dẫn chỉ có lời vẫn đếm giờ khi bị gợi ý chết che; QB-33 đấu lại có thể bắt đầu lúc màn Kết quả mở (hiếm); QB-13 riêng từng vũ khí chờ vũ khí boss thứ hai.
+- **Tiếp theo:** người dùng: chơi thử G1, chọn ADR-002. Em: EP-15 ST-15-14 (QB-14, QB-31), rồi ST-15-01a, ST-15-02 (mục 4 của `00-Bat-dau.md`).
+
+## 2026-11-14: EP-13 ST-13-05b chỉ số phụ của báo cáo cổng MVP
+
+- **Nhánh / commit:** `ccr-9de01342-2046rb` (không merge vào `main` trong đợt thử G1); commit ST-13-05b.
+- **Mục tiêu:** làm tiếp kế hoạch: mục 7 của báo cáo (GDD 13 mục 6.4), đóng ST-13-05.
+- **Đã làm:** `logic/telemetry/report-extra.ts`: K1–K6 (kinh tế), DK1–DK4 (độ khó, kèm cờ chỉnh), T1–T4 (hướng dẫn), X1–X5 (kỹ thuật, p75 nội suy), F1 theo thiết bị, S1 (tự bắn, hỗ trợ ngắm, giảm tốc, mù màu, cỡ chữ). `core/mvp-report.ts` tính số liệu game từ dữ liệu (giá rẻ nhất lúc Quầy mở 200, tổng giá Upgrade 14.593, thu theo màn, `rewardMul`); mục tiêu ở `telemetry.json → report.targets`. Bộ mẫu thêm sự kiện Quầy, độ khó, hướng dẫn, lỗi, cài đặt.
+- **File chính:** `game/src/logic/telemetry/report-extra.ts`, `report.ts`, `game/src/core/mvp-report.ts`, `game/tests/mvp-{sample,report}.ts`, `03-Data/telemetry.json`, `01-GDD/13-Do-luong-MVP.md` (cách tính mục 6.4), `stories/EP-13-do-luong.md`, `qa/ST-13-05/`.
+- **Quyết định:** chỉ số phụ không chặn cổng (Đúng mục tiêu, Lệch, Theo dõi, Thiếu dữ liệu); số liệu kinh tế tính từ dữ liệu game, không chép vào `telemetry.json`; tùy chọn dạng danh sách ghi `settings_change.value` bằng chỉ số (0 = mặc định) vì `value` chỉ nhận số hoặc boolean.
+- **Lỗi tìm thấy / đã sửa:** đáp án DK2 em đếm tay sai (52 lượt Thường, đúng là 51 vì P06 chơi Stage 3 ở Cốt truyện); báo cáo đúng.
+- **Kiểm tra:** 482 test (thêm 6), typecheck, lint, format, build, docs-check đạt; chạy `npm run mvp-report` thật, báo cáo mẫu cập nhật ở `qa/ST-13-05/`.
+- **Còn dở:** X3 chờ `msToControl` (ST-13-03); id đổi cỡ nút, tay thuận chờ EP-14.
+- **Tiếp theo:** người dùng: chơi thử G1, chọn ADR-002. Em: test khóa luật QB đã code nhưng chưa test, sửa QB-72, QB-70 (mục 3 của `00-Bat-dau.md`).
+
+## 2026-11-14: EP-13 ST-13-05a báo cáo cổng MVP (MV1–MV7, H1–H4)
+
+- **Nhánh / commit:** `ccr-9de01342-2046rb` (không merge vào `main` trong đợt thử G1); commit ST-13-05a.
+- **Mục tiêu:** làm tiếp kế hoạch: bộ báo cáo cổng MVP (`npm run mvp-report`), có bộ dữ liệu mẫu có đáp án.
+- **Đã làm:** `logic/telemetry/report-data.ts` (đọc gói xuất, bảng tải, mảng lô; kiểm, khử trùng QB-152; lọc đợt, build, cửa sổ đo; loại staff, phiên ngắn, ghi rác; dựng lượt qua phiên QB-154), `report.ts` (MV1–MV7 kèm Wilson, H1–H4 ba trạng thái, phễu, theo màn, thiết bị, F1, việc đề xuất theo 7.4, Markdown), `core/mvp-report.ts`, `scripts/mvp-report.mjs` (Vite `runnerImport`). `boss_start`/`boss_end` ghi `weaknessOwned` (MV6 trước đây luôn n = 0); danh mục boss gồm Lumen, Cryo, Aeris; `stages.json` thêm `expectedMin`, `bossFightSec`; khối `report` trong `telemetry.json`.
+- **Duyệt:** QA Lead duyệt GDD 13 mục 6–7 kèm sửa: áp hết 10 sửa bắt buộc vào GDD 13 bản 1.2 (xong màn theo `boss_end{win}` đúng boss; sắp phiên theo `t`; đoạn theo `segments`; MV6 không suy từ `dmg`; ngày 0 bắt buộc; Chưa kết luận khi còn Biên/Thiếu dữ liệu).
+- **File chính:** `game/src/logic/telemetry/report*.ts`, `game/src/core/mvp-report.ts`, `game/scripts/mvp-report.mjs`, `game/tests/mvp-{sample,report}.ts`, `03-Data/{stages,telemetry}.json`, `01-GDD/13-Do-luong-MVP.md`, `stories/EP-13-do-luong.md`, `qa/ST-13-05/`.
+- **Quyết định:** khối `report` game không đọc (lỗi không tắt đo lường); thời gian dự kiến, thời gian thắng boss ở `stages.json` (không thêm boss rỗng vào `bosses.json`); giờ chơi tối thiểu khi tính ghi rác 15 phút (1 giờ làm người chơi nhiều bị loại nhầm).
+- **Lỗi tìm thấy / đã sửa:** bản nháp tính "xong màn" theo `stage_end`, sắp phiên theo `sid`, loại install theo tổng phiên (QA Lead chỉ ra, đã sửa trước commit).
+- **Kiểm tra:** 476 test (thêm 20), typecheck, lint, format, build, docs-check đạt; chạy `npm run mvp-report` thật trên bộ mẫu, báo cáo ở `qa/ST-13-05/`.
+- **Còn dở:** ST-13-05b (K, DK, T, X, S). Prologue chưa ghi `stage_end{clear}` (chưa có Prologue); bản đồ thật phải dùng id đoạn `A`–`D`, `boss`.
+- **Tiếp theo:** người dùng: chơi thử G1, chọn ADR-002. Em: ST-13-05b, rồi test khóa luật QB (mục 3 của `00-Bat-dau.md`).
+
+## 2026-11-14: Hướng đồ họa 2.5D three.js: demo phòng Thorna (EP-22 ST-22-01)
+
+- **Nhánh / commit:** `ccr-9de01342-2046rb` (không merge vào `main` trong đợt thử G1); commit demo 2.5D.
+- **Mục tiêu:** người dùng chọn hướng đồ họa (c) 2.5D thời gian thực bằng three.js và xin demo.
+- **Đã làm:** trang riêng `game/demo-25d.html` + `src/demo25d/`: dựng phòng boss Thorna từ `StageWorld` thật (logic, dữ liệu không đổi); khối ô có chiều sâu, rừng nhiều lớp, sương, bóng, bloom; Kai, Thorna dựng từ khối 3D có hoạt ảnh; đạn phát sáng, vùng cảnh báo đòn 3D, hạt; camera phối cảnh bám Kai, khóa đấu trường; nút chạm; `?q=low`; tự chơi và quay từng khung (`scripts/demo25d-video.mjs`). three.js 0.170; chunk demo 140 KB gzip, game Phaser không nạp.
+- **Tài liệu:** ADR-003 (Proposed: hướng đã chọn, cách chuyển chờ duyệt và đo máy thật), Epic EP-22, `09` mục 3 ghi lựa chọn, GDD chính mục 14 ghi đang đổi, ST-21-05 bỏ, asset pixel art dừng.
+- **Lỗi tìm thấy / đã sửa:** tường nền che rừng; rêu quá rộng làm chói; tự chơi kẹt (leo tường, quay lưng bắn, đứng trên bục bắn qua đầu boss): đã sửa.
+- **Kiểm tra:** 456 test (thêm 3), typecheck, lint, format, build, docs-check đạt; chạy Chromium (CPU, không GPU) PC và Pixel 7: 0 lỗi trang; video 24 s, ảnh ở `qa/DEMO-25D/`. FPS máy thật chưa đo.
+- **Tiếp theo:** người dùng xem video; sau đợt thử G1 đưa demo lên Pages để thử trên điện thoại (ST-22-02); duyệt ADR-003. Em: ST-13-05 báo cáo đo lường.
+
+## 2026-11-14: EP-13 ST-13-02 nối đo lường vào game
+
+- **Nhánh / commit:** `ccr-9de01342-2046rb` (không merge vào `main` trong đợt thử G1); `8ba4609` (02a), commit 02b.
+- **Mục tiêu:** người dùng giao "làm tiếp": ST-13-02 nối sự kiện đo lường vào game; tách 02a (logic thuần) và 02b (scene).
+- **02a:** đạn kẻ địch mang `source`; `WorldEvents.hurtBy`, `deathCause` (`enemy:<id>`, `boss:<loại đạn>`, `spike`, `pit`); `StageWorld.bossDamage` theo vũ khí, `bossWeakHits`; `StageTracker` (một lượt màn: stage_start…stage_end, boss_end win/death/exit), `FrameStats`, `buildSignature`. Test chuỗi sự kiện trên StageWorld thật (GDD 13 mục 10 ý 1).
+- **02b:** `src/scenes/telemetry/` (dịch vụ: session_start, boot_timing, lỗi trang; một lượt màn: FrameStats, hướng dẫn, gợi ý NOVA, trang ẩn, rời màn); `logic/telemetry/device.ts`; Quầy, Xưởng báo giao dịch qua `onTelemetry`; cờ tạm `?debug=1&telemetry=1` (bộ nhớ), `?staff=1`.
+- **Quyết định:** chỉ màn chiến dịch mới ghi; lớp nối nằm trong `src/scenes/` vì luật lint chỉ cho scene import Phaser; mã lỗi lưu, phiên mới sau 30 phút ẩn, `msToControl` chuyển sang ST-13-03.
+- **Kiểm tra:** 453 test (thêm 7), typecheck, lint, format, build, docs-check đạt; chạy thử Chromium Pixel 7: không cờ thì 0 bộ ghi, 0 request; có cờ thì 17 sự kiện đúng chuỗi, 0 sai lược đồ, 0 lỗi console (`qa/ST-13-02/`); `gate-flow` đạt.
+- **Tiếp theo:** ST-13-05 báo cáo (`report.ts`, `npm run mvp-report`). Người dùng: chơi thử G1, chọn hướng đồ họa, chọn kênh gửi (ADR-002).
+
+## 2026-11-14: EP-13 ST-13-01 lõi đo lường (duyệt Technical Director GDD 13)
+
+- **Nhánh / commit:** `ccr-9de01342-2046rb` (sau merge PR #10, #11; không merge vào `main` trong đợt thử G1); commit ST-13-01.
+- **Mục tiêu:** người dùng giao "làm tiếp theo plan": việc code số 2 của `00-Bat-dau.md`, EP-13 lõi đo lường.
+- **Quy trình:** agent Technical Director duyệt GDD 13 trước khi code: "duyệt kèm sửa", 12 điểm (byte = độ dài JSON ASCII; lô bất biến; bộ đệm không bao giờ vượt; khử trùng theo install+sid+n; id theo danh mục; làm phẳng `audio`; enum còn thiếu; làm sạch lỗi; tắt gửi không ghi `consent: off`; `telemetry.json` thêm trường, không bắt buộc; dấu vân tay `data` trừ `telemetry.json`; hiệu năng). Đã sửa hết vào GDD 13 bản 1.1 và code.
+- **Code:** `logic/telemetry/` (schema 26 sự kiện, validate, text, buffer, batch, logger), `logic/hash.ts`, `core/telemetry-config.ts`, `core/telemetry-catalogs.ts`, `03-Data/telemetry.json`. Bản thường chưa gọi lõi.
+- **Tài liệu:** Epic `stories/EP-13-do-luong.md` (Story ST-13-01 theo mẫu), `17-Quy-tac-bien.md` bản 1.4 (mục 10.1, QB-150…157, 101 luật), `game/docs/quyet-dinh/do-luong.md`, CONTEXT, bản đồ hệ thống.
+- **Lỗi tìm thấy / đã sửa:** bản nháp đầu đếm sự kiện bị bỏ đúng luật vào `lost`; sửa (chỉ đếm `lost` khi không còn gì bỏ được).
+- **Kiểm tra:** 446 test (thêm 21), typecheck, lint, format, build, docs-check đạt; `gate-flow` đạt (PC, cảm ứng).
+- **Tiếp theo:** ST-13-02 nối sự kiện (StageWorld: sát thương theo vũ khí, nguồn cú đánh cuối, chữ ký build; mã lỗi SaveManager), ST-13-05 báo cáo. Người dùng: chơi thử G1, chọn hướng đồ họa, chọn kênh gửi (ADR-002).
+
+## 2026-11-14: CI đỏ trên PR #10; PR #9 song song; ST-21-01 chuỗi hướng dẫn (QB-88)
+
+- **Nhánh / commit:** `ccr-9de01342-2046rb`; `76b9b62` (CI), `02008fe` (ghi chú PR #9), `b71a155` (EP-21), merge `eeb8ca1`, commit tài liệu sau merge.
+- **Mục tiêu:** trả lời kế hoạch tiếp theo; kiểm tra CI đỏ người dùng báo; xử lý PR #9 theo cách A người dùng chọn (giữ bản thử G1, chuyển PR #9 từng phần).
+- **CI:** lần #40–#42 đỏ ở `docs-check` vì commit tạm của agent có README trỏ tới `LOI-THOI.md` trước khi file được commit; #43 trở đi đạt. Nâng action lên bản Node 24 (checkout, setup-node v6; Pages v6/v5/v5). Mục EP-10 sang lưu trữ.
+- **PR #9:** nhánh phiên 13/11, tách từ `main` song song, xung đột 31 file; có hình vẽ bằng mã, âm tổng hợp, smoke check, chuỗi vi/en. Epic `stories/EP-21-chuyen-PR9.md` (ST-21-01…06). Ảnh hình PR #9 so với hình khối: `qa/ST-21-05/`.
+- **ST-21-01 (QB-88):** thoát giữa trận Thorna rồi vào lại thì câu S10 hiện ngay đầu màn tới khi hạ boss. Sửa: `after` nối theo bước xong trong lượt; bước đã lưu mà điều kiện xảy ra lại (vào lại phòng boss) thì nối chuỗi, không hiện lại lời (giữ gợi ý né đòn, khác bản sửa của PR #9). Không ảnh hưởng G1 (màn xám không có hướng dẫn).
+- **Tìm lại:** yêu cầu 2.5D của người dùng (13/11) chỉ nằm trên nhánh PR #9; đã ghi vào `09-Quyet-dinh-cho-duyet.md` mục 3 (pixel art / 2.5D render sẵn / three.js; đề xuất pixel art cho MVP).
+- **Lỗi tìm thấy:** commit tạm được đẩy khi chưa chạy docs-check (từ nay chạy đủ trước cả commit tạm).
+- **Kiểm tra:** 425 test (thêm 2 QB-88, đỏ trên code cũ), lint, format, build, docs-check đạt; chạy thử Chromium trước/sau sửa (`qa/ST-21-01/`), 0 lỗi console.
+- **Merge:** người dùng nhờ merge; PR #10 merge (merge commit `eeb8ca1`, CI #50 đạt). Pages #5 trên `main`: test, build đạt, dừng ở `configure-pages` vì repo riêng tư chưa bật Pages. Nhánh làm việc đưa lên ngang `main`. Người dùng chuyển repo sang công khai; Pages #6 (chạy tay) vẫn dừng ở `configure-pages`: chưa chọn Source "GitHub Actions" trong Settings → Pages. Người dùng bật Pages; lần #7 đăng thành công `eeb8ca1`. Môi trường chặn `github.io` nên em không tự mở link thật được.
+- **Tag, merge tài liệu:** người dùng đồng ý tag `gate-r1`; đẩy tag từ môi trường bị proxy chặn (403), GitHub MCP không có lệnh tạo tag, người dùng tạo trên GitHub (`gate-r1` → `eeb8ca1`, đã kiểm). Tài liệu sau merge vào `main` bằng PR #11 (`c458643`); Pages #8 đăng lại đạt, code game không đổi.
+- **Tiếp theo:** người dùng mở link `?gate=1` trên điện thoại rồi phát cho 5 người; không merge vào `main` trong đợt thử; chọn hướng đồ họa. Em: EP-13 lõi đo lường; EP-21 ST-21-02 sau tag.
+
+## 2026-11-14: ST-11-01 vùng an toàn cho nút cảm ứng, canvas, bảng HTML (bước đầu của G1)
+
+- **Nhánh / commit:** `ccr-9de01342-2046rb`; commit ST-11-01.
+- **Mục tiêu:** người dùng đồng ý làm bước đầu tiên của `00-Bat-dau.md`: sửa vùng an toàn (QB-92) trước khi phát link chơi thử G1.
+- **Đã làm:** Story `stories/EP-11-cong-prototype-dot-1.md`; `touch-layout.ts` (nút, cần ảo neo theo mép vùng an toàn), `scale.ts` (canvas tránh trái, phải, trên), `input/safe-area.ts` (đọc `env()` qua phần tử dò), `style.css` (bảng HTML trừ vùng an toàn).
+- **Quyết định:** canvas không tránh thanh vuốt dưới (chỉ đè, không che hình; tránh thì iPhone 14 tụt ×6 → ×5); nút tránh cả 4 phía.
+- **Kiểm tra:** 423 test (thêm 8), lint, format, build, docs-check đạt; `gate-flow` đạt; chạy thử iPhone 14 và Pixel 7 giả lập tai thỏ bằng CDP, 0 lỗi console (`qa/ST-11-01/`).
+- **Còn dở:** kiểm trên máy thật có tai thỏ ở buổi chơi thử.
+- **Tiếp theo:** người dùng merge và tag `gate-r1`, chơi thử 5 người; code tiếp (EP-13 lõi đo lường) ở nhánh mới.
+
+>>>>>>> 6eb3e419966f34e2a9b6b9bb046704b88ec1db68
 ## 2026-11-14: Rà soát toàn bộ tài liệu, quy tắc biên, tài liệu hệ thống còn thiếu, kế hoạch S9–S21
 
 - **Nhánh / commit:** `ccr-9de01342-2046rb`; `84ac8b2` (sửa code), `3ec2438` … commit đóng phiên (tài liệu).

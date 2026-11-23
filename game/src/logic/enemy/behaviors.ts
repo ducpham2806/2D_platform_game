@@ -3,11 +3,13 @@ import type {
   DroneData,
   EnemyData,
   GolemData,
+  LobData,
   ShieldChargerData,
   TurretData,
 } from '../../core/enemy-config';
-import type { Projectile } from '../combat/projectiles';
+import type { ProjectileSpec, ShieldContact } from '../combat/projectiles';
 import { spawnShockwaves } from '../boss/enemy-projectile';
+import { droneAim, landingMark, lobVelocities } from './aim';
 import { Enemy, type EnemyContext, type EnemyHitResult } from './enemy';
 
 const DEG = Math.PI / 180;
@@ -32,10 +34,23 @@ export class Drone extends Enemy {
     this.fire(ctx, this.data.attack.projectile, dx / len, dy / len);
   }
 
+  private warnAim(ctx: EnemyContext) {
+    const attack = this.data.attack;
+    const from = { x: this.centerX, y: this.centerY };
+    const shots = droneAim(ctx, from, attack.projectile, attack.dualShot);
+    this.aimLines = shots.flatMap((shot) => shot.lines);
+    this.beats = shots.length;
+    return { from, shots };
+  }
+
   protected override behave(ctx: EnemyContext, dt: number): void {
     const a = this.data.attack;
     const t = this.tileSize;
     this.cooldown = Math.max(0, this.cooldown - dt);
+    if (!this.canAttack(ctx, dt)) {
+      this.patrol(ctx.map, this.data.moveSpeedTilesPerSec, this.data.patrolRangeTiles, dt);
+      return;
+    }
     if (this.burstLeft > 0) {
       // Các viên sau của loạt: nhắm lại, không báo trước riêng (báo trước tính cho cả loạt).
       this.faceToward(ctx.playerX);
@@ -50,8 +65,13 @@ export class Drone extends Enemy {
     if (this.telegraphing) {
       this.faceToward(ctx.playerX);
       this.windup -= dt;
+      const aim = a.bankShot ? this.warnAim(ctx) : undefined;
       if (this.windup <= 1e-9) {
-        this.shoot(ctx);
+        if (aim) {
+          for (const shot of aim.shots)
+            ctx.pool.spawn(this.makeShot(a.projectile, aim.from, shot.vx, shot.vy, 'enemyShot'));
+          this.aimLines = [];
+        } else this.shoot(ctx);
         this.telegraphing = false;
         this.cooldown = a.cooldownSec;
         this.burstLeft = a.burst.count - 1;
@@ -65,6 +85,7 @@ export class Drone extends Enemy {
       this.beats = a.burst.count;
       this.windup = a.telegraphSec;
       this.faceToward(ctx.playerX);
+      if (a.bankShot) this.warnAim(ctx);
       return;
     }
     this.patrol(ctx.map, this.data.moveSpeedTilesPerSec, this.data.patrolRangeTiles, dt);
@@ -75,6 +96,11 @@ export class Drone extends Enemy {
     this.windup = 0;
     this.burstLeft = 0;
     this.burstTimer = 0;
+  }
+
+  protected override cancelAttack(dt: number): void {
+    super.cancelAttack(dt);
+    this.burstLeft = 0;
   }
 }
 
@@ -98,6 +124,10 @@ export class Turret extends Enemy {
   /** Một loạt `count` viên xòe quạt `spreadDeg`, lệch thêm `offsetDeg` (độ, chiều kim đồng hồ khi nhìn phải). */
   private volleyAt(ctx: EnemyContext, offsetDeg: number): void {
     const a = this.data.attack;
+    if (a.lob) {
+      for (const shot of this.lobShots(ctx, a.lob)) ctx.pool.spawn(shot);
+      return;
+    }
     for (let i = 0; i < a.count; i += 1) {
       const deg = a.count === 1 ? 0 : -a.spreadDeg / 2 + (a.spreadDeg * i) / (a.count - 1);
       const angle = (deg + offsetDeg) * DEG;
@@ -105,9 +135,21 @@ export class Turret extends Enemy {
     }
   }
 
+  private lobShots(ctx: EnemyContext, lob: LobData): ProjectileSpec[] {
+    const a = this.data.attack;
+    const from = { x: this.centerX, y: this.box.y - a.projectile.sizePx.h / 2 };
+    const gravity = lob.gravityTilesPerSec2 * this.tileSize;
+    return lobVelocities(ctx, from, a.projectile, lob, a.count).map(({ x, y }) => ({
+      ...this.makeShot(a.projectile, from, x, y, 'enemyShot', gravity),
+      arc: {},
+    }));
+  }
+
   protected override behave(ctx: EnemyContext, dt: number): void {
     const a = this.data.attack;
     this.faceToward(ctx.playerX);
+    this.timer -= dt;
+    if (!this.canAttack(ctx, dt)) return;
     if (this.volley > 0 && this.volley < a.volleys) {
       this.volleyTimer -= dt;
       if (this.volleyTimer <= 1e-9) {
@@ -116,21 +158,36 @@ export class Turret extends Enemy {
         this.volleyTimer = a.volleyGapSec;
       }
     }
-    this.timer -= dt;
-    this.telegraphing = this.timer <= a.telegraphSec + 1e-9;
-    if (this.telegraphing) this.beats = a.volleys;
+    const warning = this.timer <= a.telegraphSec + 1e-9;
+    const followUp = a.lob !== undefined && this.volley > 0 && this.volley < a.volleys;
+    this.telegraphing = warning || followUp;
+    if (this.telegraphing) {
+      this.beats = followUp ? a.volleys - this.volley : a.volleys;
+      if (a.lob)
+        this.landingMarks = this.lobShots(ctx, a.lob)
+          .map((shot) => landingMark(ctx.map, shot, dt))
+          .filter((mark) => mark !== undefined);
+    } else this.landingMarks = [];
     if (this.timer > 1e-9) return;
     this.volleyAt(ctx, 0);
     this.volley = 1;
     this.volleyTimer = a.volleyGapSec;
     this.timer = a.intervalSec;
-    this.telegraphing = false;
+    this.telegraphing = a.lob !== undefined && a.volleys > 1;
+    if (!this.telegraphing) this.landingMarks = [];
   }
 
   protected override resetBehavior(): void {
     this.timer = this.data.attack.intervalSec;
     this.volley = 0;
     this.volleyTimer = 0;
+  }
+
+  protected override cancelAttack(dt: number): void {
+    super.cancelAttack(dt);
+    this.volley = 0;
+    // Bước đầu khi vào khung còn trừ dt trước khi hiện báo.
+    this.timer = Math.max(this.timer, this.data.attack.telegraphSec + dt);
   }
 }
 
@@ -158,6 +215,8 @@ export class Butterfly extends Enemy {
     this.patrol(ctx.map, this.data.moveSpeedTilesPerSec, this.data.patrolRangeTiles, dt);
     this.box.y =
       this.home.y + wave.amplitudeTiles * t * Math.sin((2 * Math.PI * this.time) / wave.periodSec);
+    this.timer -= dt;
+    if (!this.canAttack(ctx, dt)) return;
     if (this.dropsLeft > 0) {
       this.dropTimer -= dt;
       if (this.dropTimer <= 1e-9) {
@@ -166,7 +225,6 @@ export class Butterfly extends Enemy {
         this.dropTimer = attack.dropGapSec;
       }
     }
-    this.timer -= dt;
     this.telegraphing = this.timer <= attack.telegraphSec + 1e-9;
     if (this.telegraphing) this.beats = attack.drops;
     if (this.timer > 1e-9) return;
@@ -182,6 +240,12 @@ export class Butterfly extends Enemy {
     this.timer = this.data.attack.intervalSec;
     this.dropsLeft = 0;
     this.dropTimer = 0;
+  }
+
+  protected override cancelAttack(dt: number): void {
+    super.cancelAttack(dt);
+    this.dropsLeft = 0;
+    this.timer = Math.max(this.timer, this.data.attack.telegraphSec + dt);
   }
 }
 
@@ -212,7 +276,7 @@ export class ShieldCharger extends Enemy {
     return this.shieldLeft > 0;
   }
 
-  protected override shieldCheck(p: Projectile): EnemyHitResult | undefined {
+  protected override shieldCheck(p: ShieldContact): EnemyHitResult | undefined {
     if (!this.shieldUp) return undefined;
     // Đạn bay vào mặt khiên: ngược hướng nhìn; roi đứng yên thì xét phía của nó.
     const fromFront =
@@ -230,6 +294,7 @@ export class ShieldCharger extends Enemy {
     const a = this.data.attack;
     const t = this.tileSize;
     this.cooldown = Math.max(0, this.cooldown - dt);
+    const canAttack = this.canAttack(ctx, dt);
     const dx = ctx.playerX - this.centerX;
     const sameLevel = Math.abs(ctx.playerY - this.centerY) <= 1.5 * t;
     const inRange = Math.abs(dx) <= a.rangeTiles * t && sameLevel;
@@ -241,7 +306,7 @@ export class ShieldCharger extends Enemy {
           this.facing = this.facing === 1 ? -1 : 1;
           this.behindFor = 0;
         }
-        if (inRange && inFront && this.cooldown <= 0) {
+        if (canAttack && inRange && inFront && this.cooldown <= 0) {
           this.chainLeft = a.chainDashes;
           this.enter('telegraph', a.telegraphSec);
           this.beats = 1 + a.chainDashes;
@@ -258,10 +323,10 @@ export class ShieldCharger extends Enemy {
         }
         return;
       case 'dash': {
-        const step = a.dashSpeedTilesPerSec * t * dt;
+        const step = Math.min(a.dashSpeedTilesPerSec * t * dt, a.dashTiles * t - this.dashed);
         const nextX = this.box.x + this.facing * step;
-        if (this.blocked(ctx.map, nextX) || this.dashed >= a.dashTiles * t) {
-          if (this.chainLeft > 0) {
+        if (step <= 1e-9 || this.blocked(ctx.map, nextX)) {
+          if (canAttack && this.chainLeft > 0) {
             // Lao nối: quay về phía người chơi, báo trước ngắn rồi lao tiếp.
             this.chainLeft -= 1;
             this.faceToward(ctx.playerX);
@@ -301,6 +366,12 @@ export class ShieldCharger extends Enemy {
     this.behindFor = 0;
     this.chainLeft = 0;
   }
+
+  protected override cancelAttack(dt: number): void {
+    super.cancelAttack(dt);
+    if (this.state === 'telegraph') this.enter('walk', 0);
+    this.chainLeft = 0;
+  }
 }
 
 type GolemState = 'walk' | 'slamTelegraph' | 'bombTelegraph' | 'dashTelegraph' | 'dash' | 'recover';
@@ -311,6 +382,10 @@ type GolemState = 'walk' | 'slamTelegraph' | 'bombTelegraph' | 'dashTelegraph' |
  * cao rơi quanh mình, báo trước lần nữa rồi lao `dashTiles` ô.
  */
 export class Golem extends Enemy {
+  protected override get disableImmune(): boolean {
+    return true;
+  }
+
   declare readonly data: GolemData;
   state: GolemState = 'walk';
   /** Tiến độ báo trước 0..1 để vẽ. */
@@ -330,6 +405,12 @@ export class Golem extends Enemy {
     return this.state === 'recover';
   }
 
+  override get contactDamage(): number {
+    if (!this.harmless && this.state === 'dash')
+      return this.data.attack.dash.damage ?? super.contactDamage;
+    return super.contactDamage;
+  }
+
   get phase(): 1 | 2 {
     return this.hp / this.maxHp <= this.data.phase2HpPct / 100 ? 2 : 1;
   }
@@ -338,13 +419,14 @@ export class Golem extends Enemy {
     const a = this.data.attack;
     const t = this.tileSize;
     this.cooldown = Math.max(0, this.cooldown - dt);
+    const canAttack = this.canAttack(ctx, dt);
     switch (this.state) {
       case 'walk': {
         this.faceToward(ctx.playerX);
         const next = this.box.x + this.facing * this.data.moveSpeedTilesPerSec * t * dt;
         if (Math.abs(ctx.playerX - this.centerX) > 3 * t && !this.blocked(ctx.map, next))
           this.box.x = next;
-        if (this.cooldown <= 0) {
+        if (this.cooldown <= 0 && this.canAttack(ctx, dt)) {
           this.enter(this.phase === 1 ? 'slamTelegraph' : 'bombTelegraph');
           // Pha 2: bom rồi lao (thêm cú giậm cuối ở Thử thách).
           this.beats = this.phase === 1 ? 1 : a.dash.endSlam ? 3 : 2;
@@ -355,6 +437,10 @@ export class Golem extends Enemy {
       case 'bombTelegraph':
       case 'dashTelegraph':
         this.timer -= dt;
+        if (this.state === 'bombTelegraph')
+          this.landingMarks = this.bombShots()
+            .map((shot) => landingMark(ctx.map, shot, dt))
+            .filter((mark) => mark !== undefined);
         this.telegraphProgress = 1 - Math.max(0, this.timer) / this.telegraphTotal;
         if (this.timer > 1e-9) return;
         if (this.state === 'slamTelegraph') this.doSlam(ctx);
@@ -365,11 +451,14 @@ export class Golem extends Enemy {
         }
         return;
       case 'dash': {
-        const step = a.dash.dashSpeedTilesPerSec * t * dt;
+        const step = Math.min(
+          a.dash.dashSpeedTilesPerSec * t * dt,
+          a.dash.dashTiles * t - this.dashed,
+        );
         const nextX = this.box.x + this.facing * step;
-        if (this.blocked(ctx.map, nextX) || this.dashed >= a.dash.dashTiles * t) {
+        if (step <= 1e-9 || this.blocked(ctx.map, nextX)) {
           // Thử thách: dừng lao là giậm đất tại chỗ (báo trước như cú giậm thường).
-          if (a.dash.endSlam) this.enter('slamTelegraph');
+          if (canAttack && a.dash.endSlam) this.enter('slamTelegraph');
           else this.enter('recover', a.dash.recoverSec);
           return;
         }
@@ -398,22 +487,50 @@ export class Golem extends Enemy {
       this.box.w / 2,
       wave,
       1,
+      `enemy:${this.data.id}`,
     );
     this.enter('recover', s.recoverSec);
   }
 
-  private doBombs(ctx: EnemyContext): void {
+  private bombShots(): ProjectileSpec[] {
     const b = this.data.attack.bombs;
-    for (let i = 0; i < b.count; i += 1) {
+    const t = this.tileSize;
+    const speed = b.projectile.speedTilesPerSec * t;
+    const from = { x: this.centerX, y: this.box.y - b.projectile.sizePx.h / 2 };
+    return Array.from({ length: b.count }, (_, i) => {
       const dirX = (i - (b.count - 1) / 2) * b.spreadFactor;
-      this.fire(
-        ctx,
+      return this.makeShot(
         b.projectile,
-        dirX,
-        -b.lobSpeedTilesPerSec,
+        from,
+        dirX * speed,
+        -b.lobSpeedTilesPerSec * speed,
         'bomb',
-        b.gravityTilesPerSec2 * this.tileSize,
+        b.gravityTilesPerSec2 * t,
       );
+    });
+  }
+
+  private doBombs(ctx: EnemyContext): void {
+    const land = this.data.attack.bombs.landShockwave;
+    for (const shot of this.bombShots()) {
+      ctx.pool.spawn({
+        ...shot,
+        arc: land
+          ? {
+              onLand: (p) =>
+                spawnShockwaves(
+                  ctx.pool,
+                  this.tileSize,
+                  p.x + p.w / 2,
+                  p.y + p.h,
+                  p.w / 2,
+                  this.harmless ? { ...land, damage: 0 } : land,
+                  1,
+                  p.source,
+                ),
+            }
+          : {},
+      });
     }
     this.faceToward(ctx.playerX);
     this.enter('dashTelegraph');
@@ -422,6 +539,7 @@ export class Golem extends Enemy {
   private enter(state: GolemState, seconds?: number): void {
     const a = this.data.attack;
     this.state = state;
+    this.landingMarks = [];
     if (state === 'slamTelegraph') this.telegraphTotal = a.slam.telegraphSec;
     if (state === 'bombTelegraph') this.telegraphTotal = a.bombs.telegraphSec;
     if (state === 'dashTelegraph') this.telegraphTotal = a.dash.telegraphSec;
@@ -437,6 +555,11 @@ export class Golem extends Enemy {
     this.cooldown = this.data.attack.cooldownSec;
     this.dashed = 0;
     this.telegraphProgress = 0;
+  }
+
+  protected override cancelAttack(dt: number): void {
+    if (this.telegraphing) this.enter('walk');
+    super.cancelAttack(dt);
   }
 }
 

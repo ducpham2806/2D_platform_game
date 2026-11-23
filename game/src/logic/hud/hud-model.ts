@@ -19,6 +19,7 @@ export interface HudModel {
   hp: HudBar & { low: boolean };
   /** Năng lượng vũ khí boss đang cầm; Arc Cannon không tốn năng lượng nên không có. */
   energy: HudBar | undefined;
+  nanoCells: { capacity: number; remaining: number };
   weapon: { name: string; index: number; count: number };
   /** Chỉ có trong trận boss. */
   boss: (HudBar & { name: string; phase: number; phaseMarks: number[] }) | undefined;
@@ -47,14 +48,15 @@ export function buildHud(world: StageWorld, savedCoreBits = 0, level = world.lev
   const pl = world.player;
   const hp = bar(Math.max(0, Math.ceil(pl.hp)), pl.maxHp);
   const slot = world.loadout.current;
-  const boss = world.boss;
+  const boss = world.combatBoss;
   return {
     hp: { ...hp, low: hp.frac <= LOW_HP_FRACTION },
     energy:
       slot.kind === 'buster' ? undefined : bar(Math.floor(slot.energy), world.loadout.energyMax),
+    nanoCells: { capacity: world.nanoCells.capacity, remaining: world.nanoCells.remaining },
     weapon: { name: slot.name, index: world.loadout.index, count: world.loadout.slots.length },
     boss:
-      boss && world.phase === 'boss'
+      boss && boss.state !== 'dead'
         ? {
             ...bar(boss.hp, boss.data.hp),
             name: boss.data.name,

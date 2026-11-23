@@ -1,8 +1,9 @@
 import type { StageMechanics } from '../../core/stage-mechanics-config';
-import type { Projectile } from '../combat/projectiles';
+import { overlaps, type Projectile } from '../combat/projectiles';
 import type { Enemy } from '../enemy/enemy';
 import type { Box } from '../player/collision';
 import type { Platform } from '../player/player-physics';
+import { laserBox, type LaserSegment, laserVector } from '../stage/laser-path';
 import type {
   BarrierSpawn,
   Cell,
@@ -12,6 +13,7 @@ import type {
   VineSpawn,
 } from '../stage/layout';
 import { Tile, type TileMap } from '../tilemap';
+import type { RoomBoss } from './room-boss';
 
 /** Cơ chế môi trường của màn (M7, đặc tả Stage 1 mục 3). Logic thuần. */
 
@@ -91,6 +93,7 @@ export class LockedRoom {
   constructor(
     readonly spawn: RoomSpawn,
     private readonly map: TileMap,
+    readonly miniBoss?: RoomBoss,
   ) {}
 
   /** Gán các kẻ địch xuất phát bên trong phòng (giữa hai cột cửa). */
@@ -102,13 +105,20 @@ export class LockedRoom {
     });
   }
 
+  /** Kẻ địch xuất phát trong phòng. */
+  get members(): readonly Enemy[] {
+    return this.enemies;
+  }
+
   get remaining(): number {
-    return this.enemies.filter((e) => e.alive).length;
+    return this.enemies.filter((e) => e.alive).length + Number(this.miniBoss?.alive ?? false);
   }
 
   /** Các loại kẻ địch (id trong enemies.json) của phòng. */
   get kinds(): string[] {
-    return [...new Set(this.enemies.map((e) => e.data.id))];
+    const kinds = new Set(this.enemies.map((e) => e.data.id));
+    if (this.miniBoss) kinds.add(this.miniBoss.id);
+    return [...kinds];
   }
 
   /** Vùng bên trong (px), giữa hai cột cửa. */
@@ -139,6 +149,7 @@ export class LockedRoom {
       }
       this.state = 'locked';
       this.setDoors(true);
+      this.miniBoss?.activate();
       return 'locked';
     }
     if (this.state === 'locked' && this.remaining === 0) {
@@ -154,6 +165,7 @@ export class LockedRoom {
     if (this.state !== 'locked') return;
     this.state = 'open';
     this.setDoors(false);
+    this.miniBoss?.reset();
   }
 
   private setDoors(closed: boolean): void {
@@ -193,6 +205,20 @@ export class Barrier {
     const touching =
       p.x < b.x + b.w + 1 && p.x + p.w > b.x - 1 && p.y < b.y + b.h + 1 && p.y + p.h > b.y - 1;
     if (!touching) return false;
+    return this.breakOpen();
+  }
+
+  /** Tia kết thúc ngay mặt ô đặc, nên xét thêm một lát mỏng ngay sau đầu tia. */
+  tryBreakByBeam(weapon: string, leg: LaserSegment, width: number): boolean {
+    if (this.broken || weapon !== this.spawn.requiresWeapon) return false;
+    const dir = laserVector(leg);
+    const from = leg.to;
+    const to = { x: from.x + dir.x * 1e-6, y: from.y + dir.y * 1e-6 };
+    if (!overlaps(laserBox({ from, to }, width), this.box())) return false;
+    return this.breakOpen();
+  }
+
+  private breakOpen(): true {
     this.broken = true;
     this.fill(Tile.Empty);
     return true;

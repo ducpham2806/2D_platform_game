@@ -123,8 +123,18 @@
       ],
       "damageVsWeak": 2.5,
       "weakStunSec": 0.5,
-      "energyCostOf28": null,
-      "behavior": null
+      "energyCostOf28": 4,
+      "behavior": {
+        "type": "boomerang",
+        "outTiles": 6,
+        "speedTilesPerSec": 11,
+        "sizePx": { "w": 12, "h": 12 },
+        "damageMul": 1,
+        "maxOnScreen": 1,
+        "maxCancelsPerThrow": 2,
+        "cancelKinds": ["enemyShot", "bomb"],
+        "note": "GDD 16 mục 5.7, Q4. Trúng mỗi mục tiêu một lần mỗi chiều. Chỉ hủy đạn thường và bom của kẻ địch thường. Có thể ném lại sau khi đón lưỡi. Hành vi triển khai ở ST-15-05. [PLACEHOLDER]"
+      }
     },
     {
       "name": "Frost Shard",
@@ -134,8 +144,17 @@
       ],
       "damageVsWeak": 2.5,
       "weakStunSec": 0.5,
-      "energyCostOf28": null,
-      "behavior": null
+      "energyCostOf28": 4,
+      "behavior": {
+        "type": "shard",
+        "speedTilesPerSec": 10,
+        "rangeTiles": 10,
+        "sizePx": { "w": 8, "h": 6 },
+        "damageMul": 2,
+        "cooldownSec": 0.4,
+        "freezeSec": 2,
+        "note": "Đạn băng (đặc tả Stage 2–4 mục 4.7, QB-19). Đóng băng kẻ địch thường và làm đông dòng chất làm mát ở Két giáp Stage 2. Hành vi triển khai ở ST-15-04. [PLACEHOLDER]"
+      }
     },
     {
       "name": "Prism Beam",
@@ -145,8 +164,23 @@
       ],
       "damageVsWeak": 2.5,
       "weakStunSec": 0.5,
-      "energyCostOf28": null,
-      "behavior": null
+      "energyCostOf28": 3,
+      "behavior": {
+        "type": "beam",
+        "rangeTiles": 12,
+        "widthPx": 4,
+        "damageMul": 1.5,
+        "activeSec": 0.12,
+        "cooldownSec": 0.3,
+        "maxBounces": 3,
+        "note": "Tia tức thời theo LaserPath, xuyên mọi kẻ địch trên đường (mỗi mục tiêu trúng 1 lần mỗi tia), phản xạ ở gương, dừng ở mặt trước khiên Lính Kén (01-GDD/16-Dac-ta-Stage2-4-nhap.md mục 3.7, QB-16, QB-18). Dữ liệu từ ST-15-01a; hành vi ở ST-15-03, trước đó Loadout không cấp vũ khí này. [PLACEHOLDER]"
+      }
     }
-  ]
+  ],
+  "balance": {
+    "_note": "Cân bằng vũ khí Warden (01-GDD/16-Dac-ta-Stage2-4-nhap.md mục 2.3), kiểm lúc nạp cho mọi vũ khí có cấu hình hành vi: ngân sách = floor(energyMax / energyCostOf28) × damageMul × số lần trúng mỗi lần dùng, trong budgetTarget ± budgetTolerance; sức mạnh khắc chế = damageMul × số lần trúng × damageVsWeak / cooldownSec ≥ minCounterPerSec (≈ 1,6 × Arc Cannon).",
+    "budgetTarget": 14,
+    "budgetTolerance": 0.15,
+    "minCounterPerSec": 12
+  }
 }

@@ -54,6 +54,7 @@ describe('gom hiệu ứng build (GDD 10 mục 3.1)', () => {
       const pool = new ProjectilePool();
       const ctx = {
         centerX: 100,
+        centerY: 112,
         top: 100,
         facing: 1 as const,
         hurt: false,
@@ -99,7 +100,14 @@ describe('build trong trận', () => {
     w.retune({ weapons: config.weapons, player: config.player });
     expect(w.tuning.weapons.arcCannon.charge.timeSec).toBe(1.2);
     const pool = new ProjectilePool();
-    const ctx = { centerX: 100, top: 100, facing: 1 as const, hurt: false, aimTargets: undefined };
+    const ctx = {
+      centerX: 100,
+      centerY: 112,
+      top: 100,
+      facing: 1 as const,
+      hurt: false,
+      aimTargets: undefined,
+    };
     for (let i = 0; i < Math.ceil(1.02 / DT); i += 1)
       w.loadout.step(
         { pressed: i === 0, held: true, released: false, autoFire: false },

@@ -32,6 +32,7 @@ const SMALL: Phaser.Types.GameObjects.Text.TextStyle = {
 export class StageHud {
   private readonly bars: Phaser.GameObjects.Graphics;
   private readonly hpText: Phaser.GameObjects.Text;
+  private readonly nanoText: Phaser.GameObjects.Text;
   private readonly energyText: Phaser.GameObjects.Text;
   private readonly bossName: Phaser.GameObjects.Text;
   private readonly coreBits: Phaser.GameObjects.Text;
@@ -50,6 +51,9 @@ export class StageHud {
       scene.add
         .text(PAD + ENERGY_W + 6, PAD + 10, '', { ...SMALL, color: '#9be7ff' })
         .setDepth(DEPTH),
+    );
+    this.nanoText = fixed(
+      scene.add.text(PAD, PAD + 23, '', { ...SMALL, color: '#a4f2b4' }).setDepth(DEPTH),
     );
     this.bossName = fixed(
       scene.add
@@ -123,7 +127,14 @@ export class StageHud {
 
   /** Ẩn/hiện cả HUD (menu tạm dừng vẫn giữ HUD, chỉ phủ mờ lên trên). */
   setVisible(visible: boolean): void {
-    for (const o of [this.bars, this.hpText, this.energyText, this.bossName, this.coreBits])
+    for (const o of [
+      this.bars,
+      this.hpText,
+      this.energyText,
+      this.nanoText,
+      this.bossName,
+      this.coreBits,
+    ])
       o.setVisible(visible);
     for (const o of [this.side, this.weapon, this.hint]) o.setVisible(visible);
   }
@@ -135,15 +146,16 @@ export class StageHud {
   update(hud: HudModel, touch: boolean, swapGlyph: string): void {
     const g = this.bars;
     g.clear();
-    // Máu.
-    g.fillStyle(0x0f1724, 0.8).fillRect(PAD, PAD, HP_W + 4, 9);
+    // Chừa khoảng giữa số máu Kai và tên mini-boss dài trong phòng khóa.
+    const hpWidth = hud.boss && hud.roomRemaining !== undefined ? HP_W - 16 : HP_W;
+    g.fillStyle(0x0f1724, 0.8).fillRect(PAD, PAD, hpWidth + 4, 9);
     g.fillStyle(hud.hp.low ? 0xff6b6b : 0x7bd389, 1).fillRect(
       PAD + 2,
       PAD + 2,
-      HP_W * hud.hp.frac,
+      hpWidth * hud.hp.frac,
       5,
     );
-    this.hpText.setText(`${hud.hp.value}/${hud.hp.max}`);
+    this.hpText.setX(PAD + hpWidth + 6).setText(`${hud.hp.value}/${hud.hp.max}`);
     // Năng lượng vũ khí boss.
     if (hud.energy) {
       g.fillStyle(0x0f1724, 0.8).fillRect(PAD, PAD + 11, ENERGY_W + 4, 6);
@@ -152,6 +164,10 @@ export class StageHud {
     } else {
       this.energyText.setText('');
     }
+    const { capacity, remaining } = hud.nanoCells;
+    // Chừa chỗ cho vòng khiên bên trái và hộp hướng dẫn bắt đầu ở x = 58.
+    this.nanoText.setX(hud.shield ? PAD + 11 : PAD);
+    this.nanoText.setText(capacity > 0 ? `Nano ${remaining}/${capacity}` : '');
     // Khiên C3: vòng đầy khi sẵn; đang hồi thì cung sáng chạy theo tiến độ.
     if (hud.shield) {
       const { x, y, r } = SHIELD_ICON;

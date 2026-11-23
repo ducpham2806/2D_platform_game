@@ -8,6 +8,10 @@
  *             để chạy thử Shop trước khi có Stage 2. Chỉ có tác dụng cùng DEBUG; mua vẫn được ghi.
  *   ?unlock=1 mở mọi độ khó ở màn Chuẩn bị (chạy thử Thử thách). Chỉ có tác dụng cùng DEBUG;
  *             không ghi gì vào bản lưu.
+ *   ?telemetry=1 bật đo lường trong bộ nhớ (EP-13, ST-13-02b) để chạy thử: không lưu, không gửi,
+ *             đọc qua window.__cvTelemetry. Chỉ có tác dụng cùng DEBUG. Bản đợt thử MVP sẽ bật bằng
+ *             ?mvp=<mã đợt> (ST-13-03).
+ *   ?staff=1  đánh dấu người làm game trong `session_start` (báo cáo loại ra).
  */
 function hasParam(name: string): boolean {
   try {
@@ -22,3 +26,5 @@ export const TUNE = import.meta.env.DEV || hasParam('tune');
 export const GATE = hasParam('gate');
 export const SHOP = DEBUG && hasParam('shop');
 export const UNLOCK_ALL = DEBUG && hasParam('unlock');
+export const TELEMETRY_DEBUG = DEBUG && hasParam('telemetry');
+export const STAFF = hasParam('staff');

@@ -3,19 +3,12 @@
  * `CV1.<JSON bản lưu, UTF-8, base64url>.<FNV-1a 32 bit, 8 chữ số hex>`.
  * Checksum chỉ bắt mã chép thiếu/sai, không chống sửa có chủ đích (Gem và giao dịch do máy chủ giữ).
  */
+import { fnv1a } from '../hash';
 import { parseSave, type SaveData, SaveError } from './save-data';
 
 const PREFIX = 'CV1';
 
-/** FNV-1a 32 bit trên các byte. */
-export function fnv1a(bytes: Uint8Array): number {
-  let h = 0x811c9dc5;
-  for (const b of bytes) {
-    h ^= b;
-    h = Math.imul(h, 0x01000193) >>> 0;
-  }
-  return h >>> 0;
-}
+export { fnv1a } from '../hash';
 
 function toBase64Url(bytes: Uint8Array): string {
   let bin = '';

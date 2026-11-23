@@ -8,14 +8,24 @@ export interface BossEvents {
   phaseChanged: boolean;
   attackStarted: BossAttackId | undefined;
   landed: boolean;
+  reflected: boolean;
   defeated: boolean;
 }
 
 export interface BossContext {
   playerX: number;
   playerY: number;
+  /** Phòng khóa áp QB-23 theo khung đã vẽ và khoảng cách tới Kai. */
+  attackAllowed?: boolean;
+  inRange?: boolean;
 }
 
 export function noEvents(): BossEvents {
-  return { phaseChanged: false, attackStarted: undefined, landed: false, defeated: false };
+  return {
+    phaseChanged: false,
+    attackStarted: undefined,
+    landed: false,
+    reflected: false,
+    defeated: false,
+  };
 }

@@ -179,12 +179,12 @@ Mỗi bước R chỉ chạy ở lần đầu về Hub sau mốc tương ứng; 
 **Luật hộp gợi ý chết (D06, D10; `QB-70`…`QB-72`, `QB-82`):**
 
 - Hộp không chặn, không có nút, không dừng trận. Kai tự hồi sinh sau 1 giây như thường; không có màn hồi sinh có nút "Thử lại" hay "Đổi độ khó" (độ khó chỉ đổi ở màn Chuẩn bị, `11-Do-kho.md` mục 2.2).
-- Gợi ý chết được ưu tiên hơn hộp hướng dẫn: hướng dẫn tạm ẩn trong lúc gợi ý hiện, rồi hiện lại. Hội thoại và màn Kết quả được ưu tiên hơn gợi ý chết.
-- Câu đang chờ bị hủy khi hạ boss hoặc khi qua checkpoint.
+- Gợi ý chết được ưu tiên hơn hộp hướng dẫn: hướng dẫn tạm ẩn trong lúc gợi ý hiện, rồi hiện lại. Hội thoại và màn Kết quả được ưu tiên hơn gợi ý chết; bị che thì gợi ý ẩn rồi hiện lại với thời gian còn lại.
+- Câu đang chờ hoặc đang hiện bị hủy khi hạ boss, qua checkpoint hoặc vào đấu trường; bị che liền quá 10 s lúc trận chạy cũng hủy (`QB-71`).
 - D06 chọn câu theo độ khó đang chơi. Ở Cốt truyện khi Xưởng còn khóa dùng câu `story_early` (không nhắc Xưởng hay Quầy).
 - D06 thêm câu vũ khí (`difficultyHint.weapon`) khi đang ở đấu trường boss, `weaknessKnown[boss]` đã bật, đã có vũ khí khắc chế mà lúc chết không cầm nó. Câu ghép với tên vũ khí dài nhất ≤ 140 ký tự (kiểm lúc nạp dữ liệu).
-- Thời gian hiện = max(`showSec`, số ký tự / `charsPerSecRead`), với `showSec` 6 và `charsPerSecRead` 15.
-- Tắt hướng dẫn ở menu tạm dừng thì không hiện. Sau khi D06 hiện, menu tạm dừng có thêm mục "Đổi độ khó" (`QB-84`).
+- Thời gian hiện = max(`showSec`, số ký tự / `reading.charsPerSec`), với `showSec` 6 và `reading.charsPerSec` 15, tính bằng thời gian trận: không đếm khi tạm dừng, mở bảng Kỹ năng, có hội thoại hay bị che. Menu tạm dừng mở thì hộp ẩn, đóng menu thì hiện lại (ST-14-08).
+- Tắt hướng dẫn ở menu tạm dừng thì không hiện (câu đang hiện cũng tắt). Sau khi D06 hiện, menu tạm dừng có thêm mục "Đổi độ khó" (`QB-84`).
 
 **Cờ `weaknessKnown[boss]` (`QB-83`, cần Story):** một cờ cho mỗi boss, lưu trong bản lưu. Bật khi D03 hoặc D10 chạy (hai bước đều nói tên vũ khí khắc chế), hoặc khi hạ boss đó (Hồ sơ boss mở). Màn Chuẩn bị (ô "vũ khí khắc chế") và câu vũ khí của D06 chỉ đọc cờ này. D10 không chạy ở Stage 1: Thorna luôn là boss đầu, người chơi chưa thể có vũ khí khắc chế (Ember Burst), và S09/D06 đã lo phần gợi ý.
 

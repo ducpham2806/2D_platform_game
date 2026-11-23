@@ -1,5 +1,5 @@
 import type { Box } from '../player/collision';
-import type { Projectile } from './projectiles';
+import type { ShieldContact } from './projectiles';
 
 export type TargetHitResult = 'hit' | 'destroyed' | 'blocked' | 'shieldBroken';
 
@@ -31,13 +31,13 @@ export class TrainingTarget {
   }
 
   /** Đạn có bay vào mặt khiên không (theo hướng bay, hoặc theo vị trí với roi đứng yên). */
-  private fromShieldSide(p: Projectile): boolean {
+  private fromShieldSide(p: ShieldContact): boolean {
     if (this.shieldSide === 0) return false;
     const fromLeft = p.vx !== 0 ? p.vx > 0 : p.x + p.w / 2 < this.box.x + this.box.w / 2;
     return this.shieldSide === -1 ? fromLeft : !fromLeft;
   }
 
-  hit(p: Projectile, amount: number): TargetHitResult {
+  hit(p: ShieldContact, amount: number): TargetHitResult {
     if (this.shieldUp && this.fromShieldSide(p)) {
       if (p.breaksShield) {
         this.shieldUp = false;

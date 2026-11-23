@@ -14,12 +14,15 @@ import { characterProgress } from '../logic/rpg/progression';
 import { learn, resetBranch, type SkillRanks } from '../logic/rpg/skill-tree';
 import {
   buildWorkshop,
+  WORKSHOP_TABS,
   type WorkshopModel,
   type WorkshopNodeView,
+  workshopTabLabel,
 } from '../logic/rpg/workshop-model';
 import { setSkills } from '../logic/save/save-data';
 import type { SaveManager } from '../logic/save/save-manager';
 import { createPanel } from '../playtest/panel';
+import type { Props } from '../logic/telemetry/schema';
 
 export interface WorkshopOptions {
   /** Dòng ghi chú cố định (mở từ menu tạm dừng: thay đổi áp dụng khi hồi sinh). */
@@ -27,6 +30,8 @@ export interface WorkshopOptions {
   onClose: () => void;
   /** Gọi sau mỗi lần bậc kỹ năng đổi. */
   onChange?: (skills: SkillRanks) => void;
+  /** Đo lường (EP-13): học hoặc đặt lại kỹ năng. */
+  onTelemetry?: (name: 'skill_change', props: Props) => void;
 }
 
 type Action =
@@ -185,6 +190,12 @@ export class WorkshopPanel {
       const learned = next;
       this.save.update((s) => setSkills(s, learned));
       this.options.onChange?.(learned);
+      this.options.onTelemetry?.(
+        'skill_change',
+        a.kind === 'learn'
+          ? { node: this.selected, rank: learned[this.selected] ?? 0, action: 'learn' }
+          : { action: 'reset' },
+      );
     }
     this.render();
   }
@@ -224,8 +235,10 @@ export class WorkshopPanel {
     head.innerHTML = `<span>SP còn lại: <b>${model.available}</b> / ${model.total}</span><span>Core Bit ${this.save.data.inventory.coreBits}</span>`;
     const tabs = document.createElement('div');
     tabs.className = 'cv-ws-tabs';
-    tabs.innerHTML =
-      '<span class="on">Kỹ năng</span><span>Module · khi có module đầu tiên</span><span>Giáp · khi có Két giáp</span><span>Tủ skin · mở sau boss 5</span><span>Loadout · mở sau boss 5</span>';
+    tabs.innerHTML = WORKSHOP_TABS.map(
+      (tab) =>
+        `<span${tab.lockedHint === undefined ? ' class="on"' : ''}>${workshopTabLabel(tab)}</span>`,
+    ).join('');
 
     const cols = document.createElement('div');
     cols.className = 'cv-ws-cols';

@@ -50,6 +50,8 @@ Workflow `.github/workflows/pages.yml` build và đăng `game/dist` lên GitHub 
 
 **Trước đợt 1:** PR #10 đã merge vào `main` (`eeb8ca1`, 14/11/2026). Workflow Pages lần #5 trên `main`: test, build đạt; dừng ở `configure-pages` vì repo chưa bật Pages (lần #4 ngày 3/11 và lần #6 sau khi chuyển công khai cũng vậy). Người dùng bật Pages cùng ngày; lần #7 đăng thành công bản `eeb8ca1` lên `https://ducpham2806.github.io/2D_platform_game/`. Trước khi gửi link, mở `?gate=1` trên một điện thoại để chắc chắn trang đã cập nhật (menu chỉ còn 3 nút). Trong lúc người thử đang chơi, không merge gì vào `main` (Pages đăng lại mỗi lần `main` đổi).
 
+**Bản dùng cho đợt 1:** đợt thử chơi trên bản Pages của `main` = tag `gate-r1` (`eeb8ca1`). Nhánh làm việc sau đó đổi luật boss ở ST-15-14 (15/11/2026, QB-14): boss xám đấu lại bằng Vine Lash (hồi 0,35 s, ngắn hơn choáng 0,5 s) **không còn bị khóa choáng mãi**, hết choáng có 1,5 s không choáng lại. Ghi bản nào đã dùng vào mục 7; đợt sau nếu dùng bản mới thì so kết quả đấu lại với lưu ý này.
+
 | Link | Dùng cho |
 |---|---|
 | `https://ducpham2806.github.io/2D_platform_game/?gate=1` | **Gửi người thử.** Menu chỉ còn Chơi (màn xám), Điều khiển, Kết quả chơi thử, để người thử không vào nhầm phòng thử khác (chỉ màn xám ghi nhật ký). Nút menu và menu tạm dừng cao ≥ 48 dp trên điện thoại |
@@ -121,7 +123,11 @@ Mở link có `?tune=1` (bản dev `npm run dev` luôn bật), vào màn thử r
 
 | Đợt | Ngày | Bản build (commit) | Người thử (cảm ứng / PC) | Điểm N / L / B cảm ứng | Điểm N / L / B PC | Dấu hiệu hỏng | Quyết định |
 |---|---|---|---|---|---|---|---|
+<<<<<<< HEAD
 | 1 | Bản thử đã đăng | `gate-r1` (`eeb8ca1`) | | | | | Chờ ghi nhận kết quả chơi thử |
+=======
+| 1 | Bản thử đã đăng 14/11/2026 | `gate-r1` (`eeb8ca1`) | | | | | Chờ ghi nhận kết quả chơi thử |
+>>>>>>> 6eb3e419966f34e2a9b6b9bb046704b88ec1db68
 
 **Chạy thử trọn luồng trước đợt 1 (14/11/2026, Chromium máy tính và Pixel 7 giả lập, link `?gate=1`; chạy lại bằng `npm run gate-flow`, mục 8):**
 

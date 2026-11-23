@@ -10,7 +10,7 @@
 | ST-21-02 | Smoke check luồng chính (`npm run smoke`), job CI không chặn | `040901c`, `4cc3468` | `game/scripts/`, CI | tag `gate-r1` | 1 phiên | Chưa |
 | ST-21-03 | Âm thanh tổng hợp làm bộ âm tạm cho EP-12 | `038bf62` (`sfx-player.ts`, `feedback.json`) | EP-12 ST-12-01…03 | tag `gate-r1` | gộp vào EP-12 | Chưa |
 | ST-21-04 | Hiệu ứng phản hồi: hạt, co giãn hình Kai | `038bf62` (`logic/feel/*`) | lớp scene | quyết định G1 (đụng cảm giác) | 1 phiên | Chưa |
-| ST-21-05 | Đồ họa vẽ bằng mã: công cụ `codeart`, 68 file hình, lớp vẽ (Tilemap, nền parallax, `KaiView`, `SpritePool`, `FxLayer`, khung 9 mảnh) | `b741713`, `22fa2cb`, `7254af4`, `a78343d` | `05-Assets/tools/`, `game/public/assets/`, `scenes/` | **người dùng duyệt hướng đồ họa** (`09-Quyet-dinh-cho-duyet.md` mục 3) | 2–3 phiên | Chưa |
+| ST-21-05 | Đồ họa vẽ bằng mã: công cụ `codeart`, 68 file hình, lớp vẽ (Tilemap, nền parallax, `KaiView`, `SpritePool`, `FxLayer`, khung 9 mảnh) | `b741713`, `22fa2cb`, `7254af4`, `a78343d` | `05-Assets/tools/`, `game/public/assets/`, `scenes/` | — | — | **Bỏ** (14/11: người dùng chọn 2.5D three.js, EP-22) |
 | ST-21-06 | Bảng chuỗi vi/en cho HUD, tạm dừng, hội thoại, Kết quả | `af4daff` (`strings.json`, `logic/i18n.ts`) | EP-14 (i18n nền) | tag `gate-r1` | gộp vào EP-14 | Chưa |
 
 Không chuyển: `07-Danh-gia-ke-hoach.md`, `08-Viec-cho-nguoi-dung.md` của PR #9 (đã thay bằng `01-Ke-hoach-lam-viec.md`, `00-Bat-dau.md`); thư mục `__pycache__` lọt vào commit đồ họa.

@@ -4,6 +4,7 @@ import type { Projectile } from '../../logic/combat/projectiles';
 import { Tile, type TileMap } from '../../logic/tilemap';
 import type { StageWorld } from '../../logic/world/stage-world';
 import { drawEnemies, drawPickups } from './enemy-renderer';
+import { drawRoomBoss } from './room-boss-renderer';
 
 /** Màu khối giữ chỗ (chưa có sprite). Mỗi loại đạn một màu để dễ đọc khi chơi thử. */
 const PROJECTILE_COLORS: Readonly<Record<Projectile['kind'], number>> = {
@@ -11,6 +12,8 @@ const PROJECTILE_COLORS: Readonly<Record<Projectile['kind'], number>> = {
   mid: 0x4fd1ff,
   charged: 0xffffff,
   sweep: 0x7bd389,
+  shard: 0x9beaff,
+  boomerang: 0x89ffcf,
   enemyShot: 0xff8787,
   shockwave: 0xffa94d,
   drop: 0xff6b6b,
@@ -84,10 +87,22 @@ export function drawDynamic(
   // Lõi sáng khi boss đang hở: chỉ hiện khi đã học Đòn Trừng Phạt (V3).
   const showCore = (world.build.effects.punishMul ?? 1) > 1;
   if (world.boss) drawBoss(g, world.boss, t, world.map, timeMs, showCore);
+  for (const room of world.rooms) if (room.miniBoss) drawRoomBoss(g, room, t, timeMs);
   drawEnemies(g, world.enemies, timeMs);
   if (world.field) drawPickups(g, world.field.pickups.all, timeMs);
+  if (world.playerBeams.length > 0) {
+    g.fillStyle(0x9ef5ff, 1);
+    for (const beam of world.playerBeams)
+      for (const b of beam.boxes) g.fillRect(b.x, b.y, b.w, b.h);
+  }
   for (const p of world.pool.all) {
-    g.fillStyle(PROJECTILE_COLORS[p.kind], p.kind === 'sweep' ? 0.6 : 1).fillRect(
+    if (!p.alive) continue;
+    if (p.boomerang) {
+      drawBoomerang(g, p, timeMs);
+      continue;
+    }
+    const ice = p.source === 'enemy:thap_bang' || p.source === 'enemy:frost_titan';
+    g.fillStyle(ice ? 0x8fddf8 : PROJECTILE_COLORS[p.kind], p.kind === 'sweep' ? 0.6 : 1).fillRect(
       p.x,
       p.y,
       p.w,
@@ -96,6 +111,19 @@ export function drawDynamic(
     if (p.kind === 'charged')
       g.lineStyle(1, 0x4fd1ff, 1).strokeRect(p.x - 1, p.y - 1, p.w + 2, p.h + 2);
   }
+}
+
+function drawBoomerang(g: Phaser.GameObjects.Graphics, p: Projectile, timeMs: number): void {
+  const x = p.x + p.w / 2;
+  const y = p.y + p.h / 2;
+  const angle = timeMs / 45;
+  const dx = Math.cos(angle);
+  const dy = Math.sin(angle);
+  const radius = Math.min(p.w, p.h) / 2;
+  const back = p.boomerang?.phase === 'return';
+  g.lineStyle(2, back ? 0xe6fff5 : PROJECTILE_COLORS.boomerang, 1);
+  g.lineBetween(x - dx * radius, y - dy * radius, x + dx * 2, y + dy * 2);
+  g.lineBetween(x + dx * 2, y + dy * 2, x - dy * radius, y + dx * radius);
 }
 
 function drawBoss(
@@ -153,7 +181,8 @@ function drawBoss(
     }
   } else {
     const color =
-      boss.flash > 0
+      // Nháy trắng khi trúng đòn, và trắng suốt lúc bất tử đổi pha (QB-31: đạn không vào).
+      boss.flash > 0 || boss.shifting
         ? 0xffffff
         : boss.stunned
           ? 0x9be7ff

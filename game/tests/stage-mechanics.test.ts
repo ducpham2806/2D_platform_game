@@ -417,8 +417,8 @@ describe('vật chắn và bí mật', () => {
     expect(arc!.broken).toBe(true);
     expect(world.map.isSolid(86, 9)).toBe(false);
     // Đi tới nhặt Nano Cell, rồi bắn rễ khô: không vỡ.
-    const evs = runUntil(world, input({ moveX: 1 }), (e) => e.secretFound !== undefined, 120);
-    expect(evs.at(-1)!.secretFound).toBe('nano_cell');
+    const evs = runUntil(world, input({ moveX: 1 }), (e) => e.secretsFound.length > 0, 120);
+    expect(evs.at(-1)!.secretsFound).toEqual(['nano_cell']);
     for (let i = 0; i < 60; i += 1)
       world.step(
         input({ shootPressed: i % 10 === 0, shootHeld: i % 10 === 0, shootReleased: i % 10 === 1 }),

@@ -5,6 +5,7 @@
  */
 import { ACTIONS, type Action } from './actions';
 import {
+  actionsFor,
   type GamepadBindings,
   type KeyboardBindings,
   missingRequired,
@@ -118,9 +119,16 @@ function parseTouch(value: unknown, touch: TouchConfig): TouchSettings {
   };
 }
 
-function parseOr<T extends Record<Action, unknown[]>>(parse: () => T, fallback: T): T {
+function parseOr<T>(
+  raw: unknown,
+  parse: (value: unknown) => Record<Action, T[]>,
+  fallback: Record<Action, T[]>,
+): Record<Action, T[]> {
   try {
-    const parsed = parse();
+    const parsed = parse(raw);
+    // Bản lưu cũ chưa có Nano Cell. Giữ phím cũ nếu người chơi đã gán H/RT cho việc khác.
+    if (isRecord(raw) && raw.heal === undefined)
+      parsed.heal = fallback.heal.filter((button) => actionsFor(parsed, button).length === 0);
     return missingRequired(parsed).length === 0 ? parsed : fallback;
   } catch {
     return fallback;
@@ -132,8 +140,8 @@ export function parseControlSettings(raw: unknown, defaults: ControlDefaults): C
   if (!isRecord(raw) || raw.version !== CONTROL_SETTINGS_VERSION) return base;
   return {
     version: CONTROL_SETTINGS_VERSION,
-    keyboard: parseOr(() => parseKeyboardBindings(raw.keyboard), base.keyboard),
-    gamepad: parseOr(() => parseGamepadBindings(raw.gamepad), base.gamepad),
+    keyboard: parseOr(raw.keyboard, parseKeyboardBindings, base.keyboard),
+    gamepad: parseOr(raw.gamepad, parseGamepadBindings, base.gamepad),
     touch: parseTouch(raw.touch, defaults.touch),
   };
 }

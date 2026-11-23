@@ -226,7 +226,14 @@ describe('P3 Lướt Xuyên Đạn', () => {
   it('sượt đạn cộng 0,25 s nạp khi đang giữ nút nạp', () => {
     const l = new WeaponLoadout(config.weapons, T);
     const pool = new ProjectilePool();
-    const ctx = { centerX: 100, top: 100, facing: 1 as const, hurt: false, aimTargets: undefined };
+    const ctx = {
+      centerX: 100,
+      centerY: 112,
+      top: 100,
+      facing: 1 as const,
+      hurt: false,
+      aimTargets: undefined,
+    };
     for (let i = 0; i < 20; i += 1)
       l.step({ pressed: i === 0, held: true, released: false, autoFire: false }, ctx, pool, DT);
     expect(l.chargeLevel).toBe(0);
