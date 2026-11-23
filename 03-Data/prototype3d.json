@@ -1,0 +1,336 @@
+{
+  "stepSec": 0.016666666666666666,
+  "runSpeed": 4.65,
+  "acceleration": 32,
+  "braking": 40,
+  "gravity": 16.8,
+  "jumpSpeed": 8.25,
+  "maxFallSpeed": 16,
+  "radius": 0.31,
+  "height": 1.66,
+  "jumpBufferSec": 0.125,
+  "coyoteSec": 0.1,
+  "dashSpeed": 11.5,
+  "dashSec": 0.19,
+  "dashCooldownSec": 0.63,
+  "fallY": -4.25,
+  "respawnSec": 0.42,
+  "shotSpeed": 27,
+  "shotCooldownSec": 0.19,
+  "shotLifetimeSec": 0.62,
+  "aimConeDeg": 58,
+  "muzzleHeight": 1.2,
+  "camera": {
+    "yawDeg": 27,
+    "height": 7.3,
+    "distance": 9.5,
+    "fovDeg": 46,
+    "lookHeight": 0.55,
+    "lookAhead": 1.7,
+    "follow": 7
+  },
+  "spawn": {
+    "x": 0,
+    "y": 0,
+    "z": 4.2
+  },
+  "platforms": [
+    {
+      "id": "arrival",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "width": 13,
+      "depth": 15,
+      "kind": "floor"
+    },
+    {
+      "id": "runway",
+      "x": 0,
+      "y": 0,
+      "z": -14,
+      "width": 8,
+      "depth": 13,
+      "kind": "floor"
+    },
+    {
+      "id": "step-a",
+      "x": 1.7,
+      "y": 0.52,
+      "z": -23,
+      "width": 5,
+      "depth": 4.4,
+      "kind": "platform"
+    },
+    {
+      "id": "step-b",
+      "x": -1.25,
+      "y": 1,
+      "z": -29,
+      "width": 4.8,
+      "depth": 4.1,
+      "kind": "platform"
+    },
+    {
+      "id": "relay-deck",
+      "x": -2.6,
+      "y": 1,
+      "z": -36.1,
+      "width": 9,
+      "depth": 10,
+      "kind": "floor"
+    },
+    {
+      "id": "lower-walk",
+      "x": -2.6,
+      "y": 1,
+      "z": -55.5,
+      "width": 7.8,
+      "depth": 30,
+      "kind": "floor"
+    },
+    {
+      "id": "elbow-east",
+      "x": 4.8,
+      "y": 1,
+      "z": -70,
+      "width": 20,
+      "depth": 7,
+      "kind": "floor"
+    },
+    {
+      "id": "ridge-east",
+      "x": 11.7,
+      "y": 1,
+      "z": -78,
+      "width": 7,
+      "depth": 11,
+      "kind": "floor"
+    },
+    {
+      "id": "step-c",
+      "x": 13,
+      "y": 1.65,
+      "z": -87,
+      "width": 4.8,
+      "depth": 4.5,
+      "kind": "platform"
+    },
+    {
+      "id": "step-d",
+      "x": 9.4,
+      "y": 2.1,
+      "z": -93.5,
+      "width": 5.1,
+      "depth": 4.5,
+      "kind": "platform"
+    },
+    {
+      "id": "upper-deck",
+      "x": 8.2,
+      "y": 2.1,
+      "z": -102.5,
+      "width": 9,
+      "depth": 13.2,
+      "kind": "floor"
+    },
+    {
+      "id": "upper-walk",
+      "x": 8.2,
+      "y": 2.1,
+      "z": -116,
+      "width": 7.2,
+      "depth": 16,
+      "kind": "floor"
+    },
+    {
+      "id": "elbow-west",
+      "x": 0,
+      "y": 2.1,
+      "z": -124.2,
+      "width": 24,
+      "depth": 7,
+      "kind": "floor"
+    },
+    {
+      "id": "final-walk",
+      "x": -8.6,
+      "y": 2.1,
+      "z": -135.5,
+      "width": 7.4,
+      "depth": 25,
+      "kind": "floor"
+    },
+    {
+      "id": "coolant-bend",
+      "x": -17,
+      "y": 2.1,
+      "z": -146,
+      "width": 23,
+      "depth": 7.5,
+      "kind": "floor"
+    },
+    {
+      "id": "coolant-perimeter",
+      "x": -25,
+      "y": 2.1,
+      "z": -159,
+      "width": 7.5,
+      "depth": 28,
+      "kind": "floor"
+    },
+    {
+      "id": "return-cross",
+      "x": -15,
+      "y": 2.1,
+      "z": -170,
+      "width": 28,
+      "depth": 7.7,
+      "kind": "floor"
+    },
+    {
+      "id": "exit-approach",
+      "x": -3,
+      "y": 2.1,
+      "z": -184,
+      "width": 7.4,
+      "depth": 29,
+      "kind": "floor"
+    },
+    {
+      "id": "finish-deck",
+      "x": -3,
+      "y": 2.1,
+      "z": -200,
+      "width": 13.4,
+      "depth": 12,
+      "kind": "floor"
+    }
+  ],
+  "walls": [
+    {
+      "x": -5.45,
+      "y": 0,
+      "z": -15.4,
+      "width": 0.64,
+      "depth": 5.5,
+      "height": 2.45
+    },
+    {
+      "x": 5.45,
+      "y": 0,
+      "z": -15.4,
+      "width": 0.64,
+      "depth": 5.5,
+      "height": 2.45
+    },
+    {
+      "x": -6.2,
+      "y": 1,
+      "z": -56,
+      "width": 0.62,
+      "depth": 11.5,
+      "height": 1.4
+    },
+    {
+      "x": 1.15,
+      "y": 1,
+      "z": -60,
+      "width": 0.62,
+      "depth": 8,
+      "height": 1.4
+    },
+    {
+      "x": 14.85,
+      "y": 1,
+      "z": -77,
+      "width": 0.68,
+      "depth": 8,
+      "height": 1.95
+    },
+    {
+      "x": 4.25,
+      "y": 2.1,
+      "z": -103,
+      "width": 0.65,
+      "depth": 5.8,
+      "height": 1.5
+    },
+    {
+      "x": 11.45,
+      "y": 2.1,
+      "z": -113,
+      "width": 0.55,
+      "depth": 11,
+      "height": 1.5
+    },
+    {
+      "x": -12.2,
+      "y": 2.1,
+      "z": -137.5,
+      "width": 0.63,
+      "depth": 9,
+      "height": 2.3
+    },
+    {
+      "x": -28.35,
+      "y": 2.1,
+      "z": -158,
+      "width": 0.7,
+      "depth": 12,
+      "height": 1.8
+    },
+    {
+      "x": -11.3,
+      "y": 2.1,
+      "z": -173.3,
+      "width": 13,
+      "depth": 0.58,
+      "height": 1.6
+    },
+    {
+      "x": 0.4,
+      "y": 2.1,
+      "z": -185,
+      "width": 0.65,
+      "depth": 11,
+      "height": 1.9
+    }
+  ],
+  "checkpoints": [
+    {
+      "id": "relay",
+      "x": -2.6,
+      "y": 1,
+      "z": -35.8,
+      "radius": 2.9
+    },
+    {
+      "id": "ridge",
+      "x": 8.2,
+      "y": 2.1,
+      "z": -103,
+      "radius": 3.9
+    }
+  ],
+  "relay": {
+    "x": -2.6,
+    "y": 2.27,
+    "z": -41.2,
+    "radius": 0.63
+  },
+  "gate": {
+    "x": -2.6,
+    "y": 1,
+    "z": -43,
+    "width": 7.8,
+    "depth": 0.66,
+    "height": 3.3
+  },
+  "finish": {
+    "x": -3,
+    "y": 2.1,
+    "z": -201,
+    "radius": 3.0
+  }
+}

@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <meta name="theme-color" content="#081822" />
+    <title>Phòng thử 3D · Cyber Vanguard</title>
+  </head>
+  <body data-phase="loading">
+    <main class="lab" aria-label="Phòng thử 3D">
+      <canvas id="viewport" aria-label="Tuyến vượt chướng ngại của Kai"></canvas>
+      <div class="shade" aria-hidden="true"></div>
+      <header class="hud">
+        <div class="brand">
+          <div class="emblem" aria-hidden="true"><i></i><i></i></div>
+          <div>
+            <div class="studio">CYBER VANGUARD</div>
+            <div class="room">PHÒNG THỬ 3D</div>
+          </div>
+        </div>
+        <div class="stats" id="live-stats" hidden>
+          <div class="stat"><span>ĐỒNG HỒ</span><output id="time">00:00</output></div>
+          <div class="stat"><span>CHECKPOINT</span><output id="checkpoints">0/2</output></div>
+        </div>
+        <nav class="menu" aria-label="Điều khiển phiên chơi">
+          <button id="pause" type="button" aria-label="Tạm dừng" title="Tạm dừng (P)" hidden>
+            <span class="pause-icon" aria-hidden="true"></span>
+          </button>
+          <a class="back" href="./index.html">Về game</a>
+        </nav>
+      </header>
+
+      <section class="objective" id="mission" hidden>
+        <span class="objective-indicator" aria-hidden="true"></span>
+        <div>
+          <div class="objective-label">MỤC TIÊU</div>
+          <strong id="objective-text"></strong>
+          <p id="objective-detail"></p>
+        </div>
+      </section>
+
+      <section class="briefing" id="briefing" aria-labelledby="brief-title">
+        <div class="briefing-line"></div>
+        <h1 id="brief-title">Trạm phản lực</h1>
+        <p id="brief-description">Đang nạp phòng thử…</p>
+        <div class="results" id="results" hidden>
+          <div><span>Thời gian</span><strong id="result-time"></strong></div>
+          <div><span>Số lần rơi</span><strong id="result-falls"></strong></div>
+          <div><span>Phát bắn</span><strong id="result-shots"></strong></div>
+        </div>
+        <div class="actions">
+          <button class="primary" type="button" id="proceed" hidden>
+            Bắt đầu <span aria-hidden="true">↗</span>
+          </button>
+          <button class="secondary" type="button" id="restart" hidden>Chơi lại</button>
+        </div>
+      </section>
+
+      <div class="touch" id="touch" hidden>
+        <div class="stick" id="steer" role="img" aria-label="Cần di chuyển">
+          <span class="puck"></span>
+        </div>
+        <div class="touch-actions">
+          <button class="touch-dash" id="dash" type="button">Lướt</button>
+          <button class="touch-shot" id="shoot" type="button">Bắn</button>
+          <button class="touch-jump" id="jump" type="button">Nhảy</button>
+        </div>
+      </div>
+
+      <footer class="controls" aria-label="Phím điều khiển">
+        <div><kbd>W A S D</kbd><span>Di chuyển</span></div>
+        <div><kbd>SPACE</kbd><span>Nhảy</span></div>
+        <div><kbd>SHIFT</kbd><span>Lướt</span></div>
+        <div><kbd>J</kbd><span>Bắn</span></div>
+        <span class="view-mode" id="view-mode" hidden>KHỐI XÁM</span>
+      </footer>
+      <div class="toast" id="toast" role="status" hidden></div>
+    </main>
+    <script type="module" src="./src/prototype3d/main.ts"></script>
+  </body>
+</html>

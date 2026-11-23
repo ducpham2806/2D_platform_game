@@ -13,7 +13,7 @@
 1. Khi ghi kết quả G1, ghi rõ commit đã dùng. Link Pages `?gate=1` mở chế độ chơi thử của bản đang đăng. PR #9 xử lý bằng cách chuyển từng phần theo `stories/EP-21-chuyen-PR9.md` (phương án A đã chọn 14/11).
 2. Chơi thử cổng Prototype với 5 người, ≥ 3 người cảm ứng: `05-Cong-Prototype.md` mục 3; ghi kết quả vào mục 7.
 3. Chọn kênh gửi dữ liệu đo lường (`adr/ADR-002-do-luong-mvp.md`).
-4. Asset 3D: đã có đề xuất phòng thử 3D platformer với Kai và kit địa hình. Xem mục 5 của `adr/ADR-003-do-hoa-25d-threejs.md` để chọn phạm vi thử và tiêu chí đo.
+4. Chơi thử phòng 3D ST-22-06 trên `codex/asset-3d-plan`. Ghi các lần rơi vì đọc sai chiều sâu và đo FPS trên điện thoại thật theo `adr/ADR-003-do-hoa-25d-threejs.md` mục 5.
 5. Xem lại quyết định đã chốt theo ủy quyền: `09-Quyet-dinh-cho-duyet.md`.
 6. ~~Chọn hướng đồ họa~~: đã chọn **2.5D thời gian thực three.js** (14/11). Demo `game/demo-25d.html`, video `qa/DEMO-25D/`; ADR-003 (Proposed), EP-22. Còn: thử demo trên điện thoại (sau đợt thử G1, khi demo lên Pages).
 
@@ -27,11 +27,11 @@ Mỗi việc: viết Story trước (`/story-readiness`, mẫu Story của Game 
 4. EP-15 (`stories/EP-15-stage-2-4.md`): ST-15-01a/b/c, ST-15-02…06, ST-15-08a, ST-15-09 và ST-15-14…16 đã xong. Tiếp theo ST-15-10 (Lumen), ST-15-13 (chỉ số vật lý và phòng thử).
 5. EP-12 AudioService (âm tạm lấy từ PR #9, ST-21-03); rồi phần EP-14 không đụng lớp nút cảm ứng (QB-90, QB-100, hộp chữ, chuỗi vi/en ST-21-06).
 6. EP-21: ST-21-02 smoke check (sau tag). ST-21-01 (QB-88) đã xong; ST-21-05 (hình vẽ bằng mã) bỏ.
-7. EP-22 đồ họa 2.5D (`stories/EP-22-do-hoa-25d.md`): ~~ST-22-01 demo~~ xong (14/11); tiếp ST-22-02 đo trên máy thật, ST-22-03 duyệt ADR-003.
+7. EP-22 (`stories/EP-22-do-hoa-25d.md`): demo 2.5D (ST-22-01) và phòng thử 3D (ST-22-06) đã xong. Còn đo trên máy thật và duyệt ADR-003.
 
 ## Asset
 
-`game/public/` mới có `data/`; chưa có asset nào. Game chạy bằng hình khối. PR #9 (chưa merge) có bộ hình vẽ bằng mã, âm thanh tổng hợp, smoke check, chuỗi vi/en: kế hoạch chuyển từng phần ở `stories/EP-21-chuyen-PR9.md`; phần hình chờ người dùng chọn hướng đồ họa (`09-Quyet-dinh-cho-duyet.md` mục 3, ảnh so sánh ở `qa/ST-21-05/`). Danh sách và mốc asset: `05-Assets/manifest.csv` (P0 Prototype, P1 Vertical slice, P2a Stage 2–4 thuộc MVP, P2b Hub/NPC thuộc Alpha).
+Bản G1 dùng hình khối. Nguồn Blender của Kai và kit phòng thử ở `05-Assets/prototype-3d/`, GLB ở `game/public/assets/prototype3d/`. Lộ trình chuyển PR #9 ở `stories/EP-21-chuyen-PR9.md`. Danh sách asset chiến dịch ở `05-Assets/manifest.csv`.
 
 ## Đọc gì theo loại việc
 

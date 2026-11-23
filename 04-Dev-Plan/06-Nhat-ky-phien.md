@@ -25,6 +25,19 @@ Mẫu:
 
 ---
 
+## 2026-11-23: ST-22-06 Phòng thử 3D và bộ asset Kai
+
+- **Nhánh:** `codex/asset-3d-plan`, tiếp từ `ac8b422`.
+- **Mục tiêu:** thử gameplay 3D X/Z thật và camera bám góc 3/4 trong một tuyến 60–90 giây.
+- **Đã làm:** hai dãy bục lệch trục, Arc Cannon bắn mở cổng, lướt, hai checkpoint, hồi sinh và thống kê lượt. Có cần cảm ứng, khối xám và chế độ chất lượng thấp.
+- **Asset:** Kai low-poly 2.020 tam giác, rig 11 xương, bảy clip và điểm nòng. Kit có bốn mô-đun sàn, bục, mép và vách. Nguồn Blender và GLB ở [thư mục asset](../05-Assets/prototype-3d/README.md).
+- **File chính:** `game/prototype-3d.html`, `03-Data/prototype3d.json`, `game/src/logic/prototype3d/` và `game/src/prototype3d/`.
+- **Quyết định:** dùng trang riêng và tách luật di chuyển, va chạm khỏi model. Cổng G1 tiếp tục qua trang Phaser.
+- **Lỗi đã sửa:** lượt bàn phím đầu chỉ dài 45 s, mở rộng vòng cầu cuối để thử đọc chiều sâu khi đổi hướng. Nâng nhẹ phần trang trí sàn để tránh chồng mặt.
+- **Kiểm tra:** 744 test, lint, format, build, docs-check và gate-flow đạt. Chromium bàn phím 64,7 s, Pixel 7 ngang giả lập 66,3 s và một lần rơi chủ động. Cả hai lượt có 0 lỗi console. [Kịch bản và ảnh](qa/ST-22-06/README.md).
+- **Còn lại:** cần người chơi thử và đo tải, FPS trên Android và iPhone thật theo ADR-003 mục 5.
+- **Tiếp theo:** khi có kết quả máy thật, dùng số lần rơi và các đoạn khó đọc để chốt camera và phạm vi asset tiếp theo.
+
 ## 2026-11-23: Khởi động kế hoạch asset 3D
 
 - **Nhánh:** `codex/asset-3d-plan` từ `main` ở `6eb3e41`.
@@ -41,14 +54,3 @@ Mẫu:
 - **G1:** Tag `gate-r1` giữ mốc `eeb8ca1`. Liên kết Pages dựng theo `main`, nên khi ghi kết quả G1 phải ghi commit đã thử.
 - **Kiểm tra:** 736 test, lint, build, docs-check và gate-flow đạt trên nhánh phát triển. CI của PR #12 phát hiện một bảng Markdown chưa qua Prettier trong `game/maps/README.md`. Đã chuẩn hóa bảng và chạy lại các kiểm tra.
 - **Tiếp theo:** Thu kết quả chơi thử G1 và tiếp ST-15-10 (Lumen) theo kế hoạch.
-
-## 2026-11-22: ST-15-09 Prism Sentinel và Gale Roc
-
-- **Nhánh:** `ccr-9de01342-2046rb`, từ `f9a6d11`. G1 tiếp tục trên `main`.
-- **Sentinel:** Tán Sắc và Lao Lăng Kính. Tia Phản Xạ ở pha hai dùng chung `LaserPath`; xoay gương trong lúc báo có thể trừ 10 máu và choáng 1,5 s. Tia Kép mở hai vạch, xung hai đảo góc sau 0,4 s.
-- **Roc:** Bổ Nhào khóa hướng, đáp sàn hở 1 s, pha hai bổ nối báo 0,5 s và mưa tám lông chừa hai khe rộng hai ô. Thử thách có hai sóng đất. Vỗ Cánh bắn ba lông và phát trạng thái gió.
-- **Phòng khóa:** hai mini-boss dùng `Boss` và `RoomBoss`. Dựng lại nếu chưa hạ, giữ cửa khi xong. Thưởng 110/40 và 270/60 gốc, nhân độ khó. Chặn bắn ngoài khung và chỉ dọn đạn của đúng mini-boss.
-- **Quyết định:** Sentinel phát tia từ đầu dẫn phía trên gương để phản đòn bằng nhánh ngang. Tách số máu Kai khỏi tên mini-boss trên HUD sau khi xem ảnh.
-- **Kiểm tra:** 736 test, lint, format, build, docs-check, gate-flow. Chromium PC và Pixel 7 ngang giả lập, 0 lỗi console. [Ảnh](qa/ST-15-09/README.md).
-- **Còn lại:** Lực đẩy của Vỗ Cánh nối `WindZone` ở ST-15-08b. Phòng chiến dịch ở EP-17.
-- **Tiếp theo:** ST-15-10 (Lumen) làm được trước G1.

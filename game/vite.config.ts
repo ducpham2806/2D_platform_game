@@ -16,6 +16,7 @@ export default defineConfig({
       input: {
         main: fileURLToPath(new URL('./index.html', import.meta.url)),
         demo25d: fileURLToPath(new URL('./demo-25d.html', import.meta.url)),
+        prototype3d: fileURLToPath(new URL('./prototype-3d.html', import.meta.url)),
       },
     },
     // Phaser nặng khoảng 1,2 MB đã nén nhỏ; cảnh báo kích thước chunk ở mức đó là bình thường.

@@ -63,6 +63,7 @@ src/
   scenes/                 Boot → Preload → Menu, Hub, Stage, Controls, Playtest (kết quả chơi thử)
   demo25d/                demo 2.5D three.js (EP-22, ADR-003): trang riêng demo-25d.html dựng phòng Thorna từ StageWorld
                           thật (coords thuần có test, input, stage3d, actors, main: camera, bloom, tự chơi, quay từng khung)
+  prototype3d/            phòng thử ST-22-06 (prototype-3d.html), camera 3/4 và GLB. Luật X/Z ở logic/prototype3d/.
   scenes/telemetry/       lớp nối đo lường (EP-13): telemetry-service (bật bằng ?debug=1&telemetry=1, session_start,
                           boot_timing, lỗi trang), stage-telemetry (StageTracker, FrameStats, hướng dẫn, gợi ý NOVA)
   scenes/stage/           vẽ màn chơi (renderer, kẻ địch, vật phẩm), HUD vẽ theo HudModel, menu tạm dừng,
