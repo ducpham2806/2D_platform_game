@@ -1,36 +1,35 @@
 # Bắt đầu phiên (đọc file này trước)
 
-*Cập nhật 14/11/2026. Giữ ≤ 60 dòng; sửa ở cuối mỗi phiên nếu mốc, việc chờ hay việc tiếp theo đổi.*
+*Cập nhật 21/11/2026. Giữ ≤ 60 dòng; sửa ở cuối mỗi phiên nếu mốc, việc chờ hay việc tiếp theo đổi.*
 
 ## Đang ở đâu
 
 - **Mốc:** Giai đoạn 1. Code Prototype và phần MVP không phụ thuộc cảm giác đã xong (EP-08, 09, 10). **Đang chờ cổng Prototype (G1).**
-- **Nhánh làm việc:** `ccr-9de01342-2046rb`. PR #10 đã merge vào `main` (`eeb8ca1`, 14/11); nhánh tiếp tục từ đó, chỉ merge lại sau đợt thử G1. Chưa có tag nào.
+- **Bản thử:** tag `gate-r1` trỏ tới `eeb8ca1` (PR #10). `main` trên GitHub ở `c458643` (PR #11, chỉ tài liệu). CI #53 và Pages #8 đạt ngày 15/11 theo giờ Việt Nam.
+- **Nhánh phát triển:** `ccr-9de01342-2046rb` ở `83f6d6b`, hơn `main` 13 commit. Có lõi đo lường và báo cáo MVP (EP-13), hộp chữ và kiểm thử luật biên (EP-14), an toàn boss và dữ liệu nền Stage 2 (EP-15), demo 2.5D phòng Thorna (EP-22).
 - **Kế hoạch:** `01-Ke-hoach-lam-viec.md` (sprint S9–S21, epic EP-11…EP-20, ba cổng G1, G2, G3).
 
 ## Chờ người dùng (đường găng)
 
-1. ~~Merge PR #10~~ xong (14/11, `main` = `eeb8ca1`). Repo công khai, Pages đã bật; bản `eeb8ca1` đã đăng ở `https://ducpham2806.github.io/2D_platform_game/?gate=1` (14/11). Còn: người dùng mở thử trên điện thoại; **tạo tag `gate-r1` trên GitHub** (Releases → Draft a new release → tag `gate-r1`, Target chọn commit `eeb8ca1`): môi trường của Claude không đẩy được tag (proxy trả 403). Code mới tiếp tục trên nhánh này, chỉ merge vào `main` sau đợt thử. **Không merge PR #9** (nhánh của phiên 13/11, tách từ `main` song song, xung đột 31 file); người dùng chọn cách A (14/11): chuyển từng phần sau tag (`stories/EP-21-chuyen-PR9.md`), rồi đóng PR #9.
-2. Chơi thử cổng Prototype với 5 người, ≥ 3 người cảm ứng: `05-Cong-Prototype.md` mục 3; ghi kết quả vào mục 7.
+1. Mở [bản thử G1](https://ducpham2806.github.io/2D_platform_game/?gate=1) trên điện thoại để kiểm tra trước khi phát link. Nhánh phát triển chờ hết đợt thử mới merge. PR #9 vẫn mở, xử lý bằng cách chuyển từng phần theo `stories/EP-21-chuyen-PR9.md`, rồi đóng PR.
+2. Chơi thử cổng Prototype với 5 người, gồm ít nhất 3 người chơi cảm ứng và 2 người chơi trên máy tính. Quy trình ở `05-Cong-Prototype.md` mục 4, ghi kết quả vào mục 7. Chưa thấy kết quả trong repo.
 3. Chọn kênh gửi dữ liệu đo lường (`adr/ADR-002-do-luong-mvp.md`).
-4. Asset nhóm P0 (10 sheet): `05-Assets/01-Huong-dan-asset.md`, sau khi chọn hướng đồ họa (mục 6).
+4. Asset 3D chờ duyệt phương án chuyển đổi trong ADR-003 (EP-22).
 5. Xem lại quyết định đã chốt theo ủy quyền: `09-Quyet-dinh-cho-duyet.md`.
-6. Chọn hướng đồ họa: pixel art (bộ hình PR #9) hay 2.5D (`09-…` mục 3; ảnh `qa/ST-21-05/`).
+6. Đã chọn 2.5D thời gian thực bằng three.js. Demo trên nhánh phát triển cần đo hiệu năng trên Android và iPhone thật trước khi duyệt ADR-003.
 
 ## Việc code tiếp theo (theo duyệt Technical Director + Producer)
 
 Mỗi việc: viết Story trước (`/story-readiness`, mẫu Story của Game Studio Agent, nhúng mã `QB-xx`), rồi code.
 
-1. ~~Safe-area (QB-92)~~ xong (ST-11-01, 14/11). Còn: người dùng merge và tag `gate-r1` (đóng băng bản thử), rồi phát link.
-2. EP-13 lõi đo lường (logger thuần, bộ đệm, xuất JSON): không chờ ADR-002, dùng được cho G2.
-3. Test khóa các luật đã code nhưng chưa test, gắn mã QB vào tên test; sửa QB-72 (dừng đồng hồ khi tạm dừng), QB-70 (gợi ý bị che thì hiện lại).
-4. EP-15: ST-15-14 (QB-14, QB-31), rồi ST-15-01a (dữ liệu Stage 2), ST-15-02.
-5. EP-12 AudioService (âm tạm lấy từ PR #9, ST-21-03); rồi phần EP-14 không đụng lớp nút cảm ứng (QB-90, QB-100, hộp chữ, chuỗi vi/en ST-21-06).
-6. EP-21: ST-21-02 smoke check (sau tag); ST-21-05 đồ họa khi người dùng chọn hướng. ST-21-01 (QB-88) đã xong.
+1. EP-15: tiếp ST-15-02 (laser, gương, cảm biến). ST-15-14 (an toàn boss) và ST-15-01a (dữ liệu Stage 2) đã có trên nhánh phát triển.
+2. EP-13: lõi đo lường, xuất JSON và báo cáo đã có trên nhánh phát triển. ST-13-03, 04 chờ ADR-002.
+3. EP-12: AudioService (âm tạm lấy từ PR #9, ST-21-03). EP-14: phần giao diện còn lại (QB-90, QB-100, chuỗi vi/en ST-21-06). Hộp chữ (ST-14-08) và kiểm thử luật biên (ST-QB-01) đã có trên nhánh phát triển.
+4. EP-21: tiếp smoke check (ST-21-02); ST-21-01 (QB-88) đã xong. EP-22: sau đợt thử G1, đo demo trên máy thật (ST-22-02), rồi duyệt cách chuyển lớp hiển thị (ST-22-03).
 
 ## Asset
 
-`game/public/` mới có `data/`; chưa có asset nào. Game chạy bằng hình khối. PR #9 (chưa merge) có bộ hình vẽ bằng mã, âm thanh tổng hợp, smoke check, chuỗi vi/en: kế hoạch chuyển từng phần ở `stories/EP-21-chuyen-PR9.md`; phần hình chờ người dùng chọn hướng đồ họa (`09-Quyet-dinh-cho-duyet.md` mục 3, ảnh so sánh ở `qa/ST-21-05/`). Danh sách và mốc asset: `05-Assets/manifest.csv` (P0 Prototype, P1 Vertical slice, P2a Stage 2–4 thuộc MVP, P2b Hub/NPC thuộc Alpha).
+Bản thử G1 dùng hình khối. Danh sách `05-Assets/manifest.csv` vẫn theo hướng pixel art. Cập nhật quy trình model glTF sau khi duyệt ADR-003.
 
 ## Đọc gì theo loại việc
 

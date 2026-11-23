@@ -4,6 +4,22 @@ Các mục cũ chuyển từ `04-Dev-Plan/06-Nhat-ky-phien.md`, mới nhất ở
 
 ---
 
+## 2026-11-14: Rà soát toàn bộ tài liệu, quy tắc biên, tài liệu hệ thống còn thiếu, kế hoạch S9–S21
+
+- **Nhánh / commit:** `ccr-9de01342-2046rb`; `84ac8b2` (sửa code), `3ec2438` … commit đóng phiên (tài liệu).
+- **Mục tiêu:** người dùng giao kiểm tra toàn bộ tài liệu (nhất là GDD), mô tả mọi ngóc ngách, bổ sung chỗ thiếu, kiểm mâu thuẫn và quy tắc, tối ưu đầu vào, kế hoạch chi tiết, theo quy trình Game Studio Agent.
+- **Đã làm:**
+  - Rà soát 4 nhóm (`/review-all-gdds`, `/consistency-check`): lõi, kinh tế, giao diện và lời thoại, quy trình. Sửa mâu thuẫn ở GDD chính (0.8), 02–11, JSON.
+  - Tài liệu mới: 12 Âm thanh, 13 Đo lường MVP, 14 Cài đặt, 15 Nhiệm vụ phụ, 16 Stage 2–4 (nháp), 17 Quy tắc biên (92 luật QB), `08-Cong-MVP.md`, ADR-002, `02-Wireframes/LOI-THOI.md`.
+  - Duyệt Creative Director và Technical Director + Producer: mọi file "duyệt kèm sửa", đã sửa.
+  - Kế hoạch S9–S21, EP-11…EP-20, ba cổng G1/G2/G3. Đầu vào: `00-Bat-dau.md`, CLAUDE.md gọn, Story xong vào `stories/xong/`, `npm run docs-check` (CI).
+- **Sửa code:** boss và Kai hết máu cùng bước thì thắng (QB-30); gợi ý NOVA hiện được giữa trận boss (QB-70…72, 82); chết để cày EXP, Core Bit bị chặn (QB-20); gợi ý thu nhập Quầy đúng màn và độ khó (QB-65); nhãn tab Xưởng (QB-132); `regenDelayMul` 0,6667.
+- **Quyết định:** chốt theo ủy quyền, danh sách ở `09-Quyet-dinh-cho-duyet.md` (Thorna 45–65 s, Mk II thay Mk I, hết MVP cấp 10, Nano Cell, bỏ Data Chip khỏi live-ops, chỉ màn ngang…).
+- **Lỗi tìm thấy / đã sửa:** 4 lỗi code ở trên; một commit tạm lọt 1 test đỏ (test hướng dẫn theo S08 6 s) và `__pycache__`, đã sửa ngay; 4 agent dừng vì giới hạn sử dụng, đã cho chạy tiếp.
+- **Kiểm tra:** 415 test, lint, format, build, docs-check đạt; chạy thử trình duyệt: gợi ý NOVA trong trận boss, gợi ý Quầy, tab Xưởng (ảnh ở `qa/ST-09-04`, `qa/ST-08-05`).
+- **Còn dở:** người dùng chọn kênh đo lường (ADR-002), xem `09-Quyet-dinh-cho-duyet.md`; tài liệu 12–14 còn Draft (duyệt khi mở EP-12/13/14); chưa test nào mang mã QB.
+- **Tiếp theo:** 1. Safe-area (QB-92) rồi đóng băng bản thử G1 (`gate-r1`), chơi thử 5 người. 2. EP-13 lõi đo lường. 3. Test các luật QB đã code. 4. EP-15 ST-15-14, ST-15-01a. 5. EP-12 âm thanh.
+
 ## 2026-11-14: EP-10 ba độ khó; chốt EP-09 theo duyệt Game Studio Agent
 
 - **Nhánh / commit:** `ccr-9de01342-2046rb`; `8fc56bb` (bản nháp), `a22fd10`, `6677f97`, `6d98fdc`, `b48a892`, `930bdb6` (ST-10-01…05), `36f7499` (EP-09 sửa theo duyệt), commit ST-10-06 và tài liệu.
