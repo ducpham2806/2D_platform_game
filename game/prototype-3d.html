@@ -5,9 +5,25 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
     <meta name="theme-color" content="#081822" />
     <title>Phòng thử 3D · Cyber Vanguard</title>
+    <style>
+      #file-help {
+        max-width: 42rem;
+        margin: 4rem auto;
+        padding: 0 1.5rem;
+        font:
+          1rem/1.6 system-ui,
+          sans-serif;
+      }
+    </style>
   </head>
   <body data-phase="loading">
-    <main class="lab" aria-label="Phòng thử 3D">
+    <main id="file-help" hidden>
+      <h1>Mở Trạm phản lực qua máy chủ</h1>
+      <p>Trình duyệt cần địa chỉ HTTP để nạp mã trò chơi, dữ liệu và model Kai.</p>
+      <p><a href="http://127.0.0.1:4186/prototype-3d.html">Mở bản chơi thử trên Mac</a></p>
+      <p>Trên điện thoại, dùng link Wi-Fi của bản đo.</p>
+    </main>
+    <main class="lab" id="prototype-room" aria-label="Phòng thử 3D">
       <canvas id="viewport" aria-label="Tuyến vượt chướng ngại của Kai"></canvas>
       <div class="shade" aria-hidden="true"></div>
       <header class="hud">
@@ -133,6 +149,12 @@
         </label>
       </form>
     </dialog>
+    <script>
+      if (location.protocol === 'file:') {
+        document.getElementById('prototype-room').hidden = true;
+        document.getElementById('file-help').hidden = false;
+      }
+    </script>
     <script type="module" src="./src/prototype3d/main.ts"></script>
   </body>
 </html>

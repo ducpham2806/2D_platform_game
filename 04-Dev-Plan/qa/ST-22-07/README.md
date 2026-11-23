@@ -25,6 +25,8 @@ Lượt kiểm đường truyền từ MacBook hoàn thành tuyến và lưu bi�
 
 Kiểm ngày 24/11 trên Pixel 7 giả lập. Phản hồi HTTP 200 trả về trang HTML không được tính là đã nhận báo cáo. Tải lại trang khôi phục đúng số đo và phản hồi. Gửi lại nhận HTTP 201 và ghi đúng báo cáo. Khởi động lại máy chủ với cùng mã vẫn đọc được tệp đã ghi. [Ảnh mở lại bản lưu](touch-04-khoi-phuc-bao-cao.png)
 
+Chrome mở trực tiếp tệp HTML sẽ hiện hướng dẫn và link HTTP cho Mac. Đã kiểm cả tệp nguồn và tệp build. Bấm link Mac vào được phòng, địa chỉ Wi-Fi vào được phòng với cần cảm ứng trên Pixel 7 giả lập. [Ảnh hướng dẫn mở qua HTTP](pc-05-huong-dan-mo-qua-http.png)
+
 ## Kết quả máy thật
 
 Ngày 24/11, người chơi báo đã bấm **Lưu kết quả** trên điện thoại. Khi kiểm tra, đường nhận cũ đã ngừng lắng nghe và tệp của phiên còn trống. Đã mở lại cùng đường nhận để thử gửi lại lượt đó. Chờ báo cáo điện thoại để ghi tải, FPS và nhận xét điểm đáp.

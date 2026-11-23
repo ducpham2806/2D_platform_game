@@ -36,7 +36,9 @@ Mở http://localhost:5173. Bản đã đăng: https://ducpham2806.github.io/2D_
 
 ## Phòng thử 3D
 
-Mở [Trạm phản lực](http://localhost:5173/prototype-3d.html) khi Vite đang chạy. Dùng WASD hoặc phím mũi tên để đi theo góc camera, Space để nhảy, Shift để lướt, J để bắn và P hoặc Esc để tạm dừng. Trên điện thoại xoay ngang, dùng cần và các nút trên màn hình.
+Mở [Trạm phản lực](http://localhost:5173/prototype-3d.html) khi Vite đang chạy. Đường dẫn `file://` chỉ hiện hướng dẫn mở qua HTTP. Để mở bản build trên Mac, chạy `npm run preview -- --host 127.0.0.1 --port 4186` và mở [bản chơi thử](http://127.0.0.1:4186/prototype-3d.html).
+
+Dùng WASD hoặc phím mũi tên để đi theo góc camera, Space để nhảy, Shift để lướt, J để bắn và P hoặc Esc để tạm dừng. Trên điện thoại xoay ngang, dùng cần và các nút trên màn hình.
 
 Thêm `?gray=1` để xem cùng tuyến dưới dạng khối xám, hoặc `?q=low` để giảm chất lượng vẽ. Xem [nguồn Blender và tệp GLB](../05-Assets/prototype-3d/README.md) và [ảnh chạy thử](../04-Dev-Plan/qa/ST-22-06/README.md).
 

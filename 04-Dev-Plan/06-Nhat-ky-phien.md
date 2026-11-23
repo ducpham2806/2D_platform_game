@@ -25,6 +25,15 @@ Mẫu:
 
 ---
 
+## 2026-11-24: ST-22-07 Mở phòng thử qua HTTP
+
+- **Nhánh:** `codex/asset-3d-plan`, tiếp từ `769a520`.
+- **Lỗi:** ảnh người chơi cho thấy Chrome mở tệp nguồn `prototype-3d.html` qua `file://`. JavaScript và model cần máy chủ HTTP nên giao diện dừng ở thông báo đang nạp.
+- **Đã làm:** mở bản preview Mac tại cổng 4186, kiểm bản đo Wi-Fi cổng 4187 và giữ cùng mã phiên. Tệp HTML mở trực tiếp hiện hướng dẫn và link sang bản Mac.
+- **File chính:** `game/prototype-3d.html`, `game/README.md` và [ảnh QA](qa/ST-22-07/pc-05-huong-dan-mo-qua-http.png).
+- **Kiểm tra:** 745 test, lint, format, build, docs-check đạt. Chromium xác nhận tệp nguồn và build đều hiện hướng dẫn, link Mac vào chơi và link Wi-Fi hiện cần cảm ứng trên Pixel 7 giả lập.
+- **Còn lại:** chờ nhận số đo và nhận xét từ điện thoại thật.
+
 ## 2026-11-24: ST-22-07 Kiểm hoạt ảnh Kai và khôi phục báo cáo
 
 - **Nhánh:** `codex/asset-3d-plan`, tiếp từ `f10bba9`.
@@ -47,16 +56,3 @@ Mẫu:
 - **Kiểm tra:** 745 test, lint, format, build và docs-check đạt. Test three.js giữ chạy ba vòng, xác nhận hai chân đổi bên trong mỗi vòng. Pixel 7 giả lập xác nhận bấm giữ cần, về `Idle` và lưu báo cáo sau khi tạm dừng. Hồi quy G1 đạt trên bản thêm bộ đo.
 - **Còn lại:** chờ người chơi gửi lượt điện thoại qua LAN.
 - **Tiếp theo:** đối chiếu FPS và tải với ADR-003. Xem nhận xét điểm đáp cùng các lần rơi trước khi điều chỉnh camera.
-
-## 2026-11-23: ST-22-06 Phòng thử 3D và bộ asset Kai
-
-- **Nhánh:** `codex/asset-3d-plan`, tiếp từ `ac8b422`.
-- **Mục tiêu:** thử gameplay 3D X/Z thật và camera bám góc 3/4 trong một tuyến 60–90 giây.
-- **Đã làm:** hai dãy bục lệch trục, Arc Cannon bắn mở cổng, lướt, hai checkpoint, hồi sinh và thống kê lượt. Có cần cảm ứng, khối xám và chế độ chất lượng thấp.
-- **Asset:** Kai low-poly 2.020 tam giác, rig 11 xương, bảy clip và điểm nòng. Kit có bốn mô-đun sàn, bục, mép và vách. Nguồn Blender và GLB ở [thư mục asset](../05-Assets/prototype-3d/README.md).
-- **File chính:** `game/prototype-3d.html`, `03-Data/prototype3d.json`, `game/src/logic/prototype3d/` và `game/src/prototype3d/`.
-- **Quyết định:** dùng trang riêng và tách luật di chuyển, va chạm khỏi model. Cổng G1 tiếp tục qua trang Phaser.
-- **Lỗi đã sửa:** lượt bàn phím đầu chỉ dài 45 s, mở rộng vòng cầu cuối để thử đọc chiều sâu khi đổi hướng. Nâng nhẹ phần trang trí sàn để tránh chồng mặt.
-- **Kiểm tra:** 744 test, lint, format, build, docs-check và gate-flow đạt. Chromium bàn phím 64,7 s, Pixel 7 ngang giả lập 66,3 s và một lần rơi chủ động. Cả hai lượt có 0 lỗi console. [Kịch bản và ảnh](qa/ST-22-06/README.md).
-- **Còn lại:** cần người chơi thử và đo tải, FPS trên Android và iPhone thật theo ADR-003 mục 5.
-- **Tiếp theo:** khi có kết quả máy thật, dùng số lần rơi và các đoạn khó đọc để chốt camera và phạm vi asset tiếp theo.
