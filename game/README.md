@@ -40,6 +40,8 @@ Mở [Trạm phản lực](http://localhost:5173/prototype-3d.html) khi Vite đa
 
 Thêm `?gray=1` để xem cùng tuyến dưới dạng khối xám, hoặc `?q=low` để giảm chất lượng vẽ. Xem [nguồn Blender và tệp GLB](../05-Assets/prototype-3d/README.md) và [ảnh chạy thử](../04-Dev-Plan/qa/ST-22-06/README.md).
 
+Để đo tải và FPS trên điện thoại cùng Wi-Fi, chạy `npm run build` và `node scripts/prototype3d-lan.mjs <IPv4-cua-may> 4187`. Mở link in ra và bấm **Kết quả đo** cuối lượt. [Quy trình và kết quả máy thật](../04-Dev-Plan/qa/ST-22-07/README.md).
+
 ## Kiểm tra
 
 ```

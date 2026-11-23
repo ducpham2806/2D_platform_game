@@ -53,6 +53,7 @@
             Bắt đầu <span aria-hidden="true">↗</span>
           </button>
           <button class="secondary" type="button" id="restart" hidden>Chơi lại</button>
+          <button class="secondary" type="button" id="measure-open" hidden>Kết quả đo</button>
         </div>
       </section>
 
@@ -76,6 +77,53 @@
       </footer>
       <div class="toast" id="toast" role="status" hidden></div>
     </main>
+    <dialog id="measure-dialog" aria-labelledby="measure-title">
+      <form id="measure-form">
+        <h2 id="measure-title">Kết quả chơi thử</h2>
+        <p id="measure-stats"></p>
+        <label>
+          Điện thoại
+          <input name="device" type="text" maxlength="80" placeholder="VD: iPhone 14" />
+        </label>
+        <label>
+          Anh có dễ nhìn ra điểm đáp không?
+          <select name="landing" required>
+            <option value="">Chọn một mức</option>
+            <option value="clear">Dễ nhìn</option>
+            <option value="sometimes-unclear">Có lúc khó nhìn</option>
+            <option value="unclear">Khó nhìn</option>
+            <option value="not-tested">Chưa qua đoạn nhảy</option>
+          </select>
+        </label>
+        <label>
+          Đoạn khó nhìn nhất
+          <select name="section">
+            <option value="">Chọn nếu có</option>
+            <option value="cross">Dãy bục đầu</option>
+            <option value="ridge">Dãy bục lên sàn trên</option>
+            <option value="exit">Vòng cầu cuối</option>
+          </select>
+        </label>
+        <label>
+          Ghi chú (không bắt buộc)
+          <input
+            name="notes"
+            type="text"
+            maxlength="240"
+            placeholder="VD: khó ước lượng mép sau của bục"
+          />
+        </label>
+        <div class="actions">
+          <button class="primary" type="submit" id="measure-save">Lưu kết quả</button>
+          <button class="secondary" type="button" id="measure-close">Đóng</button>
+        </div>
+        <p id="measure-status" role="status" hidden></p>
+        <label id="measure-export" hidden>
+          Dữ liệu kết quả
+          <textarea id="measure-json" readonly rows="3"></textarea>
+        </label>
+      </form>
+    </dialog>
     <script type="module" src="./src/prototype3d/main.ts"></script>
   </body>
 </html>

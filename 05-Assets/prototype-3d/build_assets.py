@@ -257,16 +257,22 @@ def terrain_model():
 
 
 def save(selected, name, animations):
-    OUT.mkdir(parents=True, exist_ok=True)
     bpy.ops.object.select_all(action="DESELECT")
     selected.select_set(True)
     bpy.context.view_layer.objects.active = selected
     bpy.ops.wm.save_as_mainfile(filepath=str(SOURCE / f"{name}.blend"), compress=True)
+    export_glb(name, animations)
+
+
+def export_glb(name, animations):
+    OUT.mkdir(parents=True, exist_ok=True)
     bpy.ops.export_scene.gltf(
         filepath=str(OUT / f"{name}.glb"),
         export_format="GLB",
         export_animations=animations,
         export_animation_mode="NLA_TRACKS",
+        # Each runtime clip starts at zero, regardless of where its strip sits in Blender.
+        export_anim_slide_to_zero=True,
         export_skins=animations,
     )
 

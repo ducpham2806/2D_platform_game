@@ -2,6 +2,7 @@ import { parsePrototype3d } from '../core/prototype3d-config';
 import { FixedStep } from '../logic/fixed-step';
 import { PrototypeRoom, type Objective3 } from '../logic/prototype3d/room';
 import { PrototypeInput } from './input';
+import { RoomMeasurement } from './measurement';
 import { loadModels } from './models';
 import { PrototypeView } from './view';
 import './style.css';
@@ -46,6 +47,9 @@ const input = new PrototypeInput(
 const params = new URLSearchParams(location.search);
 const gray = params.get('gray') === '1';
 const low = params.get('q') === 'low';
+const measurement =
+  params.get('measure') === '1' ? new RoomMeasurement(low, gray, params.get('session')) : undefined;
+const openMeasurement = element<HTMLButtonElement>('measure-open');
 
 let phase: Phase = 'loading';
 let world: PrototypeRoom | undefined;
@@ -70,6 +74,7 @@ function phaseTo(value: Phase, error?: string) {
   input.enabled = value === 'playing';
   input.clear();
   clock?.reset();
+  measurement?.breakFrames();
   const live = value === 'playing';
   liveStats.hidden = !(live || value === 'paused' || value === 'finished');
   mission.hidden = !live;
@@ -79,6 +84,7 @@ function phaseTo(value: Phase, error?: string) {
   results.hidden = value !== 'finished';
   proceed.hidden = value === 'loading';
   restart.hidden = value !== 'paused';
+  openMeasurement.hidden = !measurement || (value !== 'paused' && value !== 'finished');
   toast.hidden = true;
   if (live) return;
   const headings = {
@@ -103,6 +109,7 @@ function start() {
   if (!world) return;
   world = new PrototypeRoom(world.config);
   view?.reset();
+  measurement?.restart();
   lastObjective = undefined;
   phaseTo('playing');
 }
@@ -124,6 +131,7 @@ function frame(now: number) {
   lastFrame = now;
   if (!world || !view || !clock) return;
   if (phase === 'playing') {
+    measurement?.frame(now);
     const oldCheckpoint = world.checkpoint,
       oldFalls = world.falls,
       oldRelay = world.relayPowered;
@@ -139,18 +147,23 @@ function frame(now: number) {
       detail.textContent = description;
       lastObjective = world.objective;
     }
-    if (world.falls > oldFalls)
+    if (world.falls > oldFalls) {
+      measurement?.fall(world.objective, world.falls - oldFalls);
       announce(world.checkpoint < 0 ? 'Quay lại điểm xuất phát' : 'Quay lại checkpoint', now);
-    else if (world.relayPowered !== oldRelay) announce('Cổng đã mở', now);
+    } else if (world.relayPowered !== oldRelay) announce('Cổng đã mở', now);
     else if (world.checkpoint > oldCheckpoint) announce('Đã lưu checkpoint', now);
     if (now > toastUntil) toast.hidden = true;
     if (world.finished) phaseTo('finished');
   }
   view.render(world, dt, now / 1000, phase === 'ready');
+  if (phase === 'ready') measurement?.ready();
   requestAnimationFrame(frame);
 }
 
 proceed.addEventListener('click', proceedWithPhase);
+openMeasurement.addEventListener('click', () => {
+  if (world) measurement?.open(world);
+});
 pause.addEventListener('click', () => {
   if (phase === 'playing') phaseTo('paused');
 });

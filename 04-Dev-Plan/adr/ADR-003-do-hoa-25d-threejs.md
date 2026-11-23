@@ -55,6 +55,6 @@ Kai và bộ địa hình sci-fi low-poly được dựng song song với phòng
 
 Giữ nguồn chỉnh sửa trong Blender và xuất `.glb` để thử bằng `GLTFLoader` của three.js. Ghi kích thước, hướng trước, gốc ở chân, tên clip và điểm gắn nòng của từng model. Model và animation đi theo trạng thái điều khiển. Va chạm và tính đòn thuộc lớp gameplay, nên kit địa hình và rig có thể dùng lại nếu chọn 2.5D. [Tài liệu hoạt ảnh three.js](https://threejs.org/manual/pages/animation-system.html)
 
-[Phòng thử ST-22-06](../stories/EP-22-do-hoa-25d.md#st-22-06-phòng-thử-3d-platformer-và-asset-mẫu) đã chạy trọn tuyến bằng bàn phím và Pixel 7 ngang giả lập. [Kết quả và ảnh chạy thử](../qa/ST-22-06/README.md) ghi thời lượng từng lượt. Đo tải và FPS trên máy thật còn chờ.
+[Phòng thử ST-22-06](../stories/EP-22-do-hoa-25d.md#st-22-06-phòng-thử-3d-platformer-và-asset-mẫu) đã chạy trọn tuyến bằng bàn phím và Pixel 7 ngang giả lập. [Kết quả và ảnh chạy thử](../qa/ST-22-06/README.md) ghi thời lượng từng lượt. [ST-22-07](../qa/ST-22-07/README.md) ghi tải, FPS và nhận xét điểm đáp trên điện thoại thật.
 
 Nếu phòng thử cho thấy chiều sâu tạo thêm lựa chọn nhảy, né hoặc tiếp cận mục tiêu, lập ADR riêng cho gameplay 3D và ước lượng lại camera, va chạm, nhắm bắn, bản đồ và AI. Dùng tài liệu hiện có làm nguồn cho nhân vật, thế giới, vũ khí và chỉ số, rồi kiểm lại các số ảnh hưởng đến cảm giác chơi. Nếu ưu tiên ra bản MVP sớm hoặc người chơi khó đọc chiều sâu trên điện thoại, đưa Kai và bộ địa hình vào demo 2.5D theo mục 3.

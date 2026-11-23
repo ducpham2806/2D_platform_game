@@ -277,6 +277,49 @@ h1 {
   margin-left: 12px;
 }
 
+#measure-dialog {
+  width: min(440px, calc(100% - 24px));
+  max-height: calc(100dvh - 24px);
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #132732;
+  color: #f0faf7;
+  overflow-y: auto;
+}
+
+#measure-dialog::backdrop {
+  background: rgb(4 14 22 / 74%);
+}
+
+#measure-form {
+  display: grid;
+  gap: 12px;
+}
+
+#measure-form h2,
+#measure-form p {
+  margin: 0;
+}
+
+#measure-form label {
+  display: grid;
+  gap: 4px;
+  font-size: 14px;
+}
+
+#measure-form :is(input, select, textarea) {
+  min-width: 0;
+  min-height: 38px;
+  padding: 7px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #0a1920;
+  color: #f0faf7;
+  font: inherit;
+  font-size: 16px;
+}
+
 .secondary {
   color: #effaf5;
   border-color: var(--border);

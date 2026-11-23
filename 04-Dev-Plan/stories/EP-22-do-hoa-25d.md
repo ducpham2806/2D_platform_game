@@ -11,6 +11,7 @@
 | ST-22-04 | Lớp vẽ three.js dùng chung cho mọi màn (tách từ demo), HUD và bảng HTML giữ nguyên | 22-03 | 2–3 phiên | Chưa |
 | ST-22-05 | Pipeline model glTF (Kai, kẻ địch, boss), hoạt ảnh xương, ngân sách tam giác/kết cấu | 22-03 | chưa ước lượng | Chưa |
 | ST-22-06 | Phòng thử 3D platformer và asset mẫu Kai, kit địa hình | Người dùng chọn thử 3D | 1 phiên | DONE (23/11/2026) |
+| ST-22-07 | Đo tải, FPS và khả năng đọc điểm đáp của phòng 3D trên điện thoại thật | 22-06, điện thoại cùng Wi-Fi | 1 phiên + người chơi | Đang làm |
 
 ## ST-22-01: Demo 2.5D
 
@@ -32,3 +33,9 @@
 - [x] Kiểm bàn phím và Pixel 7 ngang giả lập từ bắt đầu đến kết thúc. [Thời lượng, ảnh và phần còn chờ đo trên máy thật](../qa/ST-22-06/README.md).
 
 Chạy `npm run dev` trong `game/` và mở `/prototype-3d.html`. Thêm `?gray=1` để so hình khối với bản dùng model. [Nguồn và quy ước xuất asset](../../05-Assets/prototype-3d/README.md).
+
+## ST-22-07: Chạy thử phòng 3D trên điện thoại thật
+
+- [x] Bản đo ghi từ lúc mở trang đến khung 3D đầu tiên và FPS trong lượt chơi. Loại thời gian tạm dừng và tab ẩn.
+- [x] Biểu mẫu ghi mẫu máy, trình duyệt, mức chất lượng, nhận xét về điểm đáp và số lần rơi theo đoạn.
+- [ ] Chạy ít nhất một lượt trên điện thoại thật. [Quy trình và kết quả kiểm bộ đo](../qa/ST-22-07/README.md).

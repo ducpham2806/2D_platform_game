@@ -15,4 +15,4 @@ Mặt đi của sàn và bục tại z = 0 trong Blender. Chân vách tại z = 
 blender --background --python 05-Assets/prototype-3d/build_assets.py
 ```
 
-Script tái tạo cả hai nguồn `.blend` và hai bản `.glb`. Khi chỉnh asset thủ công, lưu nguồn trước rồi xuất GLB với tên mô-đun và clip như trong bảng.
+Script tái tạo cả hai nguồn `.blend` và hai bản `.glb`. Khi chỉnh asset thủ công, lưu nguồn trước rồi xuất GLB với tên mô-đun và clip như trong bảng. Trong tùy chọn xuất GLB, bật **Set All glTF Animation Starting at 0** để mỗi clip phát từ giây 0, dù các dải NLA đặt nối tiếp nhau trên timeline Blender.

@@ -1,8 +1,10 @@
 import { readFileSync } from 'node:fs';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { describe, expect, it } from 'vitest';
 import { parsePrototype3d } from '@/core/prototype3d-config';
 import { cameraMove, segmentHit, wallBounds } from '@/logic/prototype3d/geometry';
 import { PrototypeRoom, STILL_3D } from '@/logic/prototype3d/room';
+import { KaiActor } from '@/prototype3d/models';
 import roomData from '../../03-Data/prototype3d.json';
 
 const config = parsePrototype3d(roomData);
@@ -163,5 +165,32 @@ describe('Asset 3D mẫu', () => {
   it('kit có đủ bốn mô-đun theo tên dùng ở runtime', () => {
     const names = readGlb('terrain-kit').nodes.map((node) => node.name);
     expect(names).toEqual(expect.arrayContaining(['Floor', 'Platform', 'Edge', 'Wall']));
+  });
+
+  it('timeline riêng của mỗi clip bắt đầu ở 0 và hai chân chạy luân phiên mỗi vòng', async () => {
+    const bytes = readFileSync(new URL('../public/assets/prototype3d/kai.glb', import.meta.url));
+    const model = await new GLTFLoader().parseAsync(Uint8Array.from(bytes).buffer, '');
+    for (const clip of model.animations) {
+      for (const track of clip.tracks) expect(track.times[0], clip.name).toBeCloseTo(0, 4);
+    }
+    const run = model.animations.find((clip) => clip.name === 'Run')!;
+    expect(run.duration).toBeCloseTo(0.6);
+    const actor = new KaiActor(model);
+    const world = new PrototypeRoom(config);
+    const left = model.scene.getObjectByName('ThighL')!;
+    const right = model.scene.getObjectByName('ThighR')!;
+    const lift = () => left.quaternion.w ** 2 - right.quaternion.w ** 2;
+    const framesPerCycle = Math.round(run.duration / config.stepSec);
+    for (let cycle = 0; cycle < 3; cycle += 1) {
+      const strides: number[] = [];
+      for (let frame = 0; frame < framesPerCycle; frame += 1) {
+        world.step({ ...STILL_3D, z: -1 });
+        actor.update(world, config.stepSec, cycle === 0 && frame === 0);
+        strides.push(lift());
+      }
+      expect(world.clip).toBe('Run');
+      expect(Math.min(...strides)).toBeLessThan(-0.02);
+      expect(Math.max(...strides)).toBeGreaterThan(0.02);
+    }
   });
 });
