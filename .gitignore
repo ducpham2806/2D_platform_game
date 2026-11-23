@@ -3,6 +3,7 @@ game/node_modules/
 game/dist/
 game/public/data/
 game/coverage/
+game/.prototype3d-playtests/
 
 # graphify: đồ thị tri thức sinh lại được bằng `graphify update .`
 graphify-out/

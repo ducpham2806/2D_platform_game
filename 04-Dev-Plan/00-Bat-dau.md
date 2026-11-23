@@ -1,6 +1,6 @@
 # Bắt đầu phiên (đọc file này trước)
 
-*Cập nhật 23/11/2026. Giữ ≤ 60 dòng; sửa ở cuối mỗi phiên nếu mốc, việc chờ hay việc tiếp theo đổi.*
+*Cập nhật 24/11/2026. Giữ ≤ 60 dòng; sửa ở cuối mỗi phiên nếu mốc, việc chờ hay việc tiếp theo đổi.*
 
 ## Đang ở đâu
 
@@ -13,7 +13,7 @@
 1. Khi ghi kết quả G1, ghi rõ commit đã dùng. Link Pages `?gate=1` mở chế độ chơi thử của bản đang đăng. PR #9 xử lý bằng cách chuyển từng phần theo `stories/EP-21-chuyen-PR9.md` (phương án A đã chọn 14/11).
 2. Chơi thử cổng Prototype với 5 người, ≥ 3 người cảm ứng: `05-Cong-Prototype.md` mục 3; ghi kết quả vào mục 7.
 3. Chọn kênh gửi dữ liệu đo lường (`adr/ADR-002-do-luong-mvp.md`).
-4. Chơi thử phòng 3D trên `codex/asset-3d-plan`. ST-22-07 thu tải, FPS và nhận xét điểm đáp trên điện thoại thật qua Wi-Fi. Xem `qa/ST-22-07/README.md`.
+4. ST-22-07 chờ nhận báo cáo điện thoại thật trên `codex/asset-3d-plan`. Bản đo giữ bản sao trên trình duyệt và tệp theo mã phiên. Xem `qa/ST-22-07/README.md`.
 5. Xem lại quyết định đã chốt theo ủy quyền: `09-Quyet-dinh-cho-duyet.md`.
 6. ~~Chọn hướng đồ họa~~: đã chọn **2.5D thời gian thực three.js** (14/11). Demo `game/demo-25d.html`, video `qa/DEMO-25D/`; ADR-003 (Proposed), EP-22. Còn: thử demo trên điện thoại (sau đợt thử G1, khi demo lên Pages).
 

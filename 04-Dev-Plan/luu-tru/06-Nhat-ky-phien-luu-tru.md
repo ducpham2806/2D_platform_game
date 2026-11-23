@@ -4,6 +4,15 @@ Các mục cũ chuyển từ `04-Dev-Plan/06-Nhat-ky-phien.md`, mới nhất ở
 
 ---
 
+## 2026-11-23: Khởi động kế hoạch asset 3D
+
+- **Nhánh:** `codex/asset-3d-plan` từ `main` ở `6eb3e41`.
+- **Mục tiêu:** đánh giá hướng 3D platformer và chọn gói asset đầu tiên.
+- **Đã làm:** đối chiếu demo Thorna, GDD và EP-22. Bổ sung đề xuất phòng thử có di chuyển theo chiều sâu vào mục 5 của ADR-003. Gói đầu gồm Kai có rig, kit địa hình, tia bắn và bóng chỉ điểm đáp.
+- **Quyết định đề xuất:** thử camera bám góc 3/4 trên điện thoại thật và đo ngưỡng của ADR/GDD trước khi mở rộng asset. Kai và kit dùng được cho cả phòng thử 3D và demo 2.5D.
+- **Kiểm tra:** 736 test, lint, format, build và docs-check đạt.
+- **Tiếp theo:** dựng phòng thử chuyển động và làm bản Kai đầu tiên khi chốt phạm vi.
+
 ## 2026-11-22: Tích hợp nhánh phát triển vào main
 
 - **Phạm vi:** Người dùng yêu cầu merge toàn bộ nhánh phát triển `ccr-9de01342-2046rb` đến `0d5d328` (ST-15-09). Mốc gốc của `main` trước khi tích hợp là `c458643`.

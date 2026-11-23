@@ -25,6 +25,17 @@ Mẫu:
 
 ---
 
+## 2026-11-24: ST-22-07 Kiểm hoạt ảnh Kai và khôi phục báo cáo
+
+- **Nhánh:** `codex/asset-3d-plan`, tiếp từ `f10bba9`.
+- **Mục tiêu:** kiểm bản sửa hoạt ảnh và đọc số tải, FPS, điểm đáp của lượt điện thoại người chơi đã gửi.
+- **Kết quả hoạt ảnh:** GLB đang phục vụ trên LAN trùng với bản sửa. Test three.js xác nhận Kai đổi chân qua ba vòng chạy liên tiếp.
+- **Lỗi tìm thấy:** đường nhận trước đã dừng. Tệp phiên cũ trống và đã mở lại cùng đường nhận để có thể gửi lại từ tab điện thoại.
+- **Đã làm:** báo cáo mới lưu bản sao trên trình duyệt trước khi gửi. Máy chủ dùng tệp theo mã phiên, giữ qua lần khởi động lại. Thêm mục nhận xét hoạt ảnh chạy.
+- **File chính:** `game/src/prototype3d/measurement.ts`, `game/scripts/prototype3d-lan.mjs` và [QA](qa/ST-22-07/README.md).
+- **Kiểm tra:** 745 test, lint, format, build và docs-check đạt. Pixel 7 giả lập kiểm lưu khi mất đường gửi, tải lại trang, gửi lại và mở lại máy chủ.
+- **Còn lại:** cần báo cáo của lượt điện thoại để ghi số đo và nhận xét.
+
 ## 2026-11-23: ST-22-07 Đo phòng 3D trên điện thoại thật
 
 - **Nhánh:** `codex/asset-3d-plan`, tiếp từ `027d7a5`.
@@ -49,12 +60,3 @@ Mẫu:
 - **Kiểm tra:** 744 test, lint, format, build, docs-check và gate-flow đạt. Chromium bàn phím 64,7 s, Pixel 7 ngang giả lập 66,3 s và một lần rơi chủ động. Cả hai lượt có 0 lỗi console. [Kịch bản và ảnh](qa/ST-22-06/README.md).
 - **Còn lại:** cần người chơi thử và đo tải, FPS trên Android và iPhone thật theo ADR-003 mục 5.
 - **Tiếp theo:** khi có kết quả máy thật, dùng số lần rơi và các đoạn khó đọc để chốt camera và phạm vi asset tiếp theo.
-
-## 2026-11-23: Khởi động kế hoạch asset 3D
-
-- **Nhánh:** `codex/asset-3d-plan` từ `main` ở `6eb3e41`.
-- **Mục tiêu:** đánh giá hướng 3D platformer và chọn gói asset đầu tiên.
-- **Đã làm:** đối chiếu demo Thorna, GDD và EP-22. Bổ sung đề xuất phòng thử có di chuyển theo chiều sâu vào mục 5 của ADR-003. Gói đầu gồm Kai có rig, kit địa hình, tia bắn và bóng chỉ điểm đáp.
-- **Quyết định đề xuất:** thử camera bám góc 3/4 trên điện thoại thật và đo ngưỡng của ADR/GDD trước khi mở rộng asset. Kai và kit dùng được cho cả phòng thử 3D và demo 2.5D.
-- **Kiểm tra:** 736 test, lint, format, build và docs-check đạt.
-- **Tiếp theo:** dựng phòng thử chuyển động và làm bản Kai đầu tiên khi chốt phạm vi.

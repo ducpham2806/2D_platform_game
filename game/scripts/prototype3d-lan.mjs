@@ -1,7 +1,7 @@
 import { randomBytes } from 'node:crypto';
-import { appendFile, mkdtemp } from 'node:fs/promises';
+import { appendFile, mkdir } from 'node:fs/promises';
 import { isIPv4 } from 'node:net';
-import { networkInterfaces, tmpdir } from 'node:os';
+import { networkInterfaces } from 'node:os';
 import { join } from 'node:path';
 import { preview } from 'vite';
 
@@ -21,8 +21,11 @@ if (
 }
 
 const origin = `http://${host}:${port}`;
-const session = randomBytes(12).toString('hex');
-const output = join(await mkdtemp(join(tmpdir(), 'cv-prototype3d-')), 'reports.jsonl');
+const session = process.env.CV_PROTOTYPE3D_SESSION ?? randomBytes(12).toString('hex');
+if (!/^[\da-f]{24}$/.test(session)) throw new Error('Mã phiên phải có 24 ký tự hex.');
+const directory = join(process.cwd(), '.prototype3d-playtests');
+await mkdir(directory, { recursive: true, mode: 0o700 });
+const output = join(directory, `${session}.jsonl`);
 const limit = 8192;
 
 await preview({

@@ -50,6 +50,7 @@ const low = params.get('q') === 'low';
 const measurement =
   params.get('measure') === '1' ? new RoomMeasurement(low, gray, params.get('session')) : undefined;
 const openMeasurement = element<HTMLButtonElement>('measure-open');
+const savedMeasurement = element<HTMLButtonElement>('measure-saved');
 
 let phase: Phase = 'loading';
 let world: PrototypeRoom | undefined;
@@ -85,6 +86,7 @@ function phaseTo(value: Phase, error?: string) {
   proceed.hidden = value === 'loading';
   restart.hidden = value !== 'paused';
   openMeasurement.hidden = !measurement || (value !== 'paused' && value !== 'finished');
+  savedMeasurement.hidden = (value !== 'ready' && value !== 'error') || !measurement?.savedReport;
   toast.hidden = true;
   if (live) return;
   const headings = {
@@ -164,6 +166,7 @@ proceed.addEventListener('click', proceedWithPhase);
 openMeasurement.addEventListener('click', () => {
   if (world) measurement?.open(world);
 });
+savedMeasurement.addEventListener('click', () => measurement?.openSaved());
 pause.addEventListener('click', () => {
   if (phase === 'playing') phaseTo('paused');
 });
