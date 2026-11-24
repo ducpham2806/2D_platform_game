@@ -17,5 +17,7 @@ const files = readdirSync(source)
 for (const name of files) {
   copyFileSync(join(source, name), join(target, name));
 }
-writeFileSync(join(target, 'manifest.json'), `${JSON.stringify({ files }, null, 2)}\n`);
+// Phòng thử 3D tự nạp dữ liệu riêng. Các trang Phaser và 2.5D đọc danh sách chung.
+const shared = files.filter((name) => name !== 'prototype3d.json');
+writeFileSync(join(target, 'manifest.json'), `${JSON.stringify({ files: shared }, null, 2)}\n`);
 console.log(`sync-data: ${files.length} file JSON -> public/data`);

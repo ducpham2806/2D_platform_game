@@ -38,3 +38,23 @@ GDD chính mục 14 ghi pixel art. Ngày 13/11 người dùng nói muốn 2.5D (
 - **Rủi ro tải:** ngân sách tải theo màn ≤ 8 MB (GDD 15) phải tính cả model, kết cấu.
 - **Lệch tài liệu:** GDD mục 14, `05-Assets/*`, `manifest.csv`, ST-21-05 (hình vẽ bằng mã) đều theo pixel art; chỉ sửa sau khi duyệt bước 2 (`/propagate-design-change`). ST-21-05 bỏ.
 - **Không đổi:** cổng G1 vẫn đo cảm giác điều khiển trên bản Phaser hình khối; logic chung nên kết quả G1 vẫn dùng được.
+
+## 5. Thử 3D platformer ngày 23/11/2026
+
+Người dùng chọn thử di chuyển của Kai theo cả bề ngang lẫn chiều sâu, ngoài trục nhảy. Đợt này kiểm tra khả năng đọc điểm đáp, hướng camera và mục tiêu bắn trên điện thoại. Demo Thorna là mốc tham chiếu về hình ảnh và hiệu năng.
+
+### Đợt thử đầu tiên
+
+| Bước | Bản giao | Cách đánh giá |
+| --- | --- | --- |
+| 1. Phòng thử chuyển động | Một phòng xám chơi khoảng 60–90 giây. Kai chạy ngang và sâu, nhảy qua hai bục lệch chiều sâu, lướt, bắn một mục tiêu và hồi sinh ở checkpoint. Camera bám tự động góc 3/4. | Trên PC và điện thoại ngang, người thử nhận ra đường đi, điểm đáp và mục tiêu. Ghi lần rơi do nhìn sai chiều sâu, lúc camera che Kai và lúc thao tác bắn làm người chơi mất hướng. |
+| 2. Asset thử trong game | Một Kai low-poly có rig, clip đứng, chạy, nhảy/rơi, tiếp đất và lướt. Một điểm gắn nòng Arc Cannon. Bộ địa hình gồm sàn, bục, mép và vách có thể ghép. Hiệu ứng mẫu gồm tia bắn và bóng chỉ điểm đáp. | Thay khối xám bằng model ngay trong phòng thử. So hình dáng Kai ở kích thước trên điện thoại, độ rõ của mép bục và khả năng nhận ra điểm đáp khi nhảy. |
+| 3. Đo và quyết định | Một bản Web có phím và cảm ứng. Đo tải phòng, nhịp khung hình và chất lượng thấp trên Android yếu, Android tầm trung và iPhone thật. | Dùng ngưỡng thử trong ADR là ≥ 50 FPS trên Android tầm trung và ≥ 30 FPS ở mức thấp trên Android yếu. Đối chiếu ngân sách tải thêm ≤ 8 MB mỗi màn và mục tiêu MVP ≥ 55 FPS trên máy tầm trung trước khi mở rộng sản xuất. |
+
+Kai và bộ địa hình sci-fi low-poly được dựng song song với phòng xám. Phòng dùng một rig Kai và một bộ vật liệu cho từng model. Danh sách kẻ địch, boss và môi trường theo màn sẽ được lập sau khi chơi thử.
+
+Giữ nguồn chỉnh sửa trong Blender và xuất `.glb` để thử bằng `GLTFLoader` của three.js. Ghi kích thước, hướng trước, gốc ở chân, tên clip và điểm gắn nòng của từng model. Model và animation đi theo trạng thái điều khiển. Va chạm và tính đòn thuộc lớp gameplay, nên kit địa hình và rig có thể dùng lại nếu chọn 2.5D. [Tài liệu hoạt ảnh three.js](https://threejs.org/manual/pages/animation-system.html)
+
+[Phòng thử ST-22-06](../stories/EP-22-do-hoa-25d.md#st-22-06-phòng-thử-3d-platformer-và-asset-mẫu) đã chạy trọn tuyến bằng bàn phím và Pixel 7 ngang giả lập. [Kết quả và ảnh chạy thử](../qa/ST-22-06/README.md) ghi thời lượng từng lượt. [ST-22-07](../qa/ST-22-07/README.md) ghi tải, FPS và nhận xét điểm đáp trên điện thoại thật.
+
+Nếu phòng thử cho thấy chiều sâu tạo thêm lựa chọn nhảy, né hoặc tiếp cận mục tiêu, lập ADR riêng cho gameplay 3D và ước lượng lại camera, va chạm, nhắm bắn, bản đồ và AI. Dùng tài liệu hiện có làm nguồn cho nhân vật, thế giới, vũ khí và chỉ số, rồi kiểm lại các số ảnh hưởng đến cảm giác chơi. Nếu ưu tiên ra bản MVP sớm hoặc người chơi khó đọc chiều sâu trên điện thoại, đưa Kai và bộ địa hình vào demo 2.5D theo mục 3.

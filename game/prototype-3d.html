@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <meta name="theme-color" content="#081822" />
+    <title>Phòng thử 3D · Cyber Vanguard</title>
+    <style>
+      #file-help {
+        max-width: 42rem;
+        margin: 4rem auto;
+        padding: 0 1.5rem;
+        font:
+          1rem/1.6 system-ui,
+          sans-serif;
+      }
+    </style>
+  </head>
+  <body data-phase="loading">
+    <main id="file-help" hidden>
+      <h1>Mở Trạm phản lực qua máy chủ</h1>
+      <p>Trình duyệt cần địa chỉ HTTP để nạp mã trò chơi, dữ liệu và model Kai.</p>
+      <p><a href="http://127.0.0.1:4186/prototype-3d.html">Mở bản chơi thử trên Mac</a></p>
+      <p>Trên điện thoại, dùng link Wi-Fi của bản đo.</p>
+    </main>
+    <main class="lab" id="prototype-room" aria-label="Phòng thử 3D">
+      <canvas id="viewport" aria-label="Tuyến vượt chướng ngại của Kai"></canvas>
+      <div class="shade" aria-hidden="true"></div>
+      <header class="hud">
+        <div class="brand">
+          <div class="emblem" aria-hidden="true"><i></i><i></i></div>
+          <div>
+            <div class="studio">CYBER VANGUARD</div>
+            <div class="room">PHÒNG THỬ 3D</div>
+          </div>
+        </div>
+        <div class="stats" id="live-stats" hidden>
+          <div class="stat"><span>ĐỒNG HỒ</span><output id="time">00:00</output></div>
+          <div class="stat"><span>CHECKPOINT</span><output id="checkpoints">0/2</output></div>
+        </div>
+        <nav class="menu" aria-label="Điều khiển phiên chơi">
+          <button id="pause" type="button" aria-label="Tạm dừng" title="Tạm dừng (P)" hidden>
+            <span class="pause-icon" aria-hidden="true"></span>
+          </button>
+          <a class="back" href="./index.html">Về game</a>
+        </nav>
+      </header>
+
+      <section class="objective" id="mission" hidden>
+        <span class="objective-indicator" aria-hidden="true"></span>
+        <div>
+          <div class="objective-label">MỤC TIÊU</div>
+          <strong id="objective-text"></strong>
+          <p id="objective-detail"></p>
+        </div>
+      </section>
+
+      <section class="briefing" id="briefing" aria-labelledby="brief-title">
+        <div class="briefing-line"></div>
+        <h1 id="brief-title">Trạm phản lực</h1>
+        <p id="brief-description">Đang nạp phòng thử…</p>
+        <div class="results" id="results" hidden>
+          <div><span>Thời gian</span><strong id="result-time"></strong></div>
+          <div><span>Số lần rơi</span><strong id="result-falls"></strong></div>
+          <div><span>Phát bắn</span><strong id="result-shots"></strong></div>
+        </div>
+        <div class="actions">
+          <button class="primary" type="button" id="proceed" hidden>
+            Bắt đầu <span aria-hidden="true">↗</span>
+          </button>
+          <button class="secondary" type="button" id="restart" hidden>Chơi lại</button>
+          <button class="secondary" type="button" id="measure-open" hidden>Kết quả đo</button>
+          <button class="secondary" type="button" id="measure-saved" hidden>Kết quả đã lưu</button>
+        </div>
+      </section>
+
+      <div class="touch" id="touch" hidden>
+        <div class="stick" id="steer" role="img" aria-label="Cần di chuyển">
+          <span class="puck"></span>
+        </div>
+        <div class="touch-actions">
+          <button class="touch-dash" id="dash" type="button">Lướt</button>
+          <button class="touch-shot" id="shoot" type="button">Bắn</button>
+          <button class="touch-jump" id="jump" type="button">Nhảy</button>
+        </div>
+      </div>
+
+      <footer class="controls" aria-label="Phím điều khiển">
+        <div><kbd>W A S D</kbd><span>Di chuyển</span></div>
+        <div><kbd>SPACE</kbd><span>Nhảy</span></div>
+        <div><kbd>SHIFT</kbd><span>Lướt</span></div>
+        <div><kbd>J</kbd><span>Bắn</span></div>
+        <span class="view-mode" id="view-mode" hidden>KHỐI XÁM</span>
+      </footer>
+      <div class="toast" id="toast" role="status" hidden></div>
+    </main>
+    <dialog id="measure-dialog" aria-labelledby="measure-title">
+      <form id="measure-form">
+        <h2 id="measure-title">Kết quả chơi thử</h2>
+        <p id="measure-stats"></p>
+        <label>
+          Điện thoại
+          <input name="device" type="text" maxlength="80" placeholder="VD: iPhone 14" />
+        </label>
+        <label>
+          Anh có dễ nhìn ra điểm đáp không?
+          <select name="landing" required>
+            <option value="">Chọn một mức</option>
+            <option value="clear">Dễ nhìn</option>
+            <option value="sometimes-unclear">Có lúc khó nhìn</option>
+            <option value="unclear">Khó nhìn</option>
+            <option value="not-tested">Chưa qua đoạn nhảy</option>
+          </select>
+        </label>
+        <label>
+          Đoạn khó nhìn nhất
+          <select name="section">
+            <option value="">Chọn nếu có</option>
+            <option value="cross">Dãy bục đầu</option>
+            <option value="ridge">Dãy bục lên sàn trên</option>
+            <option value="exit">Vòng cầu cuối</option>
+          </select>
+        </label>
+        <label>
+          Hoạt ảnh chạy của Kai
+          <select name="animation">
+            <option value="">Chọn nếu đã để ý</option>
+            <option value="smooth">Kai bước đều khi giữ cần</option>
+            <option value="freezes">Kai giữ nguyên một tư thế</option>
+          </select>
+        </label>
+        <label>
+          Ghi chú (không bắt buộc)
+          <input
+            name="notes"
+            type="text"
+            maxlength="240"
+            placeholder="VD: khó ước lượng mép sau của bục"
+          />
+        </label>
+        <div class="actions">
+          <button class="primary" type="submit" id="measure-save">Lưu kết quả</button>
+          <button class="secondary" type="button" id="measure-close">Đóng</button>
+        </div>
+        <p id="measure-status" role="status" hidden></p>
+        <label id="measure-export" hidden>
+          Dữ liệu kết quả
+          <textarea id="measure-json" readonly rows="3"></textarea>
+        </label>
+      </form>
+    </dialog>
+    <script>
+      if (location.protocol === 'file:') {
+        document.getElementById('prototype-room').hidden = true;
+        document.getElementById('file-help').hidden = false;
+      }
+    </script>
+    <script type="module" src="./src/prototype3d/main.ts"></script>
+  </body>
+</html>
