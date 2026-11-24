@@ -21,9 +21,13 @@ function hasParam(name: string): boolean {
   }
 }
 
-export const DEBUG = import.meta.env.DEV || hasParam('debug');
-export const TUNE = import.meta.env.DEV || hasParam('tune');
-export const GATE = hasParam('gate');
+// Chỉ bật khi đóng gói ngoại tuyến bằng Vite --mode lumen-qa; URL không thể bật chế độ này.
+export const LUMEN_QA = import.meta.env.MODE === 'lumen-qa';
+export const DEBUG = !LUMEN_QA && (import.meta.env.DEV || hasParam('debug'));
+export const TUNE = !LUMEN_QA && (import.meta.env.DEV || hasParam('tune'));
+export const GATE = !LUMEN_QA && hasParam('gate');
+export const LUMEN_PRACTICE = LUMEN_QA || (DEBUG && !GATE && hasParam('lumen'));
+export const LUMEN_CHALLENGE = LUMEN_PRACTICE && hasParam('challenge');
 export const SHOP = DEBUG && hasParam('shop');
 export const UNLOCK_ALL = DEBUG && hasParam('unlock');
 export const TELEMETRY_DEBUG = DEBUG && hasParam('telemetry');

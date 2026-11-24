@@ -1,5 +1,11 @@
 import type { TutorialStage } from '../core/tutorial-config';
-import { type EnemyMarkers, layoutFromRows, type StageLayout } from '../logic/stage/layout';
+import {
+  type AnchoredArenaLayout,
+  type EnemyMarkers,
+  layoutFromRows,
+  type MirrorSpawn,
+  type StageLayout,
+} from '../logic/stage/layout';
 import { layoutFromTiled } from '../logic/stage/tiled';
 
 /** Kẻ địch đặt ở một ký hiệu chữ trên bản đồ ASCII. */
@@ -40,6 +46,8 @@ interface StageDefBase {
 export interface AsciiStageDef extends StageDefBase {
   kind: 'ascii';
   rows: readonly string[];
+  anchoredArena?: AnchoredArenaLayout;
+  mirrors?: readonly MirrorSpawn[];
   /** Các đoạn theo cột tăng dần, cho nhật ký chơi thử và báo cáo. */
   sections: readonly StageSection[];
   /** Ký hiệu chữ hoa trên bản đồ → kẻ địch. */
@@ -56,7 +64,10 @@ export type StageDef = AsciiStageDef | TiledStageDef;
 
 /** Dựng bố cục mới cho một lần vào màn (lưới ô bị đổi khi chơi nên không dùng chung). */
 export function buildStageLayout(def: StageDef, tileSize: number): StageLayout {
-  return def.kind === 'ascii'
-    ? layoutFromRows(def.rows, tileSize, def.enemyMarkers, def.sections)
-    : layoutFromTiled(def.map, tileSize);
+  if (def.kind === 'tiled') return layoutFromTiled(def.map, tileSize);
+  const layout = layoutFromRows(def.rows, tileSize, def.enemyMarkers, def.sections);
+  if (def.anchoredArena) layout.anchoredArena = def.anchoredArena;
+  if (def.mirrors)
+    layout.optics = { mirrors: [...def.mirrors], lasers: [], sensors: [], doors: [] };
+  return layout;
 }

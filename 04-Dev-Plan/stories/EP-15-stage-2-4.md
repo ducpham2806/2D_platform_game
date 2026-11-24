@@ -16,6 +16,7 @@
 | ST-15-06  | Gương Quang, Người Tuyết Máy, Tháp Băng và Frost Titan                                         | 01a, 01b                                               | 2 ngày | DONE (22/11/2026) |
 | ST-15-08a | Bục băng vỡ, bệ mây chìm và bệ mây trôi                                                       | 01b, 01c                                               | 1 ngày | DONE (22/11/2026) |
 | ST-15-15  | Thời gian báo đòn mini-boss và tầm hoạt động của kẻ địch                                       | 01a                                                    | 1 ngày | DONE (22/11/2026) |
+| ST-15-10  | Lumen và phần thưởng Prism Beam                                                                   | 03, 09, 14                                             | 2 ngày | IN PROGRESS (phòng thử, chờ QA) |
 
 ## ST-15-14: Boss an toàn (QB-14, QB-31)
 
@@ -347,3 +348,16 @@ Phase Step gọi chung API khi triển khai ST-08-09. Mở khóa vũ khí qua Cr
 - [x] Cấu hình gốc và Thử thách hợp lệ. Kiểm Tán Sắc, Lao Lăng Kính, đổi vạch khi xoay gương, hai xung và phản đòn. Kiểm Bổ Nhào, đòn nối, Vỗ Cánh, khe Mưa Lông Thép và sóng đất.
 - [x] Kiểm phòng khóa Tiled, sàn đặc, sát thương, hồi sinh, thưởng và mở cửa. Tia phản xạ phát qua đầu dẫn phía trên gương được chọn để nhánh ngang có thể dội qua Sentinel.
 - [x] Chạy thử hai phòng trên Chromium PC và Pixel 7 ngang giả lập, kiểm hồi quy G1. [Ảnh và cách thử](../qa/ST-15-09/README.md).
+
+## ST-15-10: Lumen
+
+- **Trạng thái:** IN PROGRESS. Phòng thử Lumen cục bộ có đủ bộ đòn và phần thưởng trong lượt. Chưa mở Lumen trong chiến dịch hoặc thay đổi bản G1.
+- **Nguồn:** [GDD 16 §3.6](../../01-GDD/16-Dac-ta-Stage2-4-nhap.md#36-boss-lumen-lumen), QB-14 chống khóa choáng và QB-31 kẹp pha.
+- **Lớp này:** `BossFocus` nhận tham số từ cơ chế nạp dữ liệu boss. Vòng bám tâm Kai kể cả trên không, khóa tại điểm cuối rồi mới gây sát thương. Vòng đã trúng hoặc bị khiên hấp thụ không đánh lại; bất tử không làm mất cơ hội trúng nếu Kai còn trong vùng cháy. Chuyển pha theo QB-31 xóa vòng trước bước xét sát thương. Nhịp khởi tạo 0,6 s và thời gian bám 0,9 s là hai đồng hồ riêng, nên có thể chồng giai đoạn bám; khóa pha nhanh không ngắn hơn 0,5 s.
+- **Phòng thử:** thêm `?debug=1&lumen=1`; thêm `&challenge=1` để thử Tiêu Điểm. `?gate=1` luôn ưu tiên bản thử cổng. Phòng riêng không đọc/ghi tiến trình chiến dịch.
+- **Dữ liệu và hành vi:** `bosses.json → lumen` có 280 HP Thường, Chớp Tín Hiệu, Tia Phản Xạ, Cột Sáng và Quang Phổ. Ba neo theo điểm trên bản đồ; báo 0,3 s sau mỗi đòn rồi dịch chuyển. Tia dùng đường từ `LaserPath` khóa đúng theo vạch cảnh báo; pha cuối có thêm một lần dội. Cột Sáng giữ khoảng cách cả khi Kai sát mép. Quang Phổ chừa ba khe, xuyên khiên Core, rồi choáng 2 s. Trong phòng, đòn kết liễu Arc Cannon cấp Prism Beam, EXP 241 và Core Bit 110 một lần. Tích hợp bộ lưu giả xác nhận thêm 1 SP khi nối vào chiến dịch.
+- **Quyết định thử nghiệm:** chọn đường dội gần tâm Kai lúc báo trước; khi hòa dùng thứ tự hướng cố định của LaserPath. Neo xoay theo thứ tự trên bản đồ. Kích cỡ, hồi sau đòn và bố trí giữ dạng bản thử; chưa chốt cân bằng hoặc sơ đồ thật.
+- **Kiểm cục bộ:** headless kiểm đủ neo, thời gian báo, gương xoay giữa báo và bắn, ba khe, Tiêu Điểm và thưởng một lần; bot Thường không né dù cấp 7/build Core vẫn thua. Không tính là nghiệm thu cảm giác/người chơi hoặc kiểm trình duyệt thật.
+- **Đo trọn trận bằng đầu vào mô phỏng:** bot Thường cấp 5 chỉ dùng Arc Cannon thắng 7/7 seed trong 75,95–80,88 s, 50,9–52,5% nhịp bắn tối đa, qua ba pha và nhận đúng thưởng. Bot cũ vẫn thua sau 101,0 s; không thay máu, đòn hay phòng. Xem [cách tái hiện và số liệu](../qa/ST-15-10/README.md).
+- **Hồi quy điều khiển:** nhả Bắn trong tạm dừng/thoại không bắn đạn nạp trễ; giữ nạp khi phím vẫn thực sự được giữ. Hủy chạm không được tính là nhả Bắn; mất bắt chạm cần ảo dừng di chuyển. Kiểm bằng TouchOverlay, StageScene và StageWorld; không đổi cân bằng.
+- **Tiếp theo:** kiểm Chromium PC và Pixel 7 giả lập theo DoD, lưu ảnh; đo thêm một lượt Arc Cannon với người thật (PC/điện thoại có sẵn) để xác nhận cảm giác và thời gian thực. Chưa đóng story; bố cục và phần thưởng chiến dịch vẫn không mở trước EP-17 sau cổng.

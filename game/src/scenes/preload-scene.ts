@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { LUMEN_CHALLENGE, LUMEN_PRACTICE, LUMEN_QA } from '../debug/flags';
 import {
   DATA_BASE_PATH,
   DATA_MANIFEST,
@@ -10,6 +11,7 @@ import { ConfigError, parseGameConfig } from '../core/game-config';
 import { getBus, setConfig, setInput, setSave } from '../core/phaser-services';
 import { LocalStorageStore } from '../input/browser-store';
 import { InputService } from '../input/input-service';
+import { MemoryStore } from '../logic/input/settings';
 import { buildNormalizer } from '../logic/rpg/normalize-build';
 import { upgradeNormalizer } from '../logic/shop/normalize-upgrades';
 import { difficultyNormalizer } from '../logic/difficulty/normalize-difficulty';
@@ -79,9 +81,14 @@ export class PreloadScene extends Phaser.Scene {
     try {
       const config = parseGameConfig(files);
       setConfig(this, config);
-      installTelemetry(this.game, config);
-      setInput(this, new InputService(config.controls, new LocalStorageStore(), getBus(this)));
+      if (!LUMEN_QA) installTelemetry(this.game, config);
+      const settings = LUMEN_QA ? new MemoryStore() : new LocalStorageStore();
+      setInput(this, new InputService(config.controls, settings, getBus(this)));
       getBus(this).emit('config:ready', { config });
+      if (LUMEN_QA) {
+        this.startLumen();
+        return;
+      }
       const save = await SaveManager.open(
         await openBrowserSaveStore(),
         Date.now,
@@ -94,11 +101,19 @@ export class PreloadScene extends Phaser.Scene {
       if (save.notice) console.info(save.notice);
       if (save.lastError) console.warn(save.lastError);
       setSave(this, save);
-      this.scene.start(SceneKey.Menu);
+      if (LUMEN_PRACTICE) this.startLumen();
+      else this.scene.start(SceneKey.Menu);
     } catch (error) {
       const message = error instanceof ConfigError ? error.message : String(error);
       this.fail(message);
     }
+  }
+
+  private startLumen(): void {
+    this.scene.start(SceneKey.Stage, {
+      stage: 'lumen',
+      difficulty: LUMEN_CHALLENGE ? 'challenge' : 'normal',
+    });
   }
 
   private fail(message: string): void {

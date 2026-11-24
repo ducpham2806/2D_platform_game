@@ -1,6 +1,7 @@
 import {
   attackOf,
   type BossAttackId,
+  type BossBeamAttack,
   type BossData,
   type ThornsAttack,
 } from '../../core/boss-config';
@@ -9,8 +10,10 @@ import type { ProjectilePool } from '../combat/projectiles';
 import { type Box, groundBelow, moveX, moveY } from '../player/collision';
 import type { Rng } from '../rng';
 import type { TileMap } from '../tilemap';
-import { BossBeam } from './boss-beam';
+import { BossBeam, type BossBeamRoute } from './boss-beam';
+import { BossAnchors, type BossAnchorPoint } from './boss-anchors';
 import { BossFlight, type DiveLine, type RoomBossArena } from './boss-flight';
+import { BossFocus } from './boss-focus';
 import { type BossContext, type BossEvents, type BossState, noEvents } from './boss-types';
 import { enemyProjectile, spawnRainDrops, spawnShockwaves } from './enemy-projectile';
 
@@ -27,6 +30,14 @@ const BOSS_GRAVITY = 1400;
  * của pha hiện tại. Pha đổi theo % máu; pha cuối nhanh hơn speedMul nhưng telegraph không ngắn
  * hơn minTelegraphSec. Trúng điểm yếu thì choáng, mọi đồng hồ đứng yên.
  */
+export interface BossAnchoredArena {
+  points: readonly BossAnchorPoint[];
+  startIndex: number;
+  floorY: number;
+  topY: number;
+  beamRoute(origin: BossAnchorPoint, target: BossAnchorPoint): BossBeamRoute;
+}
+
 export class Boss {
   readonly box: Box;
   hp: number;
@@ -41,6 +52,8 @@ export class Boss {
   slamTargetX = 0;
   rainCols: number[] = [];
   readonly beam = new BossBeam();
+  readonly focus = new BossFocus();
+  readonly anchors: BossAnchors | undefined;
   readonly source: string | undefined;
   private readonly flight: BossFlight | undefined;
   diveLine: DiveLine | undefined;
@@ -48,6 +61,7 @@ export class Boss {
   private diveFollowUpPending = false;
   private followUpWarning = false;
   private beamFollowUpPending = false;
+  private beamAttack: BossBeamAttack | undefined;
   private fanAngle = 0;
   /** Thorna: tâm các cột Rễ Trồi (vết nứt trên sàn khi báo trước) và hướng/độ dài Dây Quất. */
   rootXs: number[] = [];
@@ -87,6 +101,7 @@ export class Boss {
     private readonly arenaCols: { first: number; last: number },
     private readonly rng: Rng,
     room?: RoomBossArena,
+    private readonly anchorArena?: BossAnchoredArena,
   ) {
     this.box = {
       x: spawnCenterX - data.sizePx.w / 2,
@@ -95,6 +110,14 @@ export class Boss {
       h: data.sizePx.h,
     };
     this.hp = data.hp;
+    if (data.anchorShift && anchorArena) {
+      this.anchors = new BossAnchors(
+        anchorArena.points,
+        anchorArena.startIndex,
+        data.anchorShift.warnSec,
+      );
+      this.placeAtAnchor(this.anchors.current);
+    }
     if (room && data.roomFlight) {
       this.flight = new BossFlight(data.roomFlight, room, map.tileSize);
       this.source = `boss:${data.id}`;
@@ -165,6 +188,8 @@ export class Boss {
     this.state = 'dead';
     this.vx = 0;
     this.beam.clear();
+    this.focus.clear();
+    this.anchors?.cancel();
     this.gust = undefined;
     return true;
   }
@@ -208,6 +233,9 @@ export class Boss {
     this.stalkMarks = [];
     this.stalkPending = [];
     this.beam.clear();
+    this.focus.clear();
+    this.anchors?.cancel();
+    this.beamAttack = undefined;
     this.diveLine = undefined;
     this.diveFollowUpPending = this.followUpWarning = this.beamFollowUpPending = false;
     this.gust = undefined;
@@ -249,6 +277,8 @@ export class Boss {
       return ev;
     }
     this.stunCooldown = Math.max(0, this.stunCooldown - dt);
+    const arrival = this.anchors?.step(dt);
+    if (arrival) this.placeAtAnchor(arrival);
     this.timer -= dt;
     this.think(ctx, pool, ev, dt);
     this.physics(dt, ev, pool);
@@ -261,8 +291,18 @@ export class Boss {
   }
 
   private enter(state: BossState, seconds: number): void {
+    if (this.anchors && this.state === 'active' && (state === 'recover' || state === 'stunned')) {
+      this.anchors.begin();
+      seconds = Math.max(seconds, this.data.anchorShift!.warnSec);
+    }
     this.state = state;
     this.timer = seconds;
+  }
+
+  private placeAtAnchor({ x, y }: BossAnchorPoint): void {
+    this.box.x = x - this.box.w / 2;
+    this.box.y = y - this.box.h / 2;
+    this.vx = this.vy = 0;
   }
 
   private scaled(seconds: number): number {
@@ -306,12 +346,13 @@ export class Boss {
           this.attack === 'charge' ? this.data.attacks.charge?.retreatTiles : undefined;
         this.vx = retreat ? (-this.facing * retreat * this.map.tileSize) / this.telegraphTotal : 0;
         this.telegraphProgress = 1 - Math.max(0, this.timer) / this.telegraphTotal;
-        if (this.attack === 'beam') this.beam.warn(attackOf(this.data, 'beam'));
+        if (this.attack === 'beam' && this.beamAttack) this.beam.warn(this.beamAttack);
         if (elapsed) this.beginActive(pool, ev);
         break;
       }
       case 'active':
         if (this.attack === 'stalk') this.runStalk(ctx, pool, dt);
+        else if (this.attack === 'focus') this.runFocus(ctx, dt);
         else this.runActive(pool, ev, allowed);
         break;
       case 'recover':
@@ -334,8 +375,18 @@ export class Boss {
       this.prepareDive(ctx);
     }
     if (id === 'beam') {
-      this.beam.begin(this.flight?.route(this.centerX));
-      this.beam.warn(attackOf(this.data, id));
+      const beam = attackOf(this.data, id);
+      const finalBounces = beam.finalPhaseMaxBounces;
+      this.beamAttack =
+        finalBounces !== undefined && this.phase === this.data.phases.length - 1
+          ? { ...beam, maxBounces: finalBounces }
+          : beam;
+      const route =
+        this.anchors && this.anchorArena
+          ? this.anchorArena.beamRoute(this.anchors.current, { x: ctx.playerX, y: ctx.playerY })
+          : this.flight?.route(this.centerX);
+      this.beam.begin(route, this.anchors !== undefined);
+      this.beam.warn(this.beamAttack);
     }
     if (id === 'gust' || (id === 'thorns' && this.flight)) {
       this.shotLaneY = this.box.y + this.box.h / 2;
@@ -427,8 +478,11 @@ export class Boss {
     const lo = this.arenaCols.first * t + r.sizePx.w / 2;
     const hi = (this.arenaCols.last + 1) * t - r.sizePx.w / 2;
     const xs: number[] = [];
+    // Lumen luôn báo đủ các cột cách nhau như dữ liệu, cả khi Kai đứng sát tường.
+    const margin = this.anchors ? (r.spacingTiles * t * (r.count - 1)) / 2 : 0;
+    const center = this.anchors ? Math.max(lo + margin, Math.min(hi - margin, playerX)) : playerX;
     for (let i = 0; i < r.count; i += 1) {
-      const x = playerX + (i - (r.count - 1) / 2) * r.spacingTiles * t;
+      const x = center + (i - (r.count - 1) / 2) * r.spacingTiles * t;
       xs.push(Math.min(Math.max(x, lo), hi));
     }
     return xs;
@@ -454,7 +508,7 @@ export class Boss {
         break;
       }
       case 'beam': {
-        const a = attackOf(this.data, 'beam');
+        const a = this.beamAttack ?? attackOf(this.data, 'beam');
         this.beamFollowUpPending = a.pulseGapSec !== undefined;
         this.enter('active', a.pulseGapSec ?? a.activeSec);
         this.fireBeam(false, ev);
@@ -488,9 +542,9 @@ export class Boss {
           t,
           this.rainCols,
           attackOf(this.data, 'rain'),
-          'drop',
+          this.anchors ? 'spectrum' : 'drop',
           this.source,
-          this.flight ? this.flight.arena.topY + t : undefined,
+          this.anchorArena?.topY ?? (this.flight ? this.flight.arena.topY + t : undefined),
         );
         this.enter('active', attackOf(this.data, 'rain').activeSec);
         break;
@@ -530,6 +584,10 @@ export class Boss {
         this.enter('active', b.activeSec);
         break;
       }
+      case 'focus':
+        this.focus.begin(attackOf(this.data, 'focus'), t, this.speedMul, this.data.minTelegraphSec);
+        this.enter('active', 0);
+        break;
       case 'stalk':
         // Đánh dấu ngay vệt đầu tiên.
         this.stalkMarked = 0;
@@ -540,6 +598,12 @@ export class Boss {
       default:
         this.enter('recover', 0.5);
     }
+  }
+
+  private runFocus(ctx: BossContext, dt: number): void {
+    this.focus.step(ctx.playerX, ctx.playerY, dt);
+    if (this.focus.done)
+      this.enter('recover', this.scaled(attackOf(this.data, 'focus').recoverSec));
   }
 
   private spawnFan(pool: ProjectilePool, a: ThornsAttack): void {
@@ -564,7 +628,7 @@ export class Boss {
   }
 
   private fireBeam(alternate: boolean, ev: BossEvents): void {
-    const a = attackOf(this.data, 'beam');
+    const a = this.beamAttack ?? attackOf(this.data, 'beam');
     if (
       this.beam.fire(a, alternate, this.box) &&
       this.takeHit({ amount: a.selfHitDamage, weak: false, stunSec: a.selfHitStunSec })
@@ -662,7 +726,7 @@ export class Boss {
       case 'dive':
         break;
       case 'beam': {
-        const a = attackOf(this.data, 'beam');
+        const a = this.beamAttack ?? attackOf(this.data, 'beam');
         if (this.beamFollowUpPending && !allowed) {
           this.beamFollowUpPending = false;
           this.beam.cancelPending();
@@ -695,7 +759,7 @@ export class Boss {
         const r = attackOf(this.data, 'roots');
         const x = this.rootXs[this.rootsSpawned];
         if (this.timer <= 0 && x !== undefined) {
-          const floor = this.box.y + this.box.h;
+          const floor = this.anchorArena?.floorY ?? this.box.y + this.box.h;
           const spec = enemyProjectile(
             t,
             'root',
@@ -756,6 +820,7 @@ export class Boss {
   }
 
   private physics(dt: number, ev: BossEvents, pool: ProjectilePool): void {
+    if (this.anchors) return;
     if (this.flight) {
       this.fly(dt, ev, pool);
       return;

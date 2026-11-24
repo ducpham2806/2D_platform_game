@@ -3,7 +3,7 @@ import { LOGIC_HEIGHT, LOGIC_WIDTH } from '../../core/constants';
 import { MenuNavigator } from '../../logic/hud/menu-cursor';
 import type { InputSnapshot } from '../../logic/input/actions';
 import { MUTED_STYLE, TEXT_STYLE } from '../ui';
-import { GATE } from '../../debug/flags';
+import { GATE, LUMEN_QA } from '../../debug/flags';
 
 export type PauseChoice = 'resume' | 'quit' | 'tutorial' | 'skills';
 
@@ -17,7 +17,7 @@ const DEPTH = 30;
 const ITEM_W = 150;
 const ITEM_GAP = 19;
 /** Bản người thử (`?gate=1`) chỉ có 2 mục nên hàng cao hơn: ≥ 48 dp trên điện thoại cầm ngang. */
-const ROW = GATE ? { gap: 32, padY: 10 } : { gap: ITEM_GAP, padY: 3 };
+const ROW = GATE || LUMEN_QA ? { gap: 32, padY: 10 } : { gap: ITEM_GAP, padY: 3 };
 const COLOR = { idle: '#1d2a3b', picked: '#2f6d8f', off: '#151d29' };
 
 /**
@@ -46,13 +46,13 @@ export class PauseMenu {
       ...(skills ? [{ label: 'Kỹ năng (áp khi hồi sinh)', choice: 'skills' as const }] : []),
       ...(tutorialOn ? [{ label: '', choice: 'tutorial' as const }] : []),
       // Bản cho người thử cổng Prototype ẩn các mục chưa có để khỏi rối.
-      ...(GATE
+      ...(GATE || LUMEN_QA
         ? []
         : [
             { label: 'Lắp module nhanh (chưa có)', choice: undefined },
             { label: 'Tùy chọn (chưa có)', choice: undefined },
           ]),
-      { label: 'Thoát về menu', choice: 'quit' },
+      { label: LUMEN_QA ? 'Làm lại từ đầu' : 'Thoát về menu', choice: 'quit' },
     ];
     this.nav = new MenuNavigator(this.items.map((i) => i.choice !== undefined));
     const cx = LOGIC_WIDTH / 2;
@@ -149,7 +149,14 @@ export class PauseMenu {
       if (!t) return;
       const enabled = item.choice !== undefined;
       t.setBackgroundColor(!enabled ? COLOR.off : i === this.nav.index ? COLOR.picked : COLOR.idle);
-      if (item.choice === 'quit') t.setText(this.armedQuit ? 'Bấm lần nữa để thoát' : item.label);
+      if (item.choice === 'quit')
+        t.setText(
+          this.armedQuit
+            ? LUMEN_QA
+              ? 'Bấm lần nữa để làm lại'
+              : 'Bấm lần nữa để thoát'
+            : item.label,
+        );
       if (item.choice === 'tutorial')
         t.setText(this.tutorialOn?.() ? 'Tắt hướng dẫn' : 'Bật hướng dẫn');
     });

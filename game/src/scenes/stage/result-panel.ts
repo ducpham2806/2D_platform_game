@@ -1,3 +1,4 @@
+import { LUMEN_QA } from '../../debug/flags';
 import type Phaser from 'phaser';
 import { LOGIC_HEIGHT, LOGIC_WIDTH } from '../../core/constants';
 import { MenuNavigator } from '../../logic/hud/menu-cursor';
@@ -36,19 +37,23 @@ export class ResultPanel {
   ) {
     const defs: { label: string; choice: ResultChoice | undefined }[] = [
       { label: 'Chơi lại màn', choice: 'retry' },
-      workshop
-        ? { label: 'Mở Xưởng', choice: 'workshop' }
-        : { label: 'Mở Xưởng (không có SP)', choice: undefined },
-      { label: 'Về menu', choice: 'menu' },
+      ...(!LUMEN_QA
+        ? [
+            workshop
+              ? { label: 'Mở Xưởng', choice: 'workshop' as const }
+              : { label: 'Mở Xưởng (không có SP)', choice: undefined },
+            { label: 'Về menu', choice: 'menu' as const },
+          ]
+        : []),
     ];
     this.nav = new MenuNavigator(
       defs.map((d) => d.choice !== undefined),
       'x',
     );
-    const step = (LOGIC_WIDTH - 2 * PAD - BUTTON.w) / (defs.length - 1);
+    const step = (LOGIC_WIDTH - 2 * PAD - BUTTON.w) / Math.max(1, defs.length - 1);
     defs.forEach((d, i) => {
       const text = scene.add
-        .text(PAD + BUTTON.w / 2 + i * step, BUTTON.y, d.label, {
+        .text(LUMEN_QA ? LOGIC_WIDTH / 2 : PAD + BUTTON.w / 2 + i * step, BUTTON.y, d.label, {
           ...(d.choice ? TEXT_STYLE : MUTED_STYLE),
           fontSize: '9px',
           fixedWidth: BUTTON.w,

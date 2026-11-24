@@ -73,8 +73,9 @@ export class TouchOverlay {
     }
     this.root.addEventListener('pointerdown', (e) => this.onDown(e));
     this.root.addEventListener('pointermove', (e) => this.onMove(e));
-    this.root.addEventListener('pointerup', (e) => this.onUp(e));
-    this.root.addEventListener('pointercancel', (e) => this.onUp(e));
+    this.root.addEventListener('pointerup', (e) => this.endPointer(e, false));
+    this.root.addEventListener('pointercancel', (e) => this.endPointer(e, true));
+    this.root.addEventListener('lostpointercapture', (e) => this.endPointer(e, true));
     this.root.addEventListener('contextmenu', (e) => e.preventDefault());
     window.addEventListener('resize', this.onResize);
     document.body.append(this.root);
@@ -223,16 +224,19 @@ export class TouchOverlay {
     if (this.stick && e.pointerId === this.stick.pointerId) this.updateStick(e.clientX, e.clientY);
   }
 
-  private onUp(e: PointerEvent): void {
+  private endPointer(e: PointerEvent, canceled: boolean): void {
     if (this.drag && e.pointerId === this.drag.pointerId) {
-      this.finishDrag();
+      if (canceled) {
+        this.drag = undefined;
+        this.layout();
+      } else this.finishDrag();
       return;
     }
     const swipe = this.swipes.get(e.pointerId);
     if (swipe) {
       this.swipes.delete(e.pointerId);
       this.buttonEls.get(swipe.button.id)?.classList.remove('active');
-      if (e.type === 'pointercancel') return;
+      if (canceled) return;
       // Bấm rồi nhả trong cùng bước vẫn tính pressed (InputAggregator).
       const action = swipeAction(e.clientX - swipe.x0, this.config.swipeMinDp);
       this.aggregator.press('touch', action);
@@ -243,10 +247,16 @@ export class TouchOverlay {
     const button = this.pointerButtons.get(e.pointerId);
     if (button) {
       this.pointerButtons.delete(e.pointerId);
-      const stillHeld = [...this.pointerButtons.values()].some((b) => b.action === button.action);
-      if (!stillHeld) {
-        this.buttonEls.get(button.id)?.classList.remove('active');
-        this.aggregator.release('touch', button.action);
+      let actionHeld = false;
+      let buttonHeld = false;
+      for (const other of this.pointerButtons.values()) {
+        actionHeld ||= other.action === button.action;
+        buttonHeld ||= other.id === button.id;
+      }
+      if (!buttonHeld) this.buttonEls.get(button.id)?.classList.remove('active');
+      if (!actionHeld) {
+        if (canceled) this.aggregator.cancel('touch', button.action);
+        else this.aggregator.release('touch', button.action);
       }
       return;
     }

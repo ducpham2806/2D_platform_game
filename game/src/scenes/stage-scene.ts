@@ -1,5 +1,6 @@
+import { LumenAttemptClock, LUMEN_QA_LEVEL, LUMEN_QA_SEED } from '../qa/lumen-qa';
 import Phaser from 'phaser';
-import { DEBUG } from '../debug/flags';
+import { LUMEN_QA, DEBUG } from '../debug/flags';
 import {
   FIXED_STEP_MS,
   LOGIC_HEIGHT,
@@ -149,6 +150,7 @@ export class StageScene extends Phaser.Scene {
   private newWeapon: string | undefined;
   /** Giây còn lại tới khi mở màn Kết quả; undefined: chưa hạ boss hoặc màn không có Kết quả. */
   private resultIn: number | undefined;
+  private qaClock: LumenAttemptClock | undefined;
   private result: ResultPanel | undefined;
   /** Bảng Kỹ năng mở từ menu tạm dừng (trận đứng yên). */
   private workshop: WorkshopPanel | undefined;
@@ -203,6 +205,7 @@ export class StageScene extends Phaser.Scene {
     this.pendingWeapon = undefined;
     this.newWeapon = undefined;
     this.resultIn = undefined;
+    this.qaClock = LUMEN_QA ? new LumenAttemptClock() : undefined;
     // Dữ liệu gốc từ 03-Data; khi bật ?tune=1 thì áp thêm phần đã chỉnh lưu trên máy.
     const base: TuningData = { player: config.player, weapons: config.weapons, boss };
     const tuned = tunedData(base);
@@ -245,7 +248,7 @@ export class StageScene extends Phaser.Scene {
       stepSec: FIXED_STEP_MS / 1000,
       ...tuned,
       difficulty,
-      seed: WORLD_SEED,
+      seed: LUMEN_QA ? LUMEN_QA_SEED : WORLD_SEED,
       // Thử thách: kẻ địch dùng bản Thử thách khi có (GDD 11 mục 2.6).
       enemies: enemiesFor(config.enemies, difficulty.newAttackPatterns),
       roomBossData: difficulty.newAttackPatterns
@@ -265,13 +268,15 @@ export class StageScene extends Phaser.Scene {
       ...fromSave,
       nanoCellCount,
       takenSecrets: [...takenSecrets],
-      ...(this.def.practiceWeapons
+      ...(!LUMEN_QA && this.def.practiceWeapons
         ? { ownedWeapons: [...(save?.data.character.weapons ?? []), ...this.def.practiceWeapons] }
         : {}),
       ...(rewardClaimed === undefined ? {} : { bossRewardClaimed: rewardClaimed }),
       level: this.levels
         ? syncLevel(this.levels.info.level, this.levelRange, config.stages.levelSync)
-        : 1,
+        : LUMEN_QA
+          ? LUMEN_QA_LEVEL
+          : 1,
       // Màn chơi thử (không bản lưu) dùng build trống để số liệu các phiên so sánh được.
       build: save
         ? computeBuild(config.skills, save.data.character.skills, {
@@ -403,6 +408,19 @@ export class StageScene extends Phaser.Scene {
     const cameraView = { x, y, w: width, h: height };
     for (let i = 0; i < steps; i += 1) {
       const snap = input.step();
+      // Một điểm chạm bị hệ thống hủy không được phát đạn nạp.
+      if (snap.canceled?.shoot) this.cancelInterruptedShot(world);
+      // Hộp nổi đọc đầu vào nhưng không bước trận. Bỏ nạp khi cạnh nhả bị giữ lại,
+      // giữ nạp nếu nút Bắn thực sự vẫn còn được giữ.
+      if (
+        snap.released.shoot &&
+        (this.result?.isOpen ||
+          this.workshop ||
+          this.pause?.isOpen ||
+          snap.pressed.pause ||
+          this.dialogue)
+      )
+        this.cancelInterruptedShot(world);
       if (this.result?.isOpen) {
         this.result.handle(snap);
         continue;
@@ -417,7 +435,8 @@ export class StageScene extends Phaser.Scene {
         continue;
       }
       if (snap.pressed.pause) {
-        this.openPause(input);
+        this.hideGameplayControls(input, world);
+        this.pause?.show();
         continue;
       }
       if (this.dialogue) {
@@ -426,6 +445,7 @@ export class StageScene extends Phaser.Scene {
       }
       this.prev = { x: world.player.box.x, y: world.player.box.y };
       const ev = world.step(this.toWorldInput(snap, input), cameraView);
+      this.qaClock?.step(ev, world.phase === 'boss');
       this.telemetry?.step(ev, input.device);
       if (ev.respawned && this.pendingBuild) {
         world.setBuild(this.pendingBuild);
@@ -473,6 +493,7 @@ export class StageScene extends Phaser.Scene {
         ctx,
       ),
     );
+    if (this.qaClock) this.hud?.setQaAttempt(this.qaClock.label());
     if (DEBUG) {
       this.hud?.debug.setText(
         `${world.player.state} · chết ${world.deaths} · FPS ${Math.round(this.game.loop.actualFps)}`,
@@ -480,10 +501,16 @@ export class StageScene extends Phaser.Scene {
     }
   }
 
-  private openPause(input: InputService): void {
-    // Ẩn lớp nút cảm ứng để chạm được vào các mục của menu trên canvas.
+  private cancelInterruptedShot(world: StageWorld): void {
+    // Đang cầm vũ khí boss thì không đụng nạp đã cất của Arc Cannon.
+    if (world.loadout.current.kind === 'buster') world.loadout.cancelCharge();
+  }
+
+  private hideGameplayControls(input: InputService, world: StageWorld): void {
     input.setGameplayActive(false);
-    this.pause?.show();
+    // Ẩn lớp cảm ứng nhả các nút của riêng nó. Kiểm tra cạnh tổng hợp để không đụng
+    // phím Bắn vẫn đang được giữ trên bàn phím/tay cầm.
+    if (input.hasPendingRelease('shoot')) this.cancelInterruptedShot(world);
   }
 
   private stepTutorial(ev: WorldEvents, world: StageWorld): void {
@@ -513,9 +540,13 @@ export class StageScene extends Phaser.Scene {
       return;
     }
     if (choice === 'quit') {
-      this.scene.start(SceneKey.Menu);
+      if (LUMEN_QA) this.scene.restart({ stage: this.stageKey, difficulty: this.difficultyId });
+      else this.scene.start(SceneKey.Menu);
       return;
     }
+    // Nút canvas có thể gọi Tiếp tục giữa hai bước, trước khi quét cạnh nhả đang chờ.
+    if (this.world && this.controls?.hasPendingRelease('shoot'))
+      this.cancelInterruptedShot(this.world);
     this.pause?.hide();
     // Đang có hộp hội thoại thì lớp nút cảm ứng vẫn ẩn để chạm được vào hộp.
     this.controls?.setGameplayActive(!this.dialogue);
@@ -584,7 +615,7 @@ export class StageScene extends Phaser.Scene {
     if (lines.length === 0) return;
     this.dialogue = { runner: new DialogueRunner(lines, config.ui.dialogue), moment };
     // Ẩn lớp nút cảm ứng để chạm vào hộp và nút Bỏ qua trên canvas.
-    this.controls?.setGameplayActive(false);
+    if (this.controls) this.hideGameplayControls(this.controls, world);
   }
 
   private stepDialogue(snap: InputSnapshot): void {
@@ -646,6 +677,7 @@ export class StageScene extends Phaser.Scene {
         savedCoreBits: this.savedCoreBits,
         newWeapon: this.newWeapon,
         reminders,
+        ...(this.qaClock?.last?.won ? { attemptSec: this.qaClock.last.sec } : {}),
         level: this.levelResult(),
         difficulty: this.def.playtest
           ? undefined
@@ -747,7 +779,7 @@ export class StageScene extends Phaser.Scene {
   }
 
   private onResultChoice(choice: ResultChoice): void {
-    if (choice === 'retry')
+    if (LUMEN_QA || choice === 'retry')
       this.scene.restart({ stage: this.stageKey, difficulty: this.difficultyId });
     else if (choice === 'workshop') this.scene.start(SceneKey.Workshop);
     else this.scene.start(SceneKey.Menu);

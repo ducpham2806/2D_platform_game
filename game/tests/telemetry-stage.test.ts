@@ -289,6 +289,25 @@ describe('chữ ký build, thống kê khung (ST-13-02)', () => {
     expect(f.slowFramePct).toBeCloseTo(10, 5);
     expect(f.realMs).toBeCloseTo(90 * 16.7 + 10 * 33.4, 3);
   });
+
+  it('FrameStats: phân biệt trung vị thường và giới hạn trên của ô tràn', () => {
+    const f = new FrameStats(1000 / 30, Infinity);
+    expect(f.fpsMedianUpperBound).toBeNull();
+    for (const ms of [16, 16, 200, 200]) f.add(ms);
+    expect(f.fpsMedianUpperBound).toBeNull();
+    f.add(200);
+    expect(f.fpsMedianUpperBound).toBe(10);
+    expect((1000 * f.frames) / f.realMs).toBeCloseTo(7.91, 2);
+    expect(f.slowFramePct).toBe(60);
+  });
+
+  it('FrameStats: ô tràn gồm đúng 100 ms, không tính khung bị loại', () => {
+    const f = new FrameStats(1000 / 30, 150);
+    f.add(100);
+    f.add(200);
+    expect(f.fpsMedianUpperBound).toBe(10);
+    expect(f.frames).toBe(1);
+  });
 });
 
 describe('thiết bị cho session_start (ST-13-02b)', () => {
