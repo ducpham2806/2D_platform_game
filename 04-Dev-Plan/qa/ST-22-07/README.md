@@ -27,6 +27,8 @@ Kiểm ngày 24/11 trên Pixel 7 giả lập. Phản hồi HTTP 200 trả về t
 
 Chrome mở trực tiếp tệp HTML sẽ hiện hướng dẫn và link HTTP cho Mac. Đã kiểm cả tệp nguồn và tệp build. Bấm link Mac vào được phòng, địa chỉ Wi-Fi vào được phòng với cần cảm ứng trên Pixel 7 giả lập. [Ảnh hướng dẫn mở qua HTTP](pc-05-huong-dan-mo-qua-http.png)
 
+Chạy lại toàn tuyến trên bản `18b8472` ngày 24/11. Bàn phím về đích trong 64,2 s và Pixel 7 ngang giả lập trong 66,1 s, gồm một lần rơi chủ động để kiểm checkpoint. Cả hai lượt có 0 lỗi console.
+
 ## Kết quả máy thật
 
 Ngày 24/11, người chơi báo đã bấm **Lưu kết quả** trên điện thoại. Khi kiểm tra, đường nhận cũ đã ngừng lắng nghe và tệp của phiên còn trống. Đã mở lại cùng đường nhận để thử gửi lại lượt đó. Chờ báo cáo điện thoại để ghi tải, FPS và nhận xét điểm đáp.

@@ -25,6 +25,14 @@ Mẫu:
 
 ---
 
+## 2026-11-24: ST-22-07 Mở lại phiên đo trên Wi-Fi
+
+- **Nhánh:** `codex/asset-3d-plan`, tiếp từ `18b8472`.
+- **Mục tiêu:** tiếp tục phiên đo máy thật và xác nhận đường vào phòng.
+- **Đã làm:** mở lại hai máy chủ thử bằng tiến trình tách khỏi lệnh khởi động. Giữ cùng địa chỉ, cổng và mã phiên Wi-Fi để gửi lại bản lưu trên điện thoại.
+- **Kiểm tra:** cả hai địa chỉ trả HTTP 200 sau khi lệnh khởi động kết thúc. Bản hiện tại về đích sau 64,2 s bằng bàn phím và 66,1 s trên Pixel 7 ngang giả lập, cả hai có 0 lỗi console. [QA](qa/ST-22-07/README.md).
+- **Còn lại:** phiên đo đang chờ báo cáo điện thoại thật để đối chiếu tải, FPS, hoạt ảnh chạy và điểm đáp.
+
 ## 2026-11-24: ST-22-07 Mở phòng thử qua HTTP
 
 - **Nhánh:** `codex/asset-3d-plan`, tiếp từ `769a520`.
@@ -44,15 +52,3 @@ Mẫu:
 - **File chính:** `game/src/prototype3d/measurement.ts`, `game/scripts/prototype3d-lan.mjs` và [QA](qa/ST-22-07/README.md).
 - **Kiểm tra:** 745 test, lint, format, build và docs-check đạt. Pixel 7 giả lập kiểm lưu khi mất đường gửi, tải lại trang, gửi lại và mở lại máy chủ.
 - **Còn lại:** cần báo cáo của lượt điện thoại để ghi số đo và nhận xét.
-
-## 2026-11-23: ST-22-07 Đo phòng 3D trên điện thoại thật
-
-- **Nhánh:** `codex/asset-3d-plan`, tiếp từ `027d7a5`.
-- **Mục tiêu:** đo tải, FPS và độ dễ đọc điểm đáp khi chơi bằng điện thoại thật.
-- **Đã làm:** đo tải đến khung 3D đầu tiên, lấy mẫu FPS khi chơi, đếm rơi theo đoạn. Biểu mẫu nhận mẫu máy, đoạn khó, điểm đáp và ghi chú.
-- **File chính:** `game/src/prototype3d/measurement.ts`, `game/scripts/prototype3d-lan.mjs` và [quy trình QA](qa/ST-22-07/README.md).
-- **Quyết định:** dùng bản build với `?measure=1` qua Wi-Fi. Số đo và trả lời lưu cục bộ. Lượt thử máy thật dùng chất lượng mặc định.
-- **Lỗi đã sửa:** Kai giữ tư thế nhấc chân vì clip `Run` trong GLB bắt đầu ở 1,5 s. Xuất lại từ Blender với từng clip bắt đầu ở 0 s.
-- **Kiểm tra:** 745 test, lint, format, build và docs-check đạt. Test three.js giữ chạy ba vòng, xác nhận hai chân đổi bên trong mỗi vòng. Pixel 7 giả lập xác nhận bấm giữ cần, về `Idle` và lưu báo cáo sau khi tạm dừng. Hồi quy G1 đạt trên bản thêm bộ đo.
-- **Còn lại:** chờ người chơi gửi lượt điện thoại qua LAN.
-- **Tiếp theo:** đối chiếu FPS và tải với ADR-003. Xem nhận xét điểm đáp cùng các lần rơi trước khi điều chỉnh camera.

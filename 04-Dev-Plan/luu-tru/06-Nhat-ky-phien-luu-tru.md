@@ -4,6 +4,18 @@ Các mục cũ chuyển từ `04-Dev-Plan/06-Nhat-ky-phien.md`, mới nhất ở
 
 ---
 
+## 2026-11-23: ST-22-07 Đo phòng 3D trên điện thoại thật
+
+- **Nhánh:** `codex/asset-3d-plan`, tiếp từ `027d7a5`.
+- **Mục tiêu:** đo tải, FPS và độ dễ đọc điểm đáp khi chơi bằng điện thoại thật.
+- **Đã làm:** đo tải đến khung 3D đầu tiên, lấy mẫu FPS khi chơi, đếm rơi theo đoạn. Biểu mẫu nhận mẫu máy, đoạn khó, điểm đáp và ghi chú.
+- **File chính:** `game/src/prototype3d/measurement.ts`, `game/scripts/prototype3d-lan.mjs` và [quy trình QA](qa/ST-22-07/README.md).
+- **Quyết định:** dùng bản build với `?measure=1` qua Wi-Fi. Số đo và trả lời lưu cục bộ. Lượt thử máy thật dùng chất lượng mặc định.
+- **Lỗi đã sửa:** Kai giữ tư thế nhấc chân vì clip `Run` trong GLB bắt đầu ở 1,5 s. Xuất lại từ Blender với từng clip bắt đầu ở 0 s.
+- **Kiểm tra:** 745 test, lint, format, build và docs-check đạt. Test three.js giữ chạy ba vòng, xác nhận hai chân đổi bên trong mỗi vòng. Pixel 7 giả lập xác nhận bấm giữ cần, về `Idle` và lưu báo cáo sau khi tạm dừng. Hồi quy G1 đạt trên bản thêm bộ đo.
+- **Còn lại:** chờ người chơi gửi lượt điện thoại qua LAN.
+- **Tiếp theo:** đối chiếu FPS và tải với ADR-003. Xem nhận xét điểm đáp cùng các lần rơi trước khi điều chỉnh camera.
+
 ## 2026-11-23: ST-22-06 Phòng thử 3D và bộ asset Kai
 
 - **Nhánh:** `codex/asset-3d-plan`, tiếp từ `ac8b422`.
