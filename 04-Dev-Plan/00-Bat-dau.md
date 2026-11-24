@@ -10,8 +10,8 @@
 
 ## Chờ người dùng (đường găng)
 
-1. Khi ghi kết quả G1, ghi rõ commit đã dùng. Link Pages `?gate=1` mở chế độ chơi thử của bản đang đăng. PR #9 xử lý bằng cách chuyển từng phần theo `stories/EP-21-chuyen-PR9.md` (phương án A đã chọn 14/11).
-2. Chơi thử cổng Prototype với 5 người, ≥ 3 người cảm ứng: `05-Cong-Prototype.md` mục 3; ghi kết quả vào mục 7.
+1. Mở [bản thử G1](https://ducpham2806.github.io/2D_platform_game/?gate=1) trên điện thoại trước khi gửi link. Khi ghi kết quả, ghi rõ commit đã thử. Chuyển từng phần của PR #9 rồi đóng PR theo `stories/EP-21-chuyen-PR9.md` (phương án A đã chọn 14/11).
+2. Chơi thử cổng Prototype với 5 người, ít nhất 3 người dùng điện thoại cảm ứng và 2 người dùng máy tính. Quy trình ở `05-Cong-Prototype.md` mục 4. Ghi kết quả vào mục 7.
 3. Chọn kênh gửi dữ liệu đo lường (`adr/ADR-002-do-luong-mvp.md`).
 4. ST-22-07 chờ nhận báo cáo điện thoại thật trên `codex/asset-3d-plan`. Bản đo giữ bản sao trên trình duyệt và tệp theo mã phiên. Xem `qa/ST-22-07/README.md`.
 5. Xem lại quyết định đã chốt theo ủy quyền: `09-Quyet-dinh-cho-duyet.md`.
@@ -31,7 +31,7 @@ Mỗi việc: viết Story trước (`/story-readiness`, mẫu Story của Game 
 
 ## Asset
 
-Bản G1 dùng hình khối. Nguồn Blender của Kai và kit phòng thử ở `05-Assets/prototype-3d/`, GLB ở `game/public/assets/prototype3d/`. Lộ trình chuyển PR #9 ở `stories/EP-21-chuyen-PR9.md`. Danh sách asset chiến dịch ở `05-Assets/manifest.csv`.
+Bản G1 dùng hình khối. Nguồn Blender của Kai và kit phòng thử ở `05-Assets/prototype-3d/`, GLB ở `game/public/assets/prototype3d/`. Lộ trình chuyển PR #9 ở `stories/EP-21-chuyen-PR9.md`. Danh sách asset chiến dịch ở `05-Assets/manifest.csv` vẫn theo hướng pixel art. Cập nhật quy trình glTF sau khi duyệt ADR-003.
 
 ## Đọc gì theo loại việc
 

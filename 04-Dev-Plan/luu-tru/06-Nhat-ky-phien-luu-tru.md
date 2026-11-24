@@ -4,6 +4,17 @@ Các mục cũ chuyển từ `04-Dev-Plan/06-Nhat-ky-phien.md`, mới nhất ở
 
 ---
 
+## 2026-11-24: ST-22-07 Kiểm hoạt ảnh Kai và khôi phục báo cáo
+
+- **Nhánh:** `codex/asset-3d-plan`, tiếp từ `f10bba9`.
+- **Mục tiêu:** kiểm bản sửa hoạt ảnh và đọc số tải, FPS, điểm đáp của lượt điện thoại người chơi đã gửi.
+- **Kết quả hoạt ảnh:** GLB đang phục vụ trên LAN trùng với bản sửa. Test three.js xác nhận Kai đổi chân qua ba vòng chạy liên tiếp.
+- **Lỗi tìm thấy:** đường nhận trước đã dừng. Tệp phiên cũ trống và đã mở lại cùng đường nhận để có thể gửi lại từ tab điện thoại.
+- **Đã làm:** báo cáo mới lưu bản sao trên trình duyệt trước khi gửi. Máy chủ dùng tệp theo mã phiên, giữ qua lần khởi động lại. Thêm mục nhận xét hoạt ảnh chạy.
+- **File chính:** `game/src/prototype3d/measurement.ts`, `game/scripts/prototype3d-lan.mjs` và [QA](qa/ST-22-07/README.md).
+- **Kiểm tra:** 745 test, lint, format, build và docs-check đạt. Pixel 7 giả lập kiểm lưu khi mất đường gửi, tải lại trang, gửi lại và mở lại máy chủ.
+- **Còn lại:** cần báo cáo của lượt điện thoại để ghi số đo và nhận xét.
+
 ## 2026-11-23: ST-22-07 Đo phòng 3D trên điện thoại thật
 
 - **Nhánh:** `codex/asset-3d-plan`, tiếp từ `027d7a5`.
@@ -95,6 +106,15 @@ Các mục cũ chuyển từ `04-Dev-Plan/06-Nhat-ky-phien.md`, mới nhất ở
 - **Quyết định:** dùng đường va chạm quét cho vạch dội và bóng đổ. Sửa vị trí phóng bom trong hành vi `golem` để bom không chạm sàn ngay lúc bắn. Mở hai chế độ phòng thử ở menu thường.
 - **Kiểm tra:** 669 test, build (typecheck), lint, format, docs-check và gate-flow đạt. Chromium PC Thường và Pixel 7 giả lập Thử thách, 0 lỗi console. [Ảnh](qa/ST-15-06/README.md).
 - **Tiếp theo:** ST-15-08a hoặc ST-15-15/16. Đặt địch trong bản đồ chiến dịch ở EP-17. QB-21 và QB-23 thống nhất ở ST-15-15.
+
+## 2026-11-21: Kiểm tra tiến độ Cyber Vanguard
+
+- **Mốc kiểm:** `main` ở `c458643`, tag `gate-r1` trỏ tới `eeb8ca1`; CI #53 và Pages #8 đạt theo GitHub Actions.
+- **Nhánh phát triển:** `ccr-9de01342-2046rb` ở `83f6d6b`, hơn `main` 13 commit. Có lõi đo lường và báo cáo MVP, demo 2.5D, hộp chữ, an toàn boss và dữ liệu nền Stage 2. PR #9 vẫn mở.
+- **Kiểm tra:** nhật ký nhánh phát triển ghi 541 test, lint, format, typecheck, build và gate-flow đạt. Chưa thấy lượt GitHub Actions cho commit `83f6d6b`. Môi trường kiểm tra không mở trực tiếp được bản Pages.
+- **Tài liệu:** cập nhật trang bắt đầu và dòng trạng thái G1, lưu mục nhật ký cũ vào lưu trữ.
+- **Còn dở:** chưa thấy dữ liệu đợt thử G1 trong repo. Còn chọn kênh đo lường (ADR-002) và đo demo 2.5D trên thiết bị thật trước khi duyệt ADR-003.
+- **Tiếp theo:** kiểm link trên điện thoại, chơi thử G1 với 5 người và tổng hợp kết quả. Việc code kế tiếp trên nhánh phát triển là ST-15-02 (laser, gương, cảm biến).
 
 ## 2026-11-21: ST-15-05 Gale Cutter và sương lạnh Két Tay Mk I
 
@@ -258,7 +278,7 @@ Các mục cũ chuyển từ `04-Dev-Plan/06-Nhat-ky-phien.md`, mới nhất ở
 - **Lỗi tìm thấy:** commit tạm được đẩy khi chưa chạy docs-check (từ nay chạy đủ trước cả commit tạm).
 - **Kiểm tra:** 425 test (thêm 2 QB-88, đỏ trên code cũ), lint, format, build, docs-check đạt; chạy thử Chromium trước/sau sửa (`qa/ST-21-01/`), 0 lỗi console.
 - **Merge:** người dùng nhờ merge; PR #10 merge (merge commit `eeb8ca1`, CI #50 đạt). Pages #5 trên `main`: test, build đạt, dừng ở `configure-pages` vì repo riêng tư chưa bật Pages. Nhánh làm việc đưa lên ngang `main`. Người dùng chuyển repo sang công khai; Pages #6 (chạy tay) vẫn dừng ở `configure-pages`: chưa chọn Source "GitHub Actions" trong Settings → Pages. Người dùng bật Pages; lần #7 đăng thành công `eeb8ca1`. Môi trường chặn `github.io` nên em không tự mở link thật được.
-- **Tag, merge tài liệu:** người dùng đồng ý tag `gate-r1`; đẩy tag từ môi trường bị proxy chặn (403), GitHub MCP không có lệnh tạo tag, người dùng tạo trên GitHub (`gate-r1` → `eeb8ca1`, đã kiểm). Tài liệu sau merge vào `main` bằng PR #11 (`c458643`); Pages #8 đăng lại đạt, code game không đổi.
+- **Tag, merge tài liệu:** người dùng đồng ý tag `gate-r1`; đẩy tag từ môi trường bị proxy chặn (403), GitHub MCP không có lệnh tạo tag, người dùng tạo trên GitHub (`gate-r1` → `eeb8ca1`, đã kiểm). Ba commit tài liệu sau merge vào `main` bằng PR #11 (`c458643`); Pages #8 đăng lại đạt, code game không đổi.
 - **Tiếp theo:** người dùng mở link `?gate=1` trên điện thoại rồi phát cho 5 người; không merge vào `main` trong đợt thử; chọn hướng đồ họa. Em: EP-13 lõi đo lường; EP-21 ST-21-02 sau tag.
 
 ## 2026-11-14: ST-11-01 vùng an toàn cho nút cảm ứng, canvas, bảng HTML (bước đầu của G1)

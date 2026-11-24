@@ -25,6 +25,14 @@ Mẫu:
 
 ---
 
+## 2026-11-24: Tích hợp cục bộ phòng thử 3D
+
+- **Nhánh:** `codex/integrate-asset-3d`, từ `origin/main` ở `6b02afd` và nhánh 3D ở `cb8ab61`.
+- **Phạm vi:** worktree tích hợp riêng. Giữ mốc G1, tình trạng EP-22 và việc chờ số đo ST-22-07.
+- **Xung đột:** ghép nội dung trang bắt đầu và hợp nhất nhật ký. Nhật ký chính giữ ba mục mới nhất. Chuyển mục cũ vào lưu trữ, gồm mục kiểm tiến độ 21/11 từ phía main.
+- **Kiểm tra chuẩn bị:** hai ref khớp SHA yêu cầu, lockfile trùng bản phụ thuộc đã cài. Dùng bộ test, lint, format, build và docs-check của game.
+- **Còn lại:** ST-22-07 chờ đo trên điện thoại thật. Dấu xung đột có sẵn trong bảng kết quả G1 của `05-Cong-Prototype.md` cần xử lý riêng.
+
 ## 2026-11-24: ST-22-07 Mở lại phiên đo trên Wi-Fi
 
 - **Nhánh:** `codex/asset-3d-plan`, tiếp từ `18b8472`.
@@ -41,14 +49,3 @@ Mẫu:
 - **File chính:** `game/prototype-3d.html`, `game/README.md` và [ảnh QA](qa/ST-22-07/pc-05-huong-dan-mo-qua-http.png).
 - **Kiểm tra:** 745 test, lint, format, build, docs-check đạt. Chromium xác nhận tệp nguồn và build đều hiện hướng dẫn, link Mac vào chơi và link Wi-Fi hiện cần cảm ứng trên Pixel 7 giả lập.
 - **Còn lại:** chờ nhận số đo và nhận xét từ điện thoại thật.
-
-## 2026-11-24: ST-22-07 Kiểm hoạt ảnh Kai và khôi phục báo cáo
-
-- **Nhánh:** `codex/asset-3d-plan`, tiếp từ `f10bba9`.
-- **Mục tiêu:** kiểm bản sửa hoạt ảnh và đọc số tải, FPS, điểm đáp của lượt điện thoại người chơi đã gửi.
-- **Kết quả hoạt ảnh:** GLB đang phục vụ trên LAN trùng với bản sửa. Test three.js xác nhận Kai đổi chân qua ba vòng chạy liên tiếp.
-- **Lỗi tìm thấy:** đường nhận trước đã dừng. Tệp phiên cũ trống và đã mở lại cùng đường nhận để có thể gửi lại từ tab điện thoại.
-- **Đã làm:** báo cáo mới lưu bản sao trên trình duyệt trước khi gửi. Máy chủ dùng tệp theo mã phiên, giữ qua lần khởi động lại. Thêm mục nhận xét hoạt ảnh chạy.
-- **File chính:** `game/src/prototype3d/measurement.ts`, `game/scripts/prototype3d-lan.mjs` và [QA](qa/ST-22-07/README.md).
-- **Kiểm tra:** 745 test, lint, format, build và docs-check đạt. Pixel 7 giả lập kiểm lưu khi mất đường gửi, tải lại trang, gửi lại và mở lại máy chủ.
-- **Còn lại:** cần báo cáo của lượt điện thoại để ghi số đo và nhận xét.
