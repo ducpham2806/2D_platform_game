@@ -18,6 +18,8 @@ export interface StageResultInfo {
   stageName: string;
   /** Core Bit trong bản lưu lúc vào màn (thanh trên cộng thêm phần nhặt trong lượt). */
   savedCoreBits: number;
+  /** Chỉ bản QA: thời gian lượt thắng, không gồm dẫn vào phòng hay lần thử cũ. */
+  attemptSec?: number;
   /** Vũ khí boss nhận trong lượt (thắng lần đầu). */
   newWeapon: string | undefined;
   /** Lời hướng dẫn còn dở cần nhắc lại (đã thay biểu tượng nút). */
@@ -68,7 +70,9 @@ export function buildStageResult(world: ResultSource, info: StageResultInfo): St
     coreBitsTotal: info.savedCoreBits + world.coreBits,
     stats: [
       ...(info.difficulty ? [{ label: 'Độ khó', value: info.difficulty.name }] : []),
-      { label: 'Thời gian', value: formatDuration(world.elapsedSec) },
+      info.attemptSec === undefined
+        ? { label: 'Thời gian', value: formatDuration(world.elapsedSec) }
+        : { label: 'Trận thắng', value: `${info.attemptSec.toFixed(1)} s` },
       { label: 'Số lần chết', value: String(world.deaths) },
       {
         label: 'EXP',

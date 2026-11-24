@@ -79,4 +79,29 @@ describe('InputAggregator', () => {
     expect(s.held.right).toBe(false);
     expect(s.released.jump).toBe(true);
   });
+  it('hủy một lần giữ đã được quét không tạo cạnh nhả, cạnh hủy chỉ xuất hiện một lần', () => {
+    const agg = new InputAggregator();
+    agg.press('touch', 'shoot');
+    agg.step();
+    agg.cancel('touch', 'shoot');
+    expect(agg.hasPendingRelease('shoot')).toBe(false);
+    const result = agg.step();
+    expect(result.held.shoot).toBe(false);
+    expect(result.pressed.shoot).toBe(false);
+    expect(result.released.shoot).toBe(false);
+    expect(result.canceled?.shoot).toBe(true);
+    expect(agg.step().canceled).toBeUndefined();
+  });
+
+  it('giữ được lần chạm thật nếu bắt đầu lại trong cùng bước có thao tác hủy', () => {
+    const agg = new InputAggregator();
+    agg.press('touch', 'shoot');
+    agg.cancel('touch', 'shoot');
+    agg.press('touch', 'shoot');
+    agg.release('touch', 'shoot');
+    const result = agg.step();
+    expect(result.canceled?.shoot).toBe(true);
+    expect(result.pressed.shoot).toBe(true);
+    expect(result.released.shoot).toBe(true);
+  });
 });

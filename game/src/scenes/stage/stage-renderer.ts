@@ -21,6 +21,7 @@ const PROJECTILE_COLORS: Readonly<Record<Projectile['kind'], number>> = {
   lash: 0x7bd389,
   root: 0x8b5e3c,
   seed: 0xb2f2bb,
+  spectrum: 0xfff3b0,
 };
 
 /**
@@ -168,13 +169,26 @@ function drawBoss(
       const left = boss.facing > 0 ? b.x + b.w : b.x - boss.lashReachPx;
       g.fillStyle(0xff8787, a * 0.6).fillRect(left, b.y + b.h - 4, boss.lashReachPx, 4);
     } else if (boss.attack === 'roots') {
-      // Vết nứt trên sàn ở chỗ rễ sắp mọc.
-      for (const x of boss.rootXs) g.fillStyle(0xffd166, a).fillRect(x - 6, b.y + b.h - 2, 12, 2);
+      // Vết nứt trên sàn ở chỗ rễ sắp mọc; cột Lumen bao trọn phòng.
+      if (boss.anchors) {
+        const roots = boss.data.attacks.roots!;
+        const floor = (map.rows - 1) * t;
+        for (const x of boss.rootXs)
+          g.fillStyle(0xffd166, a * 0.4).fillRect(
+            x - roots.sizePx.w / 2,
+            floor - roots.sizePx.h,
+            roots.sizePx.w,
+            roots.sizePx.h,
+          );
+      } else {
+        for (const x of boss.rootXs) g.fillStyle(0xffd166, a).fillRect(x - 6, b.y + b.h - 2, 12, 2);
+      }
     }
     const tint = boss.data.id === 'gray' ? 0x8a94a6 : 0x3f8f5a;
     // Rễ Đuổi (Thử thách): tư thế riêng, sáng tím, giơ hai tay (khác Rễ Trồi sáng cam).
     const stalk = boss.attack === 'stalk';
-    g.fillStyle(blink ? (stalk ? 0xc084fc : 0xffa94d) : tint, 1).fillRect(b.x, b.y, b.w, b.h);
+    const warnsPurple = stalk || boss.attack === 'focus';
+    g.fillStyle(blink ? (warnsPurple ? 0xc084fc : 0xffa94d) : tint, 1).fillRect(b.x, b.y, b.w, b.h);
     if (stalk) {
       g.fillStyle(0xc084fc, 1).fillRect(b.x - 3, b.y - 8, 4, 12);
       g.fillStyle(0xc084fc, 1).fillRect(b.x + b.w - 1, b.y - 8, 4, 12);
@@ -199,6 +213,26 @@ function drawBoss(
     const on = Math.floor(timeMs / (150 - 110 * m.progress)) % 2 === 0;
     g.fillStyle(0xc084fc, 0.12 + 0.25 * m.progress).fillRect(m.x - 7, m.y - 28, 14, 28);
     g.fillStyle(0xc084fc, on ? 0.95 : 0.45).fillRect(m.x - 9, m.y - 3, 18, 3);
+  }
+  for (const warning of boss.beam.warnings) {
+    g.lineStyle(1, 0xff7080, 0.9);
+    for (const { from, to } of warning.path) g.lineBetween(from.x, from.y, to.x, to.y);
+  }
+  for (const pulse of boss.beam.pulses) {
+    g.fillStyle(0xff768f, 0.85);
+    for (const box of pulse.boxes) g.fillRect(box.x, box.y, box.w, box.h);
+  }
+  const anchor = boss.anchors?.warning;
+  if (anchor) {
+    g.fillStyle(0xffe9a5, 0.15 + anchor.progress * 0.45).fillCircle(anchor.x, anchor.y, 8);
+    g.lineStyle(2, 0xffe9a5, 0.9).strokeCircle(anchor.x, anchor.y, 8);
+  }
+  for (const mark of boss.focus.marks) {
+    if (mark.phase === 'burn') g.fillStyle(0xffd166, 0.65).fillCircle(mark.x, mark.y, mark.radius);
+    else {
+      const tint = mark.phase === 'lock' ? 0xffffff : 0xc084fc;
+      g.lineStyle(2, tint, 1).strokeCircle(mark.x, mark.y, mark.radius);
+    }
   }
   // Mắt chỉ hướng.
   const eyeX = boss.facing > 0 ? b.x + b.w - 8 : b.x + 4;

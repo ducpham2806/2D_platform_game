@@ -118,6 +118,14 @@ export class StageHud {
     );
   }
 
+  setQaAttempt(text: string): void {
+    if (text !== this.debug.text)
+      this.debug
+        .setPosition(LOGIC_WIDTH / 2, 25)
+        .setOrigin(0.5, 0)
+        .setText(text);
+  }
+
   /** Hiện một dòng giữa màn hình rồi mờ dần. */
   flash(text: string, holdMs = 1600): void {
     this.message.setText(text).setAlpha(1);

@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { DEBUG } from './debug/flags';
+import { DEBUG, LUMEN_QA } from './debug/flags';
 import { LOGIC_HEIGHT, LOGIC_WIDTH } from './core/constants';
 import { currentLayout } from './core/phaser-scale';
 import { BootScene } from './scenes/boot-scene';
@@ -32,19 +32,21 @@ const game = new Phaser.Game({
   },
   fps: { target: 60 },
   input: { activePointers: 3 },
-  scene: [
-    BootScene,
-    PreloadScene,
-    MenuScene,
-    HubScene,
-    StageScene,
-    ControlsScene,
-    PlaytestScene,
-    SaveScene,
-    WorkshopScene,
-    ShopScene,
-    PrepScene,
-  ],
+  scene: LUMEN_QA
+    ? [BootScene, PreloadScene, StageScene]
+    : [
+        BootScene,
+        PreloadScene,
+        MenuScene,
+        HubScene,
+        StageScene,
+        ControlsScene,
+        PlaytestScene,
+        SaveScene,
+        WorkshopScene,
+        ShopScene,
+        PrepScene,
+      ],
 });
 
 if (DEBUG) {

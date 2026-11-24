@@ -49,6 +49,8 @@ export interface InputSnapshot {
   held: Readonly<Record<Action, boolean>>;
   pressed: Readonly<Record<Action, boolean>>;
   released: Readonly<Record<Action, boolean>>;
+  /** Một lần giữ bị hệ thống ngắt; khác nhả chủ động. Không cấp phát khi không có sự kiện. */
+  canceled?: Readonly<Partial<Record<Action, true>>>;
   /** Thiết bị dùng gần nhất, để đổi biểu tượng nút. */
   device: InputDevice;
 }

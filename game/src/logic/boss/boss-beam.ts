@@ -28,10 +28,15 @@ export class BossBeam {
   private route: BossBeamRoute | undefined;
   private turnsAtStart = 0;
   private countered = false;
+  private lockAtWarning = false;
+  private lockedPrimary: BossBeamLine | undefined;
+  private lockedAlternate: BossBeamLine | undefined;
 
-  begin(route: BossBeamRoute | undefined): void {
+  begin(route: BossBeamRoute | undefined, lockAtWarning = false): void {
+    this.cancelPending();
     this.route = route;
-    this.turnsAtStart = route?.turns() ?? 0;
+    this.lockAtWarning = lockAtWarning;
+    this.turnsAtStart = lockAtWarning ? 0 : (route?.turns() ?? 0);
     this.countered = false;
   }
 
@@ -43,21 +48,23 @@ export class BossBeam {
   warn(attack: BossBeamAttack, alternateOnly = false): void {
     this.warnings = [];
     if (!this.route) return;
-    if (!alternateOnly) this.warnings.push(this.line(attack, false));
-    if (attack.pulseGapSec !== undefined) this.warnings.push(this.line(attack, true));
+    if (!alternateOnly) this.warnings.push(this.warningLine(attack, false));
+    if (attack.pulseGapSec !== undefined) this.warnings.push(this.warningLine(attack, true));
   }
 
   cancelPending(): void {
     this.warnings = [];
+    this.lockedPrimary = this.lockedAlternate = undefined;
   }
 
   clear(): void {
-    this.cancelPending();
+    this.begin(undefined);
     this.pulses = [];
   }
 
   fire(attack: BossBeamAttack, alternate: boolean, boss: Box): boolean {
-    const line = this.line(attack, alternate);
+    const line = this.lockAtWarning ? this.lockedLine(alternate) : this.line(attack, alternate);
+    if (!line) return false; // Không bắn theo đường chưa từng báo.
     const boxes = line.path.map((leg) => laserBox(leg, attack.widthPx));
     if (boxes.length)
       this.pulses.push({
@@ -68,6 +75,7 @@ export class BossBeam {
         hitPlayer: false,
       });
     if (
+      this.lockAtWarning ||
       this.countered ||
       this.route?.turns() === this.turnsAtStart ||
       !boxes.slice(1).some((box) => overlaps(box, boss))
@@ -75,6 +83,24 @@ export class BossBeam {
       return false;
     this.countered = true;
     return true;
+  }
+
+  private lockedLine(alternate: boolean): BossBeamLine | undefined {
+    return alternate ? this.lockedAlternate : this.lockedPrimary;
+  }
+
+  private warningLine(attack: BossBeamAttack, alternate: boolean): BossBeamLine {
+    if (!this.lockAtWarning) return this.line(attack, alternate);
+    const cached = this.lockedLine(alternate);
+    if (cached) return cached;
+    const path = this.line(attack, alternate).path.map(({ from, to }) => ({
+      from: { ...from },
+      to: { ...to },
+    }));
+    const line = { alternate, path };
+    if (alternate) this.lockedAlternate = line;
+    else this.lockedPrimary = line;
+    return line;
   }
 
   private line(attack: BossBeamAttack, alternate: boolean): BossBeamLine {

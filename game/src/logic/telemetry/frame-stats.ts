@@ -45,6 +45,12 @@ export class FrameStats {
     return 0;
   }
 
+  /** Giới hạn trên nếu khung trung vị nằm trong ô tràn, null nếu không. */
+  get fpsMedianUpperBound(): number | null {
+    const framesInsideHistogram = this.total - (this.bins[BINS] ?? 0);
+    return this.total > 0 && framesInsideHistogram < this.total / 2 ? 1000 / MAX_MS : null;
+  }
+
   /** Phần trăm khung chậm hơn `slowMs` (0–100). */
   get slowFramePct(): number {
     return this.total === 0 ? 0 : (100 * this.slow) / this.total;

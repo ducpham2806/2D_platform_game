@@ -419,5 +419,147 @@
         }
       }
     }
+  },
+  "lumen": {
+    "name": "Lumen",
+    "hp": 280,
+    "sizePx": {
+      "w": 24,
+      "h": 28
+    },
+    "contactDamage": 10,
+    "weakness": "Vine Lash",
+    "reward": "Prism Beam",
+    "rewardExp": 241,
+    "rewardCoreBit": 110,
+    "idleSec": 0.9,
+    "minTelegraphSec": 0.5,
+    "anchorShift": {
+      "warnSec": 0.3
+    },
+    "phases": [
+      {
+        "untilHpPct": 60,
+        "speedMul": 1,
+        "attacks": [
+          "shot",
+          "beam"
+        ]
+      },
+      {
+        "untilHpPct": 30,
+        "speedMul": 1,
+        "attacks": [
+          "shot",
+          "beam",
+          "roots"
+        ]
+      },
+      {
+        "untilHpPct": 0,
+        "speedMul": 1.2,
+        "attacks": [
+          "beam",
+          "roots",
+          "shot",
+          "rain"
+        ]
+      }
+    ],
+    "attacks": {
+      "shot": {
+        "telegraphSec": 0.6,
+        "count": 3,
+        "intervalSec": 0.35,
+        "speedTilesPerSec": 9,
+        "damage": 12,
+        "recoverSec": 0.6,
+        "sizePx": {
+          "w": 8,
+          "h": 6
+        }
+      },
+      "beam": {
+        "telegraphSec": 0.8,
+        "activeSec": 0.5,
+        "widthPx": 6,
+        "maxBounces": 1,
+        "finalPhaseMaxBounces": 2,
+        "damage": 18,
+        "recoverSec": 0.7
+      },
+      "roots": {
+        "telegraphSec": 0.7,
+        "count": 3,
+        "spacingTiles": 3,
+        "intervalSec": 0.4,
+        "activeSec": 0.4,
+        "damage": 15,
+        "recoverSec": 0.6,
+        "sizePx": {
+          "w": 12,
+          "h": 160
+        }
+      },
+      "rain": {
+        "telegraphSec": 1,
+        "activeSec": 0.75,
+        "fallSpeedTilesPerSec": 16,
+        "damage": 20,
+        "safeGaps": 3,
+        "gapWidthTiles": 2,
+        "stunAfterSec": 2,
+        "sizePx": {
+          "w": 16,
+          "h": 18
+        }
+      }
+    },
+    "challenge": {
+      "phases": [
+        {
+          "untilHpPct": 60,
+          "speedMul": 1,
+          "attacks": [
+            "shot",
+            "beam"
+          ]
+        },
+        {
+          "untilHpPct": 30,
+          "speedMul": 1,
+          "attacks": [
+            "shot",
+            "beam",
+            "focus",
+            "roots"
+          ]
+        },
+        {
+          "untilHpPct": 0,
+          "speedMul": 1.2,
+          "attacks": [
+            "beam",
+            "focus",
+            "roots",
+            "shot",
+            "rain"
+          ]
+        }
+      ],
+      "attacks": {
+        "focus": {
+          "telegraphSec": 0.7,
+          "count": 3,
+          "markIntervalSec": 0.6,
+          "trackSec": 0.9,
+          "lockSec": 0.6,
+          "activeSec": 0.3,
+          "radiusTiles": 1,
+          "damage": 15,
+          "recoverSec": 0.9
+        }
+      }
+    }
   }
 }

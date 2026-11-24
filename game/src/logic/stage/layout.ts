@@ -118,12 +118,20 @@ export interface SectionSpawn {
   fromCol: number;
 }
 
+export interface AnchoredArenaLayout {
+  anchors: readonly Cell[];
+  startIndex: number;
+  ceilingRow: number;
+  floorRow: number;
+}
+
 export interface StageLayout {
   map: TileMap;
   spawn: Cell;
   enemies: EnemySpawn[];
   targets: TargetSpawn[];
   boss?: Cell;
+  anchoredArena?: AnchoredArenaLayout;
   /** Cửa phòng boss: một cột, nhiều hàng. */
   gate?: { col: number; rows: number[] };
   /** Theo thứ tự đi qua (cột tăng dần). */

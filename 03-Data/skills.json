@@ -6,8 +6,8 @@
     "shieldIFrameSec": 0.3,
     "shieldBreakHitStopSteps": 2,
     "bulletKinds": ["enemyShot", "drop", "seed", "bomb"],
-    "shieldPierceKinds": ["seed"],
-    "note": "bulletKinds: loại đòn tính là đạn, để bất tử thêm của Lướt Xuyên Đạn có tác dụng (sóng đất, roi, rễ không tính). shieldBreakHitStopSteps: dừng hình khi khiên C3 vỡ (bậc phản hồi Vừa). minFullChargeSec: sàn thời gian nạp đầy sau mọi giảm của build, phải lớn hơn thời gian nạp vừa (kỹ năng chỉ giảm nạp đầy, không nâng DPS tối đa). minBuildDamageTakenMul: sàn của tích hệ số giảm sát thương nhận của build (không gồm độ khó). shieldIFrameSec: bất tử sau khi khiên C3 chặn một đòn. shieldPierceKinds: loại đòn khiên C3 không chặn (hạt Hoa Nở: 12 hạt rơi cùng lúc nên Kai đứng yên chỉ trúng đúng một hạt; khiên chặn được thì đòn đỉnh mất tác dụng). Khiên để đòn đi qua và vẫn sẵn."
+    "shieldPierceKinds": ["seed", "spectrum"],
+    "note": "bulletKinds: loại đòn tính là đạn, để bất tử thêm của Lướt Xuyên Đạn có tác dụng (sóng đất, roi, rễ không tính). shieldBreakHitStopSteps: dừng hình khi khiên C3 vỡ (bậc phản hồi Vừa). minFullChargeSec: sàn thời gian nạp đầy sau mọi giảm của build, phải lớn hơn thời gian nạp vừa (kỹ năng chỉ giảm nạp đầy, không nâng DPS tối đa). minBuildDamageTakenMul: sàn của tích hệ số giảm sát thương nhận của build (không gồm độ khó). shieldIFrameSec: bất tử sau khi khiên C3 chặn một đòn. shieldPierceKinds: loại đòn khiên C3 không chặn (hạt Hoa Nở: 12 hạt rơi cùng lúc nên Kai đứng yên chỉ trúng đúng một hạt; khiên chặn được thì đòn đỉnh mất tác dụng). Quang Phổ của Lumen (spectrum) cũng xuyên khiên. Khiên để đòn đi qua và vẫn sẵn."
   },
   "branches": [
     {

@@ -41,6 +41,8 @@ import {
 import { Barrier, LockedRoom, makeSecret, type Secret, standPoint, Vine } from './stage-mechanics';
 import { RoomBoss } from './room-boss';
 import { StageOptics } from './stage-optics';
+import { anchoredBeamRoute } from './anchored-beam-route';
+import { opticalCenter } from '../stage/laser-path';
 import { NANO_CELL, NanoCells } from './nano-cell';
 import {
   IDLE_INPUT,
@@ -254,7 +256,6 @@ export class StageWorld {
         )
       : undefined;
     this.bossSpawn = layout.boss ? standPoint(layout.boss, t) : undefined;
-    this.boss = this.makeBoss();
 
     this.vines = layout.vines.map((v) => new Vine(v, setup.mechanics.vine, t));
     this.crumbles = (layout.crumbles ?? []).map(
@@ -273,6 +274,7 @@ export class StageWorld {
       (flow) => new CoolantFlow(flow, this.map, setup.mechanics.coolant.frozenSteps),
     );
     this.optics = layout.optics && new StageOptics(layout.optics, this.map, setup.mechanics);
+    this.boss = this.makeBoss();
     this.rooms = layout.rooms.map((r, i) => {
       if (!r.miniBoss) return new LockedRoom(r, this.map);
       const data = setup.roomBossData?.[r.miniBoss.id];
@@ -915,6 +917,22 @@ export class StageWorld {
     // Máu boss nhân hệ số độ khó như kẻ địch thường (GDD 11 mục 3.1); pha tính theo % nên giữ nguyên.
     const data = this.setup.boss;
     const hpMul = this.setup.difficulty.enemyHp;
+    const arena = this.layout.anchoredArena;
+    const optics = this.optics;
+    if (data.anchorShift && (!arena || !optics))
+      throw new Error(`${data.id}: thiếu điểm neo hoặc gương của đấu trường`);
+    const t = this.setup.tileSize;
+    const anchorArena =
+      data.anchorShift && arena && optics
+        ? {
+            points: arena.anchors.map(({ col, row }) => opticalCenter(col, row, t)),
+            startIndex: arena.startIndex,
+            floorY: arena.floorRow * t,
+            topY: (arena.ceilingRow + 1) * t,
+            beamRoute: (origin: { x: number; y: number }, target: { x: number; y: number }) =>
+              anchoredBeamRoute(optics, origin, target),
+          }
+        : undefined;
     return new Boss(
       hpMul === 1 ? data : { ...data, hp: data.hp * hpMul },
       this.map,
@@ -922,6 +940,8 @@ export class StageWorld {
       this.bossSpawn.y,
       this.arena,
       this.rng,
+      undefined,
+      anchorArena,
     );
   }
 

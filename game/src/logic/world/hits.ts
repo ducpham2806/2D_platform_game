@@ -289,6 +289,17 @@ export function resolveEnemyHits(
       }
     }
   }
+  const focusAttack = boss?.data.attacks.focus;
+  const mark = focusAttack ? boss?.focus.pendingHit(player.box) : undefined;
+  if (boss && focusAttack && mark) {
+    const amount = incomingDamage(focusAttack.damage, damageTaken);
+    if (absorbed(amount, 'focus')) boss.focus.consumeHit(mark.id);
+    else if (player.applyHit(amount, mark.x)) {
+      boss.focus.consumeHit(mark.id);
+      ev.playerHurt = true;
+      ev.hurtBy = boss.source ?? 'boss:focus';
+    }
+  }
   for (const e of enemies) {
     if (!e.alive || e.disabledSec > 0 || !overlaps(e.box, player.box)) continue;
     const amount = incomingDamage(e.contactDamage, damageTaken);

@@ -20,6 +20,7 @@ export class InputAggregator {
   private readonly axes = new Map<InputDevice, AxisState>();
   private readonly pressLatch = new Set<Action>();
   private readonly releaseLatch = new Set<Action>();
+  private canceled: Partial<Record<Action, true>> | undefined;
   private previous = emptyActionRecord();
   private lastDevice: InputDevice;
 
@@ -48,10 +49,23 @@ export class InputAggregator {
     if (!this.isHeldAnywhere(action)) this.releaseLatch.add(action);
   }
 
+  /** Bỏ giữ bị hệ thống hủy mà không biến nó thành một lần nhả chủ động. */
+  cancel(device: InputDevice, action: Action): void {
+    if (!this.heldSet(device).delete(action) || this.isHeldAnywhere(action)) return;
+    (this.canceled ??= {})[action] = true;
+    // Nếu có một lần chạm hợp lệ đã khép lại ở cùng bước, giữ cạnh bấm của lần đó.
+    if (!this.releaseLatch.has(action)) this.pressLatch.delete(action);
+  }
+
   /** Nhả mọi phím của một nguồn (mất focus, rút tay cầm, ẩn lớp cảm ứng). */
   releaseAll(device: InputDevice): void {
     for (const action of [...this.heldSet(device)]) this.release(device, action);
     this.axes.delete(device);
+  }
+
+  /** Đọc cạnh nhả đang chờ mà không tiêu thụ các cạnh của bước logic tiếp theo. */
+  hasPendingRelease(action: Action): boolean {
+    return this.releaseLatch.has(action);
   }
 
   /** Trục analog (-1..1) đã qua vùng chết; (0, 0) nghĩa là không dùng trục. */
@@ -69,14 +83,18 @@ export class InputAggregator {
   step(): InputSnapshot {
     const held = emptyActionRecord();
     const pressed = emptyActionRecord();
+    const canceled = this.canceled;
     const released = emptyActionRecord();
     for (const action of ACTIONS) {
       held[action] = this.isHeldAnywhere(action);
       pressed[action] = this.pressLatch.has(action) || (held[action] && !this.previous[action]);
-      released[action] = this.releaseLatch.has(action) || (!held[action] && this.previous[action]);
+      released[action] =
+        this.releaseLatch.has(action) ||
+        (!canceled?.[action] && !held[action] && this.previous[action]);
     }
     this.pressLatch.clear();
     this.releaseLatch.clear();
+    this.canceled = undefined;
     this.previous = held;
     const axis = this.strongestAxis();
     const digitalX = Number(held.right) - Number(held.left);
@@ -87,6 +105,7 @@ export class InputAggregator {
       held,
       pressed,
       released,
+      ...(canceled ? { canceled } : {}),
       device: this.lastDevice,
     };
   }

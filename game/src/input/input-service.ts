@@ -77,6 +77,10 @@ export class InputService {
     return this.aggregator.step();
   }
 
+  hasPendingRelease(action: Action): boolean {
+    return this.aggregator.hasPendingRelease(action);
+  }
+
   /** Gọi mỗi khung khi không có vòng lặp gameplay (menu) để tay cầm vẫn được đọc khi đổi nút. */
   pollIdle(): void {
     this.gamepad.poll();

@@ -2,6 +2,7 @@ import { ENEMY_ROOM } from './enemy-room';
 import { FROST_ROOM } from './frost-room';
 import { GALE_ROOM } from './gale-room';
 import { GOLEM_ROOM } from './golem-room';
+import { LUMEN_ROOM } from './lumen-room';
 import { GRAY_BOX } from './gray-box';
 import { MINI_BOSS_ROOM } from './mini-boss-room';
 import { MECHANICS_ROOM } from './mechanics-room';
@@ -25,6 +26,7 @@ export const STAGE_DEFS = {
   platforms: PLATFORM_ROOM,
   miniBossRoom: MINI_BOSS_ROOM,
   thorna: THORNA_ROOM,
+  lumen: LUMEN_ROOM,
   golem: GOLEM_ROOM,
 } as const satisfies Record<string, StageDef>;
 export type StageDefId = keyof typeof STAGE_DEFS;

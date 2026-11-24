@@ -16,7 +16,8 @@ export type ProjectileKind =
   | 'bomb'
   | 'lash'
   | 'root'
-  | 'seed';
+  | 'seed'
+  | 'spectrum';
 
 export interface BoomerangFlight {
   speedPxPerSec: number;

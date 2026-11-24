@@ -66,6 +66,7 @@ export const ENEMY_ATTACK_KINDS = [
   'lash',
   'root',
   'seed',
+  'spectrum',
 ] as const satisfies readonly ProjectileKind[];
 
 export interface SkillRules {
