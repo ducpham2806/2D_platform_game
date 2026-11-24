@@ -4,81 +4,6 @@ Các mục cũ chuyển từ `04-Dev-Plan/06-Nhat-ky-phien.md`, mới nhất ở
 
 ---
 
-## 2026-11-24: ST-22-07 Kiểm hoạt ảnh Kai và khôi phục báo cáo
-
-- **Nhánh:** `codex/asset-3d-plan`, tiếp từ `f10bba9`.
-- **Mục tiêu:** kiểm bản sửa hoạt ảnh và đọc số tải, FPS, điểm đáp của lượt điện thoại người chơi đã gửi.
-- **Kết quả hoạt ảnh:** GLB đang phục vụ trên LAN trùng với bản sửa. Test three.js xác nhận Kai đổi chân qua ba vòng chạy liên tiếp.
-- **Lỗi tìm thấy:** đường nhận trước đã dừng. Tệp phiên cũ trống và đã mở lại cùng đường nhận để có thể gửi lại từ tab điện thoại.
-- **Đã làm:** báo cáo mới lưu bản sao trên trình duyệt trước khi gửi. Máy chủ dùng tệp theo mã phiên, giữ qua lần khởi động lại. Thêm mục nhận xét hoạt ảnh chạy.
-- **File chính:** `game/src/prototype3d/measurement.ts`, `game/scripts/prototype3d-lan.mjs` và [QA](qa/ST-22-07/README.md).
-- **Kiểm tra:** 745 test, lint, format, build và docs-check đạt. Pixel 7 giả lập kiểm lưu khi mất đường gửi, tải lại trang, gửi lại và mở lại máy chủ.
-- **Còn lại:** cần báo cáo của lượt điện thoại để ghi số đo và nhận xét.
-
-## 2026-11-23: ST-22-07 Đo phòng 3D trên điện thoại thật
-
-- **Nhánh:** `codex/asset-3d-plan`, tiếp từ `027d7a5`.
-- **Mục tiêu:** đo tải, FPS và độ dễ đọc điểm đáp khi chơi bằng điện thoại thật.
-- **Đã làm:** đo tải đến khung 3D đầu tiên, lấy mẫu FPS khi chơi, đếm rơi theo đoạn. Biểu mẫu nhận mẫu máy, đoạn khó, điểm đáp và ghi chú.
-- **File chính:** `game/src/prototype3d/measurement.ts`, `game/scripts/prototype3d-lan.mjs` và [quy trình QA](qa/ST-22-07/README.md).
-- **Quyết định:** dùng bản build với `?measure=1` qua Wi-Fi. Số đo và trả lời lưu cục bộ. Lượt thử máy thật dùng chất lượng mặc định.
-- **Lỗi đã sửa:** Kai giữ tư thế nhấc chân vì clip `Run` trong GLB bắt đầu ở 1,5 s. Xuất lại từ Blender với từng clip bắt đầu ở 0 s.
-- **Kiểm tra:** 745 test, lint, format, build và docs-check đạt. Test three.js giữ chạy ba vòng, xác nhận hai chân đổi bên trong mỗi vòng. Pixel 7 giả lập xác nhận bấm giữ cần, về `Idle` và lưu báo cáo sau khi tạm dừng. Hồi quy G1 đạt trên bản thêm bộ đo.
-- **Còn lại:** chờ người chơi gửi lượt điện thoại qua LAN.
-- **Tiếp theo:** đối chiếu FPS và tải với ADR-003. Xem nhận xét điểm đáp cùng các lần rơi trước khi điều chỉnh camera.
-
-## 2026-11-23: ST-22-06 Phòng thử 3D và bộ asset Kai
-
-- **Nhánh:** `codex/asset-3d-plan`, tiếp từ `ac8b422`.
-- **Mục tiêu:** thử gameplay 3D X/Z thật và camera bám góc 3/4 trong một tuyến 60–90 giây.
-- **Đã làm:** hai dãy bục lệch trục, Arc Cannon bắn mở cổng, lướt, hai checkpoint, hồi sinh và thống kê lượt. Có cần cảm ứng, khối xám và chế độ chất lượng thấp.
-- **Asset:** Kai low-poly 2.020 tam giác, rig 11 xương, bảy clip và điểm nòng. Kit có bốn mô-đun sàn, bục, mép và vách. Nguồn Blender và GLB ở [thư mục asset](../05-Assets/prototype-3d/README.md).
-- **File chính:** `game/prototype-3d.html`, `03-Data/prototype3d.json`, `game/src/logic/prototype3d/` và `game/src/prototype3d/`.
-- **Quyết định:** dùng trang riêng và tách luật di chuyển, va chạm khỏi model. Cổng G1 tiếp tục qua trang Phaser.
-- **Lỗi đã sửa:** lượt bàn phím đầu chỉ dài 45 s, mở rộng vòng cầu cuối để thử đọc chiều sâu khi đổi hướng. Nâng nhẹ phần trang trí sàn để tránh chồng mặt.
-- **Kiểm tra:** 744 test, lint, format, build, docs-check và gate-flow đạt. Chromium bàn phím 64,7 s, Pixel 7 ngang giả lập 66,3 s và một lần rơi chủ động. Cả hai lượt có 0 lỗi console. [Kịch bản và ảnh](qa/ST-22-06/README.md).
-- **Còn lại:** cần người chơi thử và đo tải, FPS trên Android và iPhone thật theo ADR-003 mục 5.
-- **Tiếp theo:** khi có kết quả máy thật, dùng số lần rơi và các đoạn khó đọc để chốt camera và phạm vi asset tiếp theo.
-
-## 2026-11-23: Khởi động kế hoạch asset 3D
-
-- **Nhánh:** `codex/asset-3d-plan` từ `main` ở `6eb3e41`.
-- **Mục tiêu:** đánh giá hướng 3D platformer và chọn gói asset đầu tiên.
-- **Đã làm:** đối chiếu demo Thorna, GDD và EP-22. Bổ sung đề xuất phòng thử có di chuyển theo chiều sâu vào mục 5 của ADR-003. Gói đầu gồm Kai có rig, kit địa hình, tia bắn và bóng chỉ điểm đáp.
-- **Quyết định đề xuất:** thử camera bám góc 3/4 trên điện thoại thật và đo ngưỡng của ADR/GDD trước khi mở rộng asset. Kai và kit dùng được cho cả phòng thử 3D và demo 2.5D.
-- **Kiểm tra:** 736 test, lint, format, build và docs-check đạt.
-- **Tiếp theo:** dựng phòng thử chuyển động và làm bản Kai đầu tiên khi chốt phạm vi.
-
-## 2026-11-22: Tích hợp nhánh phát triển vào main
-
-- **Phạm vi:** Người dùng yêu cầu merge toàn bộ nhánh phát triển `ccr-9de01342-2046rb` đến `0d5d328` (ST-15-09). Mốc gốc của `main` trước khi tích hợp là `c458643`.
-- **Nội dung:** Đo lường và báo cáo MVP, demo 2.5D, hộp chữ, luật biên và các Story Stage 2–4 đã xong. Giữ lộ trình chuyển từng phần của PR #9.
-- **G1:** Tag `gate-r1` giữ mốc `eeb8ca1`. Liên kết Pages dựng theo `main`, nên khi ghi kết quả G1 phải ghi commit đã thử.
-- **Kiểm tra:** 736 test, lint, build, docs-check và gate-flow đạt trên nhánh phát triển. CI của PR #12 phát hiện một bảng Markdown chưa qua Prettier trong `game/maps/README.md`. Đã chuẩn hóa bảng và chạy lại các kiểm tra.
-- **Tiếp theo:** Thu kết quả chơi thử G1 và tiếp ST-15-10 (Lumen) theo kế hoạch.
-
-## 2026-11-22: ST-15-09 Prism Sentinel và Gale Roc
-
-- **Nhánh:** `ccr-9de01342-2046rb`, từ `f9a6d11`. G1 tiếp tục trên `main`.
-- **Sentinel:** Tán Sắc và Lao Lăng Kính. Tia Phản Xạ ở pha hai dùng chung `LaserPath`; xoay gương trong lúc báo có thể trừ 10 máu và choáng 1,5 s. Tia Kép mở hai vạch, xung hai đảo góc sau 0,4 s.
-- **Roc:** Bổ Nhào khóa hướng, đáp sàn hở 1 s, pha hai bổ nối báo 0,5 s và mưa tám lông chừa hai khe rộng hai ô. Thử thách có hai sóng đất. Vỗ Cánh bắn ba lông và phát trạng thái gió.
-- **Phòng khóa:** hai mini-boss dùng `Boss` và `RoomBoss`. Dựng lại nếu chưa hạ, giữ cửa khi xong. Thưởng 110/40 và 270/60 gốc, nhân độ khó. Chặn bắn ngoài khung và chỉ dọn đạn của đúng mini-boss.
-- **Quyết định:** Sentinel phát tia từ đầu dẫn phía trên gương để phản đòn bằng nhánh ngang. Tách số máu Kai khỏi tên mini-boss trên HUD sau khi xem ảnh.
-- **Kiểm tra:** 736 test, lint, format, build, docs-check, gate-flow. Chromium PC và Pixel 7 ngang giả lập, 0 lỗi console. [Ảnh](qa/ST-15-09/README.md).
-- **Còn lại:** Lực đẩy của Vỗ Cánh nối `WindZone` ở ST-15-08b. Phòng chiến dịch ở EP-17.
-- **Tiếp theo:** ST-15-10 (Lumen) làm được trước G1.
-
-## 2026-11-22: ST-15-16 Nano Cell và viên năng lượng
-
-- **Nhánh:** `ccr-9de01342-2046rb`, từ `1771a0d`. G1 tiếp tục trên `main`.
-- **Nano Cell:** Stage 1/3/5/7 cấp mỗi màn một ô. Đọc bí mật M7 cũ, ghi mới theo id màn chiến dịch. Vào lượt nạp đầy. Nhặt thêm chỉ nạp ô mới. Chết, rơi hố và qua checkpoint giữ số còn lại.
-- **Hồi máu:** H/RT hồi 40% máu tối đa khi còn sống và thiếu máu, kể cả đang choáng. Khóa đầu vào 0,4 s, xóa đệm nhảy và nạp súng. Nano Cell Cap nâng dần lên 80% ở cấp 4.
-- **Năng lượng:** 6% rơi ở lần đầu hạ địch trong lượt nếu còn thanh vũ khí boss chưa đầy. Khi cầm Arc Cannon, hồi +4 cho thanh thấp nhất. Kẹp theo thanh tối đa và giữ viên khi vũ khí đích đầy.
-- **File chính:** `NanoCells`, `StageSave`, `WeaponLoadout`, `EnemyField`, HUD và `game/tests/nano-cell-energy.test.ts`.
-- **Kiểm tra:** 723 test, lint, format, build (typecheck), docs-check và gate-flow đạt. Chromium PC/Pixel 7 ngang giả lập, 0 lỗi console. [Ảnh](qa/ST-15-16/README.md).
-- **Còn lại:** Nút dùng Nano Cell trên cảm ứng thuộc EP-14. Đặt vật phẩm vào phòng bí mật tại các bản đồ chiến dịch.
-- **Tiếp theo:** ST-15-09 (Prism Sentinel và Gale Roc) làm được trước G1.
-
 ## 2026-11-22: ST-15-15 báo đòn mini-boss và tầm hoạt động
 
 - **Nhánh:** `ccr-9de01342-2046rb`, từ `93096ce`. G1 tiếp tục trên `main`.
@@ -106,15 +31,6 @@ Các mục cũ chuyển từ `04-Dev-Plan/06-Nhat-ky-phien.md`, mới nhất ở
 - **Quyết định:** dùng đường va chạm quét cho vạch dội và bóng đổ. Sửa vị trí phóng bom trong hành vi `golem` để bom không chạm sàn ngay lúc bắn. Mở hai chế độ phòng thử ở menu thường.
 - **Kiểm tra:** 669 test, build (typecheck), lint, format, docs-check và gate-flow đạt. Chromium PC Thường và Pixel 7 giả lập Thử thách, 0 lỗi console. [Ảnh](qa/ST-15-06/README.md).
 - **Tiếp theo:** ST-15-08a hoặc ST-15-15/16. Đặt địch trong bản đồ chiến dịch ở EP-17. QB-21 và QB-23 thống nhất ở ST-15-15.
-
-## 2026-11-21: Kiểm tra tiến độ Cyber Vanguard
-
-- **Mốc kiểm:** `main` ở `c458643`, tag `gate-r1` trỏ tới `eeb8ca1`; CI #53 và Pages #8 đạt theo GitHub Actions.
-- **Nhánh phát triển:** `ccr-9de01342-2046rb` ở `83f6d6b`, hơn `main` 13 commit. Có lõi đo lường và báo cáo MVP, demo 2.5D, hộp chữ, an toàn boss và dữ liệu nền Stage 2. PR #9 vẫn mở.
-- **Kiểm tra:** nhật ký nhánh phát triển ghi 541 test, lint, format, typecheck, build và gate-flow đạt. Chưa thấy lượt GitHub Actions cho commit `83f6d6b`. Môi trường kiểm tra không mở trực tiếp được bản Pages.
-- **Tài liệu:** cập nhật trang bắt đầu và dòng trạng thái G1, lưu mục nhật ký cũ vào lưu trữ.
-- **Còn dở:** chưa thấy dữ liệu đợt thử G1 trong repo. Còn chọn kênh đo lường (ADR-002) và đo demo 2.5D trên thiết bị thật trước khi duyệt ADR-003.
-- **Tiếp theo:** kiểm link trên điện thoại, chơi thử G1 với 5 người và tổng hợp kết quả. Việc code kế tiếp trên nhánh phát triển là ST-15-02 (laser, gương, cảm biến).
 
 ## 2026-11-21: ST-15-05 Gale Cutter và sương lạnh Két Tay Mk I
 
@@ -278,7 +194,7 @@ Các mục cũ chuyển từ `04-Dev-Plan/06-Nhat-ky-phien.md`, mới nhất ở
 - **Lỗi tìm thấy:** commit tạm được đẩy khi chưa chạy docs-check (từ nay chạy đủ trước cả commit tạm).
 - **Kiểm tra:** 425 test (thêm 2 QB-88, đỏ trên code cũ), lint, format, build, docs-check đạt; chạy thử Chromium trước/sau sửa (`qa/ST-21-01/`), 0 lỗi console.
 - **Merge:** người dùng nhờ merge; PR #10 merge (merge commit `eeb8ca1`, CI #50 đạt). Pages #5 trên `main`: test, build đạt, dừng ở `configure-pages` vì repo riêng tư chưa bật Pages. Nhánh làm việc đưa lên ngang `main`. Người dùng chuyển repo sang công khai; Pages #6 (chạy tay) vẫn dừng ở `configure-pages`: chưa chọn Source "GitHub Actions" trong Settings → Pages. Người dùng bật Pages; lần #7 đăng thành công `eeb8ca1`. Môi trường chặn `github.io` nên em không tự mở link thật được.
-- **Tag, merge tài liệu:** người dùng đồng ý tag `gate-r1`; đẩy tag từ môi trường bị proxy chặn (403), GitHub MCP không có lệnh tạo tag, người dùng tạo trên GitHub (`gate-r1` → `eeb8ca1`, đã kiểm). Ba commit tài liệu sau merge vào `main` bằng PR #11 (`c458643`); Pages #8 đăng lại đạt, code game không đổi.
+- **Tag, merge tài liệu:** người dùng đồng ý tag `gate-r1`; đẩy tag từ môi trường bị proxy chặn (403), GitHub MCP không có lệnh tạo tag, người dùng tạo trên GitHub (`gate-r1` → `eeb8ca1`, đã kiểm). Tài liệu sau merge vào `main` bằng PR #11 (`c458643`); Pages #8 đăng lại đạt, code game không đổi.
 - **Tiếp theo:** người dùng mở link `?gate=1` trên điện thoại rồi phát cho 5 người; không merge vào `main` trong đợt thử; chọn hướng đồ họa. Em: EP-13 lõi đo lường; EP-21 ST-21-02 sau tag.
 
 ## 2026-11-14: ST-11-01 vùng an toàn cho nút cảm ứng, canvas, bảng HTML (bước đầu của G1)

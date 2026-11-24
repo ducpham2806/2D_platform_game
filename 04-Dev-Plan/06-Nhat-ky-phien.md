@@ -25,27 +25,32 @@ Mẫu:
 
 ---
 
-## 2026-11-24: Tích hợp cục bộ phòng thử 3D
+## 2026-11-22: Tích hợp nhánh phát triển vào main
 
-- **Nhánh:** `codex/integrate-asset-3d`, từ `origin/main` ở `6b02afd` và nhánh 3D ở `cb8ab61`.
-- **Phạm vi:** worktree tích hợp riêng. Giữ mốc G1, tình trạng EP-22 và việc chờ số đo ST-22-07.
-- **Xung đột:** ghép nội dung trang bắt đầu và hợp nhất nhật ký. Nhật ký chính giữ ba mục mới nhất. Chuyển mục cũ vào lưu trữ, gồm mục kiểm tiến độ 21/11 từ phía main.
-- **Kiểm tra chuẩn bị:** hai ref khớp SHA yêu cầu, lockfile trùng bản phụ thuộc đã cài. Dùng bộ test, lint, format, build và docs-check của game.
-- **Còn lại:** ST-22-07 chờ đo trên điện thoại thật. Dấu xung đột có sẵn trong bảng kết quả G1 của `05-Cong-Prototype.md` cần xử lý riêng.
+- **Phạm vi:** Người dùng yêu cầu merge toàn bộ nhánh phát triển `ccr-9de01342-2046rb` đến `0d5d328` (ST-15-09). Mốc gốc của `main` trước khi tích hợp là `c458643`.
+- **Nội dung:** Đo lường và báo cáo MVP, demo 2.5D, hộp chữ, luật biên và các Story Stage 2–4 đã xong. Giữ lộ trình chuyển từng phần của PR #9.
+- **G1:** Tag `gate-r1` giữ mốc `eeb8ca1`. Liên kết Pages dựng theo `main`, nên khi ghi kết quả G1 phải ghi commit đã thử.
+- **Kiểm tra:** 736 test, lint, build, docs-check và gate-flow đạt trên nhánh phát triển. CI của PR #12 phát hiện một bảng Markdown chưa qua Prettier trong `game/maps/README.md`. Đã chuẩn hóa bảng và chạy lại các kiểm tra.
+- **Tiếp theo:** Thu kết quả chơi thử G1 và tiếp ST-15-10 (Lumen) theo kế hoạch.
 
-## 2026-11-24: ST-22-07 Mở lại phiên đo trên Wi-Fi
+## 2026-11-22: ST-15-09 Prism Sentinel và Gale Roc
 
-- **Nhánh:** `codex/asset-3d-plan`, tiếp từ `18b8472`.
-- **Mục tiêu:** tiếp tục phiên đo máy thật và xác nhận đường vào phòng.
-- **Đã làm:** mở lại hai máy chủ thử bằng tiến trình tách khỏi lệnh khởi động. Giữ cùng địa chỉ, cổng và mã phiên Wi-Fi để gửi lại bản lưu trên điện thoại.
-- **Kiểm tra:** cả hai địa chỉ trả HTTP 200 sau khi lệnh khởi động kết thúc. Bản hiện tại về đích sau 64,2 s bằng bàn phím và 66,1 s trên Pixel 7 ngang giả lập, cả hai có 0 lỗi console. [QA](qa/ST-22-07/README.md).
-- **Còn lại:** phiên đo đang chờ báo cáo điện thoại thật để đối chiếu tải, FPS, hoạt ảnh chạy và điểm đáp.
+- **Nhánh:** `ccr-9de01342-2046rb`, từ `f9a6d11`. G1 tiếp tục trên `main`.
+- **Sentinel:** Tán Sắc và Lao Lăng Kính. Tia Phản Xạ ở pha hai dùng chung `LaserPath`; xoay gương trong lúc báo có thể trừ 10 máu và choáng 1,5 s. Tia Kép mở hai vạch, xung hai đảo góc sau 0,4 s.
+- **Roc:** Bổ Nhào khóa hướng, đáp sàn hở 1 s, pha hai bổ nối báo 0,5 s và mưa tám lông chừa hai khe rộng hai ô. Thử thách có hai sóng đất. Vỗ Cánh bắn ba lông và phát trạng thái gió.
+- **Phòng khóa:** hai mini-boss dùng `Boss` và `RoomBoss`. Dựng lại nếu chưa hạ, giữ cửa khi xong. Thưởng 110/40 và 270/60 gốc, nhân độ khó. Chặn bắn ngoài khung và chỉ dọn đạn của đúng mini-boss.
+- **Quyết định:** Sentinel phát tia từ đầu dẫn phía trên gương để phản đòn bằng nhánh ngang. Tách số máu Kai khỏi tên mini-boss trên HUD sau khi xem ảnh.
+- **Kiểm tra:** 736 test, lint, format, build, docs-check, gate-flow. Chromium PC và Pixel 7 ngang giả lập, 0 lỗi console. [Ảnh](qa/ST-15-09/README.md).
+- **Còn lại:** Lực đẩy của Vỗ Cánh nối `WindZone` ở ST-15-08b. Phòng chiến dịch ở EP-17.
+- **Tiếp theo:** ST-15-10 (Lumen) làm được trước G1.
 
-## 2026-11-24: ST-22-07 Mở phòng thử qua HTTP
+## 2026-11-22: ST-15-16 Nano Cell và viên năng lượng
 
-- **Nhánh:** `codex/asset-3d-plan`, tiếp từ `769a520`.
-- **Lỗi:** ảnh người chơi cho thấy Chrome mở tệp nguồn `prototype-3d.html` qua `file://`. JavaScript và model cần máy chủ HTTP nên giao diện dừng ở thông báo đang nạp.
-- **Đã làm:** mở bản preview Mac tại cổng 4186, kiểm bản đo Wi-Fi cổng 4187 và giữ cùng mã phiên. Tệp HTML mở trực tiếp hiện hướng dẫn và link sang bản Mac.
-- **File chính:** `game/prototype-3d.html`, `game/README.md` và [ảnh QA](qa/ST-22-07/pc-05-huong-dan-mo-qua-http.png).
-- **Kiểm tra:** 745 test, lint, format, build, docs-check đạt. Chromium xác nhận tệp nguồn và build đều hiện hướng dẫn, link Mac vào chơi và link Wi-Fi hiện cần cảm ứng trên Pixel 7 giả lập.
-- **Còn lại:** chờ nhận số đo và nhận xét từ điện thoại thật.
+- **Nhánh:** `ccr-9de01342-2046rb`, từ `1771a0d`. G1 tiếp tục trên `main`.
+- **Nano Cell:** Stage 1/3/5/7 cấp mỗi màn một ô. Đọc bí mật M7 cũ, ghi mới theo id màn chiến dịch. Vào lượt nạp đầy. Nhặt thêm chỉ nạp ô mới. Chết, rơi hố và qua checkpoint giữ số còn lại.
+- **Hồi máu:** H/RT hồi 40% máu tối đa khi còn sống và thiếu máu, kể cả đang choáng. Khóa đầu vào 0,4 s, xóa đệm nhảy và nạp súng. Nano Cell Cap nâng dần lên 80% ở cấp 4.
+- **Năng lượng:** 6% rơi ở lần đầu hạ địch trong lượt nếu còn thanh vũ khí boss chưa đầy. Khi cầm Arc Cannon, hồi +4 cho thanh thấp nhất. Kẹp theo thanh tối đa và giữ viên khi vũ khí đích đầy.
+- **File chính:** `NanoCells`, `StageSave`, `WeaponLoadout`, `EnemyField`, HUD và `game/tests/nano-cell-energy.test.ts`.
+- **Kiểm tra:** 723 test, lint, format, build (typecheck), docs-check và gate-flow đạt. Chromium PC/Pixel 7 ngang giả lập, 0 lỗi console. [Ảnh](qa/ST-15-16/README.md).
+- **Còn lại:** Nút dùng Nano Cell trên cảm ứng thuộc EP-14. Đặt vật phẩm vào phòng bí mật tại các bản đồ chiến dịch.
+- **Tiếp theo:** ST-15-09 (Prism Sentinel và Gale Roc) làm được trước G1.

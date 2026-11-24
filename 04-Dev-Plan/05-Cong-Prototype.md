@@ -123,11 +123,7 @@ Mở link có `?tune=1` (bản dev `npm run dev` luôn bật), vào màn thử r
 
 | Đợt | Ngày | Bản build (commit) | Người thử (cảm ứng / PC) | Điểm N / L / B cảm ứng | Điểm N / L / B PC | Dấu hiệu hỏng | Quyết định |
 |---|---|---|---|---|---|---|---|
-<<<<<<< HEAD
-| 1 | Bản thử đã đăng | `gate-r1` (`eeb8ca1`) | | | | | Chờ ghi nhận kết quả chơi thử |
-=======
 | 1 | Bản thử đã đăng 14/11/2026 | `gate-r1` (`eeb8ca1`) | | | | | Chờ ghi nhận kết quả chơi thử |
->>>>>>> 6eb3e419966f34e2a9b6b9bb046704b88ec1db68
 
 **Chạy thử trọn luồng trước đợt 1 (14/11/2026, Chromium máy tính và Pixel 7 giả lập, link `?gate=1`; chạy lại bằng `npm run gate-flow`, mục 8):**
 
