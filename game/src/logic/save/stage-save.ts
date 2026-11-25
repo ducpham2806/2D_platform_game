@@ -88,8 +88,20 @@ export class StageSave {
     } = {},
   ) {}
 
-  /** Gọi sau mỗi bước logic. Trả về true nếu đã ghi. */
-  step(ev: WorldEvents, run: RunTotals, dtSec: number): boolean {
+  get readOnly(): boolean {
+    return this.manager.readOnly;
+  }
+
+  get readUnavailable(): boolean {
+    return this.manager.readUnavailable;
+  }
+
+  get needsBackup(): boolean {
+    return this.manager.needsBackup;
+  }
+
+  /** True nếu đã đổi bản trong bộ nhớ; biên nhận ghi là callback riêng. */
+  step(ev: WorldEvents, run: RunTotals, dtSec: number, onWritten?: () => void): boolean {
     this.time += dtSec;
     const { stageId, bossId } = this;
     const changes: ((s: SaveData) => SaveData)[] = [];
@@ -113,7 +125,7 @@ export class StageSave {
       if (campaign) changes.push((s) => recordDifficultyCleared(s, campaign, difficulty));
     }
     if (changes.length === 0) return false;
-    return this.commit(run, changes);
+    return this.commit(run, changes, onWritten);
   }
 
   /** Thoát màn (về menu, đóng trang): cộng EXP, Core Bit, thời gian chưa ghi. */
@@ -121,13 +133,20 @@ export class StageSave {
     return this.commit(run, []);
   }
 
-  private commit(run: RunTotals, changes: ((s: SaveData) => SaveData)[]): boolean {
+  private commit(
+    run: RunTotals,
+    changes: ((s: SaveData) => SaveData)[],
+    onWritten?: () => void,
+  ): boolean {
     const gain = {
       exp: run.exp - this.banked.exp,
       coreBits: run.coreBits - this.banked.coreBits,
       playTimeSec: this.time - this.banked.time,
     };
     this.banked = { exp: run.exp, coreBits: run.coreBits, time: this.time };
-    return this.manager.update((s) => changes.reduce((acc, f) => f(acc), addRewards(s, gain)));
+    return this.manager.update(
+      (s) => changes.reduce((acc, f) => f(acc), addRewards(s, gain)),
+      onWritten,
+    );
   }
 }

@@ -1,4 +1,4 @@
-import type { SaveManager } from '../logic/save/save-manager';
+import type { SaveManager, TransactResult } from '../logic/save/save-manager';
 import type { CharacterProgress } from '../logic/rpg/progression';
 import { type SaveData, SaveError, summarize } from '../logic/save/save-data';
 import { createPanel, panelActions, panelButton } from '../playtest/panel';
@@ -26,13 +26,16 @@ export function showSavePanel(
   const summary = document.createElement('div');
   const exportLabel = document.createElement('div');
   exportLabel.className = 'cv-panel-note';
-  exportLabel.textContent = 'Mã sao lưu (chép sang máy khác rồi nhập ở đó):';
+  exportLabel.textContent = save.readUnavailable
+    ? 'Mã sao lưu của phiên tạm (không phải bản lưu trên máy):'
+    : 'Mã sao lưu (chép sang máy khác rồi nhập ở đó):';
   const exportArea = document.createElement('textarea');
   exportArea.readOnly = true;
   const importArea = document.createElement('textarea');
   importArea.placeholder = 'Dán mã sao lưu vào đây rồi bấm "Nhập mã". Bản hiện tại sẽ bị thay.';
   const status = document.createElement('div');
   status.className = 'cv-panel-note';
+  status.setAttribute('role', 'status');
 
   const refresh = (): void => {
     const s = summarize(save.data);
@@ -42,7 +45,6 @@ export function showSavePanel(
       `Core Bit: ${s.coreBits} · ` +
       `Thời gian chơi: ${formatTime(s.playTimeSec)} · Lần lưu cuối: ${formatDate(s.savedAt)}`;
     exportArea.value = save.exportCode();
-    if (save.readOnly) status.textContent = `${save.lastError ?? ''} Bản lưu không bị ghi đè.`;
   };
 
   const copy = panelButton('Sao chép mã', () => {
@@ -53,19 +55,46 @@ export function showSavePanel(
         (status.textContent = 'Trình duyệt chặn sao chép: hãy chọn chữ trong ô rồi sao chép tay.'),
     );
   });
-  const doImport = panelButton('Nhập mã', () => {
+  let armed = false;
+  let busy = false;
+  const setBusy = (pending: boolean): void => {
+    busy = pending;
+    doImport.disabled = reset.disabled = importArea.disabled = pending || save.readOnly;
+    copy.disabled = back.disabled = pending;
+  };
+  const write = async (
+    change: () => Promise<TransactResult>,
+    onSuccess: () => void,
+  ): Promise<void> => {
+    if (busy || save.readOnly) return;
+    setBusy(true);
+    status.textContent = 'Đang ghi dữ liệu lưu…';
     try {
-      save.importCode(importArea.value);
-      importArea.value = '';
-      status.textContent = save.notice ? `Đã nhập bản lưu. ${save.notice}` : 'Đã nhập bản lưu.';
-      save.notice = undefined;
+      const result = await change();
+      if (result.ok) onSuccess();
+      else status.textContent = `${result.error} Có thể sao chép mã sao lưu bên trên.`;
       refresh();
     } catch (e) {
       status.textContent = e instanceof SaveError ? e.message : String(e);
+    } finally {
+      setBusy(false);
     }
+  };
+  const doImport = panelButton('Nhập mã', () => {
+    if (busy || save.readOnly) return;
+    armed = false;
+    reset.textContent = 'Xóa dữ liệu';
+    void write(
+      () => save.importCode(importArea.value),
+      () => {
+        importArea.value = '';
+        status.textContent = save.notice ? `Đã nhập bản lưu. ${save.notice}` : 'Đã nhập bản lưu.';
+        save.notice = undefined;
+      },
+    );
   });
-  let armed = false;
   const reset = panelButton('Xóa dữ liệu', () => {
+    if (busy || save.readOnly) return;
     if (!armed) {
       armed = true;
       reset.textContent = 'Bấm lần nữa để xóa';
@@ -74,9 +103,12 @@ export function showSavePanel(
     }
     armed = false;
     reset.textContent = 'Xóa dữ liệu';
-    save.reset();
-    status.textContent = 'Đã xóa tiến trình.';
-    refresh();
+    void write(
+      () => save.reset(),
+      () => {
+        status.textContent = 'Đã xóa tiến trình.';
+      },
+    );
   });
   const close = (): void => {
     root.remove();
@@ -84,6 +116,7 @@ export function showSavePanel(
   const back = panelButton(
     'Về menu',
     () => {
+      if (busy) return;
       close();
       onBack();
     },
@@ -98,5 +131,12 @@ export function showSavePanel(
     panelActions(copy, doImport, reset, back),
   );
   refresh();
+  if (save.readUnavailable)
+    status.textContent =
+      'Không đọc được bản lưu. Phiên này không ghi vào kho; sao lưu trước khi tải lại để thử đọc.';
+  else if (save.readOnly) status.textContent = `${save.lastError ?? ''} Bản lưu không bị ghi đè.`;
+  else if (save.lastError)
+    status.textContent = `${save.lastError} Có thể sao chép mã sao lưu bên trên.`;
+  setBusy(false);
   return close;
 }

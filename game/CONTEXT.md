@@ -143,6 +143,7 @@ Mỗi module một dòng; chi tiết ở file quyết định và Epic.
 - **M11 Lưu:** Xong lưu cục bộ, bản lưu 4, mã sao lưu. Còn: cloud (Beta).
 - **M12 Âm thanh:** Chưa làm; tài liệu Draft (`01-GDD/12-Am-thanh.md`); EP-12 làm được ngay.
 - **M16 Đo lường MVP:** xong lõi (ST-13-01), nối vào game (ST-13-02a/b: nguồn đòn, sát thương boss theo vũ khí, `StageTracker`, sự kiện meta; tạm bật `?debug=1&telemetry=1`, chỉ bộ nhớ), báo cáo cổng đủ chỉ số (ST-13-05a/b, `npm run mvp-report`). Còn: `?mvp=`, kho, mã lỗi lưu, QB-154 (ST-13-03), gửi (ST-13-04, chờ ADR-002). Bản thường không ghi gì.
+- **ST-22-07:** Cận FPS 3D và kiểm đường nhận, xem [quy trình](../04-Dev-Plan/qa/ST-22-07/README.md).
 - **M13–M15, M17, M18:** Chưa làm (sau cổng MVP).
 - **Cổng Prototype:** Công cụ xong (`?gate=1`, `gate-check`, `gate-flow`). Còn: chơi thử 5 người thật.
 

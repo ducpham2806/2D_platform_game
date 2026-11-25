@@ -4,22 +4,39 @@ import { FrameStats } from '../logic/telemetry/frame-stats';
 const rounded = (value: number) => Math.round(value * 10) / 10;
 const feedbackFields = ['device', 'landing', 'section', 'animation', 'notes'] as const;
 
+interface RoomFrameMetrics {
+  fpsAverage: number | null;
+  fpsMedian: number | null;
+  // Absent in reports saved before the histogram limit was exported.
+  fpsMedianUpperBound?: number | null;
+  slowFramePct: number | null;
+  frames: number;
+  activeMs: number;
+}
+
+export function roomFrameMetrics(stats: FrameStats): RoomFrameMetrics {
+  const upperBound = stats.fpsMedianUpperBound;
+  return {
+    fpsAverage: stats.realMs ? rounded((1000 * stats.frames) / stats.realMs) : null,
+    fpsMedian: stats.frames && upperBound === null ? rounded(stats.fpsMedian) : null,
+    fpsMedianUpperBound: upperBound,
+    slowFramePct: stats.frames ? rounded(stats.slowFramePct) : null,
+    frames: stats.frames,
+    activeMs: Math.round(stats.realMs),
+  };
+}
+
 interface RoomReport {
   version: 1;
   page: 'prototype-3d';
+  submissionId?: string;
+  readonly capture?: Readonly<RoomCapture>;
   quality: 'low' | 'default';
   art: 'gray' | 'glb';
   navigation: string | undefined;
   viewport: { width: number; height: number; dpr: number };
   browser: string;
-  metrics: {
-    loadMs: number | null;
-    fpsAverage: number | null;
-    fpsMedian: number | null;
-    slowFramePct: number | null;
-    frames: number;
-    activeMs: number;
-  };
+  metrics: RoomFrameMetrics & { loadMs: number | null };
   run: {
     finished: boolean;
     elapsedSec: number;
@@ -30,11 +47,29 @@ interface RoomReport {
   feedback?: Partial<Record<(typeof feedbackFields)[number], string>>;
 }
 
+interface RoomCapture {
+  capturedAtUtc?: string;
+  artifactSha256?: string;
+}
+
+export function roomCapture(now: Date, artifact: string | undefined): RoomCapture | undefined {
+  const capturedAtUtc = Number.isFinite(now.getTime()) ? now.toISOString() : undefined;
+  const artifactSha256 = artifact && /^[\da-f]{64}$/.test(artifact) ? artifact : undefined;
+  if (capturedAtUtc === undefined && artifactSha256 === undefined) return undefined;
+  return {
+    ...(capturedAtUtc === undefined ? {} : { capturedAtUtc }),
+    ...(artifactSha256 === undefined ? {} : { artifactSha256 }),
+  };
+}
+
 export class RoomMeasurement {
   private stats = new FrameStats(1000 / 30, Infinity);
   private prevFrame: number | undefined;
   private loadMs: number | undefined;
   private fallsBySection: Record<Objective3, number> = { cross: 0, relay: 0, ridge: 0, exit: 0 };
+  private readonly artifactSha256 = document.querySelector<HTMLMetaElement>(
+    'meta[name="cv-prototype3d-artifact-sha256"]',
+  )?.content;
 
   constructor(
     private readonly low: boolean,
@@ -106,17 +141,13 @@ export class RoomMeasurement {
       PerformanceNavigationTiming | undefined;
     const metrics = {
       loadMs: this.loadMs === undefined ? null : rounded(this.loadMs),
-      fpsAverage: this.stats.realMs
-        ? rounded((1000 * this.stats.frames) / this.stats.realMs)
-        : null,
-      fpsMedian: this.stats.frames ? rounded(this.stats.fpsMedian) : null,
-      slowFramePct: this.stats.frames ? rounded(this.stats.slowFramePct) : null,
-      frames: this.stats.frames,
-      activeMs: Math.round(this.stats.realMs),
+      ...roomFrameMetrics(this.stats),
     };
+    const capture = roomCapture(new Date(), this.artifactSha256);
     this.showReport({
       version: 1,
       page: 'prototype-3d',
+      ...(capture === undefined ? {} : { capture }),
       quality: this.low ? 'low' : 'default',
       art: this.gray ? 'gray' : 'glb',
       navigation: navigation?.type,
@@ -143,9 +174,15 @@ export class RoomMeasurement {
     const { metrics } = report;
     const load =
       metrics.loadMs === null ? 'Đang đo tải' : `Tải ${(metrics.loadMs / 1000).toFixed(2)} s`;
-    stats.textContent = `${load} · ${metrics.fpsAverage ?? '—'} FPS trung bình · ${report.run.falls} lần rơi`;
+    const median =
+      metrics.fpsMedianUpperBound === undefined
+        ? ''
+        : ` · ${metrics.fpsMedianUpperBound === null ? (metrics.fpsMedian ?? '—') : `≤${metrics.fpsMedianUpperBound}`} FPS trung vị`;
+    stats.textContent = `${load} · ${metrics.fpsAverage ?? '—'} FPS trung bình${median} · ${report.run.falls} lần rơi`;
     form.reset();
     const saved = report.feedback;
+    let latestFeedback = saved;
+    let submissionId = report.submissionId;
     status.hidden = !saved;
     output.parentElement!.hidden = !saved;
     if (saved) {
@@ -159,13 +196,27 @@ export class RoomMeasurement {
     document.querySelector<HTMLButtonElement>('#measure-close')!.onclick = () => dialog.close();
     form.onsubmit = async (event) => {
       event.preventDefault();
+      if (button.disabled) return;
       const data = new FormData(form);
+      const feedback = Object.fromEntries(
+        feedbackFields.map((name) => [name, String(data.get(name) ?? '').trim()]),
+      );
+      if (
+        !submissionId ||
+        !/^[\da-f]{32}$/.test(submissionId) ||
+        feedbackFields.some((name) => feedback[name] !== (latestFeedback?.[name] ?? ''))
+      ) {
+        // getRandomValues cũng dùng được trên đường HTTP của máy thử.
+        submissionId = Array.from(crypto.getRandomValues(new Uint8Array(16)), (n) =>
+          n.toString(16).padStart(2, '0'),
+        ).join('');
+      }
       const json = JSON.stringify({
         ...report,
-        feedback: Object.fromEntries(
-          feedbackFields.map((name) => [name, String(data.get(name) ?? '').trim()]),
-        ),
+        feedback,
+        submissionId,
       });
+      latestFeedback = feedback;
       const savedLocally = this.saveCopy(json);
       output.parentElement!.hidden = false;
       output.value = json;

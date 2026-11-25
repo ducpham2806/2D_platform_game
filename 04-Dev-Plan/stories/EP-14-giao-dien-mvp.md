@@ -41,7 +41,7 @@
 - Hủy cả câu đang chờ lẫn đang hiện khi hạ boss, qua checkpoint, **vào đấu trường** (`deathHintExpired`; GDD 11 mục 2.5 coi như checkpoint, tránh gợi ý chen đòn đầu; điểm 3), và khi **tắt hướng dẫn** ở menu tạm dừng (điểm 4).
 - Đo lường `difficulty_hint` ghi ở bước đầu câu thật sự hiện (GDD 13: "hiện"), không ghi lúc chuẩn bị câu.
 - Dữ liệu `ui.json → reading { charsPerSec: 15, minSec: 3, maxWaitSec: 10 }`; bỏ `difficultyHint.charsPerSecRead`. `difficultyHint.showSec` (6) là mức tối thiểu riêng của gợi ý chết, kiểm ≥ `reading.minSec` lúc nạp. GDD 14 mục 4.5, 9: tự tiến thoại dùng `reading.charsPerSec`, `reading.minSec`, không dùng `maxWaitSec` (điểm 6).
-- Hộp hướng dẫn không đổi: thời gian của từng bước do `TutorialManager` đếm theo bước trận. Còn hở (ghi ở file quyết định): bước chỉ có lời vẫn đếm giờ khi gợi ý chết che nó.
+- Hồi quy QB-70/72: bước hướng dẫn chỉ có lời trừ `showSec` khi là hộp được hiện. Bị gợi ý chết hoặc hộp cao hơn che chỉ dừng giờ đọc; tín hiệu, bước có yêu cầu, tiến độ và `cancelOn` giữ nguyên. Không chuyển hệ thống hướng dẫn sang `TimedBox` trong bản vá này.
 
 ### 4. Tiêu chí nghiệm thu
 
@@ -49,6 +49,7 @@
 2. [x] `core/ui-config.ts` kiểm `reading` (`charsPerSec` ≥ 5, `minSec` ≥ 1, `maxWaitSec` ≥ `minSec`) và `difficultyHint.showSec` ≥ `reading.minSec`; test lỗi dữ liệu.
 3. [x] Scene dùng `TimedBox` và `topBox`; không còn dùng `time` của khung hình cho hộp chữ.
 4. [x] Chạy thử Chromium: chết 3 lần ở phòng Thorna, gợi ý hiện; mở menu tạm dừng 9 s (quá `showSec`): gợi ý ẩn, thời gian còn lại đứng yên; đóng menu thì gợi ý hiện lại với cùng thời gian còn lại rồi tự tắt đúng hạn. Ảnh ở `04-Dev-Plan/qa/ST-14-08/`; 0 lỗi console.
+5. Hồi quy cục bộ (chưa hợp nhất): trong `StageScene` phòng Thorna, gợi ý chết che S08 lâu hơn `showSec`; S08 chưa được đánh dấu xong, xuất hiện khi bỏ che và chỉ kết thúc khi đủ giờ đọc. Dùng thế giới thật với lớp vẽ giả lập; không thay kết quả Chromium hay cổng ở trên.
 
 ### 5. File
 

@@ -307,7 +307,11 @@ export class ShopPanel {
     const note = document.createElement('div');
     note.className = 'cv-panel-note';
     note.textContent = [
-      model.readOnly ? 'Bản lưu chỉ đọc (của phiên bản game mới hơn): chỉ xem.' : '',
+      model.readOnly
+        ? this.save.readUnavailable
+          ? 'Phiên tạm không ghi: chỉ xem.'
+          : 'Bản lưu chỉ đọc (của phiên bản game mới hơn): chỉ xem.'
+        : '',
       this.message,
     ]
       .filter((x) => x.length > 0)
