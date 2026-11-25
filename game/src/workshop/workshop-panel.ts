@@ -304,7 +304,11 @@ export class WorkshopPanel {
     const note = document.createElement('div');
     note.className = 'cv-panel-note';
     const notes = [
-      model.readOnly ? 'Bản lưu chỉ đọc (của phiên bản game mới hơn): chỉ xem.' : '',
+      model.readOnly
+        ? this.save.readUnavailable
+          ? 'Phiên tạm không ghi: chỉ xem.'
+          : 'Bản lưu chỉ đọc (của phiên bản game mới hơn): chỉ xem.'
+        : '',
       this.options.note ?? '',
       this.message,
     ].filter((x) => x.length > 0);

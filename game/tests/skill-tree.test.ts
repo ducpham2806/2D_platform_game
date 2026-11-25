@@ -130,7 +130,7 @@ describe('bản lưu 2 và chuẩn hóa build', () => {
     await m.flush();
     expect(JSON.parse((await store.read())!).character.skills).toEqual({});
     m.notice = undefined;
-    m.importCode(encodeSaveCode(bad));
+    await m.importCode(encodeSaveCode(bad));
     expect(m.data.character.skills).toEqual({});
     expect(m.notice).toMatch(/đặt lại/);
   });

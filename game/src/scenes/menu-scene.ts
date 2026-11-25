@@ -41,11 +41,15 @@ export class MenuScene extends Phaser.Scene {
       .text(
         cx,
         44,
-        `bản Prototype · cấp ${progress.level} · SP còn ${Math.max(0, progress.skillPoints - spentPoints(save.character.skills))} · boss đã hạ ${saved.bosses} · Core Bit ${saved.coreBits}`,
-        MUTED_STYLE,
+        manager.readUnavailable
+          ? 'Không đọc được bản lưu · Chơi tạm · Dữ liệu lưu để sao lưu'
+          : `bản Prototype · cấp ${progress.level} · SP còn ${Math.max(0, progress.skillPoints - spentPoints(save.character.skills))} · boss đã hạ ${saved.bosses} · Core Bit ${saved.coreBits}`,
+        manager.readUnavailable
+          ? { ...MUTED_STYLE, fontSize: '8px', color: '#ffd166' }
+          : MUTED_STYLE,
       )
       .setOrigin(0.5);
-    if (manager.notice) {
+    if (manager.notice && !manager.readUnavailable) {
       // Bản lưu vừa được chuẩn hóa lại (ví dụ kỹ năng không còn hợp lệ): báo một lần.
       this.add
         .text(cx, 186, manager.notice, { ...MUTED_STYLE, fontSize: '8px', color: '#ffd166' })

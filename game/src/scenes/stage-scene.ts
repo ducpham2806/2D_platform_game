@@ -112,6 +112,7 @@ export class StageScene extends Phaser.Scene {
   private playtest?: StagePlaytest;
   /** Ghi tiến trình vào bản lưu (M11); màn chơi thử của cổng Prototype không lưu. */
   private saver: StageSave | undefined;
+  private checkpointCue = 0;
   /** Core Bit trong bản lưu lúc vào màn (HUD cộng thêm phần nhặt trong lượt). */
   private savedCoreBits = 0;
   private pause?: PauseMenu;
@@ -454,7 +455,7 @@ export class StageScene extends Phaser.Scene {
       this.startDialogue(ev, world);
       this.react(ev, world);
       this.checkLevelUp(ev, world);
-      this.saver?.step(ev, world, FIXED_STEP_MS / 1000);
+      this.stepSave(ev, world);
       this.checkDeathHint(ev, world);
       this.stepTutorial(ev, world);
       this.stepDeathHint();
@@ -487,11 +488,19 @@ export class StageScene extends Phaser.Scene {
       this.tutorial?.box.show(view.speaker, formatGlyphs(view.text, ctx), view.hintLevel > 0);
     else this.tutorial?.box.hide();
     input.setTouchHighlight(view?.highlight);
+    const saveHint = this.saver?.readUnavailable
+      ? 'Chơi tạm · Sao lưu ở Menu > Dữ liệu lưu'
+      : this.saver?.readOnly
+        ? 'Bản lưu chỉ đọc · Menu > Dữ liệu lưu'
+        : this.saver?.needsBackup
+          ? 'Chưa ghi tiến trình · Sao lưu ở Menu > Dữ liệu lưu'
+          : undefined;
     this.hud?.hint.setText(
-      formatGlyphs(
-        '{DI_CHUYỂN} · nhảy {NHẢY} · bắn {BẮN} (giữ để nạp) · lướt {LƯỚT} · {TẠM_DỪNG}',
-        ctx,
-      ),
+      saveHint ??
+        formatGlyphs(
+          '{DI_CHUYỂN} · nhảy {NHẢY} · bắn {BẮN} (giữ để nạp) · lướt {LƯỚT} · {TẠM_DỪNG}',
+          ctx,
+        ),
     );
     if (this.qaClock) this.hud?.setQaAttempt(this.qaClock.label());
     if (DEBUG) {
@@ -499,6 +508,26 @@ export class StageScene extends Phaser.Scene {
         `${world.player.state} · chết ${world.deaths} · FPS ${Math.round(this.game.loop.actualFps)}`,
       );
     }
+  }
+
+  private stepSave(ev: WorldEvents, world: StageWorld): void {
+    const n = ev.checkpoint;
+    const saver = this.saver;
+    if (!saver) return;
+    if (n === undefined) {
+      saver.step(ev, world, FIXED_STEP_MS / 1000);
+      return;
+    }
+    const cue = ++this.checkpointCue;
+    saver.step(ev, world, FIXED_STEP_MS / 1000, () => {
+      if (
+        this.saver === saver &&
+        this.world === world &&
+        this.checkpointCue === cue &&
+        world.phase === 'explore'
+      )
+        this.hud?.flash(`Checkpoint ${n} · đã lưu`, 900);
+    });
   }
 
   private cancelInterruptedShot(world: StageWorld): void {
@@ -517,7 +546,13 @@ export class StageScene extends Phaser.Scene {
     const tut = this.tutorial;
     if (!tut) return;
     const frame = tut.signals.collect(world, ev);
-    const result = tut.manager.step(frame.signals, frame.moveTiles, FIXED_STEP_MS / 1000);
+    const textVisible = topBox(this.boxWants()) === 'tutorial';
+    const result = tut.manager.step(
+      frame.signals,
+      frame.moveTiles,
+      FIXED_STEP_MS / 1000,
+      textVisible,
+    );
     this.telemetry?.tutorial(result, tut.manager.view, this.def.tutorial);
     if (result.completed.length > 0)
       this.save?.update((s) => recordTutorialDone(s, result.completed));
@@ -848,8 +883,7 @@ export class StageScene extends Phaser.Scene {
     if (ev.kaiShieldReady) this.kaiFx.shieldReadyUntil = this.time.now + 220;
     if (ev.energyGained > 0) hud?.flash(`+${Number(ev.energyGained.toFixed(1))} năng lượng`, 500);
     if (ev.healed > 0) hud?.flash(`${ev.nanoCellUsed ? 'Nano Cell · ' : ''}+${ev.healed} máu`, 500);
-    if (ev.checkpoint !== undefined)
-      hud?.flash(`Checkpoint ${ev.checkpoint}${this.saver ? ' · đã lưu' : ''}`, 900);
+    if (ev.checkpoint !== undefined) hud?.flash(`Checkpoint ${ev.checkpoint}`, 900);
     if (ev.fellInPit) camera.shake(80, 0.003);
     if (ev.spikeHit) camera.shake(90, 0.004);
     if (ev.bossReflected) hud?.flash('Tia dội trúng Prism Sentinel', 800);

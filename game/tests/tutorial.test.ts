@@ -70,6 +70,55 @@ describe('TutorialManager', () => {
     { id: 'P', stage: 'prologue', speaker: 'NOVA', trigger: { on: 'start' }, text: 'prologue' },
   ];
 
+  it('QB-72 giữ phần giờ đọc đã dùng nhưng không tính thời gian bị che', () => {
+    const m = new TutorialManager(
+      tiny([
+        {
+          id: 'A',
+          stage: 'stage1',
+          speaker: 'NOVA',
+          trigger: { on: 'start' },
+          text: 'gốc',
+          showSec: 3,
+        },
+      ]),
+      'stage1',
+    );
+    expect(m.step(sig('start'), 0, DT).started).toBe('A');
+    m.step(sig(), 0, 1);
+    expect(m.step(sig(), 0, 8, false).completed).toEqual([]);
+    expect(m.view?.id).toBe('A');
+    expect(m.step(sig(), 0, 1.5).completed).toEqual([]);
+    expect(m.step(sig(), 0, 0.5).completed).toEqual(['A']);
+  });
+
+  it('QB-72 vẫn ghi nhận hành động và hủy theo tín hiệu trong lúc bị che', () => {
+    const m = new TutorialManager(
+      tiny([
+        {
+          id: 'A',
+          stage: 'stage1',
+          speaker: 'NOVA',
+          trigger: { on: 'start' },
+          text: 'a',
+          require: { on: 'jump', count: 1 },
+        },
+        {
+          id: 'B',
+          stage: 'stage1',
+          speaker: 'NOVA',
+          trigger: { after: 'A' },
+          text: 'b',
+          cancelOn: ['bossDefeated'],
+        },
+      ]),
+      'stage1',
+    );
+    expect(m.step(sig('start'), 0, DT, false).started).toBe('A');
+    expect(m.step(sig('jump'), 0, DT, false)).toEqual({ completed: ['A'], started: 'B' });
+    expect(m.step(sig('bossDefeated'), 0, DT, false).completed).toEqual(['B']);
+  });
+
   it('kích hoạt, đếm tiến độ, xong thì lưu; chỉ chạy bước của giai đoạn màn', () => {
     const m = new TutorialManager(tiny(steps), 'stage1');
     expect(m.step(sig('start'), 0, DT).started).toBeUndefined();

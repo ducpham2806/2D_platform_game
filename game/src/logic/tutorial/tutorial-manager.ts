@@ -4,7 +4,7 @@
  * - bước chưa xong mà gặp tín hiệu kích hoạt thì vào hàng đợi; mỗi lúc chỉ hiện một bước;
  * - `skipIfDone`: người chơi đã làm được yêu cầu từ trước thì bỏ qua (không hiện lời);
  * - đang hiện: đếm tiến độ yêu cầu, đếm thất bại, nâng bậc gợi ý theo thời gian/thất bại;
- * - bước không có yêu cầu chỉ hiện lời thoại `showSec` giây;
+ * - bước không có yêu cầu chỉ hiện lời thoại `showSec` giây được nhìn thấy (QB-72);
  * - gặp tín hiệu `cancelOn` (ví dụ đã hạ boss) thì bước đang chờ/đang hiện bị bỏ, tính là xong,
  *   và bước nối sau nó cũng bỏ trong cùng bước logic (không hiện lời trận đấu sau khi trận xong).
  * Chuỗi bước (`trigger.after`) nối theo bước đứng trước đã xong **trong lượt này** (QB-88): bước
@@ -105,8 +105,13 @@ export class TutorialManager {
     return pending.filter((s) => s.remindOnResult).map((s) => s.text);
   }
 
-  /** `signals`: tín hiệu của bước logic này; `moveTiles`: quãng đi sang phải (ô, có thể âm). */
-  step(signals: ReadonlySet<string>, moveTiles: number, dt: number): TutorialStepResult {
+  /** `moveTiles`: ô đi sang phải; `textVisible` chỉ điều khiển giờ đọc của bước không có yêu cầu. */
+  step(
+    signals: ReadonlySet<string>,
+    moveTiles: number,
+    dt: number,
+    textVisible = true,
+  ): TutorialStepResult {
     const result: TutorialStepResult = { started: undefined, completed: [] };
     for (const s of signals) this.seen.set(s, (this.seen.get(s) ?? 0) + 1);
     const forward = Math.max(0, moveTiles);
@@ -128,8 +133,8 @@ export class TutorialManager {
 
     const a = this.active;
     if (a) {
-      a.sec += dt;
       const rq = a.step.require;
+      if (rq || textVisible) a.sec += dt;
       if (rq?.moveTiles !== undefined) a.progress += forward;
       else if (rq?.on !== undefined && signals.has(rq.on)) a.progress += 1;
       if (a.step.fails.some((f) => signals.has(f))) a.fails += 1;
